@@ -797,7 +797,8 @@ def build_hair(cfg, mats, centre, radii, s):
             tipv = root + V((x * 0.01 * s, -0.02 * s, -ln * s))
             path = [surf(x * 1.3, -0.72, 1.02), root + V((0, -0.008 * s, 0)),
                     root.lerp(tipv, 0.5) + V((0, -0.016 * s, 0)), tipv]
-            lock("Beard", path, 0.014 * s, 0.002 * s, flat=0.4, weight="head", n=8, mat=mcol)
+            thick = 0.014 if beard == "long" else 0.008
+            lock("Beard", path, thick * s, 0.002 * s, flat=0.4, weight="head", n=8, mat=mcol)
     if cfg.get("horns"):
         bm = bmesh.new()
         for side in (1, -1):
