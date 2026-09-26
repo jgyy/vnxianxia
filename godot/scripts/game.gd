@@ -48,6 +48,7 @@ func _ready() -> void:
 	player.qi_changed.connect(hud.set_qi)
 	player.character_changed.connect(func(_n): hud.refresh())
 	Game.realm_changed.connect(_on_breakthrough)
+	Game.stage_changed.connect(_on_stage)
 	journal.quit_to_title.connect(func(): get_tree().change_scene_to_file("res://scenes/title.tscn"))
 	travel.chosen.connect(func(m): travel_to(m))
 	player.refill()
@@ -76,7 +77,7 @@ func load_map(map_id: String, spawn := "PlayerSpawn") -> void:
 	var q := Game.quest()
 	var sub := ""
 	if not q.is_empty():
-		sub = "Chapter %d · %s" % [int(q.chapter), Story.chapter(int(q.chapter)).get("title", "")]
+		sub = "%s  —  %s" % [Story.volume_label(int(q.get("volume", 1))), Story.chapter_label(int(q.chapter))]
 	loading.open(map_id, sub)
 	Audio.play_music("", 0.6)
 	var path := MAP_DIR + map_id + ".tscn"
@@ -199,7 +200,11 @@ func find_npc(id: String) -> Npc:
 
 
 ## Run a conversation; the speaking NPC (if any) faces the player and gestures.
+## Conditional lines are shown only when their condition holds (Story.visible_lines).
 func converse(lines: Array, npc: Npc = null) -> void:
+	lines = Story.visible_lines(lines)
+	if lines.is_empty():
+		return
 	player.controls_enabled = false
 	player.velocity = Vector3.ZERO
 	player.stop_meditation()
@@ -223,6 +228,18 @@ func converse(lines: Array, npc: Npc = null) -> void:
 	if player.anim and not player.dead:
 		player.anim.play("idle", 0.3)
 	player.controls_enabled = true
+
+
+## Offer a moral choice; returns the index into ``options`` (texts).
+func choose(prompt: String, options: Array, npc: Npc = null) -> int:
+	player.controls_enabled = false
+	player.velocity = Vector3.ZERO
+	hud.set_prompt("")
+	if npc:
+		npc.face(player.global_position)
+	var i: int = await dialogue.choose(prompt, options)
+	player.controls_enabled = true
+	return i
 
 
 func _process(_delta: float) -> void:
@@ -266,9 +283,15 @@ func _on_interact() -> void:
 		return
 	var n := _near_npc()
 	if n:
+		# idle chatter; greetings that fit the player's alignment and realm come up half the time
 		var barks: Array = n.data.get("barks", [])
-		if not barks.is_empty():
-			converse([{"speaker": n.npc_id, "text": barks[randi() % barks.size()], "voice": ""}], n)
+		var greet: Array = []
+		for g in n.data.get("greetings", []):
+			if Game.cond_ok(g.get("cond")):
+				greet.append(g.text)
+		var pool: Array = greet if not greet.is_empty() and randf() < 0.5 else barks
+		if not pool.is_empty():
+			converse([{"speaker": n.npc_id, "text": pool[randi() % pool.size()], "voice": ""}], n)
 
 
 func _on_player_died() -> void:
@@ -286,4 +309,16 @@ func _on_breakthrough(realm: String) -> void:
 	Audio.sfx("breakthrough", 0.0)
 	if map:
 		Fx.burst(map, player.global_position + Vector3.UP, Color(1.0, 0.85, 0.4), 160, 6.0, 0.06)
+	player.refill()
+
+
+## A minor stage within the realm (1st Layer .. Great Perfection). A breakthrough
+## (stage 1) has its own banner.
+func _on_stage(realm: int, stage: int) -> void:
+	if stage <= 1:
+		return
+	hud.banner("Great Perfection" if stage >= 10 else "Cultivation Deepens", Story.realm_label(realm, stage), 3.5)
+	Audio.sfx("breakthrough", -6.0)
+	if map:
+		Fx.burst(map, player.global_position + Vector3.UP, Color(0.55, 1.0, 0.85), 90, 4.0, 0.05)
 	player.refill()

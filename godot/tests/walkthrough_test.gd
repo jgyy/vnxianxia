@@ -1,9 +1,19 @@
 extends SceneTree
-## Plays the entire main story headlessly through the real game systems:
-## travel by teleport array, talk to NPCs, fight, collect, meditate,
-## interact and watch cinematics — all 100 quests must complete.
+## Plays the main story headlessly through the real game systems: travel by
+## teleport array, talk to NPCs, fight, collect, meditate, interact and watch
+## cinematics — every quest in the range must complete.
 ##
 ##   godot --headless --path godot -s res://tests/walkthrough_test.gd [-- first_quest last_quest]
+##
+## Quest numbers are 1-based (1..1000). CI plays the saga in ten shards, one per
+## volume (1 100, 101 200, ...); a shard starts with the realm, minor stage and
+## rewards of every earlier quest already applied (Game.start_at).
+##
+## Moral choices are made by Game.auto_choice (fast mode), which varies with
+## the quest and objective, so a run makes lawful, chaotic, good and evil
+## choices and the story must still finish whatever the alignment becomes.
+## Tribulations are survived the steady way: meditate through the lightning,
+## and fight off the beasts between volleys.
 
 const OBJECTIVE_TIMEOUT := 1800   # physics frames
 
@@ -13,6 +23,7 @@ var gs: Node
 var game: Node
 var counts := {}
 var travels := 0
+var _first := 1
 
 
 func _initialize() -> void:
@@ -42,6 +53,7 @@ func _run() -> void:
 	gs = root.get_node("/root/Game")
 	var args := OS.get_cmdline_user_args()
 	var first := int(args[0]) if args.size() > 0 else 1
+	_first = first
 	var last: int = int(args[1]) if args.size() > 1 else story.quests.size()
 	print("Godot ", Engine.get_version_info().string, " — walkthrough of quests %d..%d" % [first, last])
 	gs.fast = true
@@ -58,7 +70,7 @@ func _run() -> void:
 		if gs.quest_index != last_q:
 			last_q = gs.quest_index
 			var q: Dictionary = gs.quest()
-			print("[%s] ch%d %s  (%s, realm %s)" % [q.id, int(q.chapter), q.title, gs.map_id, story.realm_name(gs.realm)])
+			print("[%s] v%d ch%d %s  (%s, %s)" % [q.id, int(q.get("volume", 1)), int(q.chapter), q.title, gs.map_id, gs.realm_label()])
 			# swap protagonist now and then so both voices/models are exercised
 			if gs.quest_index % 7 == 3:
 				game.player.set_character(1 - gs.character)
@@ -67,8 +79,24 @@ func _run() -> void:
 	var secs := (Time.get_ticks_msec() - t0) / 1000.0
 	print("")
 	print("objectives by type: ", counts, "  teleports: ", travels, "  time: %.1fs" % secs)
+	print("cultivation at the end: %s" % gs.realm_label())
+	print("alignment at the end: %s (law %d, good %d); %d choices made; flags %s" % [
+		gs.alignment_name(), gs.law, gs.good, gs.choices.size(), gs.flags.keys()])
 	if gs.quest_index < last and failures.is_empty():
 		fail("stopped at quest %d" % (gs.quest_index + 1))
+	if failures.is_empty():
+		# the realm and minor stage earned by playing must match the story's rewards
+		var er := 0
+		var es := 0
+		for i in mini(last, story.quests.size()):
+			var r: Dictionary = story.quests[i].rewards
+			if r.get("realm"):
+				er = story.realm_index(r.realm)
+				es = int(r.stage) if r.get("stage") != null else 0
+			elif r.get("stage") != null:
+				es = int(r.stage)
+		if gs.realm != er or gs.stage != es:
+			fail("cultivation is %s, the story says %s" % [gs.realm_label(), story.realm_label(er, es)])
 	if last >= story.quests.size() and not gs.finished():
 		fail("story not finished")
 	if last >= story.quests.size() and gs.realm != story.world.realms.size() - 1:
@@ -79,7 +107,7 @@ func _run() -> void:
 func _finish() -> void:
 	print("")
 	if failures.is_empty():
-		print("WALKTHROUGH PASSED: %d quests completed" % gs.quest_index)
+		print("WALKTHROUGH PASSED: quests %d..%d completed" % [_first, gs.quest_index])
 		quit(0)
 	else:
 		print("WALKTHROUGH FAILED: %d problem(s)" % failures.size())
@@ -169,6 +197,10 @@ func _step() -> bool:
 			game._on_interact()
 		"cinematic":
 			pass
+		"tribulation":
+			if not await _tribulation(tag, advanced):
+				return false
+			return true
 	if not await _wait(advanced):
 		var extra := ""
 		if obj.type == "talk" and runner.target_npc:
@@ -176,6 +208,61 @@ func _step() -> bool:
 		fail("%s did not complete (state=%s)%s" % [tag, runner.state, extra])
 		return false
 	return true
+
+
+## Survive a heavenly tribulation: stand in it and meditate; when beasts or
+## heart shades come between volleys, strike them down, then meditate again.
+func _tribulation(tag: String, advanced: Callable) -> bool:
+	var runner: Node = game.runner
+	var player: CharacterBody3D = game.player
+	var site: Vector3 = runner.target_point
+	var fails := 0
+	var was_failed := false
+	_place(player, site)
+	for step in 20000:
+		if advanced.call():
+			return true
+		var t = runner.trib
+		if t == null:
+			await physics_frame
+			continue
+		if runner._trib_failed and not was_failed:
+			fails += 1
+			# meditating through it must always be enough: being struck down is a failure of the test
+			fail("%s: the tribulation struck the player down (hp %.0f / %.0f)" % [tag, player.hp, gs.max_hp()])
+			return false
+		was_failed = runner._trib_failed
+		if not t.running:
+			if Vector2(player.global_position.x - site.x, player.global_position.z - site.z).length() > 3.0:
+				_place(player, site)
+			await physics_frame
+			continue
+		var alive: Array = t.enemies.filter(func(e): return is_instance_valid(e) and not e.dead)
+		if not alive.is_empty():
+			for e in alive:
+				var guard := 0
+				while is_instance_valid(e) and not e.dead and guard < 12:
+					_place(player, _free_spot(e.global_position, 1.2))
+					for k in 30:
+						await physics_frame
+						if player.is_on_floor():
+							break
+					e.hp = minf(e.hp, 1.0)
+					player._action_lock = 0.0
+					player.strike()
+					await _frames(30)
+					guard += 1
+				if is_instance_valid(e) and not e.dead:
+					e.take_damage(1e9)
+			continue
+		if not player.meditating:
+			if not player.is_on_floor():
+				await physics_frame
+				continue
+			player.start_meditation()
+		await physics_frame
+	fail(tag + " did not complete (tribulation at volley %d)" % (runner.trib.done if runner.trib else -1))
+	return false
 
 
 func _place(player: CharacterBody3D, p: Vector3) -> void:

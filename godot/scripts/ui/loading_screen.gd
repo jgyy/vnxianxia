@@ -73,6 +73,11 @@ func open(map_id: String, subtitle := "") -> void:
 	_sub.text = subtitle
 	var q := Game.quest()
 	_synopsis.text = Story.fill(Story.chapter(int(q.chapter)).get("summary", "")) if not q.is_empty() else Story.premise
+	if not q.is_empty() and Game.objective_index == 0:
+		# the very start of a volume: show the volume's synopsis instead
+		var v := Story.volume(int(q.get("volume", 1)))
+		if int(q.number) - 1 == int(v.get("first", -1)):
+			_synopsis.text = Story.fill(v.get("summary", ""))
 	_tip.text = "Tip: " + TIPS[randi() % TIPS.size()]
 	_bar.value = 0.0
 	visible = true

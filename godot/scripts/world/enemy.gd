@@ -23,11 +23,37 @@ const STATS := {
 	"ancient_guardian": {"name": "Ancient Guardian", "model": "stone_golem", "hp": 950, "dmg": 24, "speed": 2.6, "range": 3.4, "cd": 1.8, "hit_t": 0.45, "scale": 2.0, "sfx": "golem_rumble"},
 	"jiao_serpent": {"name": "Jiao, the Flood Dragon", "model": "jiao_serpent", "hp": 1500, "dmg": 24, "speed": 3.4, "range": 7.0, "cd": 1.8, "hit_t": 0.6, "radius": 1.0, "scale": 1.5, "sfx": "serpent_roar"},
 	"heart_demon": {"name": "Heart Demon", "model": "player", "hp": 1100, "dmg": 22, "speed": 4.4, "range": 1.7, "cd": 1.0, "hit_t": 0.4},
+	# added for the 1000-quest saga
+	"rogue_cultivator": {"name": "Rogue Cultivator", "model": "bandit", "hp": 80, "dmg": 10, "speed": 3.6, "range": 1.7, "cd": 1.4, "hit_t": 0.4, "tint": Color(0.55, 0.6, 0.75)},
+	"iron_scale_disciple": {"name": "Iron Scale Disciple", "model": "disciple_male", "hp": 110, "dmg": 12, "speed": 3.5, "range": 1.7, "cd": 1.4, "hit_t": 0.4, "tint": Color(0.55, 0.72, 0.6)},
+	"void_wraith": {"name": "Void Wraith", "model": "demon_cultivator", "hp": 140, "dmg": 16, "speed": 4.0, "range": 1.8, "cd": 1.3, "hit_t": 0.4, "tint": Color(0.42, 0.36, 0.7), "glow": Color(0.55, 0.3, 1.0), "sfx": "demon_laugh_ish"},
+	"thunder_wolf": {"name": "Thunder Wolf", "model": "spirit_wolf", "hp": 120, "dmg": 15, "speed": 5.2, "range": 1.9, "cd": 1.3, "hit_t": 0.35, "tint": Color(0.7, 0.8, 1.2), "glow": Color(0.4, 0.7, 1.0), "sfx": "wolf_growl"},
+	"celestial_sentinel": {"name": "Celestial Sentinel", "model": "stone_golem", "hp": 220, "dmg": 20, "speed": 2.6, "range": 2.3, "cd": 1.8, "hit_t": 0.45, "scale": 1.15, "tint": Color(0.75, 0.95, 0.9), "sfx": "golem_rumble"},
+	"rung_deacon": {"name": "Rung of the Ladder", "model": "demon_cultivator", "hp": 1300, "dmg": 24, "speed": 4.0, "range": 2.0, "cd": 1.1, "hit_t": 0.4, "scale": 1.12, "tint": Color(0.5, 0.25, 0.35), "glow": Color(1.0, 0.2, 0.3)},
+	"void_colossus": {"name": "Void Colossus", "model": "stone_golem", "hp": 1800, "dmg": 28, "speed": 2.4, "range": 3.6, "cd": 1.9, "hit_t": 0.5, "scale": 2.2, "tint": Color(0.38, 0.32, 0.55), "glow": Color(0.6, 0.35, 1.0), "sfx": "golem_rumble"},
+	# waves of a heavenly tribulation (world/tribulation.gd)
+	"tribulation_beast": {"name": "Tribulation Beast", "model": "spirit_wolf", "hp": 110, "dmg": 12, "speed": 5.0, "range": 1.9, "cd": 1.4, "hit_t": 0.35, "scale": 1.2, "tint": Color(0.85, 0.9, 1.3), "glow": Color(0.55, 0.8, 1.0), "sfx": "wolf_howl"},
+	"heart_shade": {"name": "Heart Shade", "model": "player", "hp": 130, "dmg": 12, "speed": 4.0, "range": 1.7, "cd": 1.3, "hit_t": 0.4},
+}
+## The realm tier each enemy's base stats were tuned for. Fought in a later
+## tier (story.json gives every quest the realm index at its start), an enemy
+## gains 30% hit points and 20% damage per tier, so late fights keep pace with
+## the protagonist's growing strength.
+const NATIVE_TIER := {
+	"training_puppet": 0, "spirit_wolf": 1, "corrupted_wolf": 1, "wolf_king": 1, "bandit": 1, "sparring_disciple": 1,
+	"demon_cultivator": 1, "stone_golem": 1, "ancient_guardian": 1, "bandit_chief": 3, "tournament_champion": 2,
+	"blood_guard": 2, "demon_elder": 2, "jiao_serpent": 3, "heart_demon": 4, "blood_patriarch": 6,
+	"rogue_cultivator": 1, "iron_scale_disciple": 3, "void_wraith": 5, "thunder_wolf": 5, "celestial_sentinel": 4,
+	"rung_deacon": 4, "void_colossus": 6, "tribulation_beast": 4, "heart_shade": 4,
 }
 const GRAVITY := 13.0
 const AGGRO := 16.0
 
 var kind := ""
+## realm tier of the fight (-1 = the protagonist's current realm)
+var tier := -1
+## display name override (named bosses)
+var title := ""
 var stats: Dictionary = {}
 var hp := 1.0
 var max_hp := 1.0
@@ -49,11 +75,18 @@ var _bar: MeshInstance3D
 var _bar_mesh: QuadMesh
 
 
-static func create(enemy_kind: String, is_boss := false) -> Enemy:
+static func create(enemy_kind: String, is_boss := false, fight_tier := -1, display := "") -> Enemy:
 	var e := Enemy.new()
 	e.kind = enemy_kind
 	e.boss = is_boss
+	e.tier = fight_tier
+	e.title = display
 	return e
+
+
+## Stat multiplier for fighting ``k`` at realm tier ``t``.
+static func tier_scale(k: String, t: int, per_tier: float) -> float:
+	return 1.0 + per_tier * maxf(0.0, float(t - int(NATIVE_TIER.get(k, 1))))
 
 
 func _ready() -> void:
@@ -62,7 +95,10 @@ func _ready() -> void:
 	collision_layer = 4
 	collision_mask = 1
 	var sc: float = stats.get("scale", 1.0)
-	max_hp = float(stats.hp)
+	var t := tier if tier >= 0 else Game.realm
+	stats = stats.duplicate()
+	stats.dmg = float(stats.dmg) * tier_scale(kind, t, 0.2)
+	max_hp = float(stats.hp) * tier_scale(kind, t, 0.3)
 	hp = max_hp
 	radius = stats.get("radius", 0.4) * sc
 	height = 1.8 * sc
@@ -96,6 +132,8 @@ func _ready() -> void:
 
 
 func display_name() -> String:
+	if title != "":
+		return title
 	return stats.get("name", kind.capitalize())
 
 

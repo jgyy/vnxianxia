@@ -1,6 +1,6 @@
 extends Node3D
 ## Title screen: the sect at dusk behind the menu (new game, continue,
-## chapter select, quit).
+## volume and chapter select, quit).
 
 var _cam: Camera3D
 var _t := 0.0
@@ -8,6 +8,9 @@ var _centre := Vector3.ZERO
 var _menu: VBoxContainer
 var _chars: VBoxContainer
 var _chapters: PanelContainer
+var _chapter_list: VBoxContainer
+var _vol_title: Label
+var _vol_sub: Label
 
 
 func _ready() -> void:
@@ -61,7 +64,7 @@ func _build_ui() -> void:
 	box.add_theme_constant_override("separation", 10)
 	root.add_child(box)
 	box.add_child(UiTheme.label("AZURE CLOUD SECT", 54, UiTheme.GOLD, 10))
-	box.add_child(UiTheme.label(Story.title + "  ·  a xianxia saga in one hundred quests", 21, UiTheme.MUTED, 4))
+	box.add_child(UiTheme.label(Story.title + "  ·  a xianxia saga in one thousand quests", 21, UiTheme.MUTED, 4))
 	var premise := UiTheme.label(Story.premise.split("\n\n")[-1], 16, UiTheme.TEXT, 3)
 	premise.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	premise.custom_minimum_size.x = 440
@@ -85,20 +88,48 @@ func _build_ui() -> void:
 	_button(_chars, "Lin Feng  —  a wandering orphan with a stubborn heart", func(): _new_game(0))
 	_button(_chars, "Su Yue  —  a physician's daughter seeking the dao", func(): _new_game(1))
 	_button(_chars, "Back", func(): _chars.visible = false; _menu.visible = true)
+	# chapter select: ten volumes on the left, the chosen volume's chapters (scrollable) on the right
 	_chapters = PanelContainer.new()
 	_chapters.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
-	_chapters.position = Vector2(-520, -300)
-	_chapters.custom_minimum_size = Vector2(460, 600)
+	_chapters.position = Vector2(-780, -330)
+	_chapters.custom_minimum_size = Vector2(740, 660)
 	_chapters.visible = false
 	root.add_child(_chapters)
 	var cv := VBoxContainer.new()
-	cv.add_theme_constant_override("separation", 6)
+	cv.add_theme_constant_override("separation", 8)
 	_chapters.add_child(cv)
-	cv.add_child(UiTheme.label("Chapters", 28, UiTheme.GOLD, 5))
-	for c in Story.chapters:
-		var n := int(c.number)
-		_button(cv, "%d · %s" % [n, c.title], func(): _start_chapter(n))
+	cv.add_child(UiTheme.label("Chapter Select", 28, UiTheme.GOLD, 5))
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 14)
+	hb.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	cv.add_child(hb)
+	var vols := VBoxContainer.new()
+	vols.add_theme_constant_override("separation", 5)
+	hb.add_child(vols)
+	var right := VBoxContainer.new()
+	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hb.add_child(right)
+	_vol_title = UiTheme.label("", 20, UiTheme.GOLD, 4)
+	right.add_child(_vol_title)
+	_vol_sub = UiTheme.label("", 14, UiTheme.MUTED, 3)
+	_vol_sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_vol_sub.custom_minimum_size.x = 440
+	right.add_child(_vol_sub)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.custom_minimum_size = Vector2(460, 440)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	right.add_child(scroll)
+	_chapter_list = VBoxContainer.new()
+	_chapter_list.add_theme_constant_override("separation", 5)
+	_chapter_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_chapter_list)
+	for v in Story.volumes:
+		var vn := int(v.number)
+		var b := _small_button(vols, "%s · %s" % [Story.roman(vn), v.title], func(): _show_volume(vn), 230)
+		b.tooltip_text = v.subtitle
 	_button(cv, "Close", func(): _chapters.visible = false)
+	_show_volume(1)
 	var credit := UiTheme.label("Built with headless Blender and Godot · every model, texture, track and voice is procedural", 13, UiTheme.MUTED, 3)
 	credit.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	credit.position = Vector2(20, -30)
@@ -117,6 +148,30 @@ func _button(parent: Control, text: String, cb: Callable) -> Button:
 	return b
 
 
+func _small_button(parent: Control, text: String, cb: Callable, w := 440) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.custom_minimum_size = Vector2(w, 34)
+	b.clip_text = true
+	b.pressed.connect(cb)
+	b.pressed.connect(func(): Audio.sfx("ui_click", -6.0))
+	parent.add_child(b)
+	return b
+
+
+func _show_volume(vn: int) -> void:
+	var v := Story.volume(vn)
+	_vol_title.text = Story.volume_label(vn)
+	_vol_sub.text = v.get("subtitle", "")
+	for c in _chapter_list.get_children():
+		c.queue_free()
+	for n in v.get("chapters", []):
+		var ch := Story.chapter(int(n))
+		var num := int(n)
+		_small_button(_chapter_list, "%d · %s" % [num, ch.get("title", "")], func(): _start_chapter(num))
+
+
 func _continue() -> void:
 	if Game.load_save():
 		get_tree().change_scene_to_file("res://scenes/game.tscn")
@@ -130,6 +185,6 @@ func _new_game(character: int) -> void:
 
 func _start_chapter(n: int) -> void:
 	var c := Game.character
-	Game.start_at((n - 1) * 10)
+	Game.start_at(Story.chapter_first(n))
 	Game.character = c
 	get_tree().change_scene_to_file("res://scenes/game.tscn")

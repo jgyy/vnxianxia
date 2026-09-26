@@ -18,11 +18,16 @@ N = "narrator"
 
 
 def _lines(lines):
+    """``(speaker, text)`` or ``(speaker, text, cond)``: a conditional line is
+    shown only when ``cond`` holds (see build_story.check_cond)."""
     out = []
     for item in lines:
-        if not (isinstance(item, tuple) and len(item) == 2):
-            raise ValueError("dialogue lines must be (speaker, text) tuples, got %r" % (item,))
-        out.append({"speaker": item[0], "text": item[1]})
+        if not (isinstance(item, tuple) and len(item) in (2, 3)):
+            raise ValueError("dialogue lines must be (speaker, text[, cond]) tuples, got %r" % (item,))
+        d = {"speaker": item[0], "text": item[1]}
+        if len(item) == 3:
+            d["cond"] = dict(item[2])
+        out.append(d)
     return out
 
 
@@ -70,6 +75,17 @@ def meditate(marker, seconds, text, *lines, map=None):
 def interact(obj, marker, text, *lines, map=None):
     """Inspect a world_spec.PROPS object placed at ``marker``."""
     d = _obj("interact", text, map, object=obj, marker=marker)
+    if lines:
+        d["dialogue"] = _lines(lines)
+    return d
+
+
+def tribulation(marker, bolts, text, *lines, waves=(), map=None):
+    """A heavenly tribulation at ``marker``: ``bolts`` lightning strikes the
+    player must survive, with optional waves ``(enemy, count, after_volley)``
+    of tribulation beasts / heart shades. Optional lines open it."""
+    d = _obj("tribulation", text, map, marker=marker, bolts=bolts,
+             waves=[{"enemy": e, "count": c, "after": a} for e, c, a in waves])
     if lines:
         d["dialogue"] = _lines(lines)
     return d

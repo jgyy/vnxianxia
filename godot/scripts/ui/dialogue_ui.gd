@@ -1,11 +1,14 @@
 extends CanvasLayer
-## Voiced conversation box with speaker portrait, name and typewriter text.
+## Voiced conversation box with speaker portrait, name and typewriter text,
+## and the moral choices of the story (choose(): keys 1-4, mouse, or arrows + E).
 
 signal finished
 signal line_started(speaker: String)
+signal chosen(index: int)
 
 const CHARS_PER_SEC := 48.0
 const PORTRAIT_DIR := "res://ui/portraits/"
+const PLAYER_PROMPT := "Your choice"
 
 var active := false
 var _panel: PanelContainer
@@ -17,6 +20,8 @@ var _hint: Label
 var _visible_chars := 0.0
 var _advance := false
 var _ignore_until := 0
+var _choices: VBoxContainer
+var _choosing := false
 
 
 func _ready() -> void:
@@ -62,6 +67,10 @@ func _ready() -> void:
 	_text.add_theme_constant_override("outline_size", 3)
 	_text.add_theme_color_override("font_outline_color", Color(0, 0, 0))
 	vb.add_child(_text)
+	_choices = VBoxContainer.new()
+	_choices.add_theme_constant_override("separation", 6)
+	_choices.visible = false
+	vb.add_child(_choices)
 	_hint = UiTheme.label("E / Space  continue", 13, UiTheme.MUTED, 3)
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	vb.add_child(_hint)
@@ -69,6 +78,13 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _choosing:
+		if event is InputEventKey and event.pressed and not event.echo:
+			var k: int = event.keycode - KEY_1
+			if k >= 0 and k < _choices.get_child_count():
+				get_viewport().set_input_as_handled()
+				chosen.emit(k)
+		return
 	if not active or Time.get_ticks_msec() < _ignore_until:
 		return
 	var click: bool = event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT
@@ -110,11 +126,16 @@ func _line(line: Dictionary) -> void:
 	if Game.fast:
 		return
 	Audio.sfx("dialogue_next", -10.0)
-	var voice_len := Audio.play_voice(Story.voice_path(line))
+	var vpath := Story.voice_path(line)
+	var voice_len := Audio.play_voice(vpath)
 	_visible_chars = 0.0
 	_text.visible_characters = 0
 	var total := _text.get_total_character_count()
 	var elapsed := 0.0
+	# text-only lines (the saga's new chapters) advance by themselves after a reading time
+	if voice_len <= 0.0:
+		voice_len = total / CHARS_PER_SEC + Story.reading_time(body) * 0.6
+	_hint.text = "E / Space  continue" if vpath != "" else "E / Space  continue   ·   auto"
 	while true:
 		await get_tree().process_frame
 		var dt := get_process_delta_time()
@@ -131,3 +152,50 @@ func _line(line: Dictionary) -> void:
 		if _advance or (voice_len > 0.0 and elapsed > voice_len + 1.4):
 			break
 	_advance = false
+
+
+## Offer 2-4 options after ``prompt``; returns the chosen index. In fast mode
+## (tests) the choice is made at once by Game.auto_choice().
+func choose(prompt: String, options: Array) -> int:
+	if Game.fast or options.size() <= 1:
+		return Game.auto_choice(options.size()) if options.size() > 1 else 0
+	active = true
+	_choosing = true
+	_panel.visible = true
+	_name.text = PLAYER_PROMPT
+	_title.text = ""
+	var model := "cultivator_male" if Game.character == 0 else "cultivator_female"
+	var path := PORTRAIT_DIR + model + ".png"
+	_portrait.texture = load(path) if ResourceLoader.exists(path) else null
+	_portrait.visible = _portrait.texture != null
+	_text.visible_characters = -1
+	_text.text = "[i]%s[/i]" % prompt
+	for c in _choices.get_children():
+		c.queue_free()
+	for i in options.size():
+		var b := Button.new()
+		b.text = "%d.  %s" % [i + 1, options[i]]
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_font_size_override("font_size", 18)
+		b.focus_mode = Control.FOCUS_ALL
+		b.pressed.connect(func(): chosen.emit(i))
+		_choices.add_child(b)
+	_choices.visible = true
+	_hint.text = "1-%d  or click  choose" % options.size()
+	var prev_mouse := Input.mouse_mode
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	await get_tree().process_frame
+	if _choices.get_child_count() > 0:
+		(_choices.get_child(0) as Control).grab_focus()
+	Audio.sfx("ui_open", -8.0)
+	var i: int = await chosen
+	Audio.sfx("ui_click", -6.0)
+	_choosing = false
+	_choices.visible = false
+	for c in _choices.get_children():
+		c.queue_free()
+	Input.mouse_mode = prev_mouse
+	_panel.visible = false
+	active = false
+	_ignore_until = Time.get_ticks_msec() + 250
+	return i

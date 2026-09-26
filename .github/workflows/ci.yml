@@ -67,7 +67,7 @@ jobs:
           retention-days: 14
 
   godot-smoke-test:
-    name: Godot 4.7.2 smoke test & 100-quest walkthrough
+    name: Godot 4.7.2 smoke test
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -92,10 +92,6 @@ jobs:
         run: |
           set -o pipefail
           ~/godot/godot --headless --path godot -s res://tests/smoke_test.gd | tee smoke.log
-      - name: Play all 100 main quests headlessly
-        run: |
-          set -o pipefail
-          ~/godot/godot --headless --path godot -s res://tests/walkthrough_test.gd | tee walkthrough.log
       - name: Summary
         if: always()
         run: |
@@ -103,7 +99,54 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           cat smoke.log >> "$GITHUB_STEP_SUMMARY" || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          echo '### 100-quest walkthrough' >> "$GITHUB_STEP_SUMMARY"
+
+  # The 1000-quest saga is played headlessly in ten parallel shards, one per
+  # volume. Each shard starts with the realm, minor stage and rewards of every
+  # earlier quest applied, and checks the cultivation it ends with.
+  godot-walkthrough:
+    name: Walkthrough · Volume ${{ matrix.volume }} (quests ${{ matrix.first }}-${{ matrix.last }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {volume: 1, first: 1, last: 100}
+          - {volume: 2, first: 101, last: 200}
+          - {volume: 3, first: 201, last: 300}
+          - {volume: 4, first: 301, last: 400}
+          - {volume: 5, first: 401, last: 500}
+          - {volume: 6, first: 501, last: 600}
+          - {volume: 7, first: 601, last: 700}
+          - {volume: 8, first: 701, last: 800}
+          - {volume: 9, first: 801, last: 900}
+          - {volume: 10, first: 901, last: 1000}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-linux
+      - name: Download Godot
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot && cd ~/godot
+          curl -fsSL -o godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip && rm godot.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
+      - name: Import project
+        run: ~/godot/godot --headless --path godot --import
+      - name: Play quests ${{ matrix.first }}-${{ matrix.last }} headlessly
+        run: |
+          set -o pipefail
+          ~/godot/godot --headless --path godot -s res://tests/walkthrough_test.gd -- ${{ matrix.first }} ${{ matrix.last }} | tee walkthrough.log
+      - name: Summary
+        if: always()
+        run: |
+          echo '### Walkthrough, volume ${{ matrix.volume }} (quests ${{ matrix.first }}-${{ matrix.last }})' >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           tail -n 25 walkthrough.log >> "$GITHUB_STEP_SUMMARY" || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"

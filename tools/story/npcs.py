@@ -30,12 +30,35 @@ PATRIARCH = "patriarch_xue"
 XUEMEI = "crimson_xuemei"
 SAGE = "star_sage"
 DEMON = "heart_demon"
+# --- introduced by the 1000-quest saga (text-only, unvoiced)
+YAN = "yan_tie"
+LIUER = "liu_er"
+GOU = "bandit_gou"
+RUAN = "young_ruan"
+RUANHAI = "master_ruan"
+JING = "abbess_jing"
+TIANLU = "ancestor_zhao"
+RUNG1 = "rung_luo"
+RUNG2 = "rung_shan"
+RUNG3 = "rung_rong"
+RUNG4 = "rung_kong"
+RUNG5 = "rung_wen"
+RUNG6 = "rung_si"
+RUNG7 = "rung_chen"
 
 
-def npc(name, title, model, home=None, tint=None, scale=1.0, appear_from=None, hidden_after=None, barks=()):
+def npc(name, title, model, home=None, tint=None, scale=1.0, appear_from=None, hidden_after=None, barks=(),
+        gone_after=None):
+    """``appear_from`` / ``hidden_after`` bound when the NPC stands at ``home``.
+    ``gone_after`` is the last quest in which the character may speak or be
+    talked to at all (death or departure); it is enforced on generated quests.
+    Quest ids of the original 100-quest story use three digits (``q085``) and
+    are remapped to the 1000-quest numbering by build_story; new ids use four
+    digits (``q0405``)."""
     return {"name": name, "title": title, "model": model, "tint": tint, "scale": scale,
             "home": {"map": home[0], "marker": home[1]} if home else None,
-            "appear_from": appear_from, "hidden_after": hidden_after, "barks": list(barks)}
+            "appear_from": appear_from, "hidden_after": hidden_after, "gone_after": gone_after,
+            "barks": list(barks)}
 
 
 NPCS = {
@@ -45,7 +68,7 @@ NPCS = {
                     "Cultivate diligently, disciple. Heaven favours the stubborn.",
                     "Every stone of this mountain was laid by someone braver than me."]),
     MO: npc("Mo Changfeng", "Outer Court Elder", "elder_male", ("sect", "HallSteps"), None, 1.0,
-            hidden_after="q085",
+            hidden_after="q085", gone_after="q085",
             barks=["Back straight! A crooked spine makes a crooked meridian.",
                    "Hmph. You're late. The mountain doesn't wait, and neither do I.",
                    "When I was your age I climbed these steps on my hands. Both ways.",
@@ -55,7 +78,7 @@ NPCS = {
                     "Seven floors, ten thousand scrolls, and nobody returns anything on time.",
                     "If you fold a page corner, I will fold you."]),
     GU: npc("Gu Hanshan", "Elder of the Law Hall", "elder_male", ("sect", "ScholarRock"), [0.5, 0.45, 0.55], 1.08,
-            hidden_after="q049",
+            hidden_after="q049", gone_after="q094",
             barks=["The precepts are not suggestions, disciple.",
                    "The Law Hall sees everything. Remember that.",
                    "Move along. I am thinking."]),
@@ -120,7 +143,7 @@ NPCS = {
                     "Every face that passes, I look twice.",
                     "Heaven keeps its accounts. I keep mine."]),
     HONG: npc("Keeper Hong", "Keeper of the Town Temple", "villager_male", ("qingshi_town", "Temple"), [1.1, 1.0, 0.9], 0.97,
-              hidden_after="q028",
+              hidden_after="q028", gone_after="q029",
               barks=["May the ancestors watch over you.",
                      "Incense for the lost? Half a copper. The ancestors accept discounts.",
                      "Such a strong young cultivator. Such vigorous blood."]),
@@ -135,7 +158,7 @@ NPCS = {
     PATRIARCH: npc("Xue Wuji", "Patriarch of the Blood Moon", "blood_patriarch", None, None, 1.12,
                    barks=["Kneel.", "Three hundred years is a long time to be hungry."]),
     XUEMEI: npc("Xue Mei", "Crimson Elder of the Blood Moon", "demon_cultivator", None, [1.3, 0.7, 0.7], 1.0,
-                barks=["How delicious you look.", "Run, little lamb. I do love a chase."]),
+                gone_after="q059", barks=["How delicious you look.", "Run, little lamb. I do love a chase."]),
     DEMON: npc("Heart Demon", "Your Own Shadow", "demon_cultivator", None, [0.3, 0.3, 0.35], 1.0,
                barks=["...", "Look closer. It's you."]),
     # ------------------------------------------------------------ Celestial Sky Isles
@@ -146,7 +169,59 @@ NPCS = {
                      "Sit. Look up. Try not to fall off."]),
 }
 
+# ---------------------------------------------------------------- new cast (text-only)
+NPCS.update({
+    YAN: npc("Yan Tie", "Champion of Thunder Peak", "disciple_male", ("sect", "CliffEdge"), [0.75, 0.8, 1.0], 1.1,
+             appear_from="q0121",
+             barks=["I owe you my life and a rematch. The rematch can wait.",
+                    "Thunder Peak trains at dawn. Thunder Peak also naps at noon.",
+                    "Some days I still taste that pill. Bitter, like losing."]),
+    LIUER: npc("Liu Er", "Widow Liu's Son", "villager_male", ("qingshi_town", "Farmland"), [0.85, 0.8, 0.7], 0.9,
+               appear_from="q0221",
+               barks=["Mother makes me carry the water now. I don't mind.",
+                      "I can swim across the river and back. Twice, if nobody's counting.",
+                      "When I grow up I'm going to climb the nine thousand steps."]),
+    GOU: npc("Gou the Scarred", "Iron-Fang's Lieutenant", "bandit", None, [0.8, 0.6, 0.5], 1.08,
+             gone_after="q0060",
+             barks=["Scar? I got it arguing with a tiger. The tiger lost.", "Move along, sect brat."]),
+    RUAN: npc("Ruan Jingtao", "Young Master of the Iron Scale Sect", "disciple_male", None, [0.55, 0.7, 0.6], 1.04,
+              appear_from="q0221",
+              barks=["The Iron Scale bends to no one. Mostly.", "Your mountain is very tall. Ours is wider."]),
+    RUANHAI: npc("Ruan Hai", "Sect Master of the Iron Scale", "elder_male", None, [0.5, 0.65, 0.55], 1.1,
+                 appear_from="q0221",
+                 barks=["Scales do not rust, boy. Neither do grudges.", "Speak plainly. I am too old for riddles."]),
+    JING: npc("Jing Xuan", "Abbess of the Moon-Well Nunnery", "sect_master", None, [0.9, 0.92, 1.12], 1.0,
+              appear_from="q0501",
+              barks=["The well reflects the moon, not the other way round.", "Mercy is a discipline, not a mood."]),
+    TIANLU: npc("Zhao Tianlu", "Ancestor of the Zhao Clan", "elder_male", None, [1.25, 1.1, 0.65], 1.02,
+                appear_from="q0221",
+                barks=["The Zhao clan counts in centuries. And in gold.", "My grandson has your stubbornness. Regrettably."]),
+    # --- the Seven Rungs of the Patriarch's Ladder
+    RUNG1: npc("Luo Hui", "First Rung of the Patriarch's Ladder", "demon_cultivator", None, [0.62, 0.6, 0.64], 1.02,
+               appear_from="q0331", gone_after="q0490",
+               barks=["Ash remembers every fire.", "One rung is nothing. Seven is a road to heaven."]),
+    RUNG2: npc("Tie Shan", "Second Rung, the Rust Monk", "demon_cultivator", None, [0.9, 0.55, 0.35], 1.1,
+               appear_from="q0361", gone_after="q0530",
+               barks=["All iron rusts. All vows rust.", "Pray with me. It won't help."]),
+    RUNG3: npc("Jiu Rong", "Third Rung, Madam Ninefold", "demon_cultivator", None, [0.82, 0.5, 0.9], 1.0,
+               appear_from="q0541", gone_after="q0570",
+               barks=["I have nine faces. You'll like at least one.", "Fold, and fold, and fold again."]),
+    RUNG4: npc("Kong Yi", "Fourth Rung, Brother Hollow", "demon_cultivator", None, [0.4, 0.45, 0.62], 1.06,
+               appear_from="q0501", gone_after="q0650",
+               barks=["I am empty. It is very restful.", "Your body is a house. I am looking to rent."]),
+    RUNG5: npc("Wen Tu", "Fifth Rung, the Butcher of Wen", "bandit", None, [0.8, 0.32, 0.3], 1.14,
+               appear_from="q0601", gone_after="q0690",
+               barks=["Meat is meat.", "I weigh cultivators by the jin."]),
+    RUNG6: npc("Si Rou", "Sixth Rung, Lady Silk", "sect_master", None, [1.2, 0.62, 0.72], 0.98,
+               appear_from="q0711", gone_after="q0770",
+               barks=["Every alliance is a web. I merely spin faster.", "Such lovely manners. Such soft throats."]),
+    RUNG7: npc("Xue Chen", "Seventh Rung, the Patriarch's Shadow", "demon_cultivator", None, [0.36, 0.2, 0.26], 1.08,
+               appear_from="q0821", gone_after="q0980",
+               barks=["I was born in his shadow. I will die in yours.", "The moon is almost full."]),
+})
+
 for _id, _npc in NPCS.items():
-    _v = NPC_VOICES[_id]
-    _npc["voice"] = {"model": _v["model"], "speaker": _v["speaker"],
-                     "length_scale": _v["length_scale"], "noise_scale": _v["noise_scale"]}
+    _v = NPC_VOICES.get(_id)
+    # NPCs added for the 1000-quest saga speak only in text (no Piper casting).
+    _npc["voice"] = None if _v is None else {"model": _v["model"], "speaker": _v["speaker"],
+                                             "length_scale": _v["length_scale"], "noise_scale": _v["noise_scale"]}
