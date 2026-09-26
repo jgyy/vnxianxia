@@ -6,15 +6,15 @@ extends SceneTree
 
 ## map -> [focus marker, camera offset, look offset, actors (model, marker offset, anim)]
 const SHOTS := {
-	"sect": ["HallSteps", Vector3(-14, 5, 22), Vector3(0, 5, -6),
-		[["cultivator_male", Vector3(-0.8, 0, 9), "salute"], ["cultivator_female", Vector3(0.8, 0, 9), "salute"], ["elder_male", Vector3(0, 0, 0), "talk"]]],
-	"bamboo_forest": ["RuinsGate", Vector3(10, 4, 16), Vector3(0, 3, 0),
-		[["cultivator_female", Vector3(1.5, 0, 6), "cast"], ["spirit_wolf", Vector3(-1.5, 0, 1), "attack"]]],
-	"qingshi_town": ["MarketSquare", Vector3(-12, 5, 16), Vector3(0, 2, 0),
-		[["villager_male", Vector3(1, 0, 0), "talk"], ["villager_female", Vector3(-1, 0, 1), "idle"], ["cultivator_male", Vector3(0, 0, 4), "idle"]]],
-	"blood_abyss": ["AltarOfBlood", Vector3(12, 6, 18), Vector3(0, 3, 0),
-		[["blood_patriarch", Vector3(0, 0, 0), "cast"], ["demon_cultivator", Vector3(-2.5, 0, 2), "idle"], ["demon_cultivator", Vector3(2.5, 0, 2), "idle"]]],
-	"sky_isles": ["TribulationPeak", Vector3(-16, 7, 20), Vector3(0, 6, 0),
+	"sect": ["HallSteps", Vector3(-3.5, 2.2, 13.5), Vector3(0, 2.6, 0),
+		[["cultivator_male", Vector3(-0.8, 0, 8), "salute"], ["cultivator_female", Vector3(0.8, 0, 8), "salute"], ["elder_male", Vector3(0, 0, 0.5), "talk"]]],
+	"bamboo_forest": ["RuinsGate", Vector3(4.5, 1.8, 9.5), Vector3(0, 1.6, 0),
+		[["cultivator_female", Vector3(1.2, 0, 4.5), "cast"], ["spirit_wolf", Vector3(-1.2, 0, 0.5), "attack"]]],
+	"qingshi_town": ["MarketSquare", Vector3(-4, 2.0, 6.5), Vector3(0, 1.5, 0),
+		[["villager_male", Vector3(1, 0, 0), "talk"], ["villager_female", Vector3(-1, 0, 0.6), "idle"], ["cultivator_male", Vector3(0.2, 0, 2.8), "idle"]]],
+	"blood_abyss": ["AltarOfBlood", Vector3(4, 2.2, 8), Vector3(0, 1.8, 0),
+		[["blood_patriarch", Vector3(0, 0, 0), "cast"], ["demon_cultivator", Vector3(-2.2, 0, 1.2), "idle"], ["demon_cultivator", Vector3(2.2, 0, 1.2), "idle"]]],
+	"sky_isles": ["TribulationPeak", Vector3(-4.5, 2.5, 7.5), Vector3(0, 1.5, 0),
 		[["cultivator_male", Vector3(0, 0, 0), "meditate"]]],
 }
 
@@ -38,11 +38,17 @@ func _run() -> void:
 			load("res://scripts/world/actor_look.gd").apply(m)
 			m.global_position = map.ground_at(focus + a[1])
 			var to: Vector3 = (focus + s[1]) - m.global_position
-			m.rotation.y = atan2(to.x, to.z) * 0.6
+			m.rotation.y = atan2(to.x, to.z) - 0.3
 			var ap := m.find_child("AnimationPlayer", true, false) as AnimationPlayer
 			ap.play(a[2])
 			ap.seek(ap.current_animation_length * 0.45, true)
 			ap.pause()
+		var fill := OmniLight3D.new()
+		fill.light_energy = 1.6
+		fill.omni_range = 14.0
+		fill.light_color = Color(1.0, 0.92, 0.82)
+		map.add_child(fill)
+		fill.global_position = focus + s[1] * 0.5 + Vector3.UP * 3.0
 		var cam := Camera3D.new()
 		cam.fov = 55.0
 		cam.far = 3000.0
