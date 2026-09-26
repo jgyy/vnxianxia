@@ -110,11 +110,16 @@ func _line(line: Dictionary) -> void:
 	if Game.fast:
 		return
 	Audio.sfx("dialogue_next", -10.0)
-	var voice_len := Audio.play_voice(Story.voice_path(line))
+	var vpath := Story.voice_path(line)
+	var voice_len := Audio.play_voice(vpath)
 	_visible_chars = 0.0
 	_text.visible_characters = 0
 	var total := _text.get_total_character_count()
 	var elapsed := 0.0
+	# text-only lines (the saga's new chapters) advance by themselves after a reading time
+	if voice_len <= 0.0:
+		voice_len = total / CHARS_PER_SEC + Story.reading_time(body) * 0.6
+	_hint.text = "E / Space  continue" if vpath != "" else "E / Space  continue   ·   auto"
 	while true:
 		await get_tree().process_frame
 		var dt := get_process_delta_time()

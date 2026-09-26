@@ -28,6 +28,10 @@ var _card: PanelContainer
 var _card_head: Label
 var _card_title: Label
 var _card_text: Label
+var _banner_queue: Array = []
+var _banner_busy := false
+var _title_card: Label
+var _title_card_sub: Label
 
 
 func _ready() -> void:
@@ -65,6 +69,7 @@ func _ready() -> void:
 	var qv := VBoxContainer.new()
 	qp.add_child(qv)
 	_quest_chapter = UiTheme.label("", 14, UiTheme.MUTED)
+	_quest_chapter.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_quest_title = UiTheme.label("", 21, UiTheme.GOLD)
 	_quest_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_objective = UiTheme.label("", 17)
@@ -131,6 +136,21 @@ func _ready() -> void:
 	_banner_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_banner_sub.modulate.a = 0.0
 	_root.add_child(_banner_sub)
+	# volume title card (centre, above the banner)
+	_title_card = UiTheme.label("", 60, UiTheme.GOLD, 10)
+	_title_card.set_anchors_preset(Control.PRESET_CENTER)
+	_title_card.position = Vector2(-600, -300)
+	_title_card.custom_minimum_size = Vector2(1200, 70)
+	_title_card.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_title_card.modulate.a = 0.0
+	_root.add_child(_title_card)
+	_title_card_sub = UiTheme.label("", 26, UiTheme.TEXT, 6)
+	_title_card_sub.set_anchors_preset(Control.PRESET_CENTER)
+	_title_card_sub.position = Vector2(-600, -224)
+	_title_card_sub.custom_minimum_size = Vector2(1200, 34)
+	_title_card_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_title_card_sub.modulate.a = 0.0
+	_root.add_child(_title_card_sub)
 	# new-quest story card (top centre)
 	_card = PanelContainer.new()
 	_card.set_anchors_preset(Control.PRESET_CENTER_TOP)
@@ -171,7 +191,7 @@ func _labelled_bar(parent: Control, text: String, color: Color, h := 11.0) -> Pr
 
 
 func refresh() -> void:
-	_realm.text = Story.realm_name(Game.realm)
+	_realm.text = Game.realm_label()
 	_xp.value = float(Game.xp % Game.XP_PER_REALM) / Game.XP_PER_REALM
 	var q := Game.quest()
 	if q.is_empty():
@@ -179,8 +199,8 @@ func refresh() -> void:
 		_quest_title.text = "Immortal Ascension"
 		_objective.text = "Wander the realms freely."
 		return
-	var ch := Story.chapter(int(q.chapter))
-	_quest_chapter.text = "Chapter %d · %s   —   Quest %d / 100" % [int(q.chapter), ch.get("title", ""), int(q.number)]
+	_quest_chapter.text = "%s\n%s   —   Quest %d / %d" % [
+		Story.volume_label(int(q.get("volume", 1))), Story.chapter_label(int(q.chapter)), int(q.number), Story.quests.size()]
 	_quest_title.text = q.title
 
 
@@ -234,8 +254,8 @@ func toast(text: String, color := UiTheme.TEXT, seconds := 4.0) -> void:
 func quest_card(q: Dictionary, seconds := 6.0) -> void:
 	if q.is_empty():
 		return
-	var ch := Story.chapter(int(q.chapter))
-	_card_head.text = "Chapter %d · %s   —   Quest %d" % [int(q.chapter), ch.get("title", ""), int(q.number)]
+	_card_head.text = "Volume %s  ·  %s   —   Quest %d" % [
+		Story.roman(int(q.get("volume", 1))), Story.chapter_label(int(q.chapter)), int(q.number)]
 	_card_title.text = q.title
 	_card_text.text = Story.fill(q.summary)
 	var tw := create_tween()
@@ -244,14 +264,44 @@ func quest_card(q: Dictionary, seconds := 6.0) -> void:
 	tw.tween_property(_card, "modulate:a", 0.0, 0.8)
 
 
+## Show a centred banner. Banners queue, so a breakthrough, a chapter's end
+## and a new volume's title each get their moment instead of overwriting.
 func banner(title: String, sub := "", seconds := 3.0) -> void:
-	_banner.text = title
-	_banner_sub.text = sub
+	_banner_queue.append([title, sub, seconds])
+	if not _banner_busy:
+		_next_banner()
+
+
+func _next_banner() -> void:
+	if _banner_queue.is_empty():
+		_banner_busy = false
+		return
+	_banner_busy = true
+	var b: Array = _banner_queue.pop_front()
+	_banner.text = b[0]
+	_banner_sub.text = b[1]
+	var seconds: float = b[2]
 	for l in [_banner, _banner_sub]:
 		var tw := create_tween()
 		tw.tween_property(l, "modulate:a", 1.0, 0.6)
 		tw.tween_interval(seconds)
 		tw.tween_property(l, "modulate:a", 0.0, 1.0)
+	var done := create_tween()
+	done.tween_interval(seconds + 1.7 if not Game.fast else 0.0)
+	done.tween_callback(_next_banner)
+
+
+## A large title card (a new volume begins): letterbox-free, fades in over the game.
+func title_card(title: String, sub := "", seconds := 5.0, delay := 0.0) -> void:
+	_title_card.text = title
+	_title_card_sub.text = sub
+	for l in [_title_card, _title_card_sub]:
+		l.modulate.a = 0.0
+		var tw := create_tween()
+		tw.tween_interval(delay)
+		tw.tween_property(l, "modulate:a", 1.0, 1.2)
+		tw.tween_interval(seconds)
+		tw.tween_property(l, "modulate:a", 0.0, 1.4)
 
 
 func show_boss(enemy_name: String, frac: float) -> void:

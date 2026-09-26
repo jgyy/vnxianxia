@@ -117,8 +117,10 @@ func _spawn_enemies(center: Vector3) -> void:
 	var boss: bool = Story.world.bosses.has(obj.enemy)
 	var count := int(obj.count)
 	var remaining := count - Game.progress
+	var tier := int(Game.quest().get("tier", Game.realm))
+	var display: String = obj.get("name", "") if obj.get("name") else ""
 	for i in remaining:
-		var e := Enemy.create(obj.enemy, boss)
+		var e := Enemy.create(obj.enemy, boss, tier, display)
 		var a := TAU * i / maxf(remaining, 1) + 0.4
 		var r := 0.0 if (boss or remaining == 1) else 3.0 + 1.6 * (i % 2)
 		var p: Vector3 = center if r == 0.0 else game.map.open_spot(center, a, r)
@@ -329,8 +331,20 @@ func _finish_quest(q: Dictionary) -> void:
 	game.hud.toast("Quest complete: " + q.title, UiTheme.GOLD)
 	if r.get("realm"):
 		Game.set_realm(r.realm)
+	elif r.get("stage") != null:
+		Game.set_stage(int(r.stage))
 	quest_completed.emit(q.id)
-	if int(q.number) % 10 == 0:
+	var vol := int(q.get("volume", 1))
+	if Story.ends_volume(q) and not Game.finished():
+		# a volume ends: its banner now, the next volume's title card a moment later
+		game.hud.banner("Volume %s Complete" % Story.roman(vol), Story.volume(vol).get("subtitle", ""), 4.0)
+		var nv := Story.volume(vol + 1)
+		if not nv.is_empty():
+			game.hud.title_card(Story.volume_label(vol + 1), nv.get("subtitle", ""), 5.0, 0.0 if Game.fast else 5.5)
+		if not Game.fast:
+			Audio.play_music("victory", 0.5)
+			get_tree().create_timer(12.0).timeout.connect(func(): if game.map: Audio.play_music(game.map.music))
+	elif Story.ends_chapter(q):
 		var ch := Story.chapter(int(q.chapter))
 		game.hud.banner("Chapter %d Complete" % int(q.chapter), ch.get("title", ""), 4.0)
 		if not Game.fast:

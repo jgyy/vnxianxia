@@ -117,6 +117,7 @@ func _page(text: String) -> void:
 	_settings.visible = false
 	_content.visible = true
 	_content.text = text
+	_content.scroll_to_line(0)
 
 
 func _show_quest() -> void:
@@ -124,9 +125,9 @@ func _show_quest() -> void:
 	if q.is_empty():
 		_page("[b]The saga is complete.[/b]\n\nYou have ascended. The realms are yours to wander.")
 		return
-	var ch := Story.chapter(int(q.chapter))
-	var t := "[color=#b8ad96]Chapter %d · %s[/color]\n[b][color=#dcb86b]%d. %s[/color][/b]\n\n%s\n\n" % [
-		int(q.chapter), ch.get("title", ""), int(q.number), q.title, Story.fill(q.summary)]
+	var t := "[color=#b8ad96]%s  —  %s[/color]\n[b][color=#dcb86b]%d. %s[/color][/b]\n\n%s\n\n" % [
+		Story.volume_label(int(q.get("volume", 1))), Story.chapter_label(int(q.chapter)), int(q.number), q.title,
+		Story.fill(q.summary)]
 	var objs: Array = q.objectives
 	for i in objs.size():
 		var o: Dictionary = objs[i]
@@ -140,44 +141,75 @@ func _show_quest() -> void:
 		t += " · %s ×%d" % [Story.item_name(item), int(r.items[item])]
 	if r.get("realm"):
 		t += " · [color=#dcb86b]Breakthrough: %s[/color]" % r.realm
+	elif r.get("stage") != null:
+		t += " · [color=#73e6c7]%s[/color]" % Story.realm_label(int(q.tier), int(r.stage))
 	_page(t)
 
 
-## The narrative recap: premise, the chapters reached and what happened in each.
+## The narrative recap: premise, then every volume and chapter reached. Quest
+## summaries are listed for the current chapter only, so the page stays short
+## (and fast) even 900 quests in.
 func _show_story() -> void:
 	var t := "[b][color=#dcb86b]%s[/color][/b]\n\n[i]%s[/i]\n" % [Story.title, Story.premise]
-	for c in Story.chapters:
-		var n := int(c.number)
-		var first := (n - 1) * 10
-		if first > Game.quest_index:
+	var cur := Game.quest()
+	var cur_ch := int(cur.chapter) if not cur.is_empty() else Story.chapters.size() + 1
+	for v in Story.volumes:
+		if int(v.first) > Game.quest_index:
 			break
-		t += "\n[b][color=#dcb86b]Chapter %d · %s[/color][/b]\n%s\n" % [n, c.title, Story.fill(c.summary)]
-		for i in range(first, mini(first + 10, Game.quest_index)):
-			var q := Story.quest(i)
-			t += "[color=#b8ad96]   %d. %s[/color] — %s\n" % [int(q.number), q.title, Story.fill(q.summary)]
+		t += "\n\n[b][color=#dcb86b]%s[/color][/b]  [color=#b8ad96]%s[/color]\n[i]%s[/i]\n" % [
+			Story.volume_label(int(v.number)), v.subtitle, Story.fill(v.summary)]
+		for n in v.chapters:
+			var c := Story.chapter(int(n))
+			var first := int(c.first)
+			if first > Game.quest_index:
+				break
+			t += "\n[b]Chapter %d · %s[/b]\n%s\n" % [int(n), c.title, Story.fill(c.summary)]
+			if int(n) == cur_ch or (int(n) == Story.chapters.size() and Game.finished()):
+				for i in range(first, mini(first + 10, Game.quest_index)):
+					var q := Story.quest(i)
+					t += "[color=#b8ad96]   %d. %s[/color] — %s\n" % [int(q.number), q.title, Story.fill(q.summary)]
 	_page(t)
 
 
+## Every quest reached in the current volume; earlier volumes are folded into
+## their chapter titles, later ones into a single line each.
 func _show_chronicle() -> void:
-	var t := "[b][color=#dcb86b]Chronicle[/color][/b]\n"
-	for c in Story.chapters:
-		var n := int(c.number)
-		var first := (n - 1) * 10
-		if first > Game.quest_index:
-			t += "\n[color=#6f6a60]Chapter %d · ???[/color]" % n
+	var t := "[b][color=#dcb86b]Chronicle[/color][/b]   [color=#b8ad96]%d / %d quests[/color]\n" % [
+		mini(Game.quest_index, Story.quests.size()), Story.quests.size()]
+	var cur := Game.quest()
+	var cur_vol := int(cur.get("volume", Story.volumes.size())) if not cur.is_empty() else Story.volumes.size()
+	for v in Story.volumes:
+		var vn := int(v.number)
+		if int(v.first) > Game.quest_index:
+			t += "\n[color=#6f6a60]%s · ???[/color]" % ("Volume " + Story.roman(vn))
 			continue
-		t += "\n[b]Chapter %d · %s[/b]\n" % [n, c.title]
-		for i in range(first, mini(first + 10, Game.quest_index + 1)):
-			var q := Story.quest(i)
-			var done := i < Game.quest_index
-			t += "   %s %d. %s\n" % ["[color=#73e6c7]+[/color]" if done else "»", int(q.number), q.title]
+		t += "\n\n[b][color=#dcb86b]%s[/color][/b]\n" % Story.volume_label(vn)
+		for n in v.chapters:
+			var c := Story.chapter(int(n))
+			var first := int(c.first)
+			if first > Game.quest_index:
+				t += "[color=#6f6a60]   Chapter %d · ???[/color]\n" % int(n)
+				continue
+			var done_ch := first + 10 <= Game.quest_index
+			t += "   %s [b]Chapter %d · %s[/b]\n" % ["[color=#73e6c7]+[/color]" if done_ch else "»", int(n), c.title]
+			if vn != cur_vol or done_ch:
+				continue
+			for i in range(first, mini(first + 10, Game.quest_index + 1)):
+				var q := Story.quest(i)
+				var done := i < Game.quest_index
+				t += "        %s %d. %s\n" % ["[color=#73e6c7]+[/color]" if done else "»", int(q.number), q.title]
 	_page(t)
 
 
 func _show_cultivation() -> void:
-	var t := "[b][color=#dcb86b]%s[/color][/b]\nCultivation %d\n\nVitality %d · Qi %d · Palm strike %d · Qi blast %d\n\n[b]Inventory[/b]\n" % [
-		Story.realm_name(Game.realm), Game.xp, int(Game.max_hp()), int(Game.max_qi()),
+	var t := "[b][color=#dcb86b]%s[/color][/b]\nCultivation %d\n\nVitality %d · Qi %d · Palm strike %d · Qi blast %d\n\n" % [
+		Game.realm_label(), Game.xp, int(Game.max_hp()), int(Game.max_qi()),
 		int(Game.strike_damage()), int(Game.blast_damage())]
+	var realms: Array = Story.world.realms
+	for i in realms.size():
+		var mark := "[color=#73e6c7]+[/color]" if i < Game.realm else ("»" if i == Game.realm else "[color=#6f6a60]·[/color]")
+		t += "%s %s\n" % [mark, realms[i] if i <= Game.realm else "[color=#6f6a60]%s[/color]" % realms[i]]
+	t += "\n[b]Inventory[/b]\n"
 	if Game.inventory.is_empty():
 		t += "[color=#8f8a80]Empty[/color]"
 	for item in Game.inventory:

@@ -48,6 +48,7 @@ func _ready() -> void:
 	player.qi_changed.connect(hud.set_qi)
 	player.character_changed.connect(func(_n): hud.refresh())
 	Game.realm_changed.connect(_on_breakthrough)
+	Game.stage_changed.connect(_on_stage)
 	journal.quit_to_title.connect(func(): get_tree().change_scene_to_file("res://scenes/title.tscn"))
 	travel.chosen.connect(func(m): travel_to(m))
 	player.refill()
@@ -76,7 +77,7 @@ func load_map(map_id: String, spawn := "PlayerSpawn") -> void:
 	var q := Game.quest()
 	var sub := ""
 	if not q.is_empty():
-		sub = "Chapter %d · %s" % [int(q.chapter), Story.chapter(int(q.chapter)).get("title", "")]
+		sub = "%s  —  %s" % [Story.volume_label(int(q.get("volume", 1))), Story.chapter_label(int(q.chapter))]
 	loading.open(map_id, sub)
 	Audio.play_music("", 0.6)
 	var path := MAP_DIR + map_id + ".tscn"
@@ -286,4 +287,13 @@ func _on_breakthrough(realm: String) -> void:
 	Audio.sfx("breakthrough", 0.0)
 	if map:
 		Fx.burst(map, player.global_position + Vector3.UP, Color(1.0, 0.85, 0.4), 160, 6.0, 0.06)
+	player.refill()
+
+
+## A minor stage within the realm (Middle, Late, Peak).
+func _on_stage(label: String) -> void:
+	hud.banner("Cultivation Deepens", label, 3.5)
+	Audio.sfx("breakthrough", -6.0)
+	if map:
+		Fx.burst(map, player.global_position + Vector3.UP, Color(0.55, 1.0, 0.85), 90, 4.0, 0.05)
 	player.refill()
