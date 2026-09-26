@@ -1,13 +1,21 @@
 # The Main Story: *The Lotus and the Blood Moon*
 
-The main quest line of **Azure Cloud Sect** has 100 quests in 10 chapters, 20 cinematics and a cast of 26 named NPCs.
-Every line is voiced, and the protagonist's lines are recorded twice (Lin Feng and Su Yue).
+The main quest line of **Azure Cloud Sect** is a journey from mortal to immortal in **1000 quests**: 10 volumes, one
+per major stage of cultivation, each of 10 chapters of 10 quests. It has 20 cinematics and a cast of 40 named NPCs.
+
+The ten chapters of the original story are voiced (every line, with the protagonist's lines recorded twice for Lin
+Feng and Su Yue) and keep their cinematics. The other 90 chapters are text-only: each one is a hand-written outline
+(title, summary, cast and ten quest beats with their key dialogue) that `tools/story/saga_gen.py` expands into
+objectives, markers, enemies, pickups and connecting dialogue. A complete list of all 1000 quests is in
+**[QUESTS.md](QUESTS.md)**.
 
 | | |
 |---|---|
-| Source | `tools/story/`, authored as Python data with a small DSL (`dsl.py`) |
-| Compiler / validator | `python3 tools/build_story.py` writes `godot/data/story.json` (`--check` is used in CI) |
-| Voices | `python3 tools/gen_voices.py` writes `godot/audio/voice/*.ogg` using Piper TTS (`--check` lists missing or stale files) |
+| Source | `tools/story/`: the ten original chapters (`chapter01..10.py`, DSL in `dsl.py`) and the outlines of the 90 new ones (`vol01..vol10.py`) |
+| Structure | `volumes.py` (which chapter goes where, breakthroughs, minor stages), `numbering.py` (quest ids `q0001..q1000`) |
+| Generator | `saga_gen.py` (quest patterns, marker choice, NPC placement), `places.py`, `fillers.py` |
+| Compiler / validator | `python3 tools/build_story.py` writes `godot/data/story.json` (`--check` is used in CI, `--quests docs/QUESTS.md` writes the quest list) |
+| Voices | `python3 tools/gen_voices.py` writes `godot/audio/voice/*.ogg` using Piper TTS for the voiced lines (`--check` lists missing or stale files) |
 | Casting | `tools/story/voices.py` |
 
 ## Premise
@@ -51,7 +59,254 @@ the protagonist's.
 | **Xue Wuji** | Blood Moon Patriarch | The final antagonist, first on his throne and then as a remnant riding the tribulation lightning |
 | Qingshi Town | Magistrate Zhou, Madam Fang, Constable Du, Widow Liu, Old Pan, Merchant Jin | The townsfolk. The cowardly magistrate finds his spine and the merchant who sold blood lotus redeems himself |
 
-## Chapters
+Added for the 1000-quest saga (text-only):
+
+| Character | Role | Arc |
+|---|---|---|
+| **Yan Tie** | Thunder Peak's champion, poisoned in the tournament final | Owes the heir his life; Thunder Peak's loud, loyal friend, keeper of the lightning forge (vol. II-X) |
+| **Liu Er** | Widow Liu's son, freed from the cages | Climbs the nine thousand steps at sixteen and teaches Qingshi to fight with brooms (vol. III-X) |
+| **Gou the Scarred** | Iron-Fang's lieutenant | Raids the salt road because the Blood Moon holds his mother; spared, he writes down forty-one names (vol. I) |
+| **Ruan Hai / Ruan Jingtao** | Master and heir of the Iron Scale Sect | Rivals at the Nine Banners, then allies; their southern peak falls into the void and becomes Remembering Hill (vol. III-X) |
+| **Zhao Tianlu** | Ancestor of the Zhao clan, 112 and counting | Comes to take his great-grandson home and frames his monthly letters instead (vol. III-IX) |
+| **Jing Xuan** | Abbess of the Moon-Well Nunnery | Tests the heir with a week of anonymous service; the Great Vehicle's conscience (vol. VI-X) |
+| **The Seven Rungs** | Luo Hui, Tie Shan the Rust Monk, Jiu Rong (Madam Ninefold), Kong Yi (Brother Hollow), Wen Tu the Butcher, Si Rou (Lady Silk), Xue Chen | The Patriarch's Ladder: seven servants each holding one red star, a ladder for his soul to climb the heir's lightning. They fall one per arc, from the First Rung in vol. V to Xue Chen, the Patriarch's Shadow and the heir's cousin from Willow Creek, in vol. X |
+
+## The ten volumes
+
+Every volume breaks through into the next major realm at the end of its first chapter (quest 10 of the volume). The
+exception is the last: Tribulation Transcendence is reached in volume IX, and volume X ends with **Immortal
+Ascension** on quest 1000. Within a realm, minor stages (Early, Middle, Late, Peak) are granted at the end of the
+fourth, seventh and tenth chapters. Chapters in **bold** are the ten voiced chapters of the original story.
+
+| Vol | Realm reached | Subtitle | Chapters |
+|---|---|---|---|
+| 1 | Qi Condensation | *The Mountain and the Pendant* | **1 The Outer Disciple** · **2 Whispers in the Bamboo** · **3 Shadows over Qingshi** · 4 A Closed Door on the Mountain · 5 The Moonbell Harvest · 6 Bandits of the Salt Road · 7 The Outer Sect Examination · 8 Lanterns on the Qing River · 9 The Moonlit Grotto · 10 Heart of the Grotto |
+| 2 | Foundation Establishment | *The Traitor in the Law Hall* | **11 Ruins of the Forgotten Sect** · **12 The Inner Sect Tournament** · 13 The Burned Array · 14 Robes of the Inner Sect · 15 The Cauldron's Temper · 16 The Beast Tide · 17 Tide at the Town Gate · 18 The Second Verse · 19 The Crimson Road · 20 Eve of the Descent |
+| 3 | Core Formation | *Blood Beneath the Earth* | **21 Descent into the Blood Moon** · **22 Siege of Qingshi** · 23 Envoys of the Iron Scale · 24 The Nine Banners · 25 Smoke on the Border · 26 The Sunken Archive · 27 Tea at the Drunken Crane · 28 Sword Qi of the Golden Core · 29 Patrol of the Crimson Rim · 30 When the Sky Stair Descends |
+| 4 | Nascent Soul | *Isles Above the Clouds* | **31 Isles Above the Clouds** · 32 The Cloud Road · 33 Nine Pillars · 34 The Seven-Star Crates · 35 The Soul Fog · 36 The Zhao Clan's Summons · 37 Duel Above the Clouds · 38 What the Stars Remember · 39 The Last Pillar · 40 Before the Lighting |
+| 5 | Soul Transformation | *The Heart Demon* | **41 The Heart Demon** · 42 The Blood Moon That Did Not Break · 43 Grief Has Teeth · 44 Adequate · 45 The Empty Law Hall · 46 Where the Lotus Grew · 47 A Letter Signed With Ash · 48 The Mirror Within · 49 The Rung of Ash · 50 What the Old Man Left |
+| 6 | Void Refinement | *The Fold in the World* | 51 Cracks in the Sky · 52 The Fold in the Abyss · 53 The Rust Monk's Penance · 54 The Moon-Well Asks · 55 The Spring Runs Into Nothing · 56 Ye Wuming's Children · 57 Madam Ninefold · 58 Maps of Nothing · 59 The Iron Scale Remembers · 60 Still Water, Empty Sky |
+| 7 | Body Integration | *A Body Worth Stealing* | 61 A Body Worth Stealing · 62 Thunder Peak's Forge · 63 Hollow Men of Qingshi · 64 The Blood Pools, Again · 65 Brother Hollow · 66 The Butcher's Market · 67 Iron-Fang's Old Roads · 68 The Butcher's Larder · 69 The Butcher of Wen · 70 One Body, One Soul |
+| 8 | Mahayana | *The Great Vehicle* | 71 The Great Vehicle · 72 The Sects Arrive · 73 A Week Without a Name · 74 The Conclave of Forty Sects · 75 Threads Between Sects · 76 The Web Unravels · 77 Lady Silk · 78 The Oath of the Great Vehicle · 79 Teaching the Many · 80 A Vehicle for Ten Thousand |
+| 9 | Tribulation Transcendence | *Heaven Takes Notice* | 81 Heaven Takes Notice · 82 Thunder Crystal Harvest · 83 The Seventh Rung · 84 Lightning Rods for a Sect · 85 The Lesser Tribulation · 86 Words for Those Left Behind · 87 Han Xue's Soul · 88 Zhao Kang's Wager · 89 The Red Star Aligns · 90 The Stair Remembers |
+| 10 | Immortal Ascension | *The Last Blood Moon* | 91 The Moon Turns Red · 92 Forty Bandits, Washed and Fed · 93 A Traitor's Last Requests · 94 Xue Chen's Hunt · 95 The Shadow at the Stair · 96 The Last Evening · 97 The Void Unfolds · 98 The Patriarch's Shadow · 99 Eve of the Last Blood Moon · **100 Heavenly Tribulation** |
+
+### Volume 1 · Qi Condensation — *The Mountain and the Pendant*
+
+An orphan climbs nine thousand steps, learns to breathe qi, and finds that red-eyed wolves, caged mortals and a kindly temple keeper all point to the same buried name: the Blood Moon.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 1 | The Outer Disciple *(voiced)* | Azure Cloud Sect | An orphan with a jade pendant climbs nine thousand steps to the Azure Cloud Sect. Sect rules, sore muscles, a proud rival and a first taste of qi, until red-eyed wolves prowl the sect wall for the first time in three hundred years. |
+| 2 | Whispers in the Bamboo *(voiced)* | Whispering Bamboo | A routine herb mission into the Whispering Bamboo Forest turns into a hunt for corrupted wolves, a meeting with a hermit and a masked wanderer, and a bandit camp caging mortals. In its chest lies a blood-red jade token that should not exist. |
+| 3 | Shadows over Qingshi *(voiced)* | Qingshi Town | Mortals vanish from Qingshi Town every new moon. With Senior Sister Han Xue, you follow a trail of gossip, blood lotus and graveyard runes to a kindly temple keeper who is neither kindly nor a keeper. |
+| 4 | A Closed Door on the Mountain | Azure Cloud Sect | Home from Qingshi with a deacon's dying words, you find the main hall sealed: the Sect Master is in secluded cultivation, steadying the flickering Azure Eye. Until she emerges there are contribution points to earn, a treasury that keeps losing stones, and a mountain that has begun to notice you. |
+| 5 | The Moonbell Harvest | Whispering Bamboo | Elder Hua's autumn harvest takes you back into the Whispering Bamboo, where the herb grove is sickening and the spirit spring runs faintly red. The hermit pours tea, the wolves are gone, and something beneath the old den is still bleeding into the earth. |
+| 6 | Bandits of the Salt Road | Qingshi Town | Iron-Fang's scattered gang is raiding the salt caravans into Qingshi under his lieutenant, Gou the Scarred. Constable Du wants the road open, Magistrate Zhou wants to look brave, and the bandits want something no amount of salt can buy. |
+| 7 | The Outer Sect Examination | Azure Cloud Sect | Once a year every outer disciple is tested: the precepts before Elder Gu, the puppets before Wei Tong, a pill before Elder Hua and a sparring bout before the whole plaza. Zhao Kang intends to win. So do you. |
+| 8 | Lanterns on the Qing River | Qingshi Town | Qingshi keeps the Ghost Festival for everyone it lost to the new moon. You and Han Xue come down to help, and find the river restless: whatever Deacon Hong buried under the graves did not all stay buried. |
+| 9 | The Moonlit Grotto | Whispering Bamboo | Once a decade a secret realm opens beneath the bamboo, and the sect sends its best outer disciples in. Han Xue leads, Wei Tong carries the food, Zhao Kang carries a grudge, and the grotto carries everyone somewhere else. |
+| 10 | Heart of the Grotto | Whispering Bamboo | At the heart of the Moonlit Grotto waits its warden, a stone giant that has asked the same question for three hundred years. The rogues want what it guards, the grotto wants to close, and Wei Tong wants lunch. |
+
+### Volume 2 · Foundation Establishment — *The Traitor in the Law Hall*
+
+The Verdant Lotus ruins open for their heir, the Inner Sect Tournament unmasks Elder Gu, and a sect that trusted its own law must learn to follow a traitor into the dark.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 11 | Ruins of the Forgotten Sect *(voiced)* | Whispering Bamboo | The library's Blood Moon records are missing. The Bamboo Hermit reveals who he really is and what your pendant really is. In the ruins of the Verdant Lotus Sect, a stone guardian waits for its heir, and you establish your foundation. |
+| 12 | The Inner Sect Tournament *(voiced)* | Azure Cloud Sect | Banners rise over the Azure Cloud for the Inner Sect Tournament. Rivals become partners, a poisoned pill box points at the Law Hall, and on the night of the final the traitor finally shows his face. |
+| 13 | The Burned Array | Azure Cloud Sect | The morning after the traitor fled, the teleport array's route to the Abyss is slag, the Azure Eye is cracked, and the Law Hall is a row of empty chairs. Before anyone can follow Gu Hanshan, the sect has to find out who else was helping him. |
+| 14 | Robes of the Inner Sect | Azure Cloud Sect | A tournament champion cannot stay an outer disciple. New robes, new duties, a champion from Thunder Peak who owes you his life, and a sect that looks at you differently now: some with hope, some with envy, all with questions. |
+| 15 | The Cauldron's Temper | Azure Cloud Sect | Gu's Frenzy Pills went into more than the tournament supplies: disciples on three peaks are waking with red at the edges of their eyes. Elder Hua needs a cure, the cure needs herbs from the bamboo, and the cauldron needs someone who can hold a fire steady without blowing up the Medicine Hall. |
+| 16 | The Beast Tide | Whispering Bamboo | The wards Gu kept on the bamboo forest were never wards at all, only leashes, and he has let go of them. Every beast the Blood Moon ever fed pours out of the deep forest at once, and the hermit's hut is directly in the way. |
+| 17 | Tide at the Town Gate | Qingshi Town | Half the beast tide has turned toward Qingshi, and the town has only its constable, its magistrate's new spine and a merchant who suddenly wants very badly to be liked. You have until nightfall. |
+| 18 | The Second Verse | Whispering Bamboo | The Heart Sutra has three verses. You learned the first in the ruins. The hermit says the second is harder: it can only be learned by someone who has forgiven something. He has been trying for three hundred years. |
+| 19 | The Crimson Road | Qingshi Town | The steered tide came from somewhere, and the blood lotus in Qingshi's crates goes somewhere. Follow the carts west along the river and you find a road nobody admits exists: the Crimson Road, down to the Abyss. |
+| 20 | Eve of the Descent | Azure Cloud Sect | The array masters have laid a new route to the Abyss's rim. The Sect Master reads the Crimson Road report twice, and makes her choice: not an army, but two disciples and whoever knows the way down. Before you go, the sect says goodbye in its own ways. |
+
+### Volume 3 · Core Formation — *Blood Beneath the Earth*
+
+A golden core forged in the Abyss, a town held against a siege, and a war of words and swords between the orthodox sects while the Sky Isles slowly turn toward their opening.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 21 | Descent into the Blood Moon *(voiced)* | Blood Moon Abyss | Guided by the masked wanderer, who was once one of them, you descend into the Blood Moon Abyss. Obelisks drink the blood of caged cultivators, Han Xue is taken, and at the Altar of Blood the traitor feeds the seal to its prisoner. |
+| 22 | Siege of Qingshi *(voiced)* | Qingshi Town | The Blood Moon and Iron-Fang's bandits march on Qingshi. With Zhao Kang and Wei Tong at your side, you turn a frightened market town into a fortress, and learn that the siege was never really about the town. |
+| 23 | Envoys of the Iron Scale | Azure Cloud Sect | The Iron Scale Sect lost eleven disciples to Blood Moon raids this year, and blames the Azure Cloud for the traitor who armed them. Its sect master climbs the nine thousand steps with a demand: surrender the Lotus Key to a council of sects. His son would rather settle it with swords. |
+| 24 | The Nine Banners | Azure Cloud Sect | Nine duels, nine banners, two sects and eighty years of dusty rules. The Iron Scale fights for its dead; the Azure Cloud fights for the right to keep carrying its own burden. And beneath the plaza, the cracked Azure Eye listens to every blow. |
+| 25 | Smoke on the Border | Whispering Bamboo | The duel settled the question, but not the border. Iron Scale raiders are burning herb groves on the forest's eastern edge, and Ruan Hai swears he never sent them. The raiders' eyes are red at the edges, and they are wearing borrowed armour. |
+| 26 | The Sunken Archive | Whispering Bamboo | The Verdant Lotus kept an archive beneath their ruins, flooded when the sect fell. The hermit has never dared go down. With a golden core, you can hold your breath long enough, and the archive may know how the Sky Isles open. |
+| 27 | Tea at the Drunken Crane | Qingshi Town | The four sects on the raiders' list agree to meet on neutral ground: Madam Fang's inn in Qingshi. There will be tea, and noodles, and Iron-Fang washing the dishes. There will also be an assassin, because there always is. |
+| 28 | Sword Qi of the Golden Core | Azure Cloud Sect | A golden core can throw qi like a blade. Elder Mo intends to teach you how before the isles open, whether you like it or not, and whether he likes admitting he's proud of you or not. Xiao Shi, meanwhile, still dreams of cages. |
+| 29 | Patrol of the Crimson Rim | Blood Moon Abyss | While the sect waits for winter, somebody has to watch the Abyss. Ye Wuming and the children he took from the Blood Moon already do. They ask for help: the Blood Moon has begun to dig, and whatever they are digging for is marked with seven dots. |
+| 30 | When the Sky Stair Descends | Azure Cloud Sect | In the first week of winter a stair of cloud unrolls from the sky above the sect, and the whole mountain comes out to stare. The Sky Isles are opening. Elder Bai finishes the Great Azure Formation's design from the Law Hall archive, the Sect Master chooses her three, and the sect sends them up with dumplings. |
+
+### Volume 4 · Nascent Soul — *Isles Above the Clouds*
+
+The Sky Isles give up star iron and a nascent soul. The Great Azure Formation rises, and a seven-star mark begins to appear wherever the Blood Moon is digging.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 31 | Isles Above the Clouds *(voiced)* | Sky Isles | The Celestial Sky Isles open once every sixty years. With Han Xue and Zhao Kang you gather star iron, thunder crystals and phoenix feathers for the Great Azure Formation, face the corrupted Jiao serpent, and hear a star-gazer doubt the sect's design. |
+| 32 | The Cloud Road | Sky Isles | The full moon has closed the Sky Isles to mortal feet, but a paper crane from Qing Luan says a nascent soul can walk the cloud road anyway. She has things to teach: how to see with the soul, how to step with it, and what seven red stars really mean. |
+| 33 | Nine Pillars | Azure Cloud Sect | The Great Azure Formation stands on nine pillars, and each pillar must be inscribed by a nascent soul. There is exactly one nascent soul on the mountain young enough to carry stone. Elder Mo builds, Steward Qian weeps, Wei Tong carries, and the mountain slowly rises into a new shape. |
+| 34 | The Seven-Star Crates | Qingshi Town | Crates stamped with seven stars have been passing through Qingshi's docks. Merchant Jin, who is now honest and hates it, has noticed. The crates lead to a warehouse nobody owns, and to a pale man who calls himself the First Rung of the Patriarch's Ladder. |
+| 35 | The Soul Fog | Whispering Bamboo | A grey fog has settled on the Whispering Bamboo, and everything it touches forgets itself: birds forget to sing, streams forget to run, and the hermit has forgotten your name. Only a soul that can see can find what is feeding on the forest's memories. |
+| 36 | The Zhao Clan's Summons | Azure Cloud Sect | Zhao Tianlu, ancestor of the Zhao clan, climbs the nine thousand steps to bring his great-grandson home: the clan needs an heir, not a sect disciple who picks fights with ladders. Zhao Kang must choose, and he has never been good at choosing anything but arguments. |
+| 37 | Duel Above the Clouds | Sky Isles | Qing Luan sends word that someone is poisoning the spirit vein with rust. You walk the cloud road again and find the Second Rung: a monk in rotting robes who prays over the crystals as they die. He is very polite, and he wants to see how strong your soul has grown. |
+| 38 | What the Stars Remember | Sky Isles | Qing Luan asks you up one last time before the isles close for good. She wants to show you the night Xue Wuji first climbed, and the night the founders pulled him down. The palace sentinels would prefer she didn't. |
+| 39 | The Last Pillar | Azure Cloud Sect | The ninth pillar goes up. The mountain holds a festival for the Great Azure Formation: lanterns, dumplings, Thunder Peak shouting, and Elder Mo, who has checked nine thousand nine hundred runes and has one ring left. |
+| 40 | Before the Lighting | Azure Cloud Sect | The formation's frame is finished. The star iron is set, the thunder crystals charged, the phoenix feathers laid in the outer ring. All that remains is for Elder Mo to finish checking, and for the Sect Master to light it. The mountain holds its breath, and nobody knows why. |
+
+### Volume 5 · Soul Transformation — *The Heart Demon*
+
+Elder Mo gives his life to turn the formation back. The last blood moon does not break the seal; instead the Abyss folds its fortress into the void, and the sect learns to live with grief.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 41 | The Heart Demon *(voiced)* | Azure Cloud Sect | On the eve of lighting the Great Azure Formation, a letter from the traitor lures you to the Heart Mirror, where you must defeat your own shadow. You return to a burning sky, and Elder Mo pays the price for the sect's trust. Now you know what the Patriarch truly wants: you. |
+| 42 | The Blood Moon That Did Not Break | Blood Moon Abyss | Three days after the formation was mended, the blood moon rises and the Azure Cloud's vanguard stands at the rim of the Abyss. The seal holds. The Patriarch cannot break it. So, with the whole sect watching, he folds his black fortress into the void and vanishes, to wait for a better night. |
+| 43 | Grief Has Teeth | Azure Cloud Sect | The sect comes home from a war that didn't happen to a teacher who isn't there. Disciples wake with red at the edge of their vision again, not from pills this time, but from grief. Heart demons are gathering on the mountain, and the one feeding on Wei Tong is the hungriest. |
+| 44 | Adequate | Azure Cloud Sect | The outer court has no elder, and twelve new disciples arrived at the gate this spring as if nothing had happened. Somebody has to teach them to stand up straight. Wei Tong would rather do anything else. He does it anyway. |
+| 45 | The Empty Law Hall | Qingshi Town | Magistrate Zhou writes to the sect: Qingshi's disputes used to go to the Law Hall of the Azure Cloud when the yamen couldn't settle them. The Law Hall is empty. The Sect Master sends you, with a warning, and with advice from the last man who sat in its chair. |
+| 46 | Where the Lotus Grew | Azure Cloud Sect | The Verdant Lotus seed you planted in the sect's pond before the descent has flowered, green and gold, beside the Azure Cloud's carp. The hermit promised he would visit when it did. After three hundred years in the bamboo, Lan Jue climbs the nine thousand steps. |
+| 47 | A Letter Signed With Ash | Qingshi Town | Every night a village near Qingshi burns, and in the ashes someone draws a ladder. Luo Hui, the First Rung, is healed and hungry and writing to you. The letters are polite. The fires are not. |
+| 48 | The Mirror Within | Blood Moon Abyss | Before you hunt Luo Hui at the rim, the Heart Mirror calls. It's outside the fold, still black, still still, and your transformed soul can hear it humming your name. There is one fear you haven't faced yet: not of dying, but of ascending, and leaving everyone behind. |
+| 49 | The Rung of Ash | Blood Moon Abyss | Luo Hui, the First Rung of the Patriarch's Ladder, waits at the obelisk ring in a circle of ash. He has healed twice. He intends to test you one last time. This time, with the fold at his back and his star overhead, he is not going anywhere, and neither are you. |
+| 50 | What the Old Man Left | Azure Cloud Sect | Elder Mo left very little: a tea set, a peach orchard, forty years of notes, and a locked box addressed to you. With the first rung broken and the long war begun, the Sect Master decides it's time you opened it. |
+
+### Volume 6 · Void Refinement — *The Fold in the World*
+
+Void rifts open over isle, forest and town. To reach a patriarch hiding between spaces, the Lotus heir learns to walk where there is nothing to walk on, and the Rungs of his Ladder start to fall.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 51 | Cracks in the Sky | Sky Isles | The Sky Isles closed for sixty years. Something has torn them open again: rifts of purple nothing are eating the isles one pine at a time, and Qing Luan, who is a memory, is starting to forget herself. To save her, you must learn to stand in the void, and refine your soul in it. |
+| 52 | The Fold in the Abyss | Blood Moon Abyss | With a refined soul you can step into the edge of the fold. Ye Wuming asks you to look for the black gate. What you find is worse and stranger: the fortress drifting in nothing, and behind its walls, the prisoners, held still as flies in amber. |
+| 53 | The Rust Monk's Penance | Qingshi Town | Tie Shan, the Rust Monk and Second Rung, has taken Keeper Hong's old temple in Qingshi and begun to pray. Every prayer rusts something: the gate hinges, the ferry chain, the constable's spear, the town bell. By the end of the week there will be no iron left in Qingshi, and he will start on the people. |
+| 54 | The Moon-Well Asks | Azure Cloud Sect | The abbess of the Moon-Well Nunnery climbs the nine thousand steps: her nuns are vanishing into rifts one by one, and the girl you freed from a forgotten cage at the Abyss rim told her the Azure Cloud answers when you ask. |
+| 55 | The Spring Runs Into Nothing | Whispering Bamboo | A rift has opened in the bottom of the spirit spring, and the spring is draining into the void. Without it, the Verdant Lotus seeds won't grow, the forest will sicken, and the hermit, who has only just stopped running, will have nowhere to come home to. |
+| 56 | Ye Wuming's Children | Whispering Bamboo | Madam Ninefold, the Third Rung, raised Ye Wuming's children in the Blood Moon's cages and wants them back. She has taken River, and she is circling the others. Ye Wuming has hunted the Blood Moon for forty years. This is the first time he's been afraid. |
+| 57 | Madam Ninefold | Qingshi Town | Jiu Rong, Madam Ninefold, the Third Rung, is somewhere in Qingshi wearing one of nine faces. She could be anyone: the new cook, the widow's neighbour, the constable's cousin. The town has to learn to look twice, and so do you. |
+| 58 | Maps of Nothing | Azure Cloud Sect | Three Rungs gone, four to go, and nobody knows where the other four are. Xiao Shi's map of the rifts covers the pagoda's wall and has started on the ceiling. Elder Bai thinks the map can find the Rungs. The hermit thinks it can do something stranger: find the Patriarch. |
+| 59 | The Iron Scale Remembers | Whispering Bamboo | At the forest's far edge, the Iron Scale's border is melting into nothing. Ruan Jingtao meets you with his sword drawn and his father's banner on his back. The Iron Scale's southern peak is gone, and something enormous is walking out of the place where it used to be. |
+| 60 | Still Water, Empty Sky | Sky Isles | Qing Luan sends for you one more time before the isles' rifts close. She says your void refinement is nearly complete, and that the next stage will be the hardest: not your soul, but your body. Before that, she wants to show you the tribulation peak, from a distance. |
+
+### Volume 7 · Body Integration — *A Body Worth Stealing*
+
+The Patriarch needs a body clean enough to survive heaven. His Rungs go hunting for one; the answer is to make body and soul a single thing that cannot be borrowed.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 61 | A Body Worth Stealing | Azure Cloud Sect | Brother Hollow's red star is sliding toward the Azure Cloud, and the first things he reaches for are empty ones: the training puppets stand up in the night and walk. Elder Hua has prepared the tempering baths. They will hurt. When they are done, no one will ever be able to wear you. |
+| 62 | Thunder Peak's Forge | Azure Cloud Sect | An integrated body still has to learn what it can do. Thunder Peak has been waiting years to share its secret: the lightning forge at the summit, where they temper swords and, once a generation, people. Yan Tie wants you in it. Thunder Peak wants to shout while you're there. |
+| 63 | Hollow Men of Qingshi | Qingshi Town | In Qingshi, the people who have given up are sitting in doorways with purple eyes and smiling. Brother Hollow lives in empty things, and despair is very empty. Liu Er comes home in blue robes to find his neighbours gone out behind their own faces. |
+| 64 | The Blood Pools, Again | Blood Moon Abyss | The purified blood pools at the Abyss rim can temper an integrated body further than any bath. Brother Hollow knows it, and is waiting there. So is Ye Wuming, with his children, and a warning: the Fourth Rung has found a body he likes, and it isn't yours. |
+| 65 | Brother Hollow | Whispering Bamboo | Kong Yi, Brother Hollow, the Fourth Rung, has come to the Whispering Bamboo, where every stalk is hollow and every hollow is a place to live. He has ten thousand bodies to wear, and he wants just one more. He cannot have it. |
+| 66 | The Butcher's Market | Qingshi Town | Wen Tu, the Butcher of Wen and Fifth Rung, has opened a market beneath Qingshi. He buys the bodies of dead cultivators by the jin, and keeps the best ones fresh in void-ice for a customer who needs a body heaven can't refuse. Merchant Jin has been offered a partnership. |
+| 67 | Iron-Fang's Old Roads | Whispering Bamboo | The bandit roads through the bamboo were Iron-Fang's once. The Butcher of Wen uses them now to move his frozen cargo. Tie Hu leads you down every one of them, and remembers, on each, something he did there that he'd rather have not. |
+| 68 | The Butcher's Larder | Whispering Bamboo | In the caves beneath the old wolf den, where the Moonlit Grotto once opened, the Butcher of Wen keeps his larder: rows of void-ice, twenty-one breathing people and nineteen who are only bodies, kept fresh for a fitting that must never happen. |
+| 69 | The Butcher of Wen | Blood Moon Abyss | Wen Tu, the Butcher of Wen, Fifth Rung of the Ladder, waits at the Abyss rim by the fold, sharpening his cleavers on the obelisk stumps. He weighs cultivators by the jin. He has never weighed one like you. |
+| 70 | One Body, One Soul | Azure Cloud Sect | Five Rungs have fallen. Your body and soul are almost one thing. Elder Hua says the last step of Body Integration isn't tempering: it's rest, and home, and letting the people you love remind you what the body is for. |
+
+### Volume 8 · Mahayana — *The Great Vehicle*
+
+No one climbs alone. The sects that once quarrelled over the Lotus Key gather into one alliance, and Lady Silk spins her web through the middle of it.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 71 | The Great Vehicle | Azure Cloud Sect | Five Rungs have fallen and the fold at the Abyss grows thinner. When it opens, the Azure Cloud cannot march alone. The Sect Master decides to call every orthodox sect to one conclave, and the hermit says the heir must learn the realm that carries others: Mahayana, the Great Vehicle. |
+| 72 | The Sects Arrive | Azure Cloud Sect | For a week the nine thousand steps are never empty. Iron Scale green, Zhao gold, Moon-Well white and the colours of sects nobody has heard of climb the mountain, argue about who goes first, and set up camp on every flat stone. |
+| 73 | A Week Without a Name | Qingshi Town | Before the conclave begins, Abbess Jing of the Moon-Well sets you a test: a week in Qingshi, serving the poor, and nobody may know who you are. Mahayana, she says, is carrying people who don't know your name. |
+| 74 | The Conclave of Forty Sects | Azure Cloud Sect | Forty sects in the main hall, the first conclave in three hundred years. The Sect Master speaks. The sect masters argue. Somewhere in the middle of it, a woman in pink silk smiles, and every argument gets a little worse. |
+| 75 | Threads Between Sects | Azure Cloud Sect | The conclave agrees on everything except the thing that matters: who holds the Lotus Key when the fold opens. Lady Silk has one thread left, and she ties it to the oldest wound in the room, the question the Iron Scale gave up at the Nine Banners. |
+| 76 | The Web Unravels | Qingshi Town | Qingshi has been quarrelling for a year. Neighbours of forty years aren't speaking; the magistrate and the constable have fallen out; even Madam Fang and Iron-Fang argued over a dish. Lady Silk has woven the whole town, and somewhere in it, she's hiding at the centre of her web. |
+| 77 | Lady Silk | Azure Cloud Sect | The conclave's last night is a feast for forty sects on the formation plaza. Lady Si Rou, Sixth Rung of the Ladder, has promised to attend as guest of honour, and nobody knows what face, what thread, or what knife she'll bring. |
+| 78 | The Oath of the Great Vehicle | Azure Cloud Sect | Forty sects swear one oath on the formation plaza: when the fold opens, they march together. Then they go home, to train, to wait, and to write monthly letters. The mountain empties slowly, like a tide going out. |
+| 79 | Teaching the Many | Whispering Bamboo | The alliance sends its young disciples to the Verdant Lotus ruins, to learn the Heart Sutra from the hermit and the Great Vehicle from you. The ruins, which held three hundred years of silence, are suddenly full of children arguing about roots, stems and blossoms. |
+| 80 | A Vehicle for Ten Thousand | Blood Moon Abyss | The alliance's first joint action: every sect sends fighters to the Abyss rim, to seal the rifts leaking from the fold before they reach anyone's home. Forty sects, one rim, one heir in the middle carrying all of them. |
+
+### Volume 9 · Tribulation Transcendence — *Heaven Takes Notice*
+
+Clouds gather over every step. Thunder crystals, lightning rods, lesser tribulations and farewells said early: the long preparation for a sky that is coming to look.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 81 | Heaven Takes Notice | Sky Isles | The clouds over the Azure Cloud turn in a slow spiral, and one morning a stair of cloud unrolls from them without waiting for any sixty-year cycle. The Sky Isles have opened again, for one visitor. Qing Luan is waiting at the cloud gate, frowning at the sky like it's disappointed a constellation. |
+| 82 | Thunder Crystal Harvest | Sky Isles | A tribulation can be survived, the old books say, if the lightning can be split: thunder crystals planted on the summit, like a river delta. The isles hold the only crystals strong enough, and the storm wolves, the sentinels and the Seventh Rung's shadows all want them too. |
+| 83 | The Seventh Rung | Blood Moon Abyss | The Seventh Rung's shadows have been seen at the Abyss rim, gathering blood from the fold's edge. Ye Wuming asks you to come. At the obelisk ring, for the first time, the Patriarch's Shadow steps into the light: a young man with red eyes and your mother's cousin's village name on his lips. |
+| 84 | Lightning Rods for a Sect | Azure Cloud Sect | A tribulation strikes the cultivator, but lightning is careless: stray bolts can burn a mountain. The sect must be protected before heaven comes. Thunder Peak has opinions, Elder Bai has diagrams, and Steward Qian has a budget he's already crying over. |
+| 85 | The Lesser Tribulation | Sky Isles | Before the great tribulation comes a lesser one: three bolts, a warning shot from heaven. Qing Luan says every cultivator gets one, and most of them die of it. She says it cheerfully. Then she says your heart demon will flicker in the third bolt, and she isn't cheerful any more. |
+| 86 | Words for Those Left Behind | Qingshi Town | The Sect Master said start with Qingshi. So you walk down the nine thousand steps with a bag of warm tribulation jade, and say goodbye early to a town that has been saving your bowl of noodles for years. |
+| 87 | Han Xue's Soul | Azure Cloud Sect | Han Xue has been close to forming her nascent soul for a year, and has refused to try while you needed guarding. Now she asks you to do what she did for you, long ago in the plum garden: stand guard, and keep the trouble away. |
+| 88 | Zhao Kang's Wager | Azure Cloud Sect | Zhao Tianlu, a hundred and fifteen years old, climbs the steps one last time to name his great-grandson head of the Zhao clan. Zhao Kang doesn't want it. He wants something else: a wager with you, for old times' sake, before the sky takes you somewhere he can't follow. |
+| 89 | The Red Star Aligns | Sky Isles | Qing Luan calls you back to the isles. The seventh red star, Xue Chen's, is sliding into place over the tribulation peak, and the moon is redder every night. She has finally read the whole chart, and she wishes she hadn't. |
+| 90 | The Stair Remembers | Sky Isles | Qing Luan takes you to the foot of the Ascension Stair, the stair nobody has climbed since your founders pulled the Patriarch off it. You won't climb it today. She just wants the stair to meet you, and you to meet it, before the night when everything happens at once. |
+
+### Volume 10 · Immortal Ascension — *The Last Blood Moon*
+
+The moon turns red, the void unfolds, and the last Rung falls. The Azure Cloud marches into the Abyss, the Patriarch rides the lightning, and an orphan climbs the Ascension Stair.
+
+| # | Chapter | Map | Summary |
+|---|---|---|---|
+| 91 | The Moon Turns Red | Azure Cloud Sect | Every night the moon rises a little redder. The fold at the Abyss has begun to breathe, the forty sects' wards are straining, and Steward Qian's ledger of monthly letters has turned into a ledger of armies. The last blood moon is weeks away, and everyone knows it. |
+| 92 | Forty Bandits, Washed and Fed | Whispering Bamboo | Iron-Fang has gathered forty of his old men for the march on the Abyss: farmers now, mostly, with families behind the black gate. They are loyal, brave, badly armed and extremely dirty. Before they can storm a fortress, they need a bath, a meal, and a reason to believe they'll come home. |
+| 93 | A Traitor's Last Requests | Azure Cloud Sect | Gu Hanshan has been a prisoner for years, and for years he has helped: advice in chains, warnings at the rim, confessions nobody asked for. Now, with the moon turning red, he asks the Sect Master for three last requests. He won't say why they're last. Everyone knows. |
+| 94 | Xue Chen's Hunt | Qingshi Town | The last blood moon needs blood. Xue Chen, the Seventh Rung, comes to Qingshi for it with every shadow-born he has. He doesn't want to. He does it anyway. Qingshi, which has held against bandits, beasts, rust and silk, holds again. |
+| 95 | The Shadow at the Stair | Sky Isles | Qing Luan's crane is frantic: Xue Chen is on the tribulation peak, setting his rung early, while the moon is not yet fully red. If the seventh rung is set before the night, the Patriarch's ladder will hold. You climb the cloud stair one last time before the last time. |
+| 96 | The Last Evening | Azure Cloud Sect | One evening left before the moon turns fully red. The Sect Master declares a holiday. There will be no training, no preparations, no war. Only dumplings, lanterns, and everyone you love, all together on one mountain, for one last ordinary night. |
+| 97 | The Void Unfolds | Blood Moon Abyss | The fold is opening. As the moon climbs toward red, the black fortress drifts back out of the void and settles, groaning, onto the Abyss floor where it stood before, gate shut, cages full, prisoners still mid-breath. Iron-Fang's army waits at the rim. Ye Wuming waits at the obelisks. And at the bottom of the world, a boy waits at a mirror. |
+| 98 | The Patriarch's Shadow | Blood Moon Abyss | At the Heart Mirror, at the bottom of the world, Xue Chen sits looking at a boy in a village by a creek. He is the Seventh Rung, the last step of the Patriarch's Ladder, the Patriarch's own shadow. He is also your cousin, and he has asked you to come alone. |
+| 99 | Eve of the Last Blood Moon | Azure Cloud Sect | The last day. Forty sects' armies climb the nine thousand steps and gather at the teleport array. The Sect Master makes her plans. Everyone you love says see you later. At dusk the moon will rise red, the black gate will be waiting, and the Azure Cloud will march into the Abyss to finish what its founders began. |
+| 100 | Heavenly Tribulation *(voiced)* | Blood Moon Abyss | Under the last blood moon the Azure Cloud marches into the Abyss. A traitor opens the black gate at the cost of his life, the Blood Moon Patriarch falls on his throne, and his remnant flees to the Sky Isles to steal your heavenly tribulation. At the summit, with lightning in your veins, you face your shadow one last time, and climb. |
+
+### Realm progression
+
+
+| Quest | Cultivation |
+|---|---|
+| 10 · Qi Condensation | **Qi Condensation** |
+| 40 · The Stele Remembers You | Qi Condensation · Middle |
+| 70 · Late Autumn, Late Stage | Qi Condensation · Late |
+| 100 · The Door Opens | Qi Condensation · Peak |
+| 110 · Foundation Establishment | **Foundation Establishment** |
+| 140 · Foundation Like River Stone | Foundation Establishment · Middle |
+| 170 · Standing on the Wall | Foundation Establishment · Late |
+| 200 · The Night Before | Foundation Establishment · Peak |
+| 210 · Core Formation | **Core Formation** |
+| 240 · Five Banners to Four | Core Formation · Middle |
+| 270 · The Test, Not the Kill | Core Formation · Late |
+| 300 · The Stair Holds | Core Formation · Peak |
+| 310 · Nascent Soul | **Nascent Soul** |
+| 340 · Crates Up the Mountain | Nascent Soul · Middle |
+| 370 · Back to the Pillars | Nascent Soul · Late |
+| 400 · Three Nights | Nascent Soul · Peak |
+| 410 · Soul Transformation | **Soul Transformation** |
+| 440 · Adequate | Soul Transformation · Middle |
+| 470 · Liu Er's Steps | Soul Transformation · Late |
+| 500 · Tea on the Steps | Soul Transformation · Peak |
+| 510 · Void Refinement | **Void Refinement** |
+| 540 · Void in the Marrow | Void Refinement · Middle |
+| 570 · A Bun From Spring | Void Refinement · Late |
+| 600 · Down the Cloud Road | Void Refinement · Peak |
+| 610 · Body Integration | **Body Integration** |
+| 640 · The Hollow Man Comes Himself | Body Integration · Middle |
+| 670 · Under the Den | Body Integration · Late |
+| 700 · What Comes Next | Body Integration · Peak |
+| 710 · Mahayana | **Mahayana** |
+| 740 · Carrying Forty | Mahayana · Middle |
+| 770 · One Left | Mahayana · Late |
+| 800 · Heaven Takes Notice | Mahayana · Peak |
+| 810 · Tribulation Transcendence | **Tribulation Transcendence** |
+| 840 · Farewells Early | Tribulation Transcendence · Middle |
+| 880 · When You Come Back Down | Tribulation Transcendence · Late |
+| 950 · Down to the Mirror | Tribulation Transcendence · Peak |
+| 1000 · Immortal Ascension | **Immortal Ascension** |
+
+## The original ten chapters
+
+These are the ten voiced chapters the saga is built around, numbered as they now appear.
 
 **1. The Outer Disciple** (Azure Cloud Sect). The orphan reaches the sect and learns the Nine Precepts, whose last one reads "guard the seal". They draw a pitiful allowance from a stingy steward, beat training puppets and Zhao Kang's attendants, breathe qi for the first time on the stone bridge and chase jade slips for the librarian. When the formation array flares at their touch, Elder Gu takes a keen interest in "that trinket". Red-eyed wolves at the wall are the first corruption in three centuries. The chapter ends with the breakthrough to **Qi Condensation** above the sea of clouds.
 
@@ -59,211 +314,75 @@ the protagonist's.
 
 **3. Shadows over Qingshi** (Qingshi Town). With Han Xue, the protagonist investigates the new-moon disappearances through inn gossip, a grieving widow, a ferryman's story of lanterns on the far bank and a merchant's ledger of blood lotus. They fight demonic cultivators in a back alley and suspect the masked wanderer, who points them to the graveyard. The graves are empty and sit on a blood-gathering circle. The kindly temple keeper turns out to be **Deacon Hong of the Blood Moon** (cinematic, boss). His dying words: the taken are in the Abyss, and the Patriarch "has friends in high halls".
 
-**4. Ruins of the Forgotten Sect** (Bamboo Forest ruins and the sect). The library's pages on the seal have been cut out with a Law Hall pass. The hermit reveals that he is **Lan Jue of the Verdant Lotus** and that the pendant is the Lotus Key (cinematic). Zhao Kang, sent by Gu to "keep an eye on" the protagonist, grudgingly fights beside them. The ruins open for their heir, the **Lotus Guardian** tests them (boss) and the reliquary yields the Verdant Lotus Heart Sutra. Gu asks for the sutra and is refused, and Mo explains Gu's grief over his daughter. The protagonist reaches **Foundation Establishment** in the plum garden.
+**11. Ruins of the Forgotten Sect** (Bamboo Forest ruins and the sect). The library's pages on the seal have been cut out with a Law Hall pass. The hermit reveals that he is **Lan Jue of the Verdant Lotus** and that the pendant is the Lotus Key (cinematic). Zhao Kang, sent by Gu to "keep an eye on" the protagonist, grudgingly fights beside them. The ruins open for their heir, the **Lotus Guardian** tests them (boss) and the reliquary yields the Verdant Lotus Heart Sutra. Gu asks for the sutra and is refused, and Mo explains Gu's grief over his daughter. The protagonist reaches **Foundation Establishment** in the plum garden.
 
-**5. The Inner Sect Tournament** (Azure Cloud Sect). The chapter covers betting pools, a melee, and a semifinal fought as a forced pair with Zhao Kang, which turns the rivalry into respect. Zhao's brother died on a mission Gu assigned. Frenzy Pills are hidden in the tournament supplies under Gu's approval, and Gu demands the pendant "for inspection". In the final, champion **Yan Tie** is poisoned into a frenzy and the protagonist brings him down alive (boss). While everyone watches, Gu raids the pagoda for the master diagram of the seal. **The traitor is revealed** (cinematic) and flees to the Abyss.
+**12. The Inner Sect Tournament** (Azure Cloud Sect). The chapter covers betting pools, a melee, and a semifinal fought as a forced pair with Zhao Kang, which turns the rivalry into respect. Zhao's brother died on a mission Gu assigned. Frenzy Pills are hidden in the tournament supplies under Gu's approval, and Gu demands the pendant "for inspection". In the final, champion **Yan Tie** is poisoned into a frenzy and the protagonist brings him down alive (boss). While everyone watches, Gu raids the pagoda for the master diagram of the seal. **The traitor is revealed** (cinematic) and flees to the Abyss.
 
-**6. Descent into the Blood Moon** (Blood Moon Abyss). Ye Wuming, once a Blood Moon child, guides the protagonist and Han Xue down. They cross the bone field and the blood pools, and Xue Mei's ambush at the obelisks takes Han Xue. The protagonist breaks the obelisks, raids the war camp (and finds letters about a siege of Qingshi and Gu's promise to "Lan"), and frees the cages: Han Xue, Xiao Shi and Widow Liu's son. At the **Altar of Blood** Gu feeds the seal to the Patriarch (cinematic). **Crimson Elder Xue Mei** falls (boss) and the ritual is broken. The protagonist chooses mercy for captured child acolytes and forms a **Golden Core** in the abyss depths.
+**21. Descent into the Blood Moon** (Blood Moon Abyss). Ye Wuming, once a Blood Moon child, guides the protagonist and Han Xue down. They cross the bone field and the blood pools, and Xue Mei's ambush at the obelisks takes Han Xue. The protagonist breaks the obelisks, raids the war camp (and finds letters about a siege of Qingshi and Gu's promise to "Lan"), and frees the cages: Han Xue, Xiao Shi and Widow Liu's son. At the **Altar of Blood** Gu feeds the seal to the Patriarch (cinematic). **Crimson Elder Xue Mei** falls (boss) and the ritual is broken. The protagonist chooses mercy for captured child acolytes and forms a **Golden Core** in the abyss depths.
 
-**7. Siege of Qingshi** (Qingshi Town). Qingshi is held with Zhao Kang and Wei Tong: oil from the redeemed merchant, wards on the gate, the alarm bell, farmers ferried to safety, the graveyard circle sealed for good and river raiders repelled. The merchant confesses that he opened a smuggling tunnel under threat. **Iron-Fang** falls in the market square (boss) and is spared to fight for the town he tried to burn. On the graveyard hill Gu explains himself: the siege was only there to soak the seal with blood. The chapter closes with mourning at the temple and a new plan to build the Great Azure Formation.
+**22. Siege of Qingshi** (Qingshi Town). Qingshi is held with Zhao Kang and Wei Tong: oil from the redeemed merchant, wards on the gate, the alarm bell, farmers ferried to safety, the graveyard circle sealed for good and river raiders repelled. The merchant confesses that he opened a smuggling tunnel under threat. **Iron-Fang** falls in the market square (boss) and is spared to fight for the town he tried to burn. On the graveyard hill Gu explains himself: the siege was only there to soak the seal with blood. The chapter closes with mourning at the temple and a new plan to build the Great Azure Formation.
 
-**8. Isles Above the Clouds** (Celestial Sky Isles). The Sky Isles open once every sixty years. The protagonist crosses the railing-less jade bridge (Zhao Kang objects), and Zhao apologises among the wind pines. They gather star iron, thunder crystals, cloud silk and phoenix feathers. The Blood Moon is mining the same crystals, which is odd. The corrupted **Jiao serpent** is freed rather than slain (boss). Qing Luan studies the sect's design and says "the stars disagree with it". The protagonist forms a **Nascent Soul** at the cloud gate. Mo promises to check every rune himself.
+**31. Isles Above the Clouds** (Celestial Sky Isles). The Sky Isles open once every sixty years. The protagonist crosses the railing-less jade bridge (Zhao Kang objects), and Zhao apologises among the wind pines. They gather star iron, thunder crystals, cloud silk and phoenix feathers. The Blood Moon is mining the same crystals, which is odd. The corrupted **Jiao serpent** is freed rather than slain (boss). Qing Luan studies the sect's design and says "the stars disagree with it". The protagonist forms a **Nascent Soul** at the cloud gate. Mo promises to check every rune himself.
 
-**9. The Heart Demon** (Blood Moon Abyss and the sect). Mo finds the altered runes (cinematic) and gives the protagonist his sword tassel. A letter from Gu brings the protagonist alone to the Abyss, where Gu confesses: he altered the archive copy twenty years ago, so the new formation is a key, not a lock, and his daughter's soul was fed to the Heart Mirror. The protagonist faces their **Heart Demon** (cinematic, boss) and frees the trapped souls, Gu Lan among them. Back home the sky is red and the formation is lit. **Elder Mo burns his life to turn it back** (cinematic). After the funeral, Bai decodes the Patriarch's true plan: to wear the protagonist's body through the tribulation. The captured Gu is offered redemption instead of execution, the allies swear their oaths, and the protagonist reaches **Soul Transformation** in the repaired formation.
+**41. The Heart Demon** (Blood Moon Abyss and the sect). Mo finds the altered runes (cinematic) and gives the protagonist his sword tassel. A letter from Gu brings the protagonist alone to the Abyss, where Gu confesses: he altered the archive copy twenty years ago, so the new formation is a key, not a lock, and his daughter's soul was fed to the Heart Mirror. The protagonist faces their **Heart Demon** (cinematic, boss) and frees the trapped souls, Gu Lan among them. Back home the sky is red and the formation is lit. **Elder Mo burns his life to turn it back** (cinematic). After the funeral, Bai decodes the Patriarch's true plan: to wear the protagonist's body through the tribulation. The captured Gu is offered redemption instead of execution, the allies swear their oaths, and the protagonist reaches **Soul Transformation** in the repaired formation.
 
-**10. Heavenly Tribulation** (Blood Moon Abyss and the Sky Isles). The whole sect marches (cinematic). Wei Tong and Zhao Kang break the line, and Gu uses the old blood-red token to get inside the black gate and open it, dying in the attempt. Iron-Fang's people are freed, the altar is shattered and the protagonist reaches **Void Refinement**. The **Blood Moon Patriarch** falls on his throne (cinematic, boss), but his remnant soul flees upward to steal the tribulation. On the summit the ninth bolt is the heart tribulation: the Patriarch rides the protagonist's **Heart Demon** one last time (boss), and heaven's lightning burns him to ash. After **Tribulation Transcendence** come farewells, the Ascension Stair and **Immortal Ascension**. The epilogue shows the sect ten thousand years safe, the hermit teaching the sutra, Wei Tong shouting at puppets and a star that blinks twice.
-
-### Realm progression
-
-| Quest | Realm |
-|---|---|
-| q010 | Qi Condensation |
-| q040 | Foundation Establishment |
-| q060 | Core Formation |
-| q080 | Nascent Soul |
-| q090 | Soul Transformation |
-| q095 | Void Refinement |
-| q099 | Tribulation Transcendence |
-| q100 | Immortal Ascension |
-
-## All 100 quests
-
-### Chapter 1 · The Outer Disciple
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 1 | The Mountain Gate | Azure Cloud Sect | Watch the mountain gate open → Speak with the gate disciple → Climb to the main hall → Present yourself to Elder Mo | 60 xp |
-| 2 | Rules of the Azure Cloud | Azure Cloud Sect | Report to Elder Gu of the Law Hall → Read the Nine Precepts → Bow before the main hall → Collect your allowance from Steward Qian | 60 xp |
-| 3 | Iron Body, Iron Will | Azure Cloud Sect | Find Senior Brother Wei at the weapon rack → Defeat the training puppets → Face the puppets' second wave → Report back to Wei Tong | 80 xp |
-| 4 | A Rival's Sneer | Azure Cloud Sect | Answer Zhao Kang's summons in the plum garden → Defeat Zhao Kang's attendants → Tell Senior Brother Wei what happened | 90 xp |
-| 5 | Breath of Heaven and Earth | Azure Cloud Sect | Meet Senior Sister Han Xue in the pavilion → Meditate on the stone bridge → Return to Han Xue | 90 xp |
-| 6 | Herbs of the West Terrace | Azure Cloud Sect | Speak with Elder Hua at the herb terraces → Gather spirit herbs on the terraces → Find Xiao Man at the lotus pond → Deliver the herbs to Elder Hua | 100 xp |
-| 7 | The Scripture Pagoda | Azure Cloud Sect | Visit Elder Bai at the scripture pagoda → Recover the jade slips in the plum garden → Peek at the slips in the quiet pavilion → Return the jade slips to Elder Bai | 100 xp |
-| 8 | The Formation Array | Azure Cloud Sect | Meet Elder Mo at the formation array → Recover the lantern oil in the pine woods → Refill the lamps of the formation array → Elder Gu wants a word | 110 xp |
-| 9 | Red Eyes in the Pines | Azure Cloud Sect | Investigate the howling in the pine woods → Drive off the red-eyed wolves → Ring the alarm bell at the gate → Wake the gate disciple → Report to Elder Mo | 130 xp |
-| 10 | Qi Condensation | Azure Cloud Sect | Receive a Qi Gathering Pill from Elder Hua → Break through at the cliff edge → Present yourself to the Sect Master | 200 xp · **Qi Condensation** |
-
-### Chapter 2 · Whispers in the Bamboo
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 11 | Beyond the Mountain Gate | Azure Cloud Sect | Receive your mission from Elder Gu → Watch your arrival in the bamboo forest → Join Wei Tong on the forest path | 120 xp |
-| 12 | Moonshadow Grass | Whispering Bamboo Forest | Find the sunny herb grove → Gather moonshadow grass in the herb grove → Fight off the spirit wolves → Regroup with Wei Tong by the stream | 130 xp |
-| 13 | Fangs in the Dark | Whispering Bamboo Forest | Scout the wolf den → Slay the corrupted wolves → Collect fangs from the corrupted wolves → Show the fangs to Wei Tong in the clearing | 140 xp |
-| 14 | The King of the Den *(boss)* | Whispering Bamboo Forest | Return to the wolf den → Defeat the corrupted wolf king → Lay the wolf king to rest → Confront the masked stranger in the clearing | 220 xp |
-| 15 | The Hermit of the Bamboo | Whispering Bamboo Forest | Carry Wei Tong to the hermit's hut → Beg the hermit for help → Draw water from the spirit spring → Pick lotus leaves by the spring for the poultice → Bring the spring water to the hermit | 150 xp |
-| 16 | Smoke on the Ridge | Whispering Bamboo Forest | Meet Wei Tong on the old bridge → Scout the camp from the lookout → Wait for nightfall and steady your breath | 140 xp |
-| 17 | Iron-Fang's Camp | Whispering Bamboo Forest | Raid the bandit camp → Free the caged mortals → Cover the prisoners' escape → Recover the stolen spirit stones | 200 xp |
-| 18 | The Blood-Red Token | Whispering Bamboo Forest | Search the bandit chief's strongbox → Show the token to Wei Tong → Ask the hermit about the token | 180 xp |
-| 19 | Ambush at the Old Bridge | Whispering Bamboo Forest | Survive the ambush on the old bridge → Search the fallen bandits for clues → Speak with the masked wanderer at the stream | 200 xp |
-| 20 | Report to the Law Hall | Azure Cloud Sect | Return to the Azure Cloud Sect → Present the token to Elder Gu → Tell Elder Mo about the mission | 160 xp |
-
-### Chapter 3 · Shadows over Qingshi
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 21 | The Town That Whispers | Azure Cloud Sect | Receive the Sect Master's orders → Watch your arrival at Qingshi Town → Speak with the constable at the town gate | 180 xp |
-| 22 | The Drunken Crane | Qingshi Town | Walk the main street of Qingshi → Ask Madam Fang for gossip at the inn → Pay respects to Magistrate Zhou | 160 xp |
-| 23 | A Mother's Grief | Qingshi Town | Comfort the widow at the well → Question the old ferryman at the docks → Search the river bank → Test the well water for blood qi | 170 xp |
-| 24 | Market of Rumours | Qingshi Town | Listen to the gossip in the market square → Question Merchant Jin at the warehouse → Search the guild's crates | 190 xp |
-| 25 | The Back Alley | Qingshi Town | Follow the scream into the back alley → Rescue the woman from the demonic cultivators → Pick up the talismans the attackers dropped → Regroup with Han Xue on the main street | 220 xp |
-| 26 | The Masked Stranger | Qingshi Town | Ask Madam Fang about the masked guest → Climb the watchtower → Confront the masked wanderer in the fields | 190 xp |
-| 27 | Lanterns Among the Graves | Qingshi Town | Search the hillside graveyard at night → Examine the rune circle beneath the graves → Gather the blood-ink rune stones as proof → Decide what to do with Han Xue | 210 xp |
-| 28 | The Temple Keeper | Qingshi Town | Visit Keeper Hong at the temple → Watch the temple keeper reveal himself → Fight through Hong's acolytes on the main street | 240 xp |
-| 29 | Blood Beneath the Graves *(boss)* | Qingshi Town | Rally the magistrate → Storm the graveyard → Defeat Deacon Hong of the Blood Moon → Follow the dying deacon to his temple | 320 xp |
-| 30 | A Debt of Qingshi | Qingshi Town | Tell Widow Liu the truth → Accept Madam Fang's thanks → Cleanse the defiled temple → Head home with Han Xue | 240 xp |
-
-### Chapter 4 · Ruins of the Forgotten Sect
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 31 | Missing Pages | Azure Cloud Sect | Report to the Sect Master → Ask Elder Bai for the Blood Moon records → Watch the journey to the forgotten ruins → Find the gate of the ancient ruins | 260 xp |
-| 32 | The Hermit's Secret | Whispering Bamboo Forest | Return to the hermit's hut → Ask the hermit about the ruins → Hear the hermit's story → Accept the hermit's charge | 240 xp |
-| 33 | Stones That Remember | Whispering Bamboo Forest | Gather the lotus rune stones around the gate → Deal with Zhao Kang on the forest path → Read the stele in the ruined shrine | 240 xp |
-| 34 | Stone Guardians | Whispering Bamboo Forest | Defeat the stone sentinels at the gate → Set the rune stones into the archway → Step through the opened archway | 260 xp |
-| 35 | The Guardian of the Lotus *(boss)* | Whispering Bamboo Forest | Find the hermit at the shrine → Stop the sentinels reforming at the gate → Pass the trial of the ancient guardian | 380 xp |
-| 36 | Legacy of the Lotus | Whispering Bamboo Forest | Open the Verdant Lotus reliquary → Comprehend the Heart Sutra at the spirit spring → Return to the hermit | 300 xp |
-| 37 | Blood in the Shrine | Whispering Bamboo Forest | Drive the Blood Moon scouts from the shrine → Check on Zhao Kang at the old bridge → Gather herbs to treat Zhao Kang's wound | 280 xp |
-| 38 | The Law Hall's Interest | Azure Cloud Sect | Return to the sect with Zhao Kang → Show the Heart Sutra to Elder Bai → Answer Elder Gu's summons → Speak with Elder Mo | 240 xp |
-| 39 | Preparing the Foundation | Azure Cloud Sect | Ask Elder Hua for a Foundation Pill → Negotiate with Steward Qian → Gather lotus root at the pond at dusk → Tell Xiao Man what you learned in Qingshi | 260 xp |
-| 40 | Foundation Establishment | Azure Cloud Sect | Ask Han Xue to guard your breakthrough → Establish your foundation in the plum garden → Receive the Sect Master's news | 400 xp · **Foundation Establishment** |
-
-### Chapter 5 · The Inner Sect Tournament
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 41 | Banners on the Mountain | Azure Cloud Sect | Watch the opening of the Inner Sect Tournament → Take in the tournament stage → Register with Steward Qian → Hear the gossip from Lu Ping | 260 xp |
-| 42 | Sharpening the Blade | Azure Cloud Sect | Train with Wei Tong → Defeat four enhanced training puppets → Report back to Wei Tong | 260 xp |
-| 43 | The Preliminary Round | Azure Cloud Sect | Report to Elder Mo, the referee → Win the preliminary round → Win the deciding bout of your bracket → Receive Elder Mo's verdict | 280 xp |
-| 44 | Whispers at Night | Azure Cloud Sect | Follow Zhao Kang to the moon gate → Confront Zhao Kang at the cliff edge → Tell Han Xue what you found | 280 xp |
-| 45 | The Hundred-Disciple Melee | Azure Cloud Sect | Console Wei Tong → Survive the melee → Help Lu Ping gather his scattered winnings → Collect Lu Ping's thanks | 300 xp |
-| 46 | The Poisoned Cup | Azure Cloud Sect | Answer Elder Hua's urgent summons → Gather moonbell herbs for the antidote → Ask Xiao Man what she saw → Deliver the herbs to Elder Hua | 300 xp |
-| 47 | Partners in the Semifinal | Azure Cloud Sect | Find your partner in the plum garden → Win the paired semifinal with Zhao Kang → Talk with Zhao Kang on the stone bridge | 320 xp |
-| 48 | Eve of the Final | Azure Cloud Sect | Answer Elder Gu's summons → Ask Elder Mo about the rule → Steady your dao heart on the stone bridge → Speak with Han Xue in the pavilion | 300 xp |
-| 49 | The Final Bout *(boss)* | Azure Cloud Sect | Step up for the final → Defeat the tournament champion → Receive the Sect Master's judgement | 500 xp |
-| 50 | The Law Hall's Shadow | Azure Cloud Sect | Find Han Xue → Confront the traitor → Defeat the traitor's Blood Moon accomplices → Check on the wounded Elder Bai on the plaza → Report to the Sect Master at the teleport array | 500 xp |
-
-### Chapter 6 · Descent into the Blood Moon
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 51 | An Unlikely Guide | Azure Cloud Sect | Receive your orders from the Sect Master → Meet the masked wanderer at the sect gate → Descend into the Blood Moon Abyss → Enter the crimson canyon | 400 xp |
-| 52 | The Field of Bones | Blood Moon Abyss | Cross onto the field of bones → Clear the sentries on the field of bones → Collect the sentries' demon cores → Talk with Ye Wuming at the canyon mouth | 420 xp |
-| 53 | The Blood Pools | Blood Moon Abyss | Harvest blood lotus from the steaming pools → Drive off the blood-fed wolves drinking at the pools → Purify the lotus and steady your qi → Share the purified lotus with Han Xue | 420 xp |
-| 54 | Ambush at the Obelisks | Blood Moon Abyss | Examine the demonic obelisk → Fight off the Blood Guard ambush → Regroup with Ye Wuming by the blood pools | 460 xp |
-| 55 | Shattering the Obelisks | Blood Moon Abyss | Collect rune fragments around the obelisks → Shatter the heart obelisk with the counter-rune → Deal with the guards drawn by the noise → Confer with Ye Wuming | 460 xp |
-| 56 | The War Camp | Blood Moon Abyss | Approach the war camp → Break through the Blood Moon war camp → Seize the sealed letters from the command tent → Read the letters with Ye Wuming | 480 xp |
-| 57 | The Iron Cages | Blood Moon Abyss | Reach the prison cages → Defeat the cage wardens → Break open the cages | 500 xp |
-| 58 | What the Prisoners Saw | Blood Moon Abyss | Speak with Xiao Shi → Recover stolen medicine for the prisoners → Send the prisoners home with Han Xue | 460 xp |
-| 59 | The Altar of Blood *(boss)* | Blood Moon Abyss | Witness the ritual at the Altar of Blood → Defeat Crimson Elder Xue Mei → Disrupt the blood ritual | 700 xp |
-| 60 | Core Formation | Blood Moon Abyss | Decide the fate of the captured acolytes with Ye Wuming → Form your golden core in the abyss depths → Return Xiao Shi to his sister → Report to the Sect Master | 900 xp · **Core Formation** |
-
-### Chapter 7 · Siege of Qingshi
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 61 | Smoke on the Horizon | Azure Cloud Sect | Receive the Sect Master's orders → Watch the Blood Moon host approach Qingshi → Meet Magistrate Zhou at the yamen | 500 xp |
-| 62 | Walls and Wards | Qingshi Town | Plan the defence with Constable Du → Persuade Merchant Jin to open his warehouse → Carry the oil barrels to the wall → Paint warding talismans on the town gate | 500 xp |
-| 63 | The Watchtower | Qingshi Town | Climb the watchtower → Ring the alarm bell → Take your positions with Zhao Kang | 500 xp |
-| 64 | Raiders in the Fields | Qingshi Town | Ask Old Pan to ferry the farmers to safety → Drive the raiders from the fields → Report to Wei Tong at the market kitchens | 520 xp |
-| 65 | The Graveyard Flank | Qingshi Town | Break the demonic cultivators at the graves → Slay the blood-fed wolves they brought → Seal the blood formation for good → Check on Zhao Kang | 540 xp |
-| 66 | The Riverside Assault | Qingshi Town | Race to the docks → Repel the Blood Guards at the docks → Save the medicine crates washed up on the bank → Bring the medicine to Widow Liu at the well | 540 xp |
-| 67 | Treachery at the Warehouse | Qingshi Town | Catch Merchant Jin in the back alley → Stop the bandits in the warehouse yard → Collapse the smugglers' tunnel | 560 xp |
-| 68 | Iron-Fang Tie Hu *(boss)* | Qingshi Town | Cut down Iron-Fang's lieutenants → Defeat Iron-Fang Tie Hu → Decide Iron-Fang's fate at the temple | 800 xp |
-| 69 | The Last Wave | Qingshi Town | Hold the town gate against the last wave → Confront Gu Hanshan on the graveyard hill → Chase Gu into the graves | 800 xp |
-| 70 | Dawn over Qingshi | Qingshi Town | Accept the magistrate's thanks → Celebrate at the Drunken Crane → Mourn the fallen at the temple → Report to the Sect Master | 700 xp |
-
-### Chapter 8 · Isles Above the Clouds
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 71 | Stairway of Clouds | Azure Cloud Sect | Receive the Sect Master's orders → Ascend to the Celestial Sky Isles → Meet the star-gazer at the cloud gate | 700 xp |
-| 72 | The Jade Bridge | Celestial Sky Isles | Cross the jade bridge → Fight off the Blood Moon pursuers on the bridge → Catch your breath with Han Xue | 720 xp |
-| 73 | Isle of Winds | Celestial Sky Isles | Gather cloud silk from the wind-swept pines → Listen to the wind → Talk with Zhao Kang among the pines | 720 xp |
-| 74 | The Star-Gazer's Riddle | Celestial Sky Isles | Visit Qing Luan at the star pavilion → Study the star chart → Ask Qing Luan about the red stars | 700 xp |
-| 75 | Star Iron of the Fallen Palace | Celestial Sky Isles | Reach the celestial ruins → Defeat the palace guardians → Gather the star iron → Read the palace inscription | 740 xp |
-| 76 | The Spirit Vein | Celestial Sky Isles | Drive the Blood Moon miners from the spirit vein → Gather thunder crystals → Examine the miners' cache | 760 xp |
-| 77 | Garden of Immortals | Celestial Sky Isles | Enter the overgrown garden → Gather phoenix feathers in the immortal garden → Heed Qing Luan in the garden | 700 xp |
-| 78 | The Jiao's Lair *(boss)* | Celestial Sky Isles | Enter the serpent's lair → Defeat the corrupted Jiao serpent → Tend to your wounds with Han Xue | 1100 xp |
-| 79 | The Stars Disagree | Celestial Sky Isles | Search the Jiao's hoard → Prepare to leave with Zhao Kang → Say farewell to Qing Luan | 800 xp |
-| 80 | Nascent Soul | Celestial Sky Isles | Form your nascent soul at the cloud gate → Deliver the materials to Elder Mo at the formation array → Report to the Sect Master | 1500 xp · **Nascent Soul** |
-
-### Chapter 9 · The Heart Demon
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 81 | The Great Azure Formation | Azure Cloud Sect | Watch Elder Mo inspect the Great Azure Formation → Inspect the Great Azure Formation → Speak with Elder Mo at the hall steps → Spend an evening with Wei Tong | 900 xp |
-| 82 | A Letter from the Abyss | Azure Cloud Sect | Collect the letter from Lu Ping → Break the Law Hall seal on the letter → Show the letter to Han Xue | 800 xp |
-| 83 | The Mirror Pool | Blood Moon Abyss | Slip past the scavengers on the field of bones → Hear the traitor out in the abyss depths → Approach the Heart Mirror | 900 xp |
-| 84 | The Heart Demon *(boss)* | Blood Moon Abyss | Face the reflection in the Heart Mirror → Defeat your heart demon → Still the mirror and free the trapped souls → Return to Gu Hanshan | 1500 xp |
-| 85 | Burning Sky over Azure Cloud | Azure Cloud Sect | Race back to the sect gate → Cut through the infiltrators at the gate → Clear the demonic cultivators guarding the array | 1200 xp |
-| 86 | Elder Mo's Choice | Azure Cloud Sect | Witness Elder Mo's last stand → Stand with the Sect Master at the hall steps → Find Wei Tong | 1200 xp |
-| 87 | Ashes and Incense | Azure Cloud Sect | Toll the great bell nine times → Speak with Elder Hua → Speak with Xiao Man at the lotus pond → Remember Elder Mo at the cliff edge | 1000 xp |
-| 88 | What the Patriarch Wants | Azure Cloud Sect | Hear Elder Bai's findings → Compare the altered runes with the Heart Sutra → Face Gu Hanshan in chains at the moon gate | 1100 xp |
-| 89 | The Five Oaths | Azure Cloud Sect | Hear Zhao Kang's oath → Hear Xiao Shi's oath → Hear Steward Qian's oath → Collect Xiao Man's medicine bundles for the army → Meet Ye Wuming at the sect gate | 1000 xp |
-| 90 | Soul Transformation | Azure Cloud Sect | Set spirit stones into the repaired formation → Transform your soul at the heart of the formation → Receive the Sect Master's blessing | 2000 xp · **Soul Transformation** |
-
-### Chapter 10 · Heavenly Tribulation
-
-| # | Quest | Map | Objectives | Reward |
-|---|---|---|---|---|
-| 91 | The Last Blood Moon | Blood Moon Abyss | Watch the Azure Cloud Sect gather at the Abyss → Receive the battle plan from the Sect Master → Speak with Iron-Fang at the canyon rim → Stand with Han Xue at the canyon mouth | 2000 xp |
-| 92 | Breaking the Line | Blood Moon Abyss | Break the Blood Guard line on the field of bones → Burn the Blood Moon war camp → Regroup with Wei Tong at the blood pools | 2200 xp |
-| 93 | The Black Gate | Blood Moon Abyss | Meet Gu Hanshan at the obelisk ring → Wait before the black gate → Break the gate's last seal | 2200 xp |
-| 94 | Court of Crimson | Blood Moon Abyss | Clear the fortress courtyard → Kneel beside Gu Hanshan at the gate → Break open the last cages → Find Iron-Fang at the cages | 2400 xp |
-| 95 | Void Refinement | Blood Moon Abyss | Defeat the altar's last defenders → Shatter the Altar of Blood → Refine your soul in the void | 3000 xp · **Void Refinement** |
-| 96 | The Blood Moon Patriarch *(boss)* | Blood Moon Abyss | Cut down the Patriarch's throne guards → Confront the Blood Moon Patriarch → Defeat the Blood Moon Patriarch → Find Ye Wuming in the abyss depths | 4000 xp |
-| 97 | Pursuit to the Heavens | Celestial Sky Isles | Meet Qing Luan at the cloud gate → Fight through the possessed Blood Guards on the jade bridge → Speak with Han Xue on the Isle of Winds | 3000 xp |
-| 98 | Remnants of the Blood Moon | Celestial Sky Isles | Purge the possessed cultivators in the garden → Gather thunder crystals to ground the tribulation → Charge the crystals at the spirit vein → Speak with Zhao Kang at the celestial ruins | 3000 xp |
-| 99 | Heavenly Tribulation *(boss)* | Celestial Sky Isles | Ascend to the tribulation peak → Survive the heart tribulation and destroy the remnant → Endure the nine bolts of heavenly lightning | 6000 xp · **Tribulation Transcendence** |
-| 100 | Immortal Ascension | Celestial Sky Isles | Say farewell to the Sect Master at the cloud gate → Say farewell to Qing Luan → Climb the Ascension Stair → Ascend → Epilogue: the Azure Cloud Sect | 10000 xp · **Immortal Ascension** |
+**100. Heavenly Tribulation** (Blood Moon Abyss and the Sky Isles). The whole sect marches (cinematic). Wei Tong and Zhao Kang break the line, and Gu uses the old blood-red token to get inside the black gate and open it, dying in the attempt. Iron-Fang's people are freed and the altar is shattered. The **Blood Moon Patriarch** falls on his throne (cinematic, boss), but his remnant soul flees upward to steal the tribulation. On the summit the ninth bolt is the heart tribulation: the Patriarch rides the protagonist's **Heart Demon** one last time (boss), and heaven's lightning burns him to ash. Then come farewells, the Ascension Stair and **Immortal Ascension**. The epilogue shows the sect ten thousand years safe, the hermit teaching the sutra, Wei Tong shouting at puppets and a star that blinks twice.
 
 ## Editing the story
 
 ```bash
-python3 tools/build_story.py          # validate + write godot/data/story.json, prints stats
-python3 tools/build_story.py --check  # CI: fails if story.json is stale or anything is invalid
-python3 tools/gen_voices.py           # (re)synthesise only lines whose text/voice changed
-python3 tools/gen_voices.py --check   # CI: lists missing/stale voice files
-python3 tools/gen_voices.py --prune   # also delete voice files no longer referenced
+python3 tools/build_story.py                            # validate + write godot/data/story.json, prints stats
+python3 tools/build_story.py --check                    # CI: fails if story.json is stale or anything is invalid
+python3 tools/build_story.py --quests docs/QUESTS.md    # also regenerate the list of all 1000 quests
+python3 tools/gen_voices.py                             # (re)synthesise only voiced lines whose text/voice changed
+python3 tools/gen_voices.py --check                     # CI: lists missing/stale voice files
 ```
+
+### The original chapters
 
 The chapter files use the helpers from `tools/story/dsl.py`. An objective inherits the map of the previous objective
 unless it sets `map=`, and a cinematic objective takes its map from the cinematic. Dialogue lines are
-`(speaker, text)` tuples, where `P` is the active protagonist and `N` is the narrator.
+`(speaker, text)` tuples, where `P` is the active protagonist and `N` is the narrator. Their voice keys keep the
+original numbering (`q017_o2_l1` is original quest 17, objective 2, line 1; it is quest 17 of the saga), so editing a
+line re-synthesises only that line. `appear_from` / `hidden_after` of the original cast use three-digit original ids
+(`q085`), which `build_story` maps to the saga's numbering (`q0405`); new ids use four digits.
 
-These text tokens are resolved at runtime: `{player}` `{junior}` `{senior}` `{sibling}` `{they}` `{them}` `{their}`.
-Any line spoken by the player, or containing a token, is *gendered* and gets `<key>_m.ogg` and `<key>_f.ogg`.
-Voice keys come from positions: `q017_o2_l1` is quest 17, objective 2, line 1, and `cin_ch05_traitor_s3` is shot 3 of
-that cinematic. Inserting a line therefore renames the keys of the lines after it, and `gen_voices.py` re-synthesises
-only the lines whose text actually changed.
+### The new chapters
+
+A new chapter is an outline in `vol01.py .. vol10.py`:
+
+```python
+C("The Burned Array", "sect", "Summary...", cast=[YUN, HAN, ...], foes=["demon_cultivator"],
+  items=[...], props=[...], boss=("rung_deacon", "Luo Hui, the First Rung", "Warehouse"),
+  beats=[B("probe", "Title", "Quest summary.",
+           (HAN, "A line."), (P, "A reply."),            # a segment of dialogue
+           "@I:ScholarRock", ">Search the empty desk",   # a tagged step: interact at a marker, with its text
+           (N, "Narration for that step."),
+           "@T", (HAN, "Closing lines."), prop="treasure_chest"), ...ten beats])
+```
+
+Each beat becomes one quest. Its script is split into segments by tags (`@T` talk, `@R` reach, `@F`/`@F2` fight,
+`@X` the chapter's boss, `@G` gather, `@M` meditate, `@I` interact; `@R:qingshi_town/TownGate` pins a marker on another
+map, `>` sets the objective text, `|` starts a new segment). With two or more segments the script is the quest; a beat
+with a single segment is wrapped in the pattern named by its kind (`orders`, `gather`, `hunt`, `battle`, `probe`,
+`defend`, `delve`, `boss`, `break`, `stage`, ...). The generator fills everything left open (markers from per-map
+pools, enemy counts, pickup counts, objective text from templates, and connecting dialogue from `fillers.py`) and
+places every talking NPC at home or on a free marker. Everything is a pure function of the outlines, so a rebuild is
+byte-identical. New lines are written to story.json with `"voice": null`; the runtime shows them as text that
+advances by itself after a reading time.
+
+### Validation
 
 The validator checks every id against `tools/world_spec.py`. It also enforces these rules:
 
-- boss fights have a count of 1;
+- 10 volumes, each titled after its realm; 100 chapters; 1000 quests with unique titles;
+- each volume breaks through into its realm at the end of its first chapter, the final quest grants Immortal Ascension;
+- realms only move forward, minor stages only move forward within a realm and reset on a breakthrough;
+- boss fights have a count of 1, and a new chapter has at most one boss fight; other fights 1-8 enemies;
 - `talk` with `at = null` needs the NPC's home to be on that map, with the NPC present at the time;
 - a talk NPC never stands on another present NPC's home marker, or on a marker where the same quest spawns enemies;
-- realms only move forward;
-- lines are at most 32 words;
-- only the known tokens are allowed;
-- every chapter's opening quest plays its intro cinematic on the chapter's map.
+- in new chapters, no character speaks before `appear_from` or after `gone_after` (Elder Mo stays gone after his
+  sacrifice, the Rungs after they fall); the Sky Isles only after they open; the Blood Moon fortress is folded into
+  the void between the failed blood moon and the final march;
+- lines are at most 32 words, tracker text at most 64 characters; only the known tokens are allowed;
+- every chapter of the original story still opens with its intro cinematic on the chapter's map.
