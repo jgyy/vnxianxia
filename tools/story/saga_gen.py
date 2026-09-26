@@ -680,10 +680,8 @@ class Gen:
             if quirks:
                 return (nid, self.rotor("q/" + nid, quirks).next())
             return (nid, self.rotor("close", FL.CLOSE).next())
-        text = lines[0][1].lower()
-        asks = text.rstrip().endswith("?") or re.search(
-            r"\b(go|come|find|bring|help|take|meet|follow|fetch|hurry|quickly|now)\b", text)
-        if first and asks:
+        # the quest giver's line implies a task: answer it; later lines get a quiet acknowledgement
+        if first:
             return (P, self.rotor("reply", FL.REPLY).next())
         return (P, self.rotor("ack", ACK).next())
 
