@@ -37,7 +37,7 @@ func _ready() -> void:
 	hb.add_child(menu)
 	var head := UiTheme.label("Journal", 30, UiTheme.GOLD, 5)
 	menu.add_child(head)
-	for pair in [["Current Quest", _show_quest], ["Chronicle", _show_chronicle],
+	for pair in [["Current Quest", _show_quest], ["Story So Far", _show_story], ["Chronicle", _show_chronicle],
 			["Cultivation", _show_cultivation], ["Settings", _show_settings], ["Save Game", _save],
 			["Resume", close], ["Quit to Title", _quit]]:
 		var b := Button.new()
@@ -91,6 +91,8 @@ func show_page(page := "quest") -> void:
 	match page:
 		"chronicle":
 			_show_chronicle()
+		"story":
+			_show_story()
 		_:
 			_show_quest()
 
@@ -138,6 +140,21 @@ func _show_quest() -> void:
 		t += " · %s ×%d" % [Story.item_name(item), int(r.items[item])]
 	if r.get("realm"):
 		t += " · [color=#dcb86b]Breakthrough: %s[/color]" % r.realm
+	_page(t)
+
+
+## The narrative recap: premise, the chapters reached and what happened in each.
+func _show_story() -> void:
+	var t := "[b][color=#dcb86b]%s[/color][/b]\n\n[i]%s[/i]\n" % [Story.title, Story.premise]
+	for c in Story.chapters:
+		var n := int(c.number)
+		var first := (n - 1) * 10
+		if first > Game.quest_index:
+			break
+		t += "\n[b][color=#dcb86b]Chapter %d · %s[/color][/b]\n%s\n" % [n, c.title, Story.fill(c.summary)]
+		for i in range(first, mini(first + 10, Game.quest_index)):
+			var q := Story.quest(i)
+			t += "[color=#b8ad96]   %d. %s[/color] — %s\n" % [int(q.number), q.title, Story.fill(q.summary)]
 	_page(t)
 
 

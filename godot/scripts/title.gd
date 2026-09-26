@@ -61,7 +61,11 @@ func _build_ui() -> void:
 	box.add_theme_constant_override("separation", 10)
 	root.add_child(box)
 	box.add_child(UiTheme.label("AZURE CLOUD SECT", 54, UiTheme.GOLD, 10))
-	box.add_child(UiTheme.label("A xianxia saga in one hundred quests", 21, UiTheme.MUTED, 4))
+	box.add_child(UiTheme.label(Story.title + "  ·  a xianxia saga in one hundred quests", 21, UiTheme.MUTED, 4))
+	var premise := UiTheme.label(Story.premise.split("\n\n")[-1], 16, UiTheme.TEXT, 3)
+	premise.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	premise.custom_minimum_size.x = 440
+	box.add_child(premise)
 	var gap := Control.new()
 	gap.custom_minimum_size.y = 40
 	box.add_child(gap)

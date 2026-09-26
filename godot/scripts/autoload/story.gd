@@ -7,6 +7,8 @@ const PATH := "res://data/story.json"
 const WORLD_PATH := "res://data/world.json"
 const PLAYER_NAMES := ["Lin Feng", "Su Yue"]
 
+var title := ""
+var premise := ""
 var chapters: Array = []
 var quests: Array = []
 var npcs: Dictionary = {}
@@ -17,6 +19,8 @@ var world: Dictionary = {}
 
 func _ready() -> void:
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(PATH))
+	title = data.get("title", "")
+	premise = data.get("premise", "")
 	chapters = data.chapters
 	quests = data.quests
 	npcs = data.npcs

@@ -9,6 +9,7 @@ from . import (chapter01, chapter02, chapter03, chapter04, chapter05,
                chapter06, chapter07, chapter08, chapter09, chapter10)
 from .cinematics import CINEMATICS
 from .npcs import NPCS
+from .saga import PREMISE, TITLE
 from .voices import NARRATOR, PLAYER_F, PLAYER_M, NPC_VOICES, PRONOUNCE
 
 CHAPTERS = [m.CHAPTER for m in (chapter01, chapter02, chapter03, chapter04, chapter05,

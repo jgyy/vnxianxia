@@ -23,6 +23,7 @@ var travel: CanvasLayer
 var runner: Node
 var busy := true
 var npcs := {}                 ## npc id -> Npc on the current map
+var first_load := true
 
 @onready var player: CharacterBody3D = $Player
 
@@ -118,6 +119,9 @@ func load_map(map_id: String, spawn := "PlayerSpawn") -> void:
 	player.controls_enabled = true
 	map_loaded.emit(map_id)
 	runner.activate()
+	if first_load and Game.objective_index == 0 and Game.objective().get("type") != "cinematic":
+		hud.quest_card(Game.quest())
+	first_load = false
 
 
 func travel_to(map_id: String) -> void:

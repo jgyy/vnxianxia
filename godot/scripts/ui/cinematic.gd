@@ -167,6 +167,8 @@ func play(cin_id: String) -> void:
 	game.hud.show_gameplay(true)
 	player.controls_enabled = true
 	active = false
+	if cin.get("title") and not Game.fast:
+		game.hud.quest_card(Game.quest())
 	visible = false
 	finished.emit()
 

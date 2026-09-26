@@ -449,7 +449,8 @@ def build():
         if unused:
             E.warn("map %s" % m, "markers never used: %s" % ", ".join(unused))
 
-    return {"version": 1, "chapters": chapters, "npcs": npcs, "quests": quests, "cinematics": cinematics}
+    return {"version": 1, "title": story.TITLE, "premise": story.PREMISE, "chapters": chapters, "npcs": npcs,
+            "quests": quests, "cinematics": cinematics}
 
 
 # ------------------------------------------------------------------ output

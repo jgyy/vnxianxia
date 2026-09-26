@@ -339,6 +339,7 @@ func _finish_quest(q: Dictionary) -> void:
 	if not Game.finished():
 		var nq := Game.quest()
 		game.hud.toast("New quest: " + nq.title, UiTheme.JADE)
+		game.hud.quest_card(nq)
 		Audio.sfx("quest_accept", -6.0)
 	else:
 		game.hud.banner("Immortal Ascension", "The saga of the Azure Cloud Sect is complete", 6.0)

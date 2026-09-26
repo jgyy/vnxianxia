@@ -17,6 +17,7 @@ var _art: TextureRect
 var _title: Label
 var _sub: Label
 var _tip: Label
+var _synopsis: Label
 var _bar: ProgressBar
 var _fade: ColorRect
 
@@ -39,20 +40,23 @@ func _ready() -> void:
 	root.add_child(_art)
 	var shade := ColorRect.new()
 	shade.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-	shade.custom_minimum_size = Vector2(0, 220)
-	shade.position.y = -220
+	shade.custom_minimum_size = Vector2(0, 260)
+	shade.position.y = -260
 	shade.color = Color(0, 0, 0, 0.55)
 	root.add_child(shade)
 	var box := VBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	box.position = Vector2(60, -200)
+	box.position = Vector2(60, -236)
 	box.add_theme_constant_override("separation", 8)
 	root.add_child(box)
 	_title = UiTheme.label("", 48, UiTheme.GOLD, 8)
 	_sub = UiTheme.label("", 20, UiTheme.MUTED, 4)
-	_tip = UiTheme.label("", 17, UiTheme.TEXT, 3)
+	_synopsis = UiTheme.label("", 17, UiTheme.TEXT, 3)
+	_synopsis.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_synopsis.custom_minimum_size.x = 1100
+	_tip = UiTheme.label("", 15, UiTheme.MUTED, 3)
 	_bar = UiTheme.bar(UiTheme.GOLD, 520, 6)
-	for c in [_title, _sub, _tip, _bar]:
+	for c in [_title, _sub, _synopsis, _tip, _bar]:
 		box.add_child(c)
 	_fade = ColorRect.new()
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -67,6 +71,8 @@ func open(map_id: String, subtitle := "") -> void:
 	_art.texture = load(path) if ResourceLoader.exists(path) else null
 	_title.text = Story.map_name(map_id)
 	_sub.text = subtitle
+	var q := Game.quest()
+	_synopsis.text = Story.fill(Story.chapter(int(q.chapter)).get("summary", "")) if not q.is_empty() else Story.premise
 	_tip.text = "Tip: " + TIPS[randi() % TIPS.size()]
 	_bar.value = 0.0
 	visible = true

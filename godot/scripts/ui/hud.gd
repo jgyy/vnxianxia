@@ -24,6 +24,10 @@ var _dist: Label
 var _meditate: ProgressBar
 var _damage: ColorRect
 var _root: Control
+var _card: PanelContainer
+var _card_head: Label
+var _card_title: Label
+var _card_text: Label
 
 
 func _ready() -> void:
@@ -127,6 +131,25 @@ func _ready() -> void:
 	_banner_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_banner_sub.modulate.a = 0.0
 	_root.add_child(_banner_sub)
+	# new-quest story card (top centre)
+	_card = PanelContainer.new()
+	_card.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_card.position = Vector2(-330, 86)
+	_card.custom_minimum_size = Vector2(660, 0)
+	_card.add_theme_stylebox_override("panel", UiTheme.panel(Color(0.04, 0.05, 0.08, 0.86), UiTheme.GOLD, 8, 1))
+	_card.modulate.a = 0.0
+	_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(_card)
+	var cv := VBoxContainer.new()
+	_card.add_child(cv)
+	_card_head = UiTheme.label("", 14, UiTheme.MUTED)
+	_card_title = UiTheme.label("", 26, UiTheme.GOLD, 5)
+	_card_text = UiTheme.label("", 17, UiTheme.TEXT)
+	_card_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_card_text.custom_minimum_size.x = 630
+	for l in [_card_head, _card_title, _card_text]:
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cv.add_child(l)
 	var help := UiTheme.label("WASD move · Shift run · Space leap · E interact · F/LMB strike · Q qi blast · C meditate · Tab switch · J journal · Esc menu", 13, UiTheme.MUTED, 3)
 	help.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	help.position = Vector2(16, -28)
@@ -205,6 +228,20 @@ func toast(text: String, color := UiTheme.TEXT, seconds := 4.0) -> void:
 	tw.tween_callback(p.queue_free)
 	while _toasts.get_child_count() > 5:
 		_toasts.get_child(0).free()
+
+
+## Present a newly begun quest: its place in the saga, title and story setup.
+func quest_card(q: Dictionary, seconds := 6.0) -> void:
+	if q.is_empty():
+		return
+	var ch := Story.chapter(int(q.chapter))
+	_card_head.text = "Chapter %d · %s   —   Quest %d" % [int(q.chapter), ch.get("title", ""), int(q.number)]
+	_card_title.text = q.title
+	_card_text.text = Story.fill(q.summary)
+	var tw := create_tween()
+	tw.tween_property(_card, "modulate:a", 1.0, 0.5)
+	tw.tween_interval(seconds)
+	tw.tween_property(_card, "modulate:a", 0.0, 0.8)
 
 
 func banner(title: String, sub := "", seconds := 3.0) -> void:
