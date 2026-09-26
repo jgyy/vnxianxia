@@ -732,6 +732,11 @@ def robe(top, hem, motif, accent, style="mountains", size=1024, seed=201):
 
     style 'mountains': layered ink-wash peaks and mist (male disciple robe)
     style 'blossom'  : plum-blossom branches rising from the hem (female robe)
+    style 'plain'    : tonal damask only
+    style 'clouds'   : large auspicious clouds embroidered above the hem
+    style 'flames'   : demonic flame tongues licking up from the hem
+    style 'bamboo'   : ink bamboo stalks and leaves
+    style 'hemp'     : coarse undyed hemp with patches and darning (commoners)
     """
     top_c, hem_c, mot_c, acc_c = srgb(top), srgb(hem), srgb(motif), srgb(accent)
     u, v = grid(size)
@@ -743,6 +748,61 @@ def robe(top, hem, motif, accent, style="mountains", size=1024, seed=201):
     col = lerp(col, col * 0.93, damask * 0.8)
     rough = 0.6 - damask * 0.2
     height = damask * 0.4 + n * 0.1
+    if style == "hemp":
+        coarse = weave(size, 5.0)
+        slub = fbm(size, 64, 3, 0.6, seed + 40, stretch=4)
+        col = lerp(hem_c, top_c, grad) * (0.85 + 0.12 * coarse + 0.1 * slub)[..., None]
+        rng = np.random.default_rng(seed + 41)
+        for _ in range(7):
+            cx, cy = rng.random(), rng.uniform(0.05, 0.7)
+            w_, h_ = rng.uniform(0.03, 0.07), rng.uniform(0.03, 0.06)
+            patch = (np.abs(u - cx) < w_) & (np.abs(v - cy) < h_)
+            col = np.where(patch[..., None], col * np.array([0.85, 0.8, 0.72], np.float32), col)
+            edge = patch & ((np.abs(np.abs(u - cx) - w_) < 0.004) | (np.abs(np.abs(v - cy) - h_) < 0.004))
+            col = np.where(edge[..., None], mot_c, col)
+            height = height + patch * 0.2
+        dirt = sstep(0.25, 0.0, v) * fbm(size, 8, 4, 0.5, seed + 42)
+        col = lerp(col, col * np.array([0.6, 0.52, 0.42], np.float32), dirt * 0.8)
+        return result(col, 0.85 - slub * 0.1, 0.0, coarse * 0.5 + slub * 0.3 + height * 0.2)
+    if style == "plain":
+        return result(col, rough, 0.0, height)
+    if style == "clouds":
+        big = xiangyun_mask(size, 7, seed + 50, 0.09, 0.006) * sstep(0.55, 0.3, v)
+        col = lerp(col, mot_c, np.clip(big, 0, 1) * 0.9)
+        rim = xiangyun_mask(size, 7, seed + 50, 0.09, 0.012) * sstep(0.55, 0.3, v)
+        col = lerp(col, acc_c, np.clip(rim - big, 0, 1) * 0.8)
+        return result(col, rough - big * 0.2, big * 0.3, height + big * 0.4)
+    if style == "flames":
+        fl = np.zeros((size, size), np.float32)
+        rng = np.random.default_rng(seed + 60)
+        for k in range(22):
+            cx = k / 22 + rng.uniform(-0.01, 0.01)
+            h_ = rng.uniform(0.18, 0.42)
+            wob = 0.012 * np.sin(v * 40 + k) + 0.02 * (fbm(size, 8, 3, 0.5, seed + 61 + k % 3) - 0.5)
+            width = 0.022 * (1 - np.clip(v / h_, 0, 1)) ** 0.8
+            d = np.abs(((u - cx - wob + 0.5) % 1.0) - 0.5)
+            fl = np.maximum(fl, (d < width).astype(np.float32) * (v < h_))
+        core = fl * sstep(0.25, 0.0, v)
+        col = lerp(col, mot_c, fl * 0.95)
+        col = lerp(col, acc_c, core * 0.8)
+        return result(col, rough - fl * 0.15, 0.0, height + fl * 0.3)
+    if style == "bamboo":
+        stalk = np.zeros((size, size), np.float32)
+        rng = np.random.default_rng(seed + 70)
+        for k in range(9):
+            cx = k / 9 + rng.uniform(0, 0.08)
+            hgt = rng.uniform(0.3, 0.55)
+            lean = rng.uniform(-0.05, 0.05)
+            d = np.abs(((u - cx - lean * v + 0.5) % 1.0) - 0.5)
+            node = np.abs(((v * 12 + k * 0.3) % 1.0) - 0.5) > 0.46
+            stalk = np.maximum(stalk, ((d < 0.006) & (v < hgt) & ~node).astype(np.float32))
+            for j in range(4):
+                ly = rng.uniform(0.1, hgt)
+                pts = [((cx + lean * ly + t * 0.04 * rng.choice([-1, 1])) % 1.0, ly + t * 0.012)
+                       for t in np.linspace(0, 1, 10)]
+                stamp_curve(stalk, pts, 0.004, size)
+        col = lerp(col, mot_c, np.clip(stalk, 0, 1) * 0.85)
+        return result(col, rough, 0.0, height + stalk * 0.3)
     if style == "mountains":
         layers = [(0.30, 0.10, 0.45, 5), (0.22, 0.09, 0.7, 7), (0.13, 0.07, 1.0, 9)]
         for i, (base, amp, dark, cells) in enumerate(layers):
