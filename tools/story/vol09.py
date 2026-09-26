@@ -1,4 +1,4 @@
-"""Volume IX · Tribulation Transcendence — chapters 81-90.
+"""Volume IX · Mahayana — chapters 81-90.
 
 Heaven has noticed. Clouds spiral over the sect, the Sky Isles open again
 for the one heaven is watching, and the long preparation for a tribulation
@@ -90,15 +90,15 @@ CHAPTERS = [
             (SAGE, "A year. Two. Less. Heaven doesn't keep calendars. It keeps promises. It's promised you lightning. It'll deliver."),
             (SAGE, "Prepare. And before you prepare, break through. You're ready. You've been ready since the Great Vehicle."),
             ),
-          B("break", "Tribulation Transcendence",
+          B("break", "Mahayana",
             "At the cloud gate, under heaven's eye, you take the last step before the sky: preparing to transcend.",
-            (SAGE, "Tribulation Transcendence. Not the tribulation itself. The readiness for it. Sit at the gate. Let heaven's eye fill you."),
+            (SAGE, "Mahayana. The Great Vehicle, as a realm. Everyone you carry, carrying you. Sit at the gate. Let heaven's eye fill you."),
             "@G:CloudGate", ">Set tribulation jade around the gate",
             "@M:CloudGate", ">Open yourself to heaven's eye",
             (N, "Heaven's eye settles on you, and you don't flinch. Qi, soul, body, vehicle: everything you are rises to meet it, and holds."),
             (N, "Far above, very faint, the first rumble of a storm that has been gathering for ten thousand years, and is gathering for you."),
             "@T:CloudGate",
-            (YUN, "Tribulation Transcendence. The first in three hundred years. The storm's gathering. So are we. Come home. We've work to do."),
+            (YUN, "Mahayana. The first in three hundred years. The storm's gathering. So are we. Come home. We've work to do."),
             item="tribulation_jade", noun="tribulation jade"),
       ]),
     # ------------------------------------------------------------------ chapter 82
@@ -342,7 +342,7 @@ CHAPTERS = [
             (YAN, "Thunder Peak shouts back at the storm! It's tradition! Try it! No? Humming? Fine! Hum! Hum loudly!"),
             "@M:CliffEdge", ">Hum with the nine rods in the storm",
             (N, "You hum. The rods hum. The storm above hums back. For a moment, heaven and the mountain and you are one very long note."),
-            (N, "Middle stage of Tribulation Transcendence. The storm is closer. You are readier."),
+            (N, "Middle stage of Mahayana. The storm is closer. You are readier."),
             "@T:SectGate",
             (YUN, "Nine rods. The sect is safe from stray lightning. Now it's only you the sky wants. That's a sentence I never wanted to say."),
             ),
@@ -656,7 +656,7 @@ CHAPTERS = [
             (ZHAO, "Sit with me. At Ming's stone. I'm going to try. If I don't make it, don't tell anyone I cried."),
             "@M:CliffEdge", ">Sit with Zhao Kang as he reaches for his peak",
             (N, "Incense for Zhao Ming, twisting over the sea of clouds. Zhao Kang's golden core burns brighter and brighter, like a lantern with a crack in it, letting the light out."),
-            (N, "Peak of Core Formation. And beside him, your own cultivation rises with his: late stage of Tribulation Transcendence."),
+            (N, "Peak of Core Formation. And beside him, your own cultivation rises with his: late stage of Mahayana."),
             "@T:SectGate",
             (ZHAO, "Peak. I made it. I won. You owe me a bout. When you come back down. I'm going to win that too."),
             ),

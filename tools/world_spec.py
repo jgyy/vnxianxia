@@ -174,6 +174,9 @@ ENEMIES = {
     "celestial_sentinel": "stone_golem",
     "rung_deacon": "demon_cultivator",     # boss: a Rung of the Patriarch's Ladder
     "void_colossus": "stone_golem",        # boss
+    # --- waves of a heavenly tribulation (objective type "tribulation")
+    "tribulation_beast": "spirit_wolf",    # a beast of lightning
+    "heart_shade": "player",               # a lesser shadow of the player
 }
 BOSSES = {"wolf_king", "bandit_chief", "tournament_champion", "demon_elder", "blood_patriarch",
           "ancient_guardian", "jiao_serpent", "heart_demon", "rung_deacon", "void_colossus"}
@@ -214,8 +217,9 @@ PROPS = {
     "seal": None,
 }
 
-# Mortal plus the ten major stages of cultivation. The main story has one
-# volume per major stage (volume v breaks through into REALMS[v]).
+# Mortal, the ten major stages of cultivation, then Immortal Ascension. The
+# main story has one volume per major stage (volume v breaks through into
+# REALMS[v] at the end of its first chapter).
 REALMS = [
     "Mortal",
     "Qi Condensation",
@@ -223,17 +227,30 @@ REALMS = [
     "Core Formation",
     "Nascent Soul",
     "Soul Transformation",
+    "Spirit Severing",
     "Void Refinement",
     "Body Integration",
     "Mahayana",
     "Tribulation Transcendence",
     "Immortal Ascension",
 ]
-# Minor stages within a major realm (the story's optional ``stage`` reward).
-STAGES = ["Early", "Middle", "Late", "Peak"]
+# Ten minor stages within every major realm: chapter c of a volume ends at
+# minor stage c. STAGES[0] is unused (Mortal and Immortal Ascension have none).
+STAGES = ["", "1st Layer", "2nd Layer", "3rd Layer", "4th Layer", "5th Layer", "6th Layer", "7th Layer",
+          "8th Layer", "9th Layer", "Great Perfection"]
+# how minor stages group in the UI: 1-3 Early, 4-6 Middle, 7-9 Late, 10 Great Perfection
+STAGE_GROUPS = ["", "Early", "Early", "Early", "Middle", "Middle", "Middle", "Late", "Late", "Late",
+                "Great Perfection"]
 
-OBJECTIVE_TYPES = ["talk", "reach", "defeat", "collect", "meditate", "interact", "cinematic"]
+# The nine alignments: a Law<->Chaos axis and a Good<->Evil axis, each -100..100.
+# A score of ALIGN_THRESHOLD or more leans lawful/good, -ALIGN_THRESHOLD or less chaotic/evil.
+ALIGN_RANGE = 100
+ALIGN_THRESHOLD = 25
+ALIGN_LAW = ["lawful", "neutral", "chaotic"]
+ALIGN_MORAL = ["good", "neutral", "evil"]
+ALIGNMENTS = ["%s_%s" % (a, b) for a in ALIGN_LAW for b in ALIGN_MORAL]
 
+OBJECTIVE_TYPES = ["talk", "reach", "defeat", "collect", "meditate", "interact", "cinematic", "tribulation"]
 
 def as_dict():
     return {
@@ -248,6 +265,10 @@ def as_dict():
         "props": PROPS,
         "realms": REALMS,
         "stages": STAGES,
+        "stage_groups": STAGE_GROUPS,
+        "alignments": ALIGNMENTS,
+        "align_range": ALIGN_RANGE,
+        "align_threshold": ALIGN_THRESHOLD,
     }
 
 

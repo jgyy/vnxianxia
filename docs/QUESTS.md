@@ -22,7 +22,7 @@ An orphan with a jade pendant climbs nine thousand steps to the Azure Cloud Sect
 | 7 | The Scripture Pagoda | Azure Cloud Sect | Visit Elder Bai at the scripture pagoda → Recover the jade slips in the plum garden → Peek at the slips in the quiet pavilion → Return the jade slips to Elder Bai | 100 xp |
 | 8 | The Formation Array | Azure Cloud Sect | Meet Elder Mo at the formation array → Recover the lantern oil in the pine woods → Refill the lamps of the formation array → Elder Gu wants a word | 110 xp |
 | 9 | Red Eyes in the Pines | Azure Cloud Sect | Investigate the howling in the pine woods → Drive off the red-eyed wolves → Ring the alarm bell at the gate → Wake the gate disciple → Report to Elder Mo | 130 xp |
-| 10 | Qi Condensation | Azure Cloud Sect | Receive a Qi Gathering Pill from Elder Hua → Break through at the cliff edge → Present yourself to the Sect Master | 200 xp · **Qi Condensation** |
+| 10 | Qi Condensation | Azure Cloud Sect | Receive a Qi Gathering Pill from Elder Hua → Break through at the cliff edge → Survive the tribulation of Qi Condensation → Present yourself to the Sect Master | 200 xp · **Qi Condensation** |
 
 ### Chapter 2 · Whispers in the Bamboo  *(voiced)*
 
@@ -39,7 +39,7 @@ A routine herb mission into the Whispering Bamboo Forest turns into a hunt for c
 | 17 | Iron-Fang's Camp | Whispering Bamboo Forest | Raid the bandit camp → Free the caged mortals → Cover the prisoners' escape → Recover the stolen spirit stones | 200 xp |
 | 18 | The Blood-Red Token | Whispering Bamboo Forest | Search the bandit chief's strongbox → Show the token to Wei Tong → Ask the hermit about the token | 180 xp |
 | 19 | Ambush at the Old Bridge | Whispering Bamboo Forest | Survive the ambush on the old bridge → Search the fallen bandits for clues → Speak with the masked wanderer at the stream | 200 xp |
-| 20 | Report to the Law Hall | Azure Cloud Sect | Return to the Azure Cloud Sect → Present the token to Elder Gu → Tell Elder Mo about the mission | 160 xp |
+| 20 | Report to the Law Hall | Azure Cloud Sect | Return to the Azure Cloud Sect → Present the token to Elder Gu → Tell Elder Mo about the mission | 160 xp · *Qi Condensation · 2nd Layer* |
 
 ### Chapter 3 · Shadows over Qingshi  *(voiced)*
 
@@ -56,7 +56,7 @@ Mortals vanish from Qingshi Town every new moon. With Senior Sister Han Xue, you
 | 27 | Lanterns Among the Graves | Qingshi Town | Search the hillside graveyard at night → Examine the rune circle beneath the graves → Gather the blood-ink rune stones as proof → Decide what to do with Han Xue | 210 xp |
 | 28 | The Temple Keeper | Qingshi Town | Visit Keeper Hong at the temple → Watch the temple keeper reveal himself → Fight through Hong's acolytes on the main street | 240 xp |
 | 29 | Blood Beneath the Graves *(boss)* | Qingshi Town | Rally the magistrate → Storm the graveyard → Defeat Deacon Hong of the Blood Moon → Follow the dying deacon to his temple | 320 xp |
-| 30 | A Debt of Qingshi | Qingshi Town | Tell Widow Liu the truth → Accept Madam Fang's thanks → Cleanse the defiled temple → Head home with Han Xue | 240 xp |
+| 30 | A Debt of Qingshi | Qingshi Town | Tell Widow Liu the truth → Accept Madam Fang's thanks → Cleanse the defiled temple → Head home with Han Xue | 240 xp · *Qi Condensation · 3rd Layer* |
 
 ### Chapter 4 · A Closed Door on the Mountain
 
@@ -73,7 +73,7 @@ Home from Qingshi with a deacon's dying words, you find the main hall sealed: th
 | 37 | Contribution by Kindness | Azure Cloud Sect | Answer Elder Hua's summons → Meet Lu Ping at the gate post → Talk with Elder Mo at the hall steps | 182 xp |
 | 38 | A Letter Under the Door | Azure Cloud Sect | Report to Elder Mo → Investigate the main hall → Examine the sealed hall doors → Talk it over with Han Xue | 194 xp |
 | 39 | The Bell Nobody Rang | Azure Cloud Sect | Find Lu Ping → Ring the gate bell to wake the watch → Stop the spirit wolves at the outer pines → Find Wei Tong after the fight | 206 xp |
-| 40 | The Stele Remembers You | Azure Cloud Sect | See what Elder Mo wants → Refine your cultivation at the stone bridge → Go back to Elder Mo | 218 xp · *Qi Condensation Middle* |
+| 40 | The Stele Remembers You | Azure Cloud Sect | See what Elder Mo wants → Refine your cultivation at the stone bridge → Go back to Elder Mo | 218 xp · *Qi Condensation · 4th Layer* |
 
 ### Chapter 5 · The Moonbell Harvest
 
@@ -90,7 +90,7 @@ Elder Hua's autumn harvest takes you back into the Whispering Bamboo, where the 
 | 47 | Bandits at the Harvest | Whispering Bamboo Forest | Go and see Han Xue → Clear the forest path of bandits → Fight off the bandits → Investigate the stream | 182 xp |
 | 48 | What the Bandit Said | Whispering Bamboo Forest | Answer Han Xue's summons → Search the clearing → Speak with the hermit | 194 xp |
 | 49 | Moonbell Wine | Whispering Bamboo Forest | Report to Elder Hua → Fill the flasks at the spirit spring → Pour the first cup at the ruined shrine → Hear what the hermit has to say | 206 xp |
-| 50 | Carry It Home | Whispering Bamboo Forest | Find Elder Hua → Meet Wei Tong at the lookout rock | 218 xp |
+| 50 | Carry It Home | Whispering Bamboo Forest | Find Elder Hua → Meet Wei Tong at the lookout rock | 218 xp · *Qi Condensation · 5th Layer* |
 
 ### Chapter 6 · Bandits of the Salt Road
 
@@ -107,7 +107,7 @@ Iron-Fang's scattered gang is raiding the salt caravans into Qingshi under his l
 | 57 | The Pen of Carters | Whispering Bamboo Forest | Investigate the old bandit camp → Drive the salt-road bandits from the old bandit camp → Cut open the carters' pen → Share your findings with Han Xue | 182 xp |
 | 58 | A Scar Like a Canal | Whispering Bamboo Forest | Search the old bandit camp → Search Gou's tent → Tell Han Xue what you found | 194 xp |
 | 59 | Gou the Scarred *(boss)* | Whispering Bamboo Forest | Head to the lookout rock → Face Gou the Scarred at the old bandit camp → Catch your breath with Gou the Scarred | 261 xp |
-| 60 | Salt on the Table | Qingshi Town | Report to Madam Fang → Sit in the quiet of the town temple → Speak with Constable Du | 218 xp |
+| 60 | Salt on the Table | Qingshi Town | Report to Madam Fang → Sit in the quiet of the town temple → Speak with Constable Du | 218 xp · *Qi Condensation · 6th Layer* |
 
 ### Chapter 7 · The Outer Sect Examination
 
@@ -124,7 +124,7 @@ Once a year every outer disciple is tested: the precepts before Elder Gu, the pu
 | 67 | Results on the Stele | Azure Cloud Sect | Scout the sect gate → Read the examination results → Compare notes with Lu Ping | 182 xp |
 | 68 | Gu Hanshan's Question | Azure Cloud Sect | Report to Elder Gu → Find Han Xue at the quiet pavilion | 194 xp |
 | 69 | Lanterns for the Passing | Azure Cloud Sect | Find Elder Bai → Collect paper lanterns from the plaza → Release your lantern over the sea of clouds → Join Zhao Kang at the plum garden | 206 xp |
-| 70 | Late Autumn, Late Stage | Azure Cloud Sect | See what Elder Mo wants → Cultivate in seclusion above the clouds → Report back to Elder Mo | 218 xp · *Qi Condensation Late* |
+| 70 | Late Autumn, Late Stage | Azure Cloud Sect | See what Elder Mo wants → Cultivate in seclusion above the clouds → Report back to Elder Mo | 218 xp · *Qi Condensation · 7th Layer* |
 
 ### Chapter 8 · Lanterns on the Qing River
 
@@ -141,7 +141,7 @@ Qingshi keeps the Ghost Festival for everyone it lost to the new moon. You and H
 | 77 | Watchers for Qingshi | Qingshi Town | Answer Constable Du's summons → Hear what Old Pan has to say → Meet Madam Fang at the Drunken Crane → Talk with Merchant Jin at the guild warehouse | 182 xp |
 | 78 | The Night of Lanterns | Qingshi Town | Report to Magistrate Zhou → Sound the watchtower bell → Break the Blood Moon cultivators at the main street → Stop the Blood Moon cultivators at the market square → See Magistrate Zhou again | 194 xp |
 | 79 | Incense for the Lost | Qingshi Town | Find Widow Liu → Burn incense for the missing → Find Madam Fang at the Drunken Crane | 206 xp |
-| 80 | Back Up the Mountain | Qingshi Town | See what Han Xue wants → Join Constable Du at the town gate | 218 xp |
+| 80 | Back Up the Mountain | Qingshi Town | See what Han Xue wants → Join Constable Du at the town gate | 218 xp · *Qi Condensation · 8th Layer* |
 
 ### Chapter 9 · The Moonlit Grotto
 
@@ -158,7 +158,7 @@ Once a decade a secret realm opens beneath the bamboo, and the sect sends its be
 | 87 | Around a Silver Fire | Whispering Bamboo Forest | Report to Wei Tong → Hear what Zhao Kang has to say → Meet Han Xue at the spirit spring | 182 xp |
 | 88 | The Silver Arch | Whispering Bamboo Forest | Head to the ruins gate → Gather the fallen tiles of the arch → Set the tiles back into the arch → Clear the ruins courtyard of stone golems → Make your way to the ruins courtyard | 194 xp |
 | 89 | The Flower Nobody Remembers | Whispering Bamboo Forest | Scout the ruined shrine → Study the scraped mural → Show Han Xue what you found | 206 xp |
-| 90 | Moonlight in the Marrow | Whispering Bamboo Forest | Find Han Xue → Bathe your meridians in silver qi → Go back to Han Xue | 218 xp |
+| 90 | Moonlight in the Marrow | Whispering Bamboo Forest | Find Han Xue → Bathe your meridians in silver qi → Go back to Han Xue | 218 xp · *Qi Condensation · 9th Layer* |
 
 ### Chapter 10 · Heart of the Grotto
 
@@ -175,7 +175,7 @@ At the heart of the Moonlit Grotto waits its warden, a stone giant that has aske
 | 97 | The Grotto Begins to Close | Whispering Bamboo Forest | Hear Zhao Kang out → Stop the rogue cultivators at the clearing → Stop the rogue cultivators regrouping → Make your way to the wolf den | 182 xp |
 | 98 | Who Came Out First | Whispering Bamboo Forest | Scout the forest path → Compare notes with Zhao Kang | 194 xp |
 | 99 | The Hermit's Tea, Returned | Whispering Bamboo Forest | Speak with the hermit → Speak with Wei Tong | 206 xp |
-| 100 | The Door Opens | Azure Cloud Sect | Go and see Elder Mo → Settle the grotto's qi on the stone bridge → Bring word to Elder Mo | 218 xp · *Qi Condensation Peak* |
+| 100 | The Door Opens | Azure Cloud Sect | Go and see Elder Mo → Settle the grotto's qi on the stone bridge → Bring word to Elder Mo | 218 xp · *Qi Condensation · Great Perfection* |
 
 ## Volume 2 · Foundation Establishment — *The Traitor in the Law Hall*
 
@@ -196,7 +196,7 @@ The library's Blood Moon records are missing. The Bamboo Hermit reveals who he r
 | 107 | Blood in the Shrine | Whispering Bamboo Forest | Drive the Blood Moon scouts from the shrine → Check on Zhao Kang at the old bridge → Gather herbs to treat Zhao Kang's wound | 280 xp |
 | 108 | The Law Hall's Interest | Azure Cloud Sect | Return to the sect with Zhao Kang → Show the Heart Sutra to Elder Bai → Answer Elder Gu's summons → Speak with Elder Mo | 240 xp |
 | 109 | Preparing the Foundation | Azure Cloud Sect | Ask Elder Hua for a Foundation Pill → Negotiate with Steward Qian → Gather lotus root at the pond at dusk → Tell Xiao Man what you learned in Qingshi | 260 xp |
-| 110 | Foundation Establishment | Azure Cloud Sect | Ask Han Xue to guard your breakthrough → Establish your foundation in the plum garden → Receive the Sect Master's news | 400 xp · **Foundation Establishment** |
+| 110 | Foundation Establishment | Azure Cloud Sect | Ask Han Xue to guard your breakthrough → Establish your foundation in the plum garden → Survive the tribulation of Foundation Establishment → Receive the Sect Master's news | 400 xp · **Foundation Establishment** |
 
 ### Chapter 12 · The Inner Sect Tournament  *(voiced)*
 
@@ -213,7 +213,7 @@ Banners rise over the Azure Cloud for the Inner Sect Tournament. Rivals become p
 | 117 | Partners in the Semifinal | Azure Cloud Sect | Find your partner in the plum garden → Win the paired semifinal with Zhao Kang → Talk with Zhao Kang on the stone bridge | 320 xp |
 | 118 | Eve of the Final | Azure Cloud Sect | Answer Elder Gu's summons → Ask Elder Mo about the rule → Steady your dao heart on the stone bridge → Speak with Han Xue in the pavilion | 300 xp |
 | 119 | The Final Bout *(boss)* | Azure Cloud Sect | Step up for the final → Defeat the tournament champion → Receive the Sect Master's judgement | 500 xp |
-| 120 | The Law Hall's Shadow | Azure Cloud Sect | Find Han Xue → Confront the traitor → Defeat the traitor's Blood Moon accomplices → Check on the wounded Elder Bai on the plaza → Report to the Sect Master at the teleport array | 500 xp |
+| 120 | The Law Hall's Shadow | Azure Cloud Sect | Find Han Xue → Confront the traitor → Defeat the traitor's Blood Moon accomplices → Check on the wounded Elder Bai on the plaza → Report to the Sect Master at the teleport array | 500 xp · *Foundation Establishment · 2nd Layer* |
 
 ### Chapter 13 · The Burned Array
 
@@ -230,7 +230,7 @@ The morning after the traitor fled, the teleport array's route to the Abyss is s
 | 127 | Why We Wait | Azure Cloud Sect | Speak with the Sect Master → Find Elder Mo at the hall steps | 352 xp |
 | 128 | Jade for a New Road | Azure Cloud Sect | Go and see Elder Mo → Join Steward Qian at the incense cauldron → Dig raw jade from the terrace seam → Speak with Elder Hua | 364 xp |
 | 129 | A Place at Her Side | Azure Cloud Sect | Answer the Sect Master's summons → Sit within the Azure Eye beside the Sect Master → Return to the Sect Master | 376 xp |
-| 130 | A Promise Without the Word | Azure Cloud Sect | Report to Xiao Man → Hear what Elder Hua has to say → Meet Xiao Man at the lotus pond | 388 xp |
+| 130 | A Promise Without the Word | Azure Cloud Sect | Report to Xiao Man → Hear what Elder Hua has to say → Meet Xiao Man at the lotus pond | 388 xp · *Foundation Establishment · 3rd Layer* |
 
 ### Chapter 14 · Robes of the Inner Sect
 
@@ -247,7 +247,7 @@ A tournament champion cannot stay an outer disciple. New robes, new duties, a ch
 | 137 | Duties of a Champion | Azure Cloud Sect | Report to the Sect Master → Head to the quiet pavilion → Read the Sect Master's orders → Tell Han Xue what you found | 352 xp |
 | 138 | The Stone Guardians Wake | Azure Cloud Sect | Find Wei Tong → Calm the leaking formation → Fight off the peak guardians → Break the peak guardians at the outer pines → See Wei Tong again | 364 xp |
 | 139 | Different Eyes | Azure Cloud Sect | See what Lu Ping wants → Join Han Xue at the quiet pavilion → Speak with Elder Mo | 376 xp |
-| 140 | Foundation Like River Stone | Azure Cloud Sect | Hear Elder Mo out → Temper your foundation at the cliff edge → Hear what Yan Tie has to say | 388 xp · *Foundation Establishment Middle* |
+| 140 | Foundation Like River Stone | Azure Cloud Sect | Hear Elder Mo out → Temper your foundation at the cliff edge → Hear what Yan Tie has to say | 388 xp · *Foundation Establishment · 4th Layer* |
 
 ### Chapter 15 · The Cauldron's Temper
 
@@ -264,7 +264,7 @@ Gu's Frenzy Pills went into more than the tournament supplies: disciples on thre
 | 147 | One Hour Without Flicker | Azure Cloud Sect | See what Elder Hua wants → Refine the Clear-Heart Pills → Bring word to Elder Hua | 352 xp |
 | 148 | Nine Pills, Nine Disciples | Azure Cloud Sect | Hear Elder Hua out → Find the hiding disciples in the plum garden → Meet Yan Tie at the cliff edge | 364 xp |
 | 149 | Where the Residue Came From | Azure Cloud Sect | Speak with Steward Qian → Check the treasury's grain ledgers → See Steward Qian again | 376 xp |
-| 150 | Xiao Man's Medicine Bundles | Azure Cloud Sect | Go and see Xiao Man → Talk with Elder Hua at the herb terraces | 388 xp |
+| 150 | Xiao Man's Medicine Bundles | Azure Cloud Sect | Go and see Xiao Man → Talk with Elder Hua at the herb terraces | 388 xp · *Foundation Establishment · 5th Layer* |
 
 ### Chapter 16 · The Beast Tide
 
@@ -281,7 +281,7 @@ The wards Gu kept on the bamboo forest were never wards at all, only leashes, an
 | 157 | The Wolves Before the King | Whispering Bamboo Forest | Hear Han Xue out → Stop the corrupted wolves at the clearing → Face the next wave of spirit wolves → Find Wei Tong after the fight | 352 xp |
 | 158 | Bloodmaw, Lord of the Tide *(boss)* | Whispering Bamboo Forest | Head to the clearing → Defeat Bloodmaw, Lord of the Tide → Lay the wolf king to rest → Speak with Wei Tong | 504 xp |
 | 159 | After the Tide | Whispering Bamboo Forest | Speak with the hermit → Dig up the leash-stones in the grove → Defeat the spirit wolves at the wolf den → Go back to the hermit | 376 xp |
-| 160 | Beasts Toward Qingshi | Whispering Bamboo Forest | Go and see the hermit → Hear what Han Xue has to say → Meet Yan Tie at the spirit spring | 388 xp |
+| 160 | Beasts Toward Qingshi | Whispering Bamboo Forest | Go and see the hermit → Hear what Han Xue has to say → Meet Yan Tie at the spirit spring | 388 xp · *Foundation Establishment · 6th Layer* |
 
 ### Chapter 17 · Tide at the Town Gate
 
@@ -298,7 +298,7 @@ Half the beast tide has turned toward Qingshi, and the town has only its constab
 | 167 | The Longest Hour | Qingshi Town | Hear Constable Du out → Reinforce the gate ward with your qi → Stop the corrupted wolves at the town gate → Cut down the spirit wolves that follow → Catch your breath with Wei Tong | 352 xp |
 | 168 | Morning in the Market | Qingshi Town | Speak with Madam Fang → Hear what Merchant Jin has to say → Meet Widow Liu at the town well | 364 xp |
 | 169 | What Drove Them | Qingshi Town | Hurry to the terraced fields → Break the humming collar → Compare notes with Han Xue | 376 xp |
-| 170 | Standing on the Wall | Qingshi Town | Go to the watchtower → Cultivate on the town wall at sunrise → Talk with Yan Tie at the main street | 388 xp · *Foundation Establishment Late* |
+| 170 | Standing on the Wall | Qingshi Town | Go to the watchtower → Cultivate on the town wall at sunrise → Talk with Yan Tie at the main street | 388 xp · *Foundation Establishment · 7th Layer* |
 
 ### Chapter 18 · The Second Verse
 
@@ -315,7 +315,7 @@ The Heart Sutra has three verses. You learned the first in the ruins. The hermit
 | 177 | Wolves at the Spring | Whispering Bamboo Forest | Scout the spirit spring → Clear the herb grove of spirit wolves → Gather herbs for the hermit's bitten arm → Show the hermit what you found | 352 xp |
 | 178 | The Letter in the Reliquary | Whispering Bamboo Forest | Hurry to the ruins courtyard → Bring the letter to the light → Talk it over with the hermit | 364 xp |
 | 179 | Carrying Someone Else's | Whispering Bamboo Forest | Hear Yan Tie out → Hear what Yan Tie has to say | 376 xp |
-| 180 | The Hermit's Parting Gift | Whispering Bamboo Forest | Speak with the hermit → Gather lotus seeds from the spring → Meet Han Xue at the clearing | 388 xp |
+| 180 | The Hermit's Parting Gift | Whispering Bamboo Forest | Speak with the hermit → Gather lotus seeds from the spring → Meet Han Xue at the clearing | 388 xp · *Foundation Establishment · 8th Layer* |
 
 ### Chapter 19 · The Crimson Road
 
@@ -332,7 +332,7 @@ The steered tide came from somewhere, and the blood lotus in Qingshi's crates go
 | 187 | Bone Lanterns | Qingshi Town | Make your way to the hill graves → Stop the rogue cultivators at the terraced fields → Scout the town gate → Compare notes with Han Xue | 352 xp |
 | 188 | The Magistrate's Seal | Qingshi Town | Hear Magistrate Zhou out → Join Old Pan at the docks | 364 xp |
 | 189 | Evidence for the Mountain | Qingshi Town | Speak with Han Xue → Gather the runners' dropped evidence → Take a rubbing of the road's first lantern → Speak with Yan Tie | 376 xp |
-| 190 | Home With the Map | Qingshi Town | Go and see Constable Du → Hear what Madam Fang has to say | 388 xp |
+| 190 | Home With the Map | Qingshi Town | Go and see Constable Du → Hear what Madam Fang has to say | 388 xp · *Foundation Establishment · 9th Layer* |
 
 ### Chapter 20 · Eve of the Descent
 
@@ -349,7 +349,7 @@ The array masters have laid a new route to the Abyss's rim. The Sect Master read
 | 197 | Shadows at the Array | Azure Cloud Sect | Speak with Lu Ping → Defeat the Blood Moon cultivators at the sect gate → Finish the Blood Moon cultivators at the outer pines → Bring word to Lu Ping | 352 xp |
 | 198 | Wei Tong's Dumplings | Azure Cloud Sect | Go and see Wei Tong → Find the Sect Master at the main hall | 364 xp |
 | 199 | Steward Qian's Ledger | Azure Cloud Sect | Answer Steward Qian's summons → Join Yan Tie at the cliff edge | 376 xp |
-| 200 | The Night Before | Azure Cloud Sect | Investigate the cliff edge → Sit in the moon gate's quiet before dawn → Speak with the Sect Master | 388 xp · *Foundation Establishment Peak* |
+| 200 | The Night Before | Azure Cloud Sect | Investigate the cliff edge → Sit in the moon gate's quiet before dawn → Speak with the Sect Master | 388 xp · *Foundation Establishment · Great Perfection* |
 
 ## Volume 3 · Core Formation — *Blood Beneath the Earth*
 
@@ -370,7 +370,7 @@ Guided by the masked wanderer, who was once one of them, you descend into the Bl
 | 207 | The Iron Cages | Blood Moon Abyss | Reach the prison cages → Defeat the cage wardens → Break open the cages | 500 xp |
 | 208 | What the Prisoners Saw | Blood Moon Abyss | Speak with Xiao Shi → Recover stolen medicine for the prisoners → Send the prisoners home with Han Xue | 460 xp |
 | 209 | The Altar of Blood *(boss)* | Blood Moon Abyss | Witness the ritual at the Altar of Blood → Defeat Crimson Elder Xue Mei → Disrupt the blood ritual | 700 xp |
-| 210 | Core Formation | Blood Moon Abyss | Decide the fate of the captured acolytes with Ye Wuming → Form your golden core in the abyss depths → Return Xiao Shi to his sister → Report to the Sect Master | 900 xp · **Core Formation** |
+| 210 | Core Formation | Blood Moon Abyss | Decide the fate of the captured acolytes with Ye Wuming → Form your golden core in the abyss depths → Survive the tribulation of Core Formation → Return Xiao Shi to his sister → Report to the Sect Master | 900 xp · **Core Formation** |
 
 ### Chapter 22 · Siege of Qingshi  *(voiced)*
 
@@ -387,7 +387,7 @@ The Blood Moon and Iron-Fang's bandits march on Qingshi. With Zhao Kang and Wei 
 | 217 | Treachery at the Warehouse | Qingshi Town | Catch Merchant Jin in the back alley → Stop the bandits in the warehouse yard → Collapse the smugglers' tunnel | 560 xp |
 | 218 | Iron-Fang Tie Hu *(boss)* | Qingshi Town | Cut down Iron-Fang's lieutenants → Defeat Iron-Fang Tie Hu → Decide Iron-Fang's fate at the temple | 800 xp |
 | 219 | The Last Wave | Qingshi Town | Hold the town gate against the last wave → Confront Gu Hanshan on the graveyard hill → Chase Gu into the graves | 800 xp |
-| 220 | Dawn over Qingshi | Qingshi Town | Accept the magistrate's thanks → Celebrate at the Drunken Crane → Mourn the fallen at the temple → Report to the Sect Master | 700 xp |
+| 220 | Dawn over Qingshi | Qingshi Town | Accept the magistrate's thanks → Celebrate at the Drunken Crane → Mourn the fallen at the temple → Report to the Sect Master | 700 xp · *Core Formation · 2nd Layer* |
 
 ### Chapter 23 · Envoys of the Iron Scale
 
@@ -404,7 +404,7 @@ The Iron Scale Sect lost eleven disciples to Blood Moon raids this year, and bla
 | 227 | Nine Banner Poles | Azure Cloud Sect | Go and see Lu Ping → Cut banner poles in the outer pines → Go back to Lu Ping | 552 xp |
 | 228 | Choosing Nine | Azure Cloud Sect | Answer Yan Tie's summons → Find Zhao Kang at the plum garden → Join Xiao Shi at the stone bridge | 564 xp |
 | 229 | Night Before the Banners | Azure Cloud Sect | Report to Lu Ping → Ring the bell to wake both sects → Clear the sect gate of Blood Moon cultivators → Cut down the Blood Moon cultivators that follow → Check on Ruan Jingtao | 576 xp |
-| 230 | The Rules of Banners | Azure Cloud Sect | Find Elder Bai → Speak with the Sect Master | 588 xp |
+| 230 | The Rules of Banners | Azure Cloud Sect | Find Elder Bai → Speak with the Sect Master | 588 xp · *Core Formation · 3rd Layer* |
 
 ### Chapter 24 · The Nine Banners
 
@@ -421,7 +421,7 @@ Nine duels, nine banners, two sects and eighty years of dusty rules. The Iron Sc
 | 237 | The Ninth Banner *(boss)* | Azure Cloud Sect | Go to the formation plaza → Face Ruan Jingtao at the formation plaza → Find Ruan Jingtao after the fight | 792 xp |
 | 238 | The Question Given Up | Azure Cloud Sect | Answer Sect Master Ruan's summons → Find the Sect Master at the main hall | 564 xp |
 | 239 | Tea for Two Sects | Azure Cloud Sect | Report to Lu Ping → Carry tea cups around the plaza → Raise a cup to the fallen of both sects → Join Ruan Jingtao at the formation plaza | 576 xp |
-| 240 | Five Banners to Four | Azure Cloud Sect | Settle your core on the empty plaza → Speak with Han Xue | 588 xp · *Core Formation Middle* |
+| 240 | Five Banners to Four | Azure Cloud Sect | Settle your core on the empty plaza → Speak with Han Xue | 588 xp · *Core Formation · 4th Layer* |
 
 ### Chapter 25 · Smoke on the Border
 
@@ -438,7 +438,7 @@ The duel settled the question, but not the border. Iron Scale raiders are burnin
 | 247 | Healing the Burned Grove | Whispering Bamboo Forest | Speak with the hermit → Heal the burned grove with the Heart Sutra → Bring word to the hermit | 552 xp |
 | 248 | Red Eyes Come Back | Whispering Bamboo Forest | Go and see Zhao Kang → Defeat the corrupted wolves at the clearing → Face the next wave of Blood Moon cultivators → See Zhao Kang again | 564 xp |
 | 249 | The Raiders' Cache | Whispering Bamboo Forest | Go to the old bandit camp → Dig out the raiders' buried cache → Open the cache's iron box → Talk it over with Ruan Jingtao | 576 xp |
-| 250 | Letters to Four Sects | Whispering Bamboo Forest | Answer Ruan Jingtao's summons → Talk with Han Xue at the old bridge | 588 xp |
+| 250 | Letters to Four Sects | Whispering Bamboo Forest | Answer Ruan Jingtao's summons → Talk with Han Xue at the old bridge | 588 xp · *Core Formation · 5th Layer* |
 
 ### Chapter 26 · The Sunken Archive
 
@@ -455,7 +455,7 @@ The Verdant Lotus kept an archive beneath their ruins, flooded when the sect fel
 | 257 | The Drowned Librarian *(boss)* | Whispering Bamboo Forest | Scout the ruins courtyard → Bring down The Drowned Librarian → Return the drowned slips to the librarian → Hear what Elder Bai has to say | 792 xp |
 | 258 | Song for Seven | Whispering Bamboo Forest | Speak with the hermit → Sit with the hermit while he sings → Report back to the hermit | 564 xp |
 | 259 | Slips for the Sect | Whispering Bamboo Forest | Go and see Elder Bai → Carry the surviving slips up from the archive → Bring word to Elder Bai | 576 xp |
-| 260 | The Hermit Stops Running | Whispering Bamboo Forest | Answer the hermit's summons → Meet Han Xue at the clearing | 588 xp |
+| 260 | The Hermit Stops Running | Whispering Bamboo Forest | Answer the hermit's summons → Meet Han Xue at the clearing | 588 xp · *Core Formation · 6th Layer* |
 
 ### Chapter 27 · Tea at the Drunken Crane
 
@@ -472,7 +472,7 @@ The four sects on the raiders' list agree to meet on neutral ground: Madam Fang'
 | 267 | The Pale Assassin *(boss)* | Qingshi Town | Search the hill graves → Defeat The Pale Assassin → Check on Ruan Jingtao | 792 xp |
 | 268 | Four Seals on One Page | Qingshi Town | Speak with Sect Master Ruan → Speak with Ancestor Zhao → Hear what Magistrate Zhou has to say | 564 xp |
 | 269 | Noodles for Four Sects | Qingshi Town | Go and see Madam Fang → Carry bowls from the market stalls → Serve the first bowl at the Drunken Crane → Meet Widow Liu at the main street | 576 xp |
-| 270 | The Test, Not the Kill | Qingshi Town | Sit with the assassin's words in the temple → Talk with Han Xue at the main street | 588 xp · *Core Formation Late* |
+| 270 | The Test, Not the Kill | Qingshi Town | Sit with the assassin's words in the temple → Talk with Han Xue at the main street | 588 xp · *Core Formation · 7th Layer* |
 
 ### Chapter 28 · Sword Qi of the Golden Core
 
@@ -489,7 +489,7 @@ A golden core can throw qi like a blade. Elder Mo intends to teach you how befor
 | 277 | The Ugly Blade | Azure Cloud Sect | Make your way to the formation plaza → Quench the blade in the formation's light → Show Elder Mo what you found | 552 xp |
 | 278 | Mo Remembers His Master | Azure Cloud Sect | Hear Elder Mo out → Speak with Wei Tong → Hear what Xiao Shi has to say | 564 xp |
 | 279 | Sword Qi in Earnest | Azure Cloud Sect | Speak with Han Xue → Drive the Blood Moon cultivators from the outer pines → Hold the sect gate against more Blood Moon cultivators | 576 xp |
-| 280 | Winter Coming | Azure Cloud Sect | Go and see Elder Bai → Meet Yan Tie at the cliff edge → Talk with Elder Mo at the hall steps | 588 xp |
+| 280 | Winter Coming | Azure Cloud Sect | Go and see Elder Bai → Meet Yan Tie at the cliff edge → Talk with Elder Mo at the hall steps | 588 xp · *Core Formation · 8th Layer* |
 
 ### Chapter 29 · Patrol of the Crimson Rim
 
@@ -506,7 +506,7 @@ While the sect waits for winter, somebody has to watch the Abyss. Ye Wuming and 
 | 287 | The Last Cage on the Rim | Blood Moon Abyss | Make your way to the field of bones → Stop the Blood Guards at the field of bones → Open the forgotten cage → Tell Xiao Shi what you found | 552 xp |
 | 288 | Letters for the Sect | Blood Moon Abyss | See what Ye Wuming wants → Join Zhao Kang at the obelisk ring → Speak with Yan Tie | 564 xp |
 | 289 | Pursuit to the Array | Blood Moon Abyss | Hear Zhao Kang out → Defeat the Blood Guards at the field of bones → Finish the Blood Moon cultivators at the canyon mouth → Report back to Zhao Kang | 576 xp |
-| 290 | Seven Dots, Explained Badly | Azure Cloud Sect | Speak with Elder Bai → Compare the carvings with the drowned star chart → Bring word to Elder Bai | 588 xp |
+| 290 | Seven Dots, Explained Badly | Azure Cloud Sect | Speak with Elder Bai → Compare the carvings with the drowned star chart → Bring word to Elder Bai | 588 xp · *Core Formation · 9th Layer* |
 
 ### Chapter 30 · When the Sky Stair Descends
 
@@ -523,7 +523,7 @@ In the first week of winter a stair of cloud unrolls from the sky above the sect
 | 297 | Dumplings for the Sky | Azure Cloud Sect | Speak with Wei Tong → Join Xiao Man at the lotus pond → Speak with Lu Ping | 552 xp |
 | 298 | Core at the Peak | Azure Cloud Sect | Go and see Elder Mo → Cultivate beneath the stair of cloud → Report back to Elder Mo | 564 xp |
 | 299 | The Sect Master's Last Word | Azure Cloud Sect | Answer the Sect Master's summons → Hear what Xiao Man has to say → Meet Xiao Shi at the stone bridge | 576 xp |
-| 300 | The Stair Holds | Azure Cloud Sect | Go to the cliff edge → Talk with Han Xue at the sect gate | 588 xp · *Core Formation Peak* |
+| 300 | The Stair Holds | Azure Cloud Sect | Go to the cliff edge → Talk with Han Xue at the sect gate | 588 xp · *Core Formation · Great Perfection* |
 
 ## Volume 4 · Nascent Soul — *Isles Above the Clouds*
 
@@ -544,7 +544,7 @@ The Celestial Sky Isles open once every sixty years. With Han Xue and Zhao Kang 
 | 307 | Garden of Immortals | Celestial Sky Isles | Enter the overgrown garden → Gather phoenix feathers in the immortal garden → Heed Qing Luan in the garden | 700 xp |
 | 308 | The Jiao's Lair *(boss)* | Celestial Sky Isles | Enter the serpent's lair → Defeat the corrupted Jiao serpent → Tend to your wounds with Han Xue | 1100 xp |
 | 309 | The Stars Disagree | Celestial Sky Isles | Search the Jiao's hoard → Prepare to leave with Zhao Kang → Say farewell to Qing Luan | 800 xp |
-| 310 | Nascent Soul | Celestial Sky Isles | Form your nascent soul at the cloud gate → Deliver the materials to Elder Mo at the formation array → Report to the Sect Master | 1500 xp · **Nascent Soul** |
+| 310 | Nascent Soul | Celestial Sky Isles | Form your nascent soul at the cloud gate → Survive the tribulation of Nascent Soul → Deliver the materials to Elder Mo at the formation array → Report to the Sect Master | 1500 xp · **Nascent Soul** |
 
 ### Chapter 32 · The Cloud Road
 
@@ -561,7 +561,7 @@ The full moon has closed the Sky Isles to mortal feet, but a paper crane from Qi
 | 317 | Pursuers on the Cloud Road | Celestial Sky Isles | Speak with Han Xue → Fight off the Blood Guards → Stop the Blood Guards regrouping → Catch your breath with Qing Luan | 832 xp |
 | 318 | The Soul Crystal | Celestial Sky Isles | Make your way to the celestial ruins → Gather the fallen crystal shards → Touch the soul crystal → Break the celestial sentinels at the celestial ruins → Regroup with Qing Luan | 844 xp |
 | 319 | Back Down the Cloud Road | Celestial Sky Isles | Go and see Qing Luan → Speak with Elder Mo | 856 xp |
-| 320 | Mo Checks a Rune | Azure Cloud Sect | Scout the formation plaza → Help Elder Mo check the first ring of runes → Talk it over with Elder Mo | 868 xp |
+| 320 | Mo Checks a Rune | Azure Cloud Sect | Scout the formation plaza → Help Elder Mo check the first ring of runes → Talk it over with Elder Mo | 868 xp · *Nascent Soul · 2nd Layer* |
 
 ### Chapter 33 · Nine Pillars
 
@@ -578,7 +578,7 @@ The Great Azure Formation stands on nine pillars, and each pillar must be inscri
 | 327 | Night Raid on the Pillars | Azure Cloud Sect | Go and see Han Xue → Ward the finished pillar → Defeat the Blood Moon cultivators at the formation plaza → Face the next wave of Blood Moon cultivators → Bring word to Han Xue | 832 xp |
 | 328 | The Open Door | Azure Cloud Sect | Answer Xiao Shi's summons → Talk with Han Xue at the quiet pavilion | 844 xp |
 | 329 | The Back Door of Heaven | Azure Cloud Sect | Go to the cliff edge → Drive the Blood Moon cultivators from the outer pines → Investigate the outer pines → Tell Yan Tie what you found | 856 xp |
-| 330 | Eight More Pillars | Azure Cloud Sect | Report to Elder Mo → Find Xiao Man at the lotus pond | 868 xp |
+| 330 | Eight More Pillars | Azure Cloud Sect | Report to Elder Mo → Find Xiao Man at the lotus pond | 868 xp · *Nascent Soul · 3rd Layer* |
 
 ### Chapter 34 · The Seven-Star Crates
 
@@ -595,7 +595,7 @@ Crates stamped with seven stars have been passing through Qingshi's docks. Merch
 | 337 | Luo Hui, the First Rung *(boss)* | Qingshi Town | Go to the guild warehouse → Face Luo Hui, the First Rung at the guild warehouse → Investigate the guild warehouse → Meet Han Xue at the main street | 1212 xp |
 | 338 | Liu Er Wants to Help | Qingshi Town | Hear Liu Er out → Talk with Iron-Fang at the market square → Find Han Xue at the back alley | 844 xp |
 | 339 | Ash on the River | Qingshi Town | Settle your soul in the town temple → Join Zhao Kang at the main street | 856 xp |
-| 340 | Crates Up the Mountain | Qingshi Town | Speak with Old Pan → Speak with Madam Fang | 868 xp · *Nascent Soul Middle* |
+| 340 | Crates Up the Mountain | Qingshi Town | Speak with Old Pan → Speak with Madam Fang | 868 xp · *Nascent Soul · 4th Layer* |
 
 ### Chapter 35 · The Soul Fog
 
@@ -612,7 +612,7 @@ A grey fog has settled on the Whispering Bamboo, and everything it touches forge
 | 347 | Tea, Remembered | Whispering Bamboo Forest | Find the hermit → Find Xiao Shi at the spirit spring | 832 xp |
 | 348 | Seven Dots on the Stone | Whispering Bamboo Forest | Go to the ruins gate → Read the stolen memory-slip → Tell Han Xue what you found | 844 xp |
 | 349 | Giving Back the Forest's Memories | Whispering Bamboo Forest | See what the hermit wants → Release the forest's memories at the spring → Return to the hermit | 856 xp |
-| 350 | What the Ladder Wants | Whispering Bamboo Forest | Hear Han Xue out → Investigate the ruins gate → Join the hermit at the hermit's hut | 868 xp |
+| 350 | What the Ladder Wants | Whispering Bamboo Forest | Hear Han Xue out → Investigate the ruins gate → Join the hermit at the hermit's hut | 868 xp · *Nascent Soul · 5th Layer* |
 
 ### Chapter 36 · The Zhao Clan's Summons
 
@@ -629,7 +629,7 @@ Zhao Tianlu, ancestor of the Zhao clan, climbs the nine thousand steps to bring 
 | 357 | Uninvited Escort | Azure Cloud Sect | Hear Wei Tong out → Clear the sect gate of Blood Moon cultivators → Stop the Blood Moon cultivators regrouping → Check on Ancestor Zhao | 832 xp |
 | 358 | Monthly Letters | Azure Cloud Sect | Speak with Zhao Kang → Find the Sect Master at the main hall → Join Han Xue at the quiet pavilion | 844 xp |
 | 359 | Brothers' Stone | Azure Cloud Sect | Go and see Zhao Kang → Burn incense with Zhao Kang at the cliff → Bring word to Zhao Kang | 856 xp |
-| 360 | Accounting | Azure Cloud Sect | Answer the Sect Master's summons → Speak with Elder Mo | 868 xp |
+| 360 | Accounting | Azure Cloud Sect | Answer the Sect Master's summons → Speak with Elder Mo | 868 xp · *Nascent Soul · 6th Layer* |
 
 ### Chapter 37 · Duel Above the Clouds
 
@@ -646,7 +646,7 @@ Qing Luan sends word that someone is poisoning the spirit vein with rust. You wa
 | 367 | Healing the Vein | Celestial Sky Isles | Hear Qing Luan out → Clear the rusted crystals from the vein → Return to Qing Luan | 832 xp |
 | 368 | The Soul Grows Tall | Celestial Sky Isles | Speak with Qing Luan → Let your nascent soul settle at the cloud gate → Talk with Han Xue at the cloud gate | 844 xp |
 | 369 | Two Rungs Shaken | Celestial Sky Isles | Go and see Qing Luan → Find Zhao Kang at the cloud gate | 856 xp |
-| 370 | Back to the Pillars | Azure Cloud Sect | Answer Elder Mo's summons → Join Wei Tong at the weapon rack | 868 xp · *Nascent Soul Late* |
+| 370 | Back to the Pillars | Azure Cloud Sect | Answer Elder Mo's summons → Join Wei Tong at the weapon rack | 868 xp · *Nascent Soul · 7th Layer* |
 
 ### Chapter 38 · What the Stars Remember
 
@@ -663,7 +663,7 @@ Qing Luan asks you up one last time before the isles close for good. She wants t
 | 377 | A Body Heaven Can't Refuse | Celestial Sky Isles | See what Han Xue wants → Talk with Zhao Kang at the immortal garden | 832 xp |
 | 378 | Watching the Stair | Celestial Sky Isles | Hear Qing Luan out → Watch the Ascension Stair with Qing Luan → Report back to Qing Luan | 844 xp |
 | 379 | Gifts for the Formation | Celestial Sky Isles | Speak with Qing Luan → Gather cloud silk for Elder Mo → Bring word to Qing Luan | 856 xp |
-| 380 | The Isles Close | Azure Cloud Sect | Hurry to the cliff edge → Find Han Xue at the sect gate | 868 xp |
+| 380 | The Isles Close | Azure Cloud Sect | Hurry to the cliff edge → Find Han Xue at the sect gate | 868 xp · *Nascent Soul · 8th Layer* |
 
 ### Chapter 39 · The Last Pillar
 
@@ -680,7 +680,7 @@ The ninth pillar goes up. The mountain holds a festival for the Great Azure Form
 | 387 | One Ring Left | Azure Cloud Sect | Investigate the formation plaza → Sit with Elder Mo as he checks the outer ring → Tell Elder Mo what you found | 832 xp |
 | 388 | Peaches for Elder Hua | Azure Cloud Sect | Hear Elder Mo out → Pick peaches in the old orchard → Find Elder Hua at the herb terraces | 844 xp |
 | 389 | The Sect Master's Night Off | Azure Cloud Sect | Speak with the Sect Master → Join Elder Mo at the hall steps → Speak with Wei Tong | 856 xp |
-| 390 | The Morning After | Azure Cloud Sect | Go and see Wei Tong → Hear what Han Xue has to say | 868 xp |
+| 390 | The Morning After | Azure Cloud Sect | Go and see Wei Tong → Hear what Han Xue has to say | 868 xp · *Nascent Soul · 9th Layer* |
 
 ### Chapter 40 · Before the Lighting
 
@@ -697,7 +697,7 @@ The formation's frame is finished. The star iron is set, the thunder crystals ch
 | 397 | The Whole Mountain Waits | Azure Cloud Sect | Go and see Lu Ping → Find Xiao Shi at the stone bridge → Join Xiao Man at the lotus pond | 832 xp |
 | 398 | Soul at the Peak | Azure Cloud Sect | Bring your nascent soul to its peak → Speak with Han Xue | 844 xp |
 | 399 | Telling Mo | Azure Cloud Sect | Answer Elder Mo's summons → Show Elder Mo where the red thread runs → See Elder Mo again | 856 xp |
-| 400 | Three Nights | Azure Cloud Sect | Report to the Sect Master → Hear what Wei Tong has to say | 868 xp · *Nascent Soul Peak* |
+| 400 | Three Nights | Azure Cloud Sect | Report to the Sect Master → Hear what Wei Tong has to say | 868 xp · *Nascent Soul · Great Perfection* |
 
 ## Volume 5 · Soul Transformation — *The Heart Demon*
 
@@ -718,7 +718,7 @@ On the eve of lighting the Great Azure Formation, a letter from the traitor lure
 | 407 | Ashes and Incense | Azure Cloud Sect | Toll the great bell nine times → Speak with Elder Hua → Speak with Xiao Man at the lotus pond → Remember Elder Mo at the cliff edge | 1000 xp |
 | 408 | What the Patriarch Wants | Azure Cloud Sect | Hear Elder Bai's findings → Compare the altered runes with the Heart Sutra → Face Gu Hanshan in chains at the moon gate | 1100 xp |
 | 409 | The Five Oaths | Azure Cloud Sect | Hear Zhao Kang's oath → Hear Xiao Shi's oath → Hear Steward Qian's oath → Collect Xiao Man's medicine bundles for the army → Meet Ye Wuming at the sect gate | 1000 xp |
-| 410 | Soul Transformation | Azure Cloud Sect | Set spirit stones into the repaired formation → Transform your soul at the heart of the formation → Receive the Sect Master's blessing | 2000 xp · **Soul Transformation** |
+| 410 | Soul Transformation | Azure Cloud Sect | Set spirit stones into the repaired formation → Transform your soul at the heart of the formation → Survive the tribulation of Soul Transformation → Receive the Sect Master's blessing | 2000 xp · **Soul Transformation** |
 
 ### Chapter 42 · The Blood Moon That Did Not Break
 
@@ -735,7 +735,7 @@ Three days after the formation was mended, the blood moon rises and the Azure Cl
 | 417 | Iron-Fang at the Fold | Blood Moon Abyss | Go and see Iron-Fang → Find Ye Wuming at the obelisk ring → Join Elder Gu at the abyss depths | 1132 xp |
 | 418 | The Sect Master's Choice | Blood Moon Abyss | Answer the Sect Master's summons → Speak with Elder Gu | 1144 xp |
 | 419 | Collecting the Wounded | Blood Moon Abyss | Report to Xiao Shi → Gather Xiao Man's medicine bundles for the wounded → Return to Xiao Shi | 1156 xp |
-| 420 | The Long War | Blood Moon Abyss | Find Ye Wuming → Hear what Zhao Kang has to say | 1168 xp |
+| 420 | The Long War | Blood Moon Abyss | Find Ye Wuming → Hear what Zhao Kang has to say | 1168 xp · *Soul Transformation · 2nd Layer* |
 
 ### Chapter 43 · Grief Has Teeth
 
@@ -752,7 +752,7 @@ The sect comes home from a war that didn't happen to a teacher who isn't there. 
 | 427 | Wei Tong's Despair *(boss)* | Azure Cloud Sect | Search the training ground → Defeat Wei Tong's Despair → Regroup with Wei Tong | 1662 xp |
 | 428 | Tea for the Empty Step | Azure Cloud Sect | Report to Wei Tong → Pick tea leaves from the terraces → Pour the first cup at the hall steps → Bring word to Wei Tong | 1144 xp |
 | 429 | The Sect Master's Grief | Azure Cloud Sect | Find Elder Bai → Speak with the Sect Master | 1156 xp |
-| 430 | The Shades Thin | Azure Cloud Sect | See what Elder Hua wants → Hear what Xiao Shi has to say | 1168 xp |
+| 430 | The Shades Thin | Azure Cloud Sect | See what Elder Hua wants → Hear what Xiao Shi has to say | 1168 xp · *Soul Transformation · 3rd Layer* |
 
 ### Chapter 44 · Adequate
 
@@ -769,7 +769,7 @@ The outer court has no elder, and twelve new disciples arrived at the gate this 
 | 437 | The Budget for Buns | Azure Cloud Sect | See what Steward Qian wants → Find Elder Hua at the herb terraces | 1132 xp |
 | 438 | Wolves at the Wall | Azure Cloud Sect | Make your way to the outer pines → Drive the spirit wolves from the outer pines → Leave meat scraps for the wolves at the treeline → Share your findings with Wei Tong | 1144 xp |
 | 439 | Standing Where He Stood | Azure Cloud Sect | Hear Wei Tong out → Meditate at the hall steps at sunrise → Bring word to Wei Tong | 1156 xp |
-| 440 | Adequate | Azure Cloud Sect | Speak with Lu Ping → Join Wei Tong at the weapon rack | 1168 xp · *Soul Transformation Middle* |
+| 440 | Adequate | Azure Cloud Sect | Speak with Lu Ping → Join Wei Tong at the weapon rack | 1168 xp · *Soul Transformation · 4th Layer* |
 
 ### Chapter 45 · The Empty Law Hall
 
@@ -786,7 +786,7 @@ Magistrate Zhou writes to the sect: Qingshi's disputes used to go to the Law Hal
 | 447 | The Child at the Temple | Qingshi Town | Investigate the back alley → Join Madam Fang at the Drunken Crane | 1132 xp |
 | 448 | Night Court | Qingshi Town | Speak with Constable Du → Ward the Drunken Crane's door → Fight off the Blood Moon cultivators → Cut down the Blood Moon cultivators that follow → Check on Madam Fang | 1144 xp |
 | 449 | The Law Tablet | Qingshi Town | Go and see Magistrate Zhou → Gather carving stones from the market → Watch the judgements carved on the tablet → Go back to Magistrate Zhou | 1156 xp |
-| 450 | Report to the Chains | Azure Cloud Sect | Answer Elder Gu's summons → Search the herb terraces → Speak with Constable Du | 1168 xp |
+| 450 | Report to the Chains | Azure Cloud Sect | Answer Elder Gu's summons → Search the herb terraces → Speak with Constable Du | 1168 xp · *Soul Transformation · 5th Layer* |
 
 ### Chapter 46 · Where the Lotus Grew
 
@@ -803,7 +803,7 @@ The Verdant Lotus seed you planted in the sect's pond before the descent has flo
 | 457 | Wolves Follow the Hermit | Azure Cloud Sect | Scout the outer pines → Break the void wraiths at the outer pines → Calm the hermit's wolves with meat → Compare notes with the hermit | 1132 xp |
 | 458 | The Letter for Lan | Azure Cloud Sect | Give the hermit his master's letter → Show the hermit what you found | 1144 xp |
 | 459 | Wei Tong Is Jealous | Azure Cloud Sect | Answer Wei Tong's summons → Hear what Han Xue has to say | 1156 xp |
-| 460 | Something's Wrong | Azure Cloud Sect | Report to Han Xue → Hurry to the quiet pavilion → Meet the hermit at the hall steps | 1168 xp |
+| 460 | Something's Wrong | Azure Cloud Sect | Report to Han Xue → Hurry to the quiet pavilion → Meet the hermit at the hall steps | 1168 xp · *Soul Transformation · 6th Layer* |
 
 ### Chapter 47 · A Letter Signed With Ash
 
@@ -820,7 +820,7 @@ Every night a village near Qingshi burns, and in the ashes someone draws a ladde
 | 467 | The Rung in the Ruins | Whispering Bamboo Forest | Scout the ruins courtyard → Pull the stolen lotus stones from the altar → Cut the red thread to the star → Clear the ruins gate of ash-cultists → Hurry to the ruined shrine | 1132 xp |
 | 468 | He'll Be at the Abyss | Qingshi Town | Hear Ye Wuming out → Speak with Han Xue | 1144 xp |
 | 469 | Ash and Soul | Whispering Bamboo Forest | Meditate in the ruined shrine → Hear what Iron-Fang has to say | 1156 xp |
-| 470 | Liu Er's Steps | Qingshi Town | Speak with Liu Er → Meet Widow Liu at the town well | 1168 xp · *Soul Transformation Late* |
+| 470 | Liu Er's Steps | Qingshi Town | Speak with Liu Er → Meet Widow Liu at the town well | 1168 xp · *Soul Transformation · 7th Layer* |
 
 ### Chapter 48 · The Mirror Within
 
@@ -837,7 +837,7 @@ Before you hunt Luo Hui at the rim, the Heart Mirror calls. It's outside the fol
 | 477 | Blood Guards at the Rim | Blood Moon Abyss | Make your way to the field of bones → Break the Blood Guards at the field of bones → Gather demon cores from the fallen guards → Show Ye Wuming what you found | 1132 xp |
 | 478 | Rest Before the Rung | Blood Moon Abyss | See what Han Xue wants → Rest your soul in the abyss depths → Meet Xiao Shi at the canyon mouth | 1144 xp |
 | 479 | The Flickering Star | Blood Moon Abyss | Scout the obelisk ring → Trace the red thread with your soul → Talk it over with Han Xue | 1156 xp |
-| 480 | The Night Before the Rung | Blood Moon Abyss | Hear Ye Wuming out → Talk with Zhao Kang at the field of bones | 1168 xp |
+| 480 | The Night Before the Rung | Blood Moon Abyss | Hear Ye Wuming out → Talk with Zhao Kang at the field of bones | 1168 xp · *Soul Transformation · 8th Layer* |
 
 ### Chapter 49 · The Rung of Ash
 
@@ -854,7 +854,7 @@ Luo Hui, the First Rung of the Patriarch's Ladder, waits at the obelisk ring in 
 | 487 | What the Letters Say | Blood Moon Abyss | Read the letter addressed to the Patriarch → Make your way to the war camp → Share your findings with Ye Wuming | 1132 xp |
 | 488 | Iron-Fang's Question | Blood Moon Abyss | Report to Iron-Fang → Hear what Zhao Kang has to say → Meet the Sect Master at the blood pools | 1144 xp |
 | 489 | Void at the Rim | Blood Moon Abyss | Find Han Xue → Drive the void wraiths from the blood pools → Finish the void wraiths at the field of bones → Find Zhao Kang after the fight | 1156 xp |
-| 490 | Burning the Letters | Blood Moon Abyss | See what Han Xue wants → Burn the unsent letters at the rim → See Han Xue again | 1168 xp |
+| 490 | Burning the Letters | Blood Moon Abyss | See what Han Xue wants → Burn the unsent letters at the rim → See Han Xue again | 1168 xp · *Soul Transformation · 9th Layer* |
 
 ### Chapter 50 · What the Old Man Left
 
@@ -871,9 +871,9 @@ Elder Mo left very little: a tea set, a peach orchard, forty years of notes, and
 | 497 | Guarding His Grave | Azure Cloud Sect | Find Lu Ping → Ward the cliff edge where his ashes lie → Clear the cliff edge of void wraiths → Cut down the void wraiths that follow → Catch your breath with Wei Tong | 1132 xp |
 | 498 | Liu Er at the Gate | Azure Cloud Sect | See what Lu Ping wants → Speak with Liu Er | 1144 xp |
 | 499 | Standing Straight | Azure Cloud Sect | Meditate where Elder Mo's ashes lie → Hear what the Sect Master has to say | 1156 xp |
-| 500 | Tea on the Steps | Azure Cloud Sect | Hear Wei Tong out → Meet Han Xue at the quiet pavilion | 1168 xp · *Soul Transformation Peak* |
+| 500 | Tea on the Steps | Azure Cloud Sect | Hear Wei Tong out → Meet Han Xue at the quiet pavilion | 1168 xp · *Soul Transformation · Great Perfection* |
 
-## Volume 6 · Void Refinement — *The Fold in the World*
+## Volume 6 · Spirit Severing — *The Fold in the World*
 
 Void rifts open over isle, forest and town. To reach a patriarch hiding between spaces, the Lotus heir learns to walk where there is nothing to walk on, and the Rungs of his Ladder start to fall.
 
@@ -892,7 +892,7 @@ The Sky Isles closed for sixty years. Something has torn them open again: rifts 
 | 507 | Qing Luan Remembers Herself | Celestial Sky Isles | Report to Qing Luan → Find Han Xue at the immortal garden | 1522 xp |
 | 508 | Stitching the Isles | Celestial Sky Isles | Find Qing Luan → Stitch the hairline rifts with cloud silk → Join Zhao Kang at the cloud gate | 1534 xp |
 | 509 | The Void Beneath the Soul | Celestial Sky Isles | See what Qing Luan wants → Speak with the Sect Master | 1546 xp |
-| 510 | Void Refinement | Celestial Sky Isles | Hear Qing Luan out → Gather the stitched rift-silk for the breakthrough → Refine your soul in the void → Hear what the Sect Master has to say | 3008 xp · **Void Refinement** |
+| 510 | Spirit Severing | Celestial Sky Isles | Hear Qing Luan out → Gather the stitched rift-silk for the breakthrough → Sever your spirit in the void → Survive the tribulation of Spirit Severing → Hear what the Sect Master has to say | 3008 xp · **Spirit Severing** |
 
 ### Chapter 52 · The Fold in the Abyss
 
@@ -909,7 +909,7 @@ With a refined soul you can step into the edge of the fold. Ye Wuming asks you t
 | 517 | Ye Qing | Blood Moon Abyss | Investigate the blood pools → Read the wall of names through the fold → Tell Ye Wuming what you found | 1522 xp |
 | 518 | Holding the Rim | Blood Moon Abyss | Find Zhao Kang → Clear the field of bones of Blood Guards → Face the next wave of Blood Moon cultivators → Look for Han Xue at the canyon mouth | 1534 xp |
 | 519 | Maps of the Touching Places | Blood Moon Abyss | See what Xiao Shi wants → Gather fold-shards for Xiao Shi's map → Bring word to Xiao Shi | 1546 xp |
-| 520 | Promise at the Fold | Blood Moon Abyss | Hear Iron-Fang out → Search the canyon mouth → Join Han Xue at the canyon mouth | 1558 xp |
+| 520 | Promise at the Fold | Blood Moon Abyss | Hear Iron-Fang out → Search the canyon mouth → Join Han Xue at the canyon mouth | 1558 xp · *Spirit Severing · 2nd Layer* |
 
 ### Chapter 53 · The Rust Monk's Penance
 
@@ -926,7 +926,7 @@ Tie Shan, the Rust Monk and Second Rung, has taken Keeper Hong's old temple in Q
 | 527 | Rust in the Graves | Qingshi Town | Scout the hill graves → Stop the void wraiths at the hill graves → Gather the crumbling grave markers → Show Iron-Fang what you found | 1522 xp |
 | 528 | Rain for a Monk | Qingshi Town | Find Han Xue → Call rain over the temple with your soul → Join Magistrate Zhou at the main street | 1534 xp |
 | 529 | The Second Rung Kneels *(boss)* | Qingshi Town | Hurry to the town temple → Defeat Tie Shan, the Rust Monk → Pray with the Rust Monk as he falls → Speak with Han Xue | 2271 xp |
-| 530 | Iron Again | Qingshi Town | See what Constable Du wants → Hear what Madam Fang has to say → Meet Merchant Jin at the guild warehouse | 1558 xp |
+| 530 | Iron Again | Qingshi Town | See what Constable Du wants → Hear what Madam Fang has to say → Meet Merchant Jin at the guild warehouse | 1558 xp · *Spirit Severing · 3rd Layer* |
 
 ### Chapter 54 · The Moon-Well Asks
 
@@ -943,7 +943,7 @@ The abbess of the Moon-Well Nunnery climbs the nine thousand steps: her nuns are
 | 537 | Xiao Shi's Map | Azure Cloud Sect | Find Xiao Shi → Study Xiao Shi's map of the rifts → Share your findings with Elder Bai | 1522 xp |
 | 538 | The Abbess Stays a Week | Azure Cloud Sect | See what Abbess Jing wants → Hear what the hermit has to say | 1534 xp |
 | 539 | Rifts on the Mountain | Azure Cloud Sect | Hear Lu Ping out → Pour your soul into the formation to hold the rifts → Drive the void wraiths from the outer pines → Hold the training ground against more celestial sentinels → Regroup with Abbess Jing | 1546 xp |
-| 540 | Void in the Marrow | Azure Cloud Sect | Refine your soul on the formation plaza → Meet Han Xue at the sect gate | 1558 xp · *Void Refinement Middle* |
+| 540 | Void in the Marrow | Azure Cloud Sect | Refine your soul on the formation plaza → Meet Han Xue at the sect gate | 1558 xp · *Spirit Severing · 4th Layer* |
 
 ### Chapter 55 · The Spring Runs Into Nothing
 
@@ -960,7 +960,7 @@ A rift has opened in the bottom of the spirit spring, and the spring is draining
 | 547 | The Spring Refills | Whispering Bamboo Forest | Find the hermit → Talk with Elder Hua at the lookout rock | 1522 xp |
 | 548 | Ye Wuming's Other Half | Whispering Bamboo Forest | See what Ye Wuming wants → Scout the clearing → Examine River's torn ribbon → Return to Ye Wuming | 1534 xp |
 | 549 | The Hermit Says Go | Whispering Bamboo Forest | Hear the hermit out → Find Ye Wuming at the old bridge | 1546 xp |
-| 550 | Following Nine Perfumes | Whispering Bamboo Forest | Speak with Ye Wuming → Join Han Xue at the forest path | 1558 xp |
+| 550 | Following Nine Perfumes | Whispering Bamboo Forest | Speak with Ye Wuming → Join Han Xue at the forest path | 1558 xp · *Spirit Severing · 5th Layer* |
 
 ### Chapter 56 · Ye Wuming's Children
 
@@ -977,7 +977,7 @@ Madam Ninefold, the Third Rung, raised Ye Wuming's children in the Blood Moon's 
 | 557 | Ye Wuming Is Afraid | Whispering Bamboo Forest | Answer Ye Wuming's summons → Hear what Han Xue has to say → Meet Zhao Kang at the lookout rock | 1522 xp |
 | 558 | Ninefold's Soldiers | Whispering Bamboo Forest | Report to Zhao Kang → Fight off the Ninefold's acolytes → Cut down the void wraiths that follow → Look for Xiao Shi at the spirit spring | 1534 xp |
 | 559 | Counting Breaths With Children | Whispering Bamboo Forest | Count breaths with the children → Talk with Ye Wuming at the clearing | 1546 xp |
-| 560 | Nine Faces in Qingshi | Whispering Bamboo Forest | Find the hermit → Scout the ruined shrine → Find Iron-Fang at the ruined shrine | 1558 xp |
+| 560 | Nine Faces in Qingshi | Whispering Bamboo Forest | Find the hermit → Scout the ruined shrine → Find Iron-Fang at the ruined shrine | 1558 xp · *Spirit Severing · 6th Layer* |
 
 ### Chapter 57 · Madam Ninefold
 
@@ -994,7 +994,7 @@ Jiu Rong, Madam Ninefold, the Third Rung, is somewhere in Qingshi wearing one of
 | 567 | Ye Wuming Finds Her | Qingshi Town | Report to Ye Wuming → Meet Magistrate Zhou at the yamen → Talk with Merchant Jin at the guild warehouse | 1522 xp |
 | 568 | Jiu Rong, Madam Ninefold *(boss)* | Qingshi Town | Search the market square → Face Jiu Rong, Madam Ninefold at the market square → Watch the ninth face fall → Find Ye Wuming at the main street | 2259 xp |
 | 569 | The Stillness After | Qingshi Town | Refine your soul in the temple's stillness → Join Ye Wuming at the main street | 1546 xp |
-| 570 | A Bun From Spring | Qingshi Town | Find Ye Wuming → Speak with Madam Fang | 1558 xp · *Void Refinement Late* |
+| 570 | A Bun From Spring | Qingshi Town | Find Ye Wuming → Speak with Madam Fang | 1558 xp · *Spirit Severing · 7th Layer* |
 
 ### Chapter 58 · Maps of Nothing
 
@@ -1011,7 +1011,7 @@ Three Rungs gone, four to go, and nobody knows where the other four are. Xiao Sh
 | 577 | A Letter From the East | Azure Cloud Sect | Report to Lu Ping → Join the Sect Master at the main hall | 1522 xp |
 | 578 | Supplies for the East | Azure Cloud Sect | Find Elder Hua → Pack medicine for the Iron Scale → Speak with Steward Qian | 1534 xp |
 | 579 | Wei Tong's New Disciples Help | Azure Cloud Sect | See what Wei Tong wants → Give Wei Tong's disciples a demonstration → Return to Wei Tong | 1546 xp |
-| 580 | East | Azure Cloud Sect | Hear Xiao Shi out → Hear what Han Xue has to say | 1558 xp |
+| 580 | East | Azure Cloud Sect | Hear Xiao Shi out → Hear what Han Xue has to say | 1558 xp · *Spirit Severing · 8th Layer* |
 
 ### Chapter 59 · The Iron Scale Remembers
 
@@ -1028,11 +1028,11 @@ At the forest's far edge, the Iron Scale's border is melting into nothing. Ruan 
 | 587 | The Hollow Giant *(boss)* | Whispering Bamboo Forest | Investigate the clearing → Bring down The Hollow Giant → Pour the Iron Scale's memories into the giant → Speak with Sect Master Ruan | 2247 xp |
 | 588 | Bringing the Forty Home | Whispering Bamboo Forest | Report to Ruan Jingtao → Guide the lost disciples out of the fog → Report back to Ruan Jingtao | 1534 xp |
 | 589 | The Iron Scale Remembers | Whispering Bamboo Forest | Find Sect Master Ruan → Hear what Yan Tie has to say → Meet Ye Wuming at the spirit spring | 1546 xp |
-| 590 | Brother Hollow's Taste | Whispering Bamboo Forest | See what Ye Wuming wants → Search the wolf den → Talk with Ruan Jingtao at the wolf den | 1558 xp |
+| 590 | Brother Hollow's Taste | Whispering Bamboo Forest | See what Ye Wuming wants → Search the wolf den → Talk with Ruan Jingtao at the wolf den | 1558 xp · *Spirit Severing · 9th Layer* |
 
 ### Chapter 60 · Still Water, Empty Sky
 
-Qing Luan sends for you one more time before the isles' rifts close. She says your void refinement is nearly complete, and that the next stage will be the hardest: not your soul, but your body. Before that, she wants to show you the tribulation peak, from a distance.
+Qing Luan sends for you one more time before the isles' rifts close. She says your spirit severing is nearly complete, and that the next stage will be the hardest: not your soul, but your body. Before that, she wants to show you the tribulation peak, from a distance.
 
 | # | Quest | Map | Objectives | Reward |
 |---|---|---|---|---|
@@ -1044,10 +1044,10 @@ Qing Luan sends for you one more time before the isles' rifts close. She says yo
 | 596 | The Isles' Last Visitors | Celestial Sky Isles | Go and see Zhao Kang → Defeat the void wraiths at the jade bridge → Cut down the celestial sentinels that follow → Check on Qing Luan | 1510 xp |
 | 597 | A Face Remembered | Celestial Sky Isles | Answer Qing Luan's summons → Hear what Han Xue has to say | 1522 xp |
 | 598 | Four Red Stars | Celestial Sky Isles | Watch the moving red star → Scout the star pavilion → Tell Qing Luan what you found | 1534 xp |
-| 599 | Still Water, Empty Sky | Celestial Sky Isles | Bring your void refinement to its peak → Meet the Sect Master at the cloud gate | 1546 xp |
-| 600 | Down the Cloud Road | Azure Cloud Sect | Hurry to the cliff edge → Talk with Zhao Kang at the sect gate | 1558 xp · *Void Refinement Peak* |
+| 599 | Still Water, Empty Sky | Celestial Sky Isles | Bring your spirit severing to perfection → Meet the Sect Master at the cloud gate | 1546 xp |
+| 600 | Down the Cloud Road | Azure Cloud Sect | Hurry to the cliff edge → Talk with Zhao Kang at the sect gate | 1558 xp · *Spirit Severing · Great Perfection* |
 
-## Volume 7 · Body Integration — *A Body Worth Stealing*
+## Volume 7 · Void Refinement — *A Body Worth Stealing*
 
 The Patriarch needs a body clean enough to survive heaven. His Rungs go hunting for one; the answer is to make body and soul a single thing that cannot be borrowed.
 
@@ -1066,7 +1066,7 @@ Brother Hollow's red star is sliding toward the Azure Cloud, and the first thing
 | 607 | Hollow Men at the Wall | Azure Cloud Sect | Go and see Zhao Kang → Ward the tempering bath → Clear the outer pines of hollowed guardians → Hold the sect gate against more hollowed puppets → Return to Zhao Kang | 1972 xp |
 | 608 | The Worst Day | Azure Cloud Sect | Answer Han Xue's summons → Speak with the Sect Master | 1984 xp |
 | 609 | Brother Hollow Writes | Azure Cloud Sect | Read Brother Hollow's letter → Search the sect gate → Show Lu Ping what you found | 1996 xp |
-| 610 | Body Integration | Azure Cloud Sect | Report to Elder Hua → Plant thunder crystals on the cliff → Integrate body and soul in the lightning → Hear what the Sect Master has to say | 3908 xp · **Body Integration** |
+| 610 | Void Refinement | Azure Cloud Sect | Report to Elder Hua → Plant thunder crystals on the cliff → Refine the void between body and soul → Survive the tribulation of Void Refinement → Hear what the Sect Master has to say | 3908 xp · **Void Refinement** |
 
 ### Chapter 62 · Thunder Peak's Forge
 
@@ -1083,7 +1083,7 @@ An integrated body still has to learn what it can do. Thunder Peak has been wait
 | 617 | An Integrated Spar | Azure Cloud Sect | Go and see Han Xue → Spar with Han Xue's Frost Sword disciples first → Bring word to Han Xue | 1972 xp |
 | 618 | Star Iron for a Blade | Azure Cloud Sect | Answer Yan Tie's summons → Gather star iron from the old anvils → See Yan Tie again | 1984 xp |
 | 619 | Hollow Wolves | Azure Cloud Sect | Report to Yan Tie → Ward the lightning forge → Stop the peak thunder wolves at the outer pines → Finish the peak thunder wolves at the training ground → Return to Yan Tie | 1996 xp |
-| 620 | East Again | Azure Cloud Sect | Find the Sect Master → Talk with Liu Er at the moon gate | 2008 xp |
+| 620 | East Again | Azure Cloud Sect | Find the Sect Master → Talk with Liu Er at the moon gate | 2008 xp · *Void Refinement · 2nd Layer* |
 
 ### Chapter 63 · Hollow Men of Qingshi
 
@@ -1100,7 +1100,7 @@ In Qingshi, the people who have given up are sitting in doorways with purple eye
 | 627 | The Last Hollow | Qingshi Town | Answer Constable Du's summons → Talk with Magistrate Zhou at the yamen | 1972 xp |
 | 628 | The Thread East | Qingshi Town | Investigate the town gate → Follow the snapped threads with your soul → Compare notes with Han Xue | 1984 xp |
 | 629 | Plum Wine for the Returned | Qingshi Town | Report to Merchant Jin → Gather plums from Old Chen's trees → Pour the plum wine at the Drunken Crane → Find Old Pan at the main street | 1996 xp |
-| 630 | Liu Er Stays a Night | Qingshi Town | Find Liu Er → Join Widow Liu at the town well | 2008 xp |
+| 630 | Liu Er Stays a Night | Qingshi Town | Find Liu Er → Join Widow Liu at the town well | 2008 xp · *Void Refinement · 3rd Layer* |
 
 ### Chapter 64 · The Blood Pools, Again
 
@@ -1117,7 +1117,7 @@ The purified blood pools at the Abyss rim can temper an integrated body further 
 | 637 | Twelve Fingers | Blood Moon Abyss | Go and see Iron-Fang → Fight off the Blood Guards → Hold the field of bones against more Blood Guards → Bring word to Iron-Fang | 1972 xp |
 | 638 | Singing to Tan | Blood Moon Abyss | Scout the obelisk ring → Sing Willow Creek's song to Tan → Share your findings with Ye Wuming | 1984 xp |
 | 639 | Pink Water, Iron Bones | Blood Moon Abyss | Finish tempering in the purified pools → Talk with Xiao Shi at the canyon mouth | 1996 xp |
-| 640 | The Hollow Man Comes Himself | Blood Moon Abyss | Answer Ye Wuming's summons → Find Han Xue at the abyss depths | 2008 xp · *Body Integration Middle* |
+| 640 | The Hollow Man Comes Himself | Blood Moon Abyss | Answer Ye Wuming's summons → Find Han Xue at the abyss depths | 2008 xp · *Void Refinement · 4th Layer* |
 
 ### Chapter 65 · Brother Hollow
 
@@ -1134,7 +1134,7 @@ Kong Yi, Brother Hollow, the Fourth Rung, has come to the Whispering Bamboo, whe
 | 647 | Kong Yi, Brother Hollow *(boss)* | Whispering Bamboo Forest | Investigate the clearing → Defeat Kong Yi, Brother Hollow → Stand over the fallen Fourth Rung → Hear what Ye Wuming has to say | 2922 xp |
 | 648 | Clearing the Last Stalks | Whispering Bamboo Forest | Search the wolf den → Defeat the bamboo men at the wolf den → Gather the fallen stalks for replanting → Compare notes with the hermit | 1984 xp |
 | 649 | Four Stars Out | Whispering Bamboo Forest | Speak with the hermit → Meet Han Xue at the lookout rock | 1996 xp |
-| 650 | The Butcher's Calling Card | Whispering Bamboo Forest | Head to the forest path → Talk with Zhao Kang at the clearing | 2008 xp |
+| 650 | The Butcher's Calling Card | Whispering Bamboo Forest | Head to the forest path → Talk with Zhao Kang at the clearing | 2008 xp · *Void Refinement · 5th Layer* |
 
 ### Chapter 66 · The Butcher's Market
 
@@ -1151,7 +1151,7 @@ Wen Tu, the Butcher of Wen and Fifth Rung, has opened a market beneath Qingshi. 
 | 657 | The Butcher's Ledger | Qingshi Town | Search the guild warehouse → Read the Butcher's ledger → Tell Han Xue what you found | 1972 xp |
 | 658 | Warm Blankets for the Frozen | Qingshi Town | Find Madam Fang → Gather blankets from the market → Join Liu Er at the main street | 1984 xp |
 | 659 | Iron-Fang Knows the Road | Qingshi Town | See what Iron-Fang wants → Speak with Merchant Jin | 1996 xp |
-| 660 | Up the Bandit Roads | Qingshi Town | Hear Iron-Fang out → Head to the town temple → Hear what Old Pan has to say | 2008 xp |
+| 660 | Up the Bandit Roads | Qingshi Town | Hear Iron-Fang out → Head to the town temple → Hear what Old Pan has to say | 2008 xp · *Void Refinement · 6th Layer* |
 
 ### Chapter 67 · Iron-Fang's Old Roads
 
@@ -1168,7 +1168,7 @@ The bandit roads through the bamboo were Iron-Fang's once. The Butcher of Wen us
 | 667 | The Butcher's Hide | Whispering Bamboo Forest | Go to the lookout rock → Search the Butcher's hide → Talk it over with Iron-Fang | 1972 xp |
 | 668 | The Butcher Comes for Iron-Fang | Whispering Bamboo Forest | Report to Zhao Kang → Raise the hermit's ward around the fire → Drive the Butcher's carters from the clearing → Stop the rogue cultivators regrouping → Check on Iron-Fang | 1984 xp |
 | 669 | Bones Like Iron Roads | Whispering Bamboo Forest | Temper your body on the old bandit road → Join Iron-Fang at the clearing | 1996 xp |
-| 670 | Under the Den | Whispering Bamboo Forest | Find Iron-Fang → Investigate the hermit's hut → Speak with Han Xue | 2008 xp · *Body Integration Late* |
+| 670 | Under the Den | Whispering Bamboo Forest | Find Iron-Fang → Investigate the hermit's hut → Speak with Han Xue | 2008 xp · *Void Refinement · 7th Layer* |
 
 ### Chapter 68 · The Butcher's Larder
 
@@ -1185,7 +1185,7 @@ In the caves beneath the old wolf den, where the Moonlit Grotto once opened, the
 | 677 | The Butcher's Welcome | Whispering Bamboo Forest | Answer Zhao Kang's summons → Break the ice golems at the clearing → Face the next wave of void wraiths → Return to Zhao Kang | 1972 xp |
 | 678 | Singing for Nineteen | Whispering Bamboo Forest | Sit with the hermit as he sings for the dead → Talk with the hermit at the clearing | 1984 xp |
 | 679 | Where the Butcher Went | Whispering Bamboo Forest | Scout the wolf den → Pull the cleaver from the table → Compare notes with Iron-Fang | 1996 xp |
-| 680 | To the Rim | Whispering Bamboo Forest | Report to Ruan Jingtao → Find Iron-Fang at the clearing | 2008 xp |
+| 680 | To the Rim | Whispering Bamboo Forest | Report to Ruan Jingtao → Find Iron-Fang at the clearing | 2008 xp · *Void Refinement · 8th Layer* |
 
 ### Chapter 69 · The Butcher of Wen
 
@@ -1202,11 +1202,11 @@ Wen Tu, the Butcher of Wen, Fifth Rung of the Ladder, waits at the Abyss rim by 
 | 687 | Wen Tu, the Butcher of Wen *(boss)* | Blood Moon Abyss | Search the obelisk ring → Face Wen Tu, the Butcher of Wen at the obelisk ring → Stand over the fallen Butcher → Talk with Iron-Fang at the canyon mouth | 2922 xp |
 | 688 | Five Stars Out | Blood Moon Abyss | Hear Ye Wuming out → Find Ruan Jingtao at the obelisk ring | 1984 xp |
 | 689 | The Butcher's Last Ledger | Blood Moon Abyss | Speak with Iron-Fang → Gather the pages of the Butcher's ledger → Report back to Iron-Fang | 1996 xp |
-| 690 | Carving Names | Blood Moon Abyss | Go and see Iron-Fang → Join Ye Wuming at the abyss depths | 2008 xp |
+| 690 | Carving Names | Blood Moon Abyss | Go and see Iron-Fang → Join Ye Wuming at the abyss depths | 2008 xp · *Void Refinement · 9th Layer* |
 
 ### Chapter 70 · One Body, One Soul
 
-Five Rungs have fallen. Your body and soul are almost one thing. Elder Hua says the last step of Body Integration isn't tempering: it's rest, and home, and letting the people you love remind you what the body is for.
+Five Rungs have fallen. Your body and soul are almost one thing. Elder Hua says the last step of Void Refinement isn't tempering: it's rest, and home, and letting the people you love remind you what the body is for.
 
 | # | Quest | Map | Objectives | Reward |
 |---|---|---|---|---|
@@ -1219,20 +1219,20 @@ Five Rungs have fallen. Your body and soul are almost one thing. Elder Hua says 
 | 697 | Visitors From Nothing | Azure Cloud Sect | Go and see Elder Hua → Ring the alarm at the cliff edge → Drive the void wraiths from the outer pines → Cut down the void wraiths that follow → Catch your breath with Zhao Kang | 1972 xp |
 | 698 | The Sect Master's Gift | Azure Cloud Sect | Answer the Sect Master's summons → Join Liu Er at the scholar rock → Speak with Yan Tie | 1984 xp |
 | 699 | One Body, One Soul | Azure Cloud Sect | Meditate in stillness on the stone bridge → Hear what the Sect Master has to say | 1996 xp |
-| 700 | What Comes Next | Azure Cloud Sect | Report to the hermit → Meet Han Xue at the quiet pavilion | 2008 xp · *Body Integration Peak* |
+| 700 | What Comes Next | Azure Cloud Sect | Report to the hermit → Meet Han Xue at the quiet pavilion | 2008 xp · *Void Refinement · Great Perfection* |
 
-## Volume 8 · Mahayana — *The Great Vehicle*
+## Volume 8 · Body Integration — *The Great Vehicle*
 
 No one climbs alone. The sects that once quarrelled over the Lotus Key gather into one alliance, and Lady Silk spins her web through the middle of it.
 
 ### Chapter 71 · The Great Vehicle
 
-Five Rungs have fallen and the fold at the Abyss grows thinner. When it opens, the Azure Cloud cannot march alone. The Sect Master decides to call every orthodox sect to one conclave, and the hermit says the heir must learn the realm that carries others: Mahayana, the Great Vehicle.
+Five Rungs have fallen and the fold at the Abyss grows thinner. When it opens, the Azure Cloud cannot march alone. The Sect Master decides to call every orthodox sect to one conclave, and the hermit says the heir must learn the realm that carries others: Body Integration, the first step of the Great Vehicle.
 
 | # | Quest | Map | Objectives | Reward |
 |---|---|---|---|---|
 | 701 | Not Alone | Azure Cloud Sect | Find the Sect Master → Make your way to the formation plaza → Talk with Lu Ping at the sect gate | 2450 xp |
-| 702 | The Hermit Explains Mahayana | Azure Cloud Sect | See what the hermit wants → Find Wei Tong at the weapon rack → Join Zhao Kang at the plum garden | 2462 xp |
+| 702 | The Hermit Explains the Body of Many | Azure Cloud Sect | See what the hermit wants → Find Wei Tong at the weapon rack → Join Zhao Kang at the plum garden | 2462 xp |
 | 703 | Paper for a Thousand Cranes | Azure Cloud Sect | Hear Elder Bai out → Gather crane paper from the pagoda → Speak with Lu Ping | 2474 xp |
 | 704 | Folding a Thousand Cranes | Azure Cloud Sect | Scout the formation plaza → Breathe life into the thousand cranes → Share your findings with Wei Tong | 2486 xp |
 | 705 | Carrying Wei Tong | Azure Cloud Sect | Speak with Wei Tong → Fight the puppets while carrying Wei Tong → See Wei Tong again | 2498 xp |
@@ -1240,7 +1240,7 @@ Five Rungs have fallen and the fold at the Abyss grows thinner. When it opens, t
 | 707 | Wraiths Follow the Cranes | Azure Cloud Sect | Answer Zhao Kang's summons → Ward the cranes' flight path from the cliff → Clear the outer pines of void wraiths → Stop the void wraiths regrouping → Return to Zhao Kang | 2522 xp |
 | 708 | Carrying the Mountain | Azure Cloud Sect | Report to the hermit → Feel everyone on the mountain at once → Go back to the hermit | 2534 xp |
 | 709 | The First Answers | Azure Cloud Sect | Find Lu Ping → Talk with the Sect Master at the main hall | 2546 xp |
-| 710 | Mahayana | Azure Cloud Sect | See what the hermit wants → Gather the returned cranes by the pond → Carry every sect in your cultivation → Find the Sect Master at the main hall | 5008 xp · **Mahayana** |
+| 710 | Body Integration | Azure Cloud Sect | See what the hermit wants → Gather the returned cranes by the pond → Carry every sect in your cultivation → Survive the tribulation of Body Integration → Find the Sect Master at the main hall | 5008 xp · **Body Integration** |
 
 ### Chapter 72 · The Sects Arrive
 
@@ -1257,11 +1257,11 @@ For a week the nine thousand steps are never empty. Iron Scale green, Zhao gold,
 | 717 | Wraiths at the Camp | Azure Cloud Sect | Find Ruan Jingtao → Fight off the void wraiths → Hold the formation plaza against more void wraiths → See Ruan Jingtao again | 2522 xp |
 | 718 | The Night Before the Conclave | Azure Cloud Sect | See what the Sect Master wants → Hear what Han Xue has to say → Meet Sect Master Ruan at the hall steps | 2534 xp |
 | 719 | Lanterns for Forty Sects | Azure Cloud Sect | Hear Lu Ping out → Carry the forty sects' lanterns → Hang the last lantern on the ninth pillar → Talk with Abbess Jing at the sect gate | 2546 xp |
-| 720 | Pink at the Edges | Azure Cloud Sect | Speak with Han Xue → Find the Sect Master at the main hall | 2558 xp |
+| 720 | Pink at the Edges | Azure Cloud Sect | Speak with Han Xue → Find the Sect Master at the main hall | 2558 xp · *Body Integration · 2nd Layer* |
 
 ### Chapter 73 · A Week Without a Name
 
-Before the conclave begins, Abbess Jing of the Moon-Well sets you a test: a week in Qingshi, serving the poor, and nobody may know who you are. Mahayana, she says, is carrying people who don't know your name.
+Before the conclave begins, Abbess Jing of the Moon-Well sets you a test: a week in Qingshi, serving the poor, and nobody may know who you are. The Great Vehicle, she says, is carrying people who don't know your name.
 
 | # | Quest | Map | Objectives | Reward |
 |---|---|---|---|---|
@@ -1274,7 +1274,7 @@ Before the conclave begins, Abbess Jing of the Moon-Well sets you a test: a week
 | 727 | Night in the Poor Quarter | Qingshi Town | Hear Old Pan out → Ring the dock bell to wake the quarter → Stop the void wraiths at the hill graves → Face the next wave of void wraiths → Report back to Old Pan | 2522 xp |
 | 728 | Carrying Without Being Seen | Qingshi Town | Carry the town in silence → Talk with Magistrate Zhou at the main street | 2534 xp |
 | 729 | Everyone Knew | Qingshi Town | Speak with Madam Fang → Find Abbess Jing at the market square | 2546 xp |
-| 730 | Up the Mountain Again | Qingshi Town | Go and see Abbess Jing → Join Han Xue at the town temple | 2558 xp |
+| 730 | Up the Mountain Again | Qingshi Town | Go and see Abbess Jing → Join Han Xue at the town temple | 2558 xp · *Body Integration · 3rd Layer* |
 
 ### Chapter 74 · The Conclave of Forty Sects
 
@@ -1291,7 +1291,7 @@ Forty sects in the main hall, the first conclave in three hundred years. The Sec
 | 737 | Bai's Research | Azure Cloud Sect | Speak with Elder Bai → Compare the Silk Pavilion's seal with the Blood Moon records → Return to Elder Bai | 2522 xp |
 | 738 | Telling the Sect Master | Azure Cloud Sect | Go and see the Sect Master → Talk with Abbess Jing at the outer pines | 2534 xp |
 | 739 | The Conclave's Second Day | Azure Cloud Sect | Answer Lu Ping's summons → Raise the formation over both camps → Drive the Blood Moon cultivators from the outer pines → Cut down the Blood Moon cultivators that follow → Regroup with Ruan Jingtao | 2546 xp |
-| 740 | Carrying Forty | Azure Cloud Sect | Carry the forty sects on the formation → Find Han Xue at the sect gate | 2558 xp · *Mahayana Middle* |
+| 740 | Carrying Forty | Azure Cloud Sect | Carry the forty sects on the formation → Find Han Xue at the sect gate | 2558 xp · *Body Integration · 4th Layer* |
 
 ### Chapter 75 · Threads Between Sects
 
@@ -1308,7 +1308,7 @@ The conclave agrees on everything except the thing that matters: who holds the L
 | 747 | Where Silk Goes | Azure Cloud Sect | Speak with the hermit → Read Madam Fang's crane about Qingshi → Share your findings with Han Xue | 2522 xp |
 | 748 | Webs on the Mountain | Azure Cloud Sect | Go and see Wei Tong → Cut the threads from Wei Tong's disciples → Fight off the void wraiths → Hold the outer pines against more Blood Moon cultivators → Report back to Wei Tong | 2534 xp |
 | 749 | Carrying a Web | Azure Cloud Sect | Answer the hermit's summons → Hold every thread of the web at once → Bring word to the hermit | 2546 xp |
-| 750 | Down to Qingshi | Azure Cloud Sect | Report to Ruan Jingtao → Talk with the hermit at the hall steps | 2558 xp |
+| 750 | Down to Qingshi | Azure Cloud Sect | Report to Ruan Jingtao → Talk with the hermit at the hall steps | 2558 xp · *Body Integration · 5th Layer* |
 
 ### Chapter 76 · The Web Unravels
 
@@ -1325,7 +1325,7 @@ Qingshi has been quarrelling for a year. Neighbours of forty years aren't speaki
 | 757 | Jin's Guild Pigeons | Qingshi Town | Go and see Merchant Jin → Search the guild's pigeon loft → Go back to Merchant Jin | 2522 xp |
 | 758 | The Heir's Friends Are Next | Qingshi Town | Answer Madam Fang's summons → Send your soul up the mountain along the threads → Stop the silk servants at the town gate → Finish the void wraiths at the docks → Check on Zhao Kang | 2534 xp |
 | 759 | The Town Carries Back | Qingshi Town | Report to Constable Du → Stand in the circle of the town → Meet Magistrate Zhou at the main street | 2546 xp |
-| 760 | The Spider in the Temple | Qingshi Town | Make your way to the town temple → Talk with Han Xue at the main street | 2558 xp |
+| 760 | The Spider in the Temple | Qingshi Town | Make your way to the town temple → Talk with Han Xue at the main street | 2558 xp · *Body Integration · 6th Layer* |
 
 ### Chapter 77 · Lady Silk
 
@@ -1342,7 +1342,7 @@ The conclave's last night is a feast for forty sects on the formation plaza. Lad
 | 767 | The Sixth Rung Falls *(boss)* | Azure Cloud Sect | Go to the formation plaza → Bring down Si Rou, Lady Silk → Stand over the fallen Sixth Rung → Talk with Han Xue at the sect gate | 3747 xp |
 | 768 | The Feast, Properly | Azure Cloud Sect | Answer Wei Tong's summons → Carry dishes to all forty tables → Raise a cup to the alliance → Find Abbess Jing at the sect gate | 2534 xp |
 | 769 | Carrying Two Thousand | Azure Cloud Sect | Carry the whole alliance in stillness → Join the hermit at the sect gate | 2546 xp |
-| 770 | One Left | Azure Cloud Sect | Report to the Sect Master → Speak with Han Xue | 2558 xp · *Mahayana Late* |
+| 770 | One Left | Azure Cloud Sect | Report to the Sect Master → Speak with Han Xue | 2558 xp · *Body Integration · 7th Layer* |
 
 ### Chapter 78 · The Oath of the Great Vehicle
 
@@ -1358,8 +1358,8 @@ Forty sects swear one oath on the formation plaza: when the fold opens, they mar
 | 776 | The Zhao Ancestor's Last Words | Azure Cloud Sect | Answer Ancestor Zhao's summons → Find Zhao Kang at the plum garden | 2510 xp |
 | 777 | An Empty Mountain | Azure Cloud Sect | Report to the hermit → Carry the departed sects from the cliff → Return to the hermit | 2522 xp |
 | 778 | Qing Luan's Last Crane | Azure Cloud Sect | Find Lu Ping → Listen to Qing Luan's faint crane → Show the Sect Master what you found | 2534 xp |
-| 779 | What Comes After Mahayana | Azure Cloud Sect | See what the Sect Master wants → Join Han Xue at the quiet pavilion | 2546 xp |
-| 780 | Letters From Forty Mountains | Azure Cloud Sect | Hear Steward Qian out → Speak with Abbess Jing | 2558 xp |
+| 779 | What Comes After the Body | Azure Cloud Sect | See what the Sect Master wants → Join Han Xue at the quiet pavilion | 2546 xp |
+| 780 | Letters From Forty Mountains | Azure Cloud Sect | Hear Steward Qian out → Speak with Abbess Jing | 2558 xp · *Body Integration · 8th Layer* |
 
 ### Chapter 79 · Teaching the Many
 
@@ -1376,7 +1376,7 @@ The alliance sends its young disciples to the Verdant Lotus ruins, to learn the 
 | 787 | Teaching the Blossom | Whispering Bamboo Forest | See what the hermit wants → Teach the blossom to three hundred children → See the hermit again | 2522 xp |
 | 788 | Wraiths at the School | Whispering Bamboo Forest | Hear Han Xue out → Raise the old Verdant Lotus ward over the school → Break the void wraiths at the ruins gate → Face the next wave of void wraiths → Catch your breath with Wei Tong | 2534 xp |
 | 789 | The Hermit's Successor | Whispering Bamboo Forest | Speak with the hermit → Read Qiu Hua's sutra copy → Return to the hermit | 2546 xp |
-| 790 | The School Stays | Whispering Bamboo Forest | Go and see Abbess Jing → Find the hermit at the hermit's hut | 2558 xp |
+| 790 | The School Stays | Whispering Bamboo Forest | Go and see Abbess Jing → Find the hermit at the hermit's hut | 2558 xp · *Body Integration · 9th Layer* |
 
 ### Chapter 80 · A Vehicle for Ten Thousand
 
@@ -1393,9 +1393,9 @@ The alliance's first joint action: every sect sends fighters to the Abyss rim, t
 | 797 | What's Left | Blood Moon Abyss | Go to the war camp → Defeat the void wraiths at the war camp → Gather the demon cores they leave → Tell Wei Tong what you found | 2522 xp |
 | 798 | A Picnic in the Abyss | Blood Moon Abyss | Hear Wei Tong out → Hand out Wei Tong's dumplings → Raise a cup at the rim with forty sects → Meet Abbess Jing at the canyon mouth | 2534 xp |
 | 799 | A Vehicle for Ten Thousand | Blood Moon Abyss | Carry ten thousand in the stillness of the depths → Talk with the Sect Master at the canyon mouth | 2546 xp |
-| 800 | Heaven Takes Notice | Blood Moon Abyss | Speak with Han Xue → Investigate the Heart Mirror → Find the Sect Master at the Heart Mirror | 2558 xp · *Mahayana Peak* |
+| 800 | Heaven Takes Notice | Blood Moon Abyss | Speak with Han Xue → Investigate the Heart Mirror → Find the Sect Master at the Heart Mirror | 2558 xp · *Body Integration · Great Perfection* |
 
-## Volume 9 · Tribulation Transcendence — *Heaven Takes Notice*
+## Volume 9 · Mahayana — *Heaven Takes Notice*
 
 Clouds gather over every step. Thunder crystals, lightning rods, lesser tribulations and farewells said early: the long preparation for a sky that is coming to look.
 
@@ -1414,7 +1414,7 @@ The clouds over the Azure Cloud turn in a slow spiral, and one morning a stair o
 | 807 | Tribulation Jade | Celestial Sky Isles | See what Qing Luan wants → Gather tribulation jade from the old strikes → Return to Qing Luan | 3172 xp |
 | 808 | The Peak From Afar | Celestial Sky Isles | Scout the Isle of Winds → Look at the figure through the star chart → Talk it over with Qing Luan | 3184 xp |
 | 809 | Heaven's Timetable | Celestial Sky Isles | Hear Qing Luan out → Hurry to the cloud gate → Hear what Han Xue has to say | 3196 xp |
-| 810 | Tribulation Transcendence | Celestial Sky Isles | Speak with Qing Luan → Set tribulation jade around the gate → Open yourself to heaven's eye → Meet the Sect Master at the cloud gate | 6308 xp · **Tribulation Transcendence** |
+| 810 | Mahayana | Celestial Sky Isles | Speak with Qing Luan → Set tribulation jade around the gate → Open yourself to heaven's eye → Survive the tribulation of Mahayana → Meet the Sect Master at the cloud gate | 6308 xp · **Mahayana** |
 
 ### Chapter 82 · Thunder Crystal Harvest
 
@@ -1431,7 +1431,7 @@ A tribulation can be survived, the old books say, if the lightning can be split:
 | 817 | Ninety-Nine | Celestial Sky Isles | Count the ninety-nine crystals → Scout the cloud gate → Tell Han Xue what you found | 3172 xp |
 | 818 | Lies for a Shadow | Celestial Sky Isles | See what Han Xue wants → Find Wei Tong at the cloud gate | 3184 xp |
 | 819 | Carrying Crystals Down | Celestial Sky Isles | Hear Zhao Kang out → Defeat the shadow-born at the jade bridge → Hold the cloud gate against more storm wolves → Regroup with Qing Luan | 3196 xp |
-| 820 | Crystals in the Pagoda | Azure Cloud Sect | Speak with Elder Bai → Join Wei Tong at the weapon rack | 3208 xp |
+| 820 | Crystals in the Pagoda | Azure Cloud Sect | Speak with Elder Bai → Join Wei Tong at the weapon rack | 3208 xp · *Mahayana · 2nd Layer* |
 
 ### Chapter 83 · The Seventh Rung
 
@@ -1448,7 +1448,7 @@ The Seventh Rung's shadows have been seen at the Abyss rim, gathering blood from
 | 827 | The Shadow's Trail | Blood Moon Abyss | Investigate the Heart Mirror → Fight off the shadow-born → Gather the drained lotus around the mirror → Show Xiao Shi what you found | 3172 xp |
 | 828 | What the Shadow Sees | Blood Moon Abyss | Search the Heart Mirror → Look at Xue Chen's reflection → Talk it over with Han Xue | 3184 xp |
 | 829 | Steal Him Back | Blood Moon Abyss | Hear Ye Wuming out → Talk with Elder Gu at the field of bones | 3196 xp |
-| 830 | Thinking of Willow Creek | Blood Moon Abyss | Remember Willow Creek in the depths → Find Iron-Fang at the canyon mouth | 3208 xp |
+| 830 | Thinking of Willow Creek | Blood Moon Abyss | Remember Willow Creek in the depths → Find Iron-Fang at the canyon mouth | 3208 xp · *Mahayana · 3rd Layer* |
 
 ### Chapter 84 · Lightning Rods for a Sect
 
@@ -1465,7 +1465,7 @@ A tribulation strikes the cultivator, but lightning is careless: stray bolts can
 | 837 | Nine Rods Around the Mountain | Azure Cloud Sect | Find Liu Er → Carry the rods to their places → Hear what Xiao Man has to say | 3172 xp |
 | 838 | Singing With the Rods | Azure Cloud Sect | See what Yan Tie wants → Hum with the nine rods in the storm → Meet the Sect Master at the sect gate | 3184 xp |
 | 839 | Xiao Shi's Map, Updated | Azure Cloud Sect | Hear Xiao Shi out → Talk with Elder Bai at the scripture pagoda | 3196 xp |
-| 840 | Farewells Early | Azure Cloud Sect | Speak with the Sect Master → Find Liu Er at the scholar rock | 3208 xp · *Tribulation Transcendence Middle* |
+| 840 | Farewells Early | Azure Cloud Sect | Speak with the Sect Master → Find Liu Er at the scholar rock | 3208 xp · *Mahayana · 4th Layer* |
 
 ### Chapter 85 · The Lesser Tribulation
 
@@ -1482,7 +1482,7 @@ Before the great tribulation comes a lesser one: three bolts, a warning shot fro
 | 847 | Everyone Watched | Celestial Sky Isles | Find Han Xue → Find Wei Tong at the cloud gate → Join Yan Tie at the immortal garden | 3172 xp |
 | 848 | Tribulation Jade, Fresh | Celestial Sky Isles | See what Qing Luan wants → Gather your own tribulation jade → Report back to Qing Luan | 3184 xp |
 | 849 | The Ninth Ring | Celestial Sky Isles | Read the star chart after the storm → Investigate the star pavilion → Compare notes with Qing Luan | 3196 xp |
-| 850 | Warm Jade | Celestial Sky Isles | Hear Qing Luan out → Speak with Han Xue | 3208 xp |
+| 850 | Warm Jade | Celestial Sky Isles | Hear Qing Luan out → Speak with Han Xue | 3208 xp · *Mahayana · 5th Layer* |
 
 ### Chapter 86 · Words for Those Left Behind
 
@@ -1499,7 +1499,7 @@ The Sect Master said start with Qingshi. So you walk down the nine thousand step
 | 857 | Jade in the Qing River | Qingshi Town | Head to the docks → Drop a piece of jade into the river → Show Old Pan what you found | 3172 xp |
 | 858 | Merchant Jin's Ledger | Qingshi Town | See what Merchant Jin wants → Meet Iron-Fang at the main street → Talk with Widow Liu at the town well | 3184 xp |
 | 859 | The Temple, One Last Time | Qingshi Town | Carry Qingshi in the temple's quiet → Find Han Xue at the main street | 3196 xp |
-| 860 | See You Later | Qingshi Town | Hear Constable Du out → Join Liu Er at the terraced fields | 3208 xp |
+| 860 | See You Later | Qingshi Town | Hear Constable Du out → Join Liu Er at the terraced fields | 3208 xp · *Mahayana · 6th Layer* |
 
 ### Chapter 87 · Han Xue's Soul
 
@@ -1516,7 +1516,7 @@ Han Xue has been close to forming her nascent soul for a year, and has refused t
 | 867 | Plum Blossoms for a New Soul | Azure Cloud Sect | Find Wei Tong → Gather plum blossoms for Han Xue → Join Han Xue at the quiet pavilion | 3172 xp |
 | 868 | The Sparring Match | Azure Cloud Sect | See what Han Xue wants → Speak with Yan Tie → Hear what Xiao Shi has to say | 3184 xp |
 | 869 | A Gift of Jade | Azure Cloud Sect | Give Han Xue your tribulation jade → Talk it over with Han Xue | 3196 xp |
-| 870 | Two Souls on the Mountain | Azure Cloud Sect | Hear the Sect Master out → Hurry to the scripture pagoda → Meet Yan Tie at the cliff edge | 3208 xp |
+| 870 | Two Souls on the Mountain | Azure Cloud Sect | Hear the Sect Master out → Hurry to the scripture pagoda → Meet Yan Tie at the cliff edge | 3208 xp · *Mahayana · 7th Layer* |
 
 ### Chapter 88 · Zhao Kang's Wager
 
@@ -1533,7 +1533,7 @@ Zhao Tianlu, a hundred and fifteen years old, climbs the steps one last time to 
 | 877 | The Ancestor's Blessing | Azure Cloud Sect | Hear Ancestor Zhao out → Meet Ancestor Zhao at the training ground | 3172 xp |
 | 878 | Jade for the Zhao Clan | Azure Cloud Sect | Speak with Zhao Kang → Gather the Zhao clan's farewell gifts → Talk with Steward Qian at the sect gate | 3184 xp |
 | 879 | Shadows at the Palanquin | Azure Cloud Sect | Go and see Zhao Kang → Break the void wraiths at the sect gate → Cut down the void wraiths that follow → Bring word to Zhao Kang | 3196 xp |
-| 880 | When You Come Back Down | Azure Cloud Sect | Answer Zhao Kang's summons → Investigate the formation plaza → Find Ancestor Zhao at the formation plaza | 3208 xp · *Tribulation Transcendence Late* |
+| 880 | When You Come Back Down | Azure Cloud Sect | Answer Zhao Kang's summons → Investigate the formation plaza → Find Ancestor Zhao at the formation plaza | 3208 xp · *Mahayana · 8th Layer* |
 
 ### Chapter 89 · The Red Star Aligns
 
@@ -1550,7 +1550,7 @@ Qing Luan calls you back to the isles. The seventh red star, Xue Chen's, is slid
 | 887 | Qing Luan's Promise | Celestial Sky Isles | Speak with Qing Luan → Hear what Han Xue has to say | 3172 xp |
 | 888 | Crystals for the Peak | Celestial Sky Isles | Go and see Qing Luan → Plant the delta's first crystals → Go back to Qing Luan | 3184 xp |
 | 889 | Xue Chen at the Peak | Celestial Sky Isles | Scout the Isle of Winds → Watch Xue Chen through the star chart → Compare notes with Ye Wuming | 3196 xp |
-| 890 | Down to the Last Preparations | Celestial Sky Isles | Answer the Sect Master's summons → Meet Ye Wuming at the Isle of Winds | 3208 xp |
+| 890 | Down to the Last Preparations | Celestial Sky Isles | Answer the Sect Master's summons → Meet Ye Wuming at the Isle of Winds | 3208 xp · *Mahayana · 9th Layer* |
 
 ### Chapter 90 · The Stair Remembers
 
@@ -1567,9 +1567,9 @@ Qing Luan takes you to the foot of the Ascension Stair, the stair nobody has cli
 | 897 | Shadows on the Stair | Celestial Sky Isles | Investigate the Ascension Stair → Clear the immortal garden of shadow-born → Gather the ash of the burned shadows → Talk it over with Qing Luan | 3172 xp |
 | 898 | Sitting at the Stair | Celestial Sky Isles | Sit at the foot of the Ascension Stair → Speak with Qing Luan | 3184 xp |
 | 899 | The Sect Master Comes Up | Celestial Sky Isles | Go and see the Sect Master → Hear what Wei Tong has to say → Meet Qing Luan at the star pavilion | 3196 xp |
-| 900 | The Moon Is Almost Red | Celestial Sky Isles | Answer Qing Luan's summons → Talk with Han Xue at the immortal garden | 3208 xp |
+| 900 | The Moon Is Almost Red | Celestial Sky Isles | Answer Qing Luan's summons → Talk with Han Xue at the immortal garden | 3208 xp · *Mahayana · Great Perfection* |
 
-## Volume 10 · Immortal Ascension — *The Last Blood Moon*
+## Volume 10 · Tribulation Transcendence — *The Last Blood Moon*
 
 The moon turns red, the void unfolds, and the last Rung falls. The Azure Cloud marches into the Abyss, the Patriarch rides the lightning, and an orphan climbs the Ascension Stair.
 
@@ -1588,7 +1588,7 @@ Every night the moon rises a little redder. The fold at the Abyss has begun to b
 | 907 | Forty Hands, One Promise | Azure Cloud Sect | Go and see Steward Qian → Speak with the Sect Master → Hear what Han Xue has to say | 3872 xp |
 | 908 | Under the Rusting Moon | Azure Cloud Sect | Carry eleven thousand under the red moon → Meet the Sect Master at the sect gate | 3884 xp |
 | 909 | The Fold Breathes | Azure Cloud Sect | Answer Lu Ping's summons → Read Ye Wuming's crane → Share your findings with the Sect Master | 3896 xp |
-| 910 | Washing Bandits | Azure Cloud Sect | Report to Wei Tong → Talk with Han Xue at the quiet pavilion | 3908 xp |
+| 910 | Heaven Answers the Red Moon | Azure Cloud Sect | Report to Han Xue → Break through beneath the red moon → Survive the tribulation of Tribulation Transcendence → Talk with the Sect Master at the sect gate | 7708 xp · **Tribulation Transcendence** |
 
 ### Chapter 92 · Forty Bandits, Washed and Fed
 
@@ -1605,7 +1605,7 @@ Iron-Fang has gathered forty of his old men for the march on the Abyss: farmers 
 | 917 | The Names Behind the Gate | Whispering Bamboo Forest | Answer Iron-Fang's summons → Hear what Ye Wuming has to say | 3872 xp |
 | 918 | The Old Map | Whispering Bamboo Forest | Report to Iron-Fang → Study Iron-Fang's old fortress map → Return to Iron-Fang | 3884 xp |
 | 919 | Forty Men by the Fire | Whispering Bamboo Forest | Carry Iron-Fang's army by the fire → Meet Iron-Fang at the clearing | 3896 xp |
-| 920 | March to the Rim | Whispering Bamboo Forest | Find Iron-Fang → Talk with Wei Tong at the lookout rock | 3908 xp |
+| 920 | March to the Rim | Whispering Bamboo Forest | Find Iron-Fang → Talk with Wei Tong at the lookout rock | 3908 xp · *Tribulation Transcendence · 2nd Layer* |
 
 ### Chapter 93 · A Traitor's Last Requests
 
@@ -1622,7 +1622,7 @@ Gu Hanshan has been a prisoner for years, and for years he has helped: advice in
 | 927 | Letters to a Dead Girl | Azure Cloud Sect | Answer Elder Gu's summons → Gather Gu's letters to his daughter → Burn the letters at the cliff edge → Report back to Elder Gu | 3872 xp |
 | 928 | The Sect Master and the Traitor | Azure Cloud Sect | Report to the Sect Master → Talk with the hermit at the scholar rock → Find Elder Gu at the outer pines | 3884 xp |
 | 929 | Sitting With the Traitor | Azure Cloud Sect | Find Elder Gu → Sit with Gu Hanshan at the moon gate → Bring word to Elder Gu | 3896 xp |
-| 930 | The Hermit's Blessing | Azure Cloud Sect | See what the hermit wants → Join the Sect Master at the main hall | 3908 xp |
+| 930 | The Hermit's Blessing | Azure Cloud Sect | See what the hermit wants → Join the Sect Master at the main hall | 3908 xp · *Tribulation Transcendence · 3rd Layer* |
 
 ### Chapter 94 · Xue Chen's Hunt
 
@@ -1639,7 +1639,7 @@ The last blood moon needs blood. Xue Chen, the Seventh Rung, comes to Qingshi fo
 | 937 | Blood for the Moon | Qingshi Town | Search the hill graves → Clear the hill graves of shadow-born → Gather the blood-soaked earth before the moon drinks it → Talk it over with Liu Er | 3872 xp |
 | 938 | The Last Wave at the Gate | Qingshi Town | Find Constable Du → Ward the town gate → Fight off the Blood Guards → Face the next wave of shadow-born → Return to Constable Du | 3884 xp |
 | 939 | The Empty Tower | Qingshi Town | Head to the watchtower → Pick up the carved horse → Share your findings with Ye Wuming | 3896 xp |
-| 940 | Qingshi Holds, Again | Qingshi Town | See what Madam Fang wants → Join Widow Liu at the town well | 3908 xp |
+| 940 | Qingshi Holds, Again | Qingshi Town | See what Madam Fang wants → Join Widow Liu at the town well | 3908 xp · *Tribulation Transcendence · 4th Layer* |
 
 ### Chapter 95 · The Shadow at the Stair
 
@@ -1656,7 +1656,7 @@ Qing Luan's crane is frantic: Xue Chen is on the tribulation peak, setting his r
 | 947 | Standing on the Black Rings | Celestial Sky Isles | Report to Qing Luan → Let the tribulation peak learn you → Report back to Qing Luan | 3872 xp |
 | 948 | Warm Jade for Qing Luan | Celestial Sky Isles | Find Qing Luan → Gather silk to wrap Qing Luan's jade → Bring word to Qing Luan | 3884 xp |
 | 949 | See You on the Night | Celestial Sky Isles | See what Qing Luan wants → Talk with Han Xue at the celestial ruins | 3896 xp |
-| 950 | Down to the Mirror | Celestial Sky Isles | Hear Ye Wuming out → Find Qing Luan at the star pavilion | 3908 xp · *Tribulation Transcendence Peak* |
+| 950 | Down to the Mirror | Celestial Sky Isles | Hear Ye Wuming out → Find Qing Luan at the star pavilion | 3908 xp · *Tribulation Transcendence · 5th Layer* |
 
 ### Chapter 96 · The Last Evening
 
@@ -1673,7 +1673,7 @@ One evening left before the moon turns fully red. The Sect Master declares a hol
 | 957 | Han Xue on the Bridge | Azure Cloud Sect | Hear Han Xue out → Talk with Wei Tong at the weapon rack → Find Zhao Kang at the plum garden | 3872 xp |
 | 958 | The Main Hall, Quiet | Azure Cloud Sect | Sit in stillness beneath the lanterns → Join the Sect Master at the main hall | 3884 xp |
 | 959 | Steward Qian's Account | Azure Cloud Sect | Speak with Steward Qian → Speak with Xiao Man → Hear what Xiao Shi has to say | 3896 xp |
-| 960 | Dawn, and the Moon | Azure Cloud Sect | Go and see the Sect Master → Meet Wei Tong at the weapon rack | 3908 xp |
+| 960 | Dawn, and the Moon | Azure Cloud Sect | Go and see the Sect Master → Meet Wei Tong at the weapon rack | 3908 xp · *Tribulation Transcendence · 6th Layer* |
 
 ### Chapter 97 · The Void Unfolds
 
@@ -1690,7 +1690,7 @@ The fold is opening. As the moon climbs toward red, the black fortress drifts ba
 | 967 | The Depths | Blood Moon Abyss | See what Han Xue wants → Break the shadow-born at the abyss depths → Face the next wave of Blood Guards → See Han Xue again | 3872 xp |
 | 968 | Before the Mirror | Blood Moon Abyss | Remember Willow Creek before the mirror → Speak with Ye Wuming | 3884 xp |
 | 969 | Medicine at the Rim | Blood Moon Abyss | Hear Xiao Shi out → Take a medicine bundle for the mirror → Return to Xiao Shi | 3896 xp |
-| 970 | Alone to the Mirror | Blood Moon Abyss | Speak with Ye Wuming → Hurry to the obelisk ring → Hear what Iron-Fang has to say | 3908 xp |
+| 970 | Alone to the Mirror | Blood Moon Abyss | Speak with Ye Wuming → Hurry to the obelisk ring → Hear what Iron-Fang has to say | 3908 xp · *Tribulation Transcendence · 7th Layer* |
 
 ### Chapter 98 · The Patriarch's Shadow
 
@@ -1707,7 +1707,7 @@ At the Heart Mirror, at the bottom of the world, Xue Chen sits looking at a boy 
 | 977 | Seven Stars Out | Blood Moon Abyss | Make your way to the field of bones → Hear what Elder Gu has to say | 3872 xp |
 | 978 | Lotus for a Cousin | Blood Moon Abyss | Report to Xiao Shi → Gather the pink lotus where he fell → Meet Iron-Fang at the abyss depths | 3884 xp |
 | 979 | Burying a Cousin | Blood Moon Abyss | Bury Xue Chen at the rim → Talk with Han Xue at the canyon mouth | 3896 xp |
-| 980 | Home for the Night | Blood Moon Abyss | Find Ye Wuming → Find Elder Gu at the abyss depths | 3908 xp |
+| 980 | Home for the Night | Blood Moon Abyss | Find Ye Wuming → Find Elder Gu at the abyss depths | 3908 xp · *Tribulation Transcendence · 8th Layer* |
 
 ### Chapter 99 · Eve of the Last Blood Moon
 
@@ -1724,7 +1724,7 @@ The last day. Forty sects' armies climb the nine thousand steps and gather at th
 | 987 | Iron-Fang and Gu | Azure Cloud Sect | Find Iron-Fang → Find Han Xue at the quiet pavilion → Join Wei Tong at the weapon rack | 3872 xp |
 | 988 | The Last Stillness | Azure Cloud Sect | Carry the whole army in stillness → Speak with Wei Tong | 3884 xp |
 | 989 | The Array Wakes | Azure Cloud Sect | Hurry to the teleport array → Light the teleport array for the march → Tell Zhao Kang what you found | 3896 xp |
-| 990 | Under the Last Blood Moon | Azure Cloud Sect | See what Han Xue wants → Hear what Elder Hua has to say | 3908 xp |
+| 990 | Under the Last Blood Moon | Azure Cloud Sect | See what Han Xue wants → Hear what Elder Hua has to say | 3908 xp · *Tribulation Transcendence · 9th Layer* |
 
 ### Chapter 100 · Heavenly Tribulation  *(voiced)*
 
@@ -1740,6 +1740,6 @@ Under the last blood moon the Azure Cloud marches into the Abyss. A traitor open
 | 996 | The Blood Moon Patriarch *(boss)* | Blood Moon Abyss | Cut down the Patriarch's throne guards → Confront the Blood Moon Patriarch → Defeat the Blood Moon Patriarch → Find Ye Wuming in the abyss depths | 4000 xp |
 | 997 | Pursuit to the Heavens | Celestial Sky Isles | Meet Qing Luan at the cloud gate → Fight through the possessed Blood Guards on the jade bridge → Speak with Han Xue on the Isle of Winds | 3000 xp |
 | 998 | Remnants of the Blood Moon | Celestial Sky Isles | Purge the possessed cultivators in the garden → Gather thunder crystals to ground the tribulation → Charge the crystals at the spirit vein → Speak with Zhao Kang at the celestial ruins | 3000 xp |
-| 999 | Heavenly Tribulation *(boss)* | Celestial Sky Isles | Ascend to the tribulation peak → Survive the heart tribulation and destroy the remnant → Endure the nine bolts of heavenly lightning | 6000 xp |
+| 999 | Heavenly Tribulation *(boss)* | Celestial Sky Isles | Ascend to the tribulation peak → Survive the heart tribulation and destroy the remnant → Survive the nine-times-nine Heavenly Tribulation → Endure the nine bolts of heavenly lightning | 6000 xp · *Tribulation Transcendence · Great Perfection* |
 | 1000 | Immortal Ascension | Celestial Sky Isles | Say farewell to the Sect Master at the cloud gate → Say farewell to Qing Luan → Climb the Ascension Stair → Ascend → Epilogue: the Azure Cloud Sect | 10000 xp · **Immortal Ascension** |
 

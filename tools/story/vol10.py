@@ -1,4 +1,4 @@
-"""Volume X · Immortal Ascension — chapters 91-99, leading into the original
+"""Volume X · Tribulation Transcendence — chapters 91-99, leading into the original
 finale "Heavenly Tribulation" (chapter 100).
 
 The moon turns red. The fold begins to unfold, and the black gate drifts back
@@ -91,11 +91,14 @@ CHAPTERS = [
             "@T:SectGate",
             (YUN, "Weeks. Maybe less. Iron-Fang has asked for time to gather his men. Go and help him. He says they need washing."),
             prop="jade_slip", thing="Ye Wuming's crane"),
-          B("interlude", "Washing Bandits",
-            "Iron-Fang's crane is short: forty men, mostly clean, all hungry. Help. Also bring soap.",
-            (WEI, "Iron-Fang needs soap? For forty bandits? I'm bringing soap. And dumplings. Bandits need dumplings. Everybody needs dumplings."),
-            "|",
-            (HAN, "Go. Help him. I'll stay and watch the moon. Somebody should watch it who isn't afraid of it. I've decided I'm not."),
+          B("break", "Heaven Answers the Red Moon",
+            "Under the red moon, the storm that has watched you for a year finally turns its eye. Tribulation Transcendence will not wait for the war.",
+            (HAN, "The clouds over the cliff. They're turning. Like an eye. It's yours, isn't it? Go. We'll hold the walls. We're good at walls."),
+            "@M:CliffEdge", ">Break through beneath the red moon",
+            (N, "Forty sects, a town, a bandit army, a mountain of friends. You carry them all, and the sky, at last, answers."),
+            "@T:SectGate",
+            (YUN, "Tribulation Transcendence. Under a blood moon. Mo would have said adequate and gone to cry somewhere private. So will I."),
+            (WEI, "Iron-Fang's crane came. He needs soap. For forty bandits. I'm bringing soap. And dumplings. Everybody needs dumplings."),
             ),
       ]),
     # ------------------------------------------------------------------ chapter 92
@@ -245,6 +248,8 @@ CHAPTERS = [
             (N, "The letters burn. The ash rises over the sea of clouds and goes up, and up. Gu watches it until it's gone. He doesn't cry. He smiles."),
             "@T:MoonGate",
             (GU, "Delivered. Twenty years late. She had better manners than me. She'll read them anyway."),
+            (GU, "You gave me water once, on the bone field, when the rules said no. I never thanked you. Thank you.",
+             {"flag": "gave_gu_water"}),
             item="letter", noun="unsent letters", prop="seal", thing="the letters"),
           B("social", "The Sect Master and the Traitor",
             "At the end, the Sect Master comes to the moon gate. She and Gu Hanshan talk for the first time in years.",
@@ -415,7 +420,7 @@ CHAPTERS = [
             (SAGE, "Stand on the rings. Where you'll stand on the night. Let the peak learn your weight. It should know who it's holding up."),
             "@M:CloudGate", ">Let the tribulation peak learn you",
             (N, "The black rings hum under your feet: ten thousand years of cultivators who stood here and were answered. They're curious about you."),
-            (N, "Peak of Tribulation Transcendence. Nothing left but the sky."),
+            (N, "Fifth layer of Tribulation Transcendence. Halfway to the sky."),
             "@T:CloudGate",
             (SAGE, "Peak. You're ready. The sky's ready. The moon's nearly ready. Only the Shadow isn't. Go to the mirror. Go and find your cousin."),
             ),

@@ -13,7 +13,10 @@ from . import numbering as NB
 from . import (chapter01, chapter02, chapter03, chapter04, chapter05,
                chapter06, chapter07, chapter08, chapter09, chapter10)
 from . import vol01, vol02, vol03, vol04, vol05, vol06, vol07, vol08, vol09, vol10
-from .saga_gen import build_chapter
+from . import morality as MO
+from . import tribulations as TR
+from .choices import LEGACY as LEGACY_CHOICES
+from .saga_gen import attach_choice, build_chapter
 
 LEGACY = [m.CHAPTER for m in (chapter01, chapter02, chapter03, chapter04, chapter05,
                               chapter06, chapter07, chapter08, chapter09, chapter10)]
@@ -54,22 +57,65 @@ VOLUME_INFO = [
      "Patriarch rides the lightning, and an orphan climbs the Ascension Stair."),
 ]
 
-# minor stage granted at the end of these chapters: 1 Middle, 2 Late, 3 Peak
-STAGE_AT = {4: 1, 7: 2, 10: 3, 14: 1, 17: 2, 20: 3, 24: 1, 27: 2, 30: 3, 34: 1, 37: 2, 40: 3,
-            44: 1, 47: 2, 50: 3, 54: 1, 57: 2, 60: 3, 64: 1, 67: 2, 70: 3, 74: 1, 77: 2, 80: 3,
-            84: 1, 88: 2, 95: 3}
-# breakthroughs granted by new chapters (the legacy chapters grant the first five)
-REALM_AT = {51: "Void Refinement", 61: "Body Integration", 71: "Mahayana", 81: "Tribulation Transcendence"}
+def schedule(number):
+    """(realm, stage) granted by the last quest of chapter ``number``.
+
+    Chapter c of volume v ends at minor stage c of major realm v; chapter 1 is
+    the breakthrough (realm and stage 1). The last chapter is the exception:
+    its ninth quest reaches Great Perfection (stage 10) of Tribulation
+    Transcendence and its tenth grants Immortal Ascension.
+    """
+    from world_spec import REALMS
+    v = NB.volume_of_chapter(number)
+    c = number - (v - 1) * NB.CHAPTERS_PER_VOLUME
+    if number == NB.TOTAL_CHAPTERS:
+        return REALMS[-1], None
+    return (REALMS[v] if c == 1 else None), c
 
 
 def _legacy_chapter(k):
+    from world_spec import REALMS
     ch = copy.deepcopy(LEGACY[k - 1])
-    ch["number"] = NB.LEGACY_CHAPTERS[k]
+    number = NB.LEGACY_CHAPTERS[k]
+    ch["number"] = number
     ch["legacy"] = k
+    realm, stage = schedule(number)
     for i, q in enumerate(ch["quests"]):
-        q["legacy"] = (k - 1) * 10 + i + 1
-        q["rewards"].setdefault("stage", None)
+        n = (k - 1) * 10 + i + 1
+        q["legacy"] = n
+        q["rewards"]["stage"] = None
+        # hand-written choices after voiced objectives (their lines stay as they are)
+        for (lq, oi), choice in LEGACY_CHOICES.items():
+            if lq == n:
+                attach_choice(q, choice, NB.legacy_to_new(n), at=oi)
+    quests = ch["quests"]
+    last = quests[-1]
+    if last["rewards"]["realm"] != realm:
+        raise ValueError("chapter %d should grant %r, grants %r" % (number, realm, last["rewards"]["realm"]))
+    if number == NB.TOTAL_CHAPTERS:
+        # Heavenly Tribulation: nine times nine before the nine bolts, then Great Perfection
+        q = quests[-2]
+        med = next(i for i, o in enumerate(q["objectives"]) if o["type"] == "meditate")
+        mo = q["objectives"][med]
+        m = next((o["map"] for o in reversed(q["objectives"][:med + 1]) if o.get("map")), None) or q["map"]
+        q["objectives"].insert(med, _added(TR.make(10, REALMS[10], mo["marker"], m, final=True)))
+        q["rewards"]["stage"] = 10
+    else:
+        last["rewards"]["stage"] = stage
+        if realm:
+            # the voiced breakthrough meditation is followed by its tribulation
+            objs = last["objectives"]
+            med = max(i for i, o in enumerate(objs) if o["type"] == "meditate")
+            mo = objs[med]
+            m = next((o["map"] for o in reversed(objs[:med + 1]) if o.get("map")), None) or last["map"]
+            objs.insert(med + 1, _added(TR.make(REALMS.index(realm), realm, mo["marker"], m)))
     return ch
+
+
+def _added(obj):
+    """An objective added to a voiced quest: build_story keeps the voice keys of the others."""
+    obj["added"] = True
+    return obj
 
 
 def build_volumes():
@@ -81,10 +127,14 @@ def build_volumes():
         for c in range(1, NB.CHAPTERS_PER_VOLUME + 1):
             number = (v - 1) * NB.CHAPTERS_PER_VOLUME + c
             if number in NB.CHAPTER_OF_LEGACY:
-                chapters.append(_legacy_chapter(NB.CHAPTER_OF_LEGACY[number]))
+                ch = _legacy_chapter(NB.CHAPTER_OF_LEGACY[number])
             else:
                 spec = next(new_iter[v - 1])
-                chapters.append(build_chapter(spec, number, realm=REALM_AT.get(number), stage=STAGE_AT.get(number)))
+                realm, stage = schedule(number)
+                ch = build_chapter(spec, number, realm=realm, stage=stage)
+            # the end of every chapter rewards the player's alignment a little
+            ch["quests"][-1]["rewards"]["bonus"] = MO.chapter_bonus()
+            chapters.append(ch)
         for it in new_iter[v - 1]:
             raise ValueError("volume %d has too many new chapters (%r)" % (v, it["title"]))
         sub, summary = VOLUME_INFO[v - 1]

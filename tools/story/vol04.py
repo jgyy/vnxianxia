@@ -819,7 +819,7 @@ CHAPTERS = [
           B("cultivate", "Soul at the Peak",
             "You sit on the stone bridge and let your nascent soul reach its peak, as if something in you knows you'll need it soon.",
             "@M:StoneBridge", ">Bring your nascent soul to its peak",
-            (N, "Your nascent soul sits cross-legged in your chest, lotus in its hands, and opens its eyes very wide. Peak of Nascent Soul."),
+            (N, "Your nascent soul sits cross-legged in your chest, lotus in its hands, and opens its eyes very wide. Great Perfection of Nascent Soul."),
             (N, "In soul sight, the formation behind you glows blue. In one place, in the outer ring, the blue has a thread of red in it."),
             "@T:StoneBridge",
             (HAN, "You look like you saw something. Did you see something?"),

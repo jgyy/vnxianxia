@@ -751,7 +751,7 @@ CHAPTERS = [
             "@M:CliffEdge", ">Cultivate beneath the stair of cloud",
             (N, "Your golden core burns at its peak, so bright it almost hums. Above you the stair of cloud solidifies, step by step, in the moonlight."),
             "@T:SectGate",
-            (MO, "Peak of Core Formation. Adequate. I've said that word more to you than to anyone. Don't let it go to your head."),
+            (MO, "Great Perfection of Core Formation. Adequate. I've said that word more to you than to anyone. Don't let it go to your head."),
             (MO, "Bring me star iron. I'll build the formation while you're gone. I'll check every rune. Twice. Go."),
             ),
           B("social", "The Sect Master's Last Word",

@@ -36,8 +36,19 @@ import re
 from . import fillers as FL
 from . import numbering as NB
 from . import places as PL
-from .dsl import N, P, chapter, collect, defeat, interact, meditate, quest, reach, talk
+from . import morality as MO
+from . import tribulations as TR
+from .choices import NEW as CHOICES
+from .dsl import N, P, _lines, chapter, collect, defeat, interact, meditate, quest, reach, talk
 from .npcs import NPCS
+
+try:
+    from world_spec import REALMS
+except ImportError:  # imported as tools.story
+    from tools.world_spec import REALMS
+
+# moral choices from the templates in morality.py per generated chapter (besides the hand-written one)
+TEMPLATE_CHOICES_PER_CHAPTER = 2
 
 # ---------------------------------------------------------------- outline helpers
 
@@ -64,7 +75,7 @@ def B(kind, title, summary, *script, **kw):
             if cur is None:
                 cur = new()
             cur["text"] = it[1:]
-        elif isinstance(it, tuple) and len(it) == 2:
+        elif isinstance(it, tuple) and len(it) in (2, 3):
             if cur is None:
                 cur = new()
             cur["lines"].append(it)
@@ -267,11 +278,27 @@ class Gen:
         if len(spec["beats"]) != NB.QUESTS_PER_CHAPTER:
             raise ValueError("chapter %d %r has %d beats" % (number, spec["title"], len(spec["beats"])))
         quests = []
+        families = {}
         for i, beat in enumerate(spec["beats"]):
             q = first + i
             last = i == len(spec["beats"]) - 1
-            quests.append(self.quest(spec, beat, q, vol, i,
-                                     realm=realm if last else None, stage=stage if last else None))
+            qd = self.quest(spec, beat, q, vol, i, realm=realm if last else None, stage=stage if last else None)
+            authored = CHOICES.get((number, i))
+            if authored:
+                attach_choice(qd, authored, q, spec, beat)
+            else:
+                fam = choice_family(qd, beat)
+                if fam:
+                    families[i] = fam
+            quests.append(qd)
+        # two more moral choices per chapter from the templates, on quests picked by a stable hash
+        picked = sorted(families, key=lambda i: h(number, i, "choice"))[:TEMPLATE_CHOICES_PER_CHAPTER]
+        for i in sorted(picked):
+            fam, extra = families[i]
+            variants = MO.TEMPLATES[fam]
+            # cycle through a family's variants across the saga, so the same dilemma rarely repeats nearby
+            tpl = variants[self.rotor("choice/" + fam, list(range(len(variants)))).next()]
+            attach_choice(quests[i], tpl, first + i, spec, spec["beats"][i], **extra)
         ch = chapter(number, spec["title"], spec["summary"], None, spec["map"], quests)
         ch["legacy"] = None
         return ch
@@ -337,6 +364,32 @@ class Gen:
         objs = []
         for idx, st in enumerate(steps):
             objs.append(self._objective(st, ctx, steps, idx))
+        # the opening talk may greet the player differently by alignment and realm
+        if objs[0]["type"] == "talk" and kind in MO.GREET_KINDS:
+            greet = MO.greeting_lines(objs[0]["npc"], q)
+            if greet:
+                objs[0]["dialogue"] = _lines(greet) + objs[0]["dialogue"]
+        if realm:
+            # a major breakthrough calls down its heavenly tribulation, right after the breakthrough meditation
+            med = [i for i, o in enumerate(objs) if o["type"] == "meditate"]
+            at = med[-1] + 1 if med else len(objs) - 1
+            base = objs[at - 1] if med else objs[-1]
+            ri = REALMS.index(realm)
+            tm = base.get("marker") or kw.get("at")
+            talks_at = {(o["map"], o.get("at") or NPCS[o["npc"]]["home"]["marker"]) for o in objs if o["type"] == "talk"}
+            if TR.params(ri)[1] and (base["map"], tm) in talks_at:
+                # tribulation beasts must not land where someone stands to talk: move the storm aside
+                tm = sorted((mk for mk in PL.POOLS[base["map"]]["fight"]
+                             if (base["map"], mk) not in talks_at and self.allowed(base["map"], mk, q, "fight")),
+                            key=lambda mk: h(q, mk, "storm"))[0]
+            trib = TR.make(ri, realm, tm, base["map"])
+            if len(objs) >= 6:
+                # keep the quest at six objectives: the breakthrough's gathering step makes way
+                drop = next(i for i, o in enumerate(objs) if o["type"] in ("collect", "interact", "reach"))
+                objs.pop(drop)
+                if drop < at:
+                    at -= 1
+            objs.insert(at, trib)
         xp = kw.get("xp") or (XP_BASE[vol] + 12 * qi + (XP_BASE[vol] // 2 if kind == "boss" else 0)
                               + (XP_BASE[vol] if realm else 0))
         items = kw.get("reward")
@@ -365,7 +418,7 @@ class Gen:
     def _seg_type(seg):
         if seg["tag"]:
             return seg["tag"]
-        has_npc = any(sp not in (P, N) for sp, _ in seg["lines"])
+        has_npc = any(ln[0] not in (P, N) and len(ln) == 2 for ln in seg["lines"])
         return "T" if has_npc else "N"
 
     def _assign(self, steps, segs, q):
@@ -399,9 +452,9 @@ class Gen:
     def _talk_npc(self, st, ctx, idx, steps):
         seg = st.get("seg")
         if seg:
-            for sp, _ in seg["lines"]:
-                if sp not in (P, N):
-                    return sp
+            for ln in seg["lines"]:
+                if ln[0] not in (P, N) and len(ln) == 2:
+                    return ln[0]
         kw, cast = ctx["kw"], ctx["spec"]["cast"]
         role = st["role"]
         if role == "back":
@@ -528,8 +581,8 @@ class Gen:
             text = self._text(key, st, ctx, name=name, place=place)
             if not lines:
                 lines = self._filler_talk(nid, {"after": "ally", "found": "ally"}.get(key, key), st, ctx, steps, idx)
-            elif len(lines) == 1:
-                lines.append(self._pad(nid, lines, ctx, first=idx == 0))
+            elif sum(1 for ln in lines if len(ln) == 2) == 1:
+                lines.append(self._pad(nid, [ln for ln in lines if len(ln) == 2], ctx, first=idx == 0))
             return talk(nid, text, *lines, at=st["at"], map=m)
         place = PL.name(m, st["marker"])
         if t == "R":
@@ -688,6 +741,76 @@ class Gen:
 
 def kind_is(ctx, k):
     return ctx["beat"]["kind"] == k
+
+
+# ---------------------------------------------------------------- moral choices
+
+def choice_family(qd, beat):
+    """Which template family of morality.TEMPLATES fits a built quest, with its slots, or None."""
+    objs = qd["objectives"]
+    if not any(o["type"] == "talk" for o in objs):
+        return None
+    fam = MO.FAMILY_OF_KIND.get(beat["kind"])
+    if fam is None:
+        return None
+    fights = [o for o in objs if o["type"] == "defeat"]
+    if fam == "boss":
+        return ("boss", {}) if fights else None
+    if fam == "fight" or (fights and fam in ("find", "social")):
+        for o in fights:
+            if o["enemy"] in MO.HUMAN_FOES:
+                return "fight_human", {"foes": FOE_NAMES[o["enemy"]]}
+        for o in fights:
+            if o["enemy"] in MO.BEAST_FOES:
+                return "fight_beast", {"foes": FOE_NAMES[o["enemy"]]}
+        if fam == "fight":
+            return None
+    if fam == "gather":
+        got = [o for o in objs if o["type"] == "collect"]
+        if not got:
+            return None
+        return "gather", {"noun": ITEM_NOUNS[got[0]["item"]], "item": got[0]["item"]}
+    if fam == "find":
+        return ("find", {}) if any(o["type"] in ("interact", "reach") for o in objs) else None
+    if fam == "social":
+        last_talk = [o for o in objs if o["type"] == "talk"][-1]
+        if last_talk["npc"] in MO.OFFICIALS:
+            return "social_official", {}
+        return MO.SOCIAL_BY_CATEGORY[MO.category(last_talk["npc"])], {}
+    return fam, {}
+
+
+def attach_choice(qd, choice, q, spec=None, beat=None, foes="", noun="", item=None, at=None):
+    """Offer ``choice`` (morality.Ch) after the quest's last conversation (or objective ``at``).
+    Every option gets the NPC's reaction as its reply."""
+    objs = qd["objectives"]
+    if at is None:
+        at = choice.get("at", "last")
+    if at == "last":
+        talks = [i for i, o in enumerate(objs) if o["type"] == "talk"]
+        if not talks:
+            raise ValueError("q%04d: a choice needs a talk objective" % q)
+        at = talks[-1]
+    o = objs[at]
+    nid = o.get("npc")
+    name = SHORT.get(nid, NPCS[nid]["name"]) if nid else ""
+    o["choice_prompt"] = _cap(fmt(choice["prompt"], foes=foes, noun=noun, name=name))
+    opts = []
+    for k, opt in enumerate(choice["options"]):
+        law, good = opt["align"]["law"], opt["align"]["good"]
+        reply = [tuple(r) for r in opt["reply"]]
+        if nid:
+            reply.append((nid, MO.reaction(nid, law, good, salt=(q, k))))
+        items = {}
+        for it, n in opt["reward"]["items"].items():
+            items[item if it == "@item" else it] = n
+        if None in items:
+            items["spirit_stone"] = items.pop(None)
+        opts.append({"text": opt["text"], "align": {"law": law, "good": good}, "reply": _lines(reply),
+                     "reward": {"xp": opt["reward"]["xp"], "items": items}, "flag": opt["flag"],
+                     "attitude": dict(opt["attitude"]), "cond": opt["cond"]})
+    o["choices"] = opts
+    return o
 
 
 # objective text keyword -> the world_spec prop that should stand there

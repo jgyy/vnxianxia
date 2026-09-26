@@ -1,4 +1,4 @@
-"""Volume VII · Body Integration — chapters 61-70.
+"""Volume VII · Void Refinement — chapters 61-70.
 
 The Patriarch needs a body clean enough to survive heaven, and his Rungs go
 hunting for one. Brother Hollow, the Fourth Rung, lives in empty things; the
@@ -92,15 +92,15 @@ CHAPTERS = [
             "@T:SectGate",
             (LU, "A hollow man wrote you a letter? About renting you? I'm going to burn the gate. No. I'm going to guard the gate. Harder."),
             prop="jade_slip", thing="the letter"),
-          B("break", "Body Integration",
+          B("break", "Void Refinement",
             "On the ninth day, you walk from the bath to the cliff edge in a thunderstorm. The whole sect stands in the rain to watch.",
             (HUA, "Ninth day. Walk to the cliff. Let the lightning in. It will finish what the bath started. It will also hurt. Last time, I promise."),
             "@G:CliffEdge", ">Plant thunder crystals on the cliff",
-            "@M:CliffEdge", ">Integrate body and soul in the lightning",
+            "@M:CliffEdge", ">Refine the void between body and soul",
             (N, "The lightning comes down and doesn't stop at your skin. It runs through bone and soul alike and finds no seam between them, because there isn't one."),
             (N, "You are one thing now. Body, soul, qi, all one. Nothing could wear you. Nothing could fit."),
             "@T:SectGate",
-            (YUN, "Body Integration. The whole sect in the rain, cheering. Wei Tong is crying. I'm crying. It's the rain. Welcome back."),
+            (YUN, "Void Refinement. The whole sect in the rain, cheering. Wei Tong is crying. I'm crying. It's the rain. Welcome back."),
             (YUN, "Let the hollow man come now. There's no room in you for anyone but you."),
             item="thunder_crystal", noun="thunder crystals"),
       ]),
@@ -804,7 +804,7 @@ CHAPTERS = [
       ]),
     # ------------------------------------------------------------------ chapter 70
     C("One Body, One Soul", "sect",
-      "Five Rungs have fallen. Your body and soul are almost one thing. Elder Hua says the last step of Body Integration "
+      "Five Rungs have fallen. Your body and soul are almost one thing. Elder Hua says the last step of Void Refinement "
       "isn't tempering: it's rest, and home, and letting the people you love remind you what the body is for.",
       cast=[HUA, WEI, HAN, ZHAO, YUN, MAN, SHI, LIUER, YAN, LAN, BAI], foes=["training_puppet", "void_wraith", "thunder_wolf"],
       items=["spirit_herb", "medicine", "incense"], props=["seal", "stone_stele", "bronze_bell"],
@@ -875,14 +875,14 @@ CHAPTERS = [
           B("stage", "One Body, One Soul",
             "In the quiet of the main hall, with the founder's tablet and the faded green lotus beside it, integration completes.",
             "@M:StoneBridge", ">Meditate in stillness on the stone bridge",
-            (N, "No lightning. No pain. Only breath, and a body that is entirely yours, and a soul that fills it to the edges. Peak of Body Integration."),
-            (N, "You feel everyone on the mountain, faintly, the way you feel your own fingers. That, the hermit says later, is the start of Mahayana."),
+            (N, "No lightning. No pain. Only breath, and a body that is entirely yours, and a soul that fills it to the edges. Great Perfection of Void Refinement."),
+            (N, "You feel everyone on the mountain, faintly, the way you feel your own fingers. That, the hermit says later, is the start of Body Integration."),
             "@T:MainHall",
-            (YUN, "Peak. Hua says you rested well. Wei Tong says you ate nine peaches. Both, apparently, count."),
+            (YUN, "Great Perfection. Hua says you rested well. Wei Tong says you ate nine peaches. Both, apparently, count."),
             ),
           B("interlude", "What Comes Next",
             "Qing Luan's last crane before the isles sealed said something you only now understand: the next stage isn't yours alone.",
-            (LAN, "Mahayana. The Great Vehicle. A stage you can't reach alone. You carry others, and they carry you. It's the sutra's blossom, as a realm."),
+            (LAN, "Body Integration. Not only your body: everyone's. A stage you can't reach alone. You carry others, and they carry you. It's the sutra's blossom, as a realm."),
             (LAN, "Lady Silk is the next Rung. She spins webs between people. Between sects. The answer to a web is not a sword. It's a vehicle."),
             "|",
             (HAN, "A vehicle. All the sects, together. The Iron Scale, the Zhao clan, the Moon-Well, Qingshi. That's what she'll try to cut. Let's not let her."),

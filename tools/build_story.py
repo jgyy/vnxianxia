@@ -11,6 +11,11 @@ quests = 1000 quests, ids q0001..q1000. The ten original chapters keep their
 voice files under their original keys (q017_o2_l1 ...); lines of the 90 new
 chapters are text-only ("voice": null).
 
+Cultivation follows a fixed schedule (chapter c of volume v ends at minor stage
+c of REALMS[v]; chapter 1 is the breakthrough, with a heavenly tribulation), and
+the story's moral choices, conditional lines, NPC greetings and alignment
+rewards are validated here too (see docs/STORY.md, "How it is stored").
+
 Pure Python 3 standard library. Every map, marker, NPC model, enemy, item,
 prop and realm is checked against tools/world_spec.py; any error exits 1.
 """
@@ -28,6 +33,7 @@ sys.path.insert(0, TOOLS)
 import world_spec as W  # noqa: E402
 import story  # noqa: E402
 from story import numbering as NB  # noqa: E402
+from story import morality as MO  # noqa: E402
 
 OUT = os.path.join(ROOT, "godot", "data", "story.json")
 VOICE_DIR = "res://audio/voice/"
@@ -142,13 +148,61 @@ def present_homes(map_id, qnum):
 
 # ------------------------------------------------------------------ compile
 
-def compile_line(where, key, raw, voices, speakers_used):
+ALIGN_OPS = re.compile(r"^(>=|<=|>|<|==)(-?\d+)$")
+COND_KEYS = {"align", "align_law", "align_good", "min_realm", "max_realm", "min_stage", "max_stage", "flag",
+             "not_flag", "likes", "dislikes"}
+FLAG_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+
+
+def check_cond(where, cond, flags=None):
+    """Validate a condition (all keys must hold):
+    align: "lawful_good" / "chaotic_*" / "*_evil" (or a list: any of them);
+    align_law / align_good: ">=30", "<=-25", ...; min_realm / max_realm: a realm name;
+    min_stage / max_stage: 1-10; flag / not_flag: a flag some earlier choice sets
+    (``flags``: the flags set so far, None to forbid flags); likes / dislikes: an NPC id."""
+    if not isinstance(cond, dict) or not cond:
+        E.err(where, "condition must be a non-empty dict")
+        return
+    for k, v in cond.items():
+        if k not in COND_KEYS:
+            E.err(where, "unknown condition %r" % k)
+        elif k == "align":
+            for pat in (v if isinstance(v, list) else [v]):
+                parts = pat.split("_") if isinstance(pat, str) else []
+                if len(parts) != 2 or parts[0] not in W.ALIGN_LAW + ["*"] or parts[1] not in W.ALIGN_MORAL + ["*"]:
+                    E.err(where, "bad alignment pattern %r" % (pat,))
+        elif k in ("align_law", "align_good"):
+            m = ALIGN_OPS.match(v) if isinstance(v, str) else None
+            if not m or abs(int(m.group(2))) > W.ALIGN_RANGE:
+                E.err(where, "%s must look like '>=30' within +-%d, got %r" % (k, W.ALIGN_RANGE, v))
+        elif k in ("min_realm", "max_realm"):
+            if v not in W.REALMS:
+                E.err(where, "unknown realm %r" % v)
+        elif k in ("min_stage", "max_stage"):
+            if not (isinstance(v, int) and 1 <= v <= 10):
+                E.err(where, "%s must be 1-10" % k)
+        elif k in ("flag", "not_flag"):
+            if flags is None:
+                E.err(where, "flags cannot be used here")
+            elif v not in flags:
+                E.err(where, "flag %r is not set by any earlier choice" % v)
+        elif k in ("likes", "dislikes"):
+            if v not in story.NPCS:
+                E.err(where, "unknown npc %r" % v)
+
+
+def compile_line(where, key, raw, voices, speakers_used, flags=None):
     """``key`` is the voice key of a line of the original story, None for a text-only line."""
     sp, text = raw["speaker"], raw["text"]
     if not valid_speaker(sp):
         E.err(where, "unknown speaker %r" % sp)
     speakers_used.add(sp)
     check_text(where, text)
+    if raw.get("cond") is not None:
+        if key is not None:
+            E.err(where, "a voiced line cannot be conditional")
+        check_cond(where, raw["cond"], flags)
+        return {"speaker": sp, "text": text, "voice": None, "cond": raw["cond"]}
     if key is None:
         return {"speaker": sp, "text": text, "voice": None}
     if key in voices:
@@ -160,7 +214,10 @@ def compile_line(where, key, raw, voices, speakers_used):
             "gendered": is_gendered(sp, text)}
 
 
-def compile_objective(where, qnum, raw, cur_map, voices, used, speakers_used, cin_uses, vkey=None):
+def compile_objective(where, qnum, raw, cur_map, voices, used, speakers_used, cin_uses, vkey=None, voi=None,
+                      flags=None):
+    """``vkey``/``voi``: voice key prefix and original objective index of a voiced quest;
+    ``flags``: the flags earlier choices can have set (for conditions)."""
     t = raw.get("type")
     if t not in W.OBJECTIVE_TYPES:
         E.err(where, "unknown objective type %r" % t)
@@ -246,20 +303,122 @@ def compile_objective(where, qnum, raw, cur_map, voices, used, speakers_used, ci
         o.update(object=raw["object"], marker=raw["marker"])
     elif t == "cinematic":
         o.update(id=raw["id"])
+    elif t == "tribulation":
+        check_marker(where, m, raw["marker"], used)
+        bolts = raw["bolts"]
+        if not (isinstance(bolts, int) and 3 <= bolts <= 81):
+            E.err(where, "tribulation bolts %r out of range 3-81" % bolts)
+            bolts = 3
+        volleys = min(bolts, 9)
+        waves = raw.get("waves") or []
+        for wi, wv in enumerate(waves):
+            ww = "%s wave %d" % (where, wi)
+            if wv["enemy"] not in W.ENEMIES or wv["enemy"] in W.BOSSES:
+                E.err(ww, "wave enemy %r must be a non-boss enemy" % wv["enemy"])
+            if not (isinstance(wv["count"], int) and 1 <= wv["count"] <= 4):
+                E.err(ww, "wave count %r out of range 1-4" % wv["count"])
+            if not (isinstance(wv["after"], int) and 1 <= wv["after"] < volleys):
+                E.err(ww, "wave must come after volley 1..%d, not %r" % (volleys - 1, wv["after"]))
+        if [w["after"] for w in waves] != sorted({w["after"] for w in waves}):
+            E.err(where, "waves must come after distinct, increasing volleys")
+        o.update(marker=raw["marker"], bolts=bolts,
+                 waves=[{"enemy": w["enemy"], "count": w["count"], "after": w["after"]} for w in waves])
     o["text"] = text
 
     lines = raw.get("dialogue")
-    if t == "talk":
-        if not lines or not (2 <= len(lines) <= 7):
-            E.err(where, "talk needs 2-7 dialogue lines, has %d" % len(lines or []))
-    elif lines is not None and not (1 <= len(lines) <= 7):
-        E.err(where, "dialogue needs 1-7 lines")
     if lines is not None:
-        oi = int(where.rsplit("_o", 1)[1])
-        o["dialogue"] = [compile_line("%s_l%d" % (where, li), ("%s_o%d_l%d" % (vkey, oi, li)) if vkey else None,
-                                      ln, voices, speakers_used)
-                         for li, ln in enumerate(lines)]
+        plain = [ln for ln in lines if ln.get("cond") is None]
+        lo = 2 if t == "talk" else 1
+        if not (lo <= len(plain) <= 7):
+            E.err(where, "dialogue needs %d-7 unconditional lines (every conversation must have a path), has %d"
+                  % (lo, len(plain)))
+        if len(lines) > 10:
+            E.err(where, "dialogue has %d lines (max 10 with conditional ones)" % len(lines))
+        # voice keys count only the unconditional lines of the objective's original index
+        oi = int(where.rsplit("_o", 1)[1]) if voi is None else voi
+        out, li = [], 0
+        for n, ln in enumerate(lines):
+            key = None
+            if vkey and ln.get("cond") is None:
+                key = "%s_o%d_l%d" % (vkey, oi, li)
+                li += 1
+            out.append(compile_line("%s_l%d" % (where, n), key, ln, voices, speakers_used, flags))
+        o["dialogue"] = out
+    elif t == "talk":
+        E.err(where, "talk needs dialogue")
+    if raw.get("choices") is not None:
+        compile_choices(where, t, raw, o, voices, speakers_used, flags)
     return o, m
+
+
+def compile_choices(where, t, raw, o, voices, speakers_used, flags):
+    """A moral choice offered after the objective's dialogue: 2-4 options, each with
+    alignment deltas, reply lines, an optional reward, flag, NPC attitudes and condition."""
+    if t not in ("talk", "reach", "interact") or not o.get("dialogue"):
+        E.err(where, "choices need a talk, reach or interact objective with dialogue")
+    prompt = raw.get("choice_prompt")
+    check_text(where + " prompt", prompt, max_words=0)
+    if isinstance(prompt, str) and len(prompt) > 140:
+        E.err(where, "choice prompt longer than 140 chars")
+    opts = raw["choices"]
+    if not (2 <= len(opts) <= 4):
+        E.err(where, "choices need 2-4 options, has %d" % len(opts))
+    if not any(op.get("cond") is None for op in opts):
+        E.err(where, "at least one option must have no condition (every conversation must have a path)")
+    out = []
+    for k, op in enumerate(opts):
+        w = "%s choice %d" % (where, k)
+        check_text(w, op["text"], max_words=14)
+        if len(op["text"]) > 64:
+            E.err(w, "option text longer than 64 chars")
+        a = op["align"]
+        if set(a) != {"law", "good"} or not all(isinstance(a[x], int) and -20 <= a[x] <= 20 for x in a):
+            E.err(w, "align needs law and good, each -20..20")
+        rw = op["reward"]
+        if not (isinstance(rw["xp"], int) and 0 <= rw["xp"] <= 500):
+            E.err(w, "reward xp must be 0-500")
+        for it, n in rw["items"].items():
+            if it not in W.ITEMS:
+                E.err(w, "unknown reward item %r" % it)
+            if not (isinstance(n, int) and 1 <= n <= 5):
+                E.err(w, "reward count must be 1-5")
+        if op["flag"] is not None and not FLAG_RE.match(op["flag"]):
+            E.err(w, "bad flag %r" % op["flag"])
+        for nid, d in op["attitude"].items():
+            if nid not in story.NPCS or not (isinstance(d, int) and -3 <= d <= 3 and d):
+                E.err(w, "attitude %r: %r must be an NPC and -3..3" % (nid, d))
+        if op.get("cond") is not None:
+            check_cond(w, op["cond"], flags)
+        reply = op["reply"]
+        if len(reply) > 3:
+            E.err(w, "at most 3 reply lines")
+        d = {"text": op["text"], "align": {"law": a["law"], "good": a["good"]},
+             "reply": [compile_line("%s_r%d" % (w, n), None, ln, voices, speakers_used, flags)
+                       for n, ln in enumerate(reply)],
+             "reward": {"xp": rw["xp"], "items": dict(sorted(rw["items"].items()))}}
+        if op["flag"]:
+            d["flag"] = op["flag"]
+        if op["attitude"]:
+            d["attitude"] = dict(sorted(op["attitude"].items()))
+        if op.get("cond") is not None:
+            d["cond"] = op["cond"]
+        out.append(d)
+    o["choice_prompt"] = prompt
+    o["choices"] = out
+
+
+def expected_cultivation(chapter, qi):
+    """(realm, stage) the ``qi``-th quest (0-9) of ``chapter`` must grant: chapter c of volume v
+    ends at minor stage c of REALMS[v], chapter 1 being the breakthrough into it; the last
+    chapter reaches Great Perfection on its ninth quest and Immortal Ascension on its tenth."""
+    v = NB.volume_of_chapter(chapter)
+    c = chapter - (v - 1) * NB.CHAPTERS_PER_VOLUME
+    last = NB.QUESTS_PER_CHAPTER - 1
+    if chapter == NB.TOTAL_CHAPTERS:
+        return {last - 1: (None, 10), last: (W.REALMS[-1], None)}.get(qi, (None, None))
+    if qi != last:
+        return None, None
+    return (W.REALMS[v] if c == 1 else None), c
 
 
 def check_generated(wq, qnum, objs):
@@ -269,7 +428,8 @@ def check_generated(wq, qnum, objs):
         who = set()
         if o["type"] == "talk":
             who.add(o["npc"])
-        for ln in o.get("dialogue", []):
+        replies = [ln for op in o.get("choices", []) for ln in op["reply"]]
+        for ln in o.get("dialogue", []) + replies:
             if ln["speaker"] not in ("player", "narrator"):
                 who.add(ln["speaker"])
         for nid in sorted(who):
@@ -404,6 +564,11 @@ def compile_npcs(used):
             check_text(where + " bark", b)
             if TOKEN_RE.search(b):
                 E.err(where, "barks are unvoiced and must not use tokens")
+        greetings = []
+        for g in MO.bark_greetings(nid):
+            check_text(where + " greeting", g["text"])
+            check_cond(where + " greeting", g["cond"])
+            greetings.append({"text": g["text"], "cond": g["cond"]})
         v = n["voice"]
         if v is not None and not os.path.basename(v["model"]) == v["model"]:
             E.err(where, "voice model must be a bare model name")
@@ -411,6 +576,7 @@ def compile_npcs(used):
         out[nid] = {"name": n["name"], "title": n["title"], "model": n["model"], "tint": n["tint"],
                     "scale": n["scale"], "home": n["home"], "appear_from": ids["appear_from"],
                     "hidden_after": ids["hidden_after"], "gone_after": ids["gone_after"], "barks": n["barks"],
+                    "greetings": greetings,
                     "voice": None if v is None else {"model": v["model"], "speaker": v["speaker"],
                                                      "length_scale": v["length_scale"], "noise_scale": v["noise_scale"]}}
     return out
@@ -435,6 +601,9 @@ def build():
     if len(story.VOLUMES) != NB.VOLUMES:
         E.err("story", "needs exactly %d volumes, has %d" % (NB.VOLUMES, len(story.VOLUMES)))
     realm_idx, stage = 0, 0
+    last_end = (0, 0)
+    last_bolts = 0
+    flags_set = set()
     qnum = cnum = 0
     titles = {}
     for vi, vol in enumerate(story.VOLUMES, 1):
@@ -477,6 +646,7 @@ def build():
                 qnum += 1
                 wq = qid(qnum)
                 legacy = q.get("legacy")
+                flags_new = set()
                 if legacy_ch and legacy != (legacy_ch - 1) * 10 + qi + 1:
                     E.err(wq, "legacy quest number %r out of place" % legacy)
                 if legacy and NB.legacy_to_new(legacy) != qnum:
@@ -494,15 +664,26 @@ def build():
                     E.err(wq, "needs 2-6 objectives, has %d" % len(objs))
                 cur = q["map"]
                 out_objs = []
+                voi = 0
                 for oi, raw in enumerate(objs):
+                    added = bool(raw.get("added"))
+                    if added and not legacy:
+                        E.err("%s_o%d" % (wq, oi), "only objectives added to a voiced quest are marked 'added'")
                     o, cur = compile_objective("%s_o%d" % (wq, oi), qnum, raw, cur, voices, used, speakers_used,
-                                               cin_uses, vkey=vkey)
+                                               cin_uses, vkey=None if added else vkey, voi=voi, flags=flags_set)
+                    if not added:
+                        voi += 1
                     if o:
                         out_objs.append(o)
+                for o in out_objs:
+                    for op in o.get("choices", []):
+                        if op.get("flag"):
+                            flags_new.add(op["flag"])
                 if out_objs and out_objs[0]["map"] != q["map"]:
                     E.err(wq, "quest map %r differs from first objective map %r" % (q["map"], out_objs[0]["map"]))
                 # talk NPCs must not stand where this quest's enemies spawn
-                fights = {(o["map"], o["marker"]) for o in out_objs if o["type"] == "defeat"}
+                fights = {(o["map"], o["marker"]) for o in out_objs
+                          if o["type"] == "defeat" or (o["type"] == "tribulation" and o["waves"])}
                 for oi, o in enumerate(out_objs):
                     if o["type"] == "talk":
                         home = story.NPCS.get(o["npc"], {}).get("home")
@@ -526,9 +707,11 @@ def build():
                         E.err(wq, "reward count must be a positive int")
                 tier = realm_idx
                 st = r.get("stage")
+                want = expected_cultivation(ci, qi)
+                if (r["realm"], st) != want:
+                    E.err(wq, "grants realm %r stage %r; the stage schedule says realm %r stage %r"
+                          % ((r["realm"], st) + want))
                 if r["realm"] is not None:
-                    if st is not None:
-                        E.err(wq, "a quest grants either a realm or a minor stage, not both")
                     if r["realm"] not in W.REALMS:
                         E.err(wq, "unknown realm %r" % r["realm"])
                     else:
@@ -536,10 +719,15 @@ def build():
                         if idx <= realm_idx:
                             E.err(wq, "realm %r does not advance (current %r)" % (r["realm"], W.REALMS[realm_idx]))
                         realm_idx = idx
-                        stage = 0
-                        if vol_realm is not None:
+                        stage = st or 0
+                        if idx < len(W.REALMS) - 1 and st != 1:
+                            E.err(wq, "a breakthrough starts the realm at minor stage 1")
+                        if idx == len(W.REALMS) - 1:
+                            pass  # Immortal Ascension crowns the last volume
+                        elif vol_realm is not None:
                             E.err(wq, "volume %d grants a second realm" % vi)
-                        vol_realm = (qnum, idx)
+                        else:
+                            vol_realm = (qnum, idx)
                 elif st is not None:
                     if not (isinstance(st, int) and 1 <= st < len(W.STAGES)):
                         E.err(wq, "stage %r out of range 1-%d" % (st, len(W.STAGES) - 1))
@@ -550,15 +738,46 @@ def build():
                               % (W.STAGES[st], W.REALMS[realm_idx], W.STAGES[stage]))
                     else:
                         stage = st
+                if qi == NB.QUESTS_PER_CHAPTER - 1:
+                    # (realm, stage) strictly increases from one chapter's end to the next
+                    if (realm_idx, stage) <= last_end:
+                        E.err(wq, "chapter %d ends at %r, not beyond chapter %d's %r" % (ci, (realm_idx, stage),
+                                                                                           ci - 1, last_end))
+                    last_end = (realm_idx, stage)
+                # a major breakthrough (and the final Great Perfection) is earned by surviving a tribulation
+                tribs = [o for o in out_objs if o["type"] == "tribulation"]
+                needs = (r["realm"] is not None and r["realm"] != W.REALMS[-1]) or (st == 10 and ci == NB.TOTAL_CHAPTERS)
+                if needs and len(tribs) != 1:
+                    E.err(wq, "a breakthrough quest needs exactly one tribulation objective, has %d" % len(tribs))
+                if not needs and tribs:
+                    E.err(wq, "tribulations belong to breakthrough quests")
+                for o in tribs:
+                    if o["bolts"] < last_bolts:
+                        E.err(wq, "tribulation of %d bolts is weaker than the last one (%d)" % (o["bolts"], last_bolts))
+                    last_bolts = o["bolts"]
+                bonus = []
+                for bi, bn in enumerate(r.get("bonus") or []):
+                    wb = "%s bonus %d" % (wq, bi)
+                    check_cond(wb, bn["cond"], flags_set)
+                    check_text(wb + " note", bn["note"], max_words=16)
+                    if not (isinstance(bn["xp"], int) and 0 <= bn["xp"] <= 500):
+                        E.err(wb, "xp must be 0-500")
+                    for it, n in bn["items"].items():
+                        if it not in W.ITEMS or not (isinstance(n, int) and 1 <= n <= 5):
+                            E.err(wb, "bad item reward %r x %r" % (it, n))
+                    bonus.append({"cond": bn["cond"], "xp": bn["xp"], "items": dict(sorted(bn["items"].items())),
+                                  "note": bn["note"]})
+                rewards = {"xp": r["xp"], "items": dict(sorted(r["items"].items())), "realm": r["realm"], "stage": st}
+                if bonus:
+                    rewards["bonus"] = bonus
                 quests.append({"id": wq, "volume": vi, "chapter": ci, "number": qnum, "legacy": legacy,
                                "title": q["title"], "summary": q["summary"], "map": q["map"], "tier": tier,
-                               "objectives": out_objs,
-                               "rewards": {"xp": r["xp"], "items": dict(sorted(r["items"].items())),
-                                           "realm": r["realm"], "stage": st}})
+                               "objectives": out_objs, "rewards": rewards})
+                flags_set |= flags_new
             if not legacy_ch and bosses_in_chapter > 1:
                 E.err(where, "%d boss fights (max one, at the chapter's climax)" % bosses_in_chapter)
-        # volume v breaks through into REALMS[v] at the end of its first chapter; the last volume at its very end
-        expect = vol_first + (NB.QUESTS_PER_CHAPTER if vi < NB.VOLUMES else NB.QUESTS_PER_CHAPTER ** 2)
+        # volume v breaks through into REALMS[v] at the end of its first chapter
+        expect = vol_first + NB.QUESTS_PER_CHAPTER
         if vol_realm != (expect, vi):
             E.err(wv, "must grant %s at %s (got %r)" % (W.REALMS[vi], qid(expect), vol_realm))
         volumes.append({"number": vi, "title": vol["title"], "subtitle": vol["subtitle"], "summary": vol["summary"],
@@ -642,7 +861,18 @@ def stats(data):
                   len({o["text"] for o in objs}), len(objs)))
     out.append("breakthroughs: " + ", ".join("%s %s" % (q["id"], q["rewards"]["realm"])
                                               for q in data["quests"] if q["rewards"]["realm"]))
-    out.append("minor stages: %d" % sum(1 for q in data["quests"] if q["rewards"].get("stage")))
+    out.append("minor stages granted: %d" % sum(1 for q in data["quests"] if q["rewards"].get("stage")))
+    tribs = [o for o in objs if o["type"] == "tribulation"]
+    out.append("tribulations: %d (%s bolts)" % (len(tribs), "/".join(str(o["bolts"]) for o in tribs)))
+    choices = [o for o in objs if o.get("choices")]
+    per_ch = Counter(q["chapter"] for q in data["quests"] for o in q["objectives"] if o.get("choices"))
+    out.append("moral choices: %d (%d options, %d with flags), in %d of %d chapters"
+               % (len(choices), sum(len(o["choices"]) for o in choices),
+                  sum(1 for o in choices for op in o["choices"] if op.get("flag")), len(per_ch), len(data["chapters"])))
+    cond = [ln for o in objs for ln in o.get("dialogue", []) if ln.get("cond")]
+    out.append("conditional lines: %d; npc greetings: %d; alignment bonuses: %d"
+               % (len(cond), sum(len(n["greetings"]) for n in data["npcs"].values()),
+                  sum(len(q["rewards"].get("bonus", [])) for q in data["quests"])))
     return "\n".join(out)
 
 
@@ -672,8 +902,8 @@ def quest_table(data):
                 rew = "%d xp" % r["xp"]
                 if r["realm"]:
                     rew += " · **%s**" % r["realm"]
-                if r.get("stage"):
-                    rew += " · *%s %s*" % (realms[q["tier"]] if not r["realm"] else r["realm"], W.STAGES[r["stage"]])
+                if r.get("stage") and not r["realm"]:
+                    rew += " · *%s · %s*" % (realms[q["tier"]], W.STAGES[r["stage"]])
                 objs = " → ".join(o["text"].replace("{player}", "Lin Feng/Su Yue").replace("|", "/")
                                   for o in q["objectives"])
                 out.append("| %d | %s%s | %s | %s | %s |" % (q["number"], q["title"], " *(boss)*" if boss else "",

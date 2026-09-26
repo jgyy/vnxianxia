@@ -1,4 +1,17 @@
 {
+ "align_range": 100,
+ "align_threshold": 25,
+ "alignments": [
+  "lawful_good",
+  "lawful_neutral",
+  "lawful_evil",
+  "neutral_good",
+  "neutral_neutral",
+  "neutral_evil",
+  "chaotic_good",
+  "chaotic_neutral",
+  "chaotic_evil"
+ ],
  "bosses": [
   "ancient_guardian",
   "bandit_chief",
@@ -40,6 +53,7 @@
   "demon_cultivator": "demon_cultivator",
   "demon_elder": "demon_cultivator",
   "heart_demon": "player",
+  "heart_shade": "player",
   "iron_scale_disciple": "disciple_male",
   "jiao_serpent": "jiao_serpent",
   "rogue_cultivator": "bandit",
@@ -50,6 +64,7 @@
   "thunder_wolf": "spirit_wolf",
   "tournament_champion": "disciple_male",
   "training_puppet": "stone_golem",
+  "tribulation_beast": "spirit_wolf",
   "void_colossus": "stone_golem",
   "void_wraith": "demon_cultivator",
   "wolf_king": "spirit_wolf"
@@ -229,16 +244,37 @@
   "Core Formation",
   "Nascent Soul",
   "Soul Transformation",
+  "Spirit Severing",
   "Void Refinement",
   "Body Integration",
   "Mahayana",
   "Tribulation Transcendence",
   "Immortal Ascension"
  ],
- "stages": [
+ "stage_groups": [
+  "",
+  "Early",
+  "Early",
   "Early",
   "Middle",
+  "Middle",
+  "Middle",
   "Late",
-  "Peak"
+  "Late",
+  "Late",
+  "Great Perfection"
+ ],
+ "stages": [
+  "",
+  "1st Layer",
+  "2nd Layer",
+  "3rd Layer",
+  "4th Layer",
+  "5th Layer",
+  "6th Layer",
+  "7th Layer",
+  "8th Layer",
+  "9th Layer",
+  "Great Perfection"
  ]
 }
