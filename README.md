@@ -51,8 +51,20 @@ flowchart LR
 
 ## Play it
 
-1. Install [Godot 4.7](https://godotengine.org/download) (standard build).
-2. Open `godot/project.godot` and press **F5**.
+Install [Godot 4.7](https://godotengine.org/download) (standard build), then
+run from the repository root:
+
+```bash
+godot --headless --path godot --import   # first run only: builds the .godot/ import cache (~40 s)
+godot --path godot                       # launch the game straight into the sect
+```
+
+The import step is needed once after cloning (and again after regenerating the
+GLBs), because the `.godot/` cache is gitignored and the game can't load the GLBs
+without it. Opening the project in the editor does this automatically.
+
+Prefer the editor? Run `godot --editor --path godot` (or open
+`godot/project.godot` from the Project Manager), then press **F5**.
 
 | Input | Action |
 |---|---|
