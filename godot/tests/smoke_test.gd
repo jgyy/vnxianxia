@@ -182,7 +182,7 @@ func _session() -> void:
 	var hp0: float = e.hp
 	player.strike()
 	await physics_frame
-	check(player.current_animation() == "attack", "strike plays attack (%s)" % player.current_animation())
+	check(player.current_animation() in ["attack", "palm_1"], "strike plays a palm strike (%s)" % player.current_animation())
 	for i in 40:
 		await physics_frame
 	check(e.hp < hp0, "palm strike damages the puppet (%.0f -> %.0f)" % [hp0, e.hp])
@@ -201,7 +201,7 @@ func _session() -> void:
 	for i in 30:
 		await physics_frame
 	player.start_meditation()
-	check(player.meditating and player.current_animation() == "meditate", "meditation pose (%s)" % player.current_animation())
+	check(player.meditating and player.current_animation().begins_with("meditate"), "meditation pose (%s)" % player.current_animation())
 	for i in 60:
 		await physics_frame
 	check(player.hp > hp_before - 10.0, "meditation restores vitality")

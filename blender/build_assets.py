@@ -15,7 +15,7 @@ sys.path.insert(0, HERE)
 
 import bpy  # noqa: E402
 
-from xianxia import catalog, characters, creatures, util  # noqa: E402
+from xianxia import catalog, characters, creatures, moves, util  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 
@@ -43,6 +43,8 @@ def main():
             t = time.time()
             characters.build_character(cfg)
             path = util.export_glb(os.path.join(args.out, "characters", cfg["name"] + ".glb"), animations=True)
+            if cfg["name"].startswith("cultivator_"):
+                moves.optimize_glb(path)  # keyframe reduction for the 130+ protagonist actions
             built.append(path)
             print(f"  character {cfg['name']:<22} {time.time() - t:5.1f}s")
         for name, fn in creatures.CREATURES.items():
