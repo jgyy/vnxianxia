@@ -60,7 +60,7 @@ func play_music(id: String, fade := 1.5) -> void:
 			new.stream = s
 			new.volume_db = -40.0
 			new.play()
-			tw.tween_property(new, "volume_db", linear_to_db(music_volume), fade)
+			tw.tween_property(new, "volume_db", linear_to_db(maxf(music_volume, 0.001)), fade)
 	tw.chain().tween_callback(old.stop)
 
 
@@ -71,7 +71,7 @@ func sfx(id: String, volume_db := 0.0, pitch := 1.0) -> AudioStreamPlayer:
 	for p in _pool:
 		if not p.playing:
 			p.stream = s
-			p.volume_db = volume_db + linear_to_db(sfx_volume)
+			p.volume_db = volume_db + linear_to_db(maxf(sfx_volume, 0.001))
 			p.pitch_scale = pitch
 			p.play()
 			return p
@@ -86,7 +86,7 @@ func play_voice(path: String) -> float:
 	if s == null:
 		return 0.0
 	_voice.stream = s
-	_voice.volume_db = linear_to_db(voice_volume)
+	_voice.volume_db = linear_to_db(maxf(voice_volume, 0.001))
 	_voice.play()
 	return s.get_length()
 

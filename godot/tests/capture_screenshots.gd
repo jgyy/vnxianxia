@@ -84,7 +84,11 @@ func _run() -> void:
 	await _frames(40)
 	await _save("quest_hud")
 	player.global_position = game.map.ground_at(npc.global_position + Vector3(0.6, 0, 1.6)) + Vector3.UP * 0.2
-	player._yaw = 0.35
+	# over-the-shoulder from the side so both speakers are in frame
+	var side := npc.global_position - player.global_position
+	player._yaw = atan2(-side.x, -side.z) + 1.15
+	player._pitch = -0.12
+	player.spring.spring_length = 3.2
 	await _frames(20)
 	game._on_interact()
 	await _until(func(): return game.dialogue._text.visible_characters < 0, 600)
@@ -125,6 +129,8 @@ func _run() -> void:
 		game.map.add_child(w)
 		w.global_position = game.map.open_spot(den, i * 2.1, 3.0)
 	await _frames(60)
+	player.refill()
+	game.hud.set_objective("Drive off the corrupted wolves  (1/3)")
 	player._yaw = 0.8
 	player._pitch = -0.25
 	player.strike()
@@ -142,11 +148,13 @@ func _run() -> void:
 	var lair: Vector3 = game.map.marker_position("SerpentLair")
 	var boss = EnemyScript.create("jiao_serpent", true)
 	game.map.add_child(boss)
-	boss.global_position = lair + Vector3(0, 0.2, -6)
-	player.global_position = lair + Vector3(1.5, 0.4, 6)
-	player._yaw = 0.15
-	player._pitch = -0.12
-	player.spring.spring_length = 7.0
+	boss.global_position = lair + Vector3(0, 0.2, -10)
+	player.global_position = lair + Vector3(3.0, 0.4, 5)
+	player.refill()
+	game.hud.set_objective("Defeat Jiao, the Flood Dragon")
+	player._yaw = 0.35
+	player._pitch = -0.1
+	player.spring.spring_length = 6.0
 	boss.take_damage(260.0)
 	game.hud.show_boss(boss.display_name(), boss.hp / boss.max_hp)
 	await _frames(100)
@@ -160,9 +168,9 @@ func _run() -> void:
 	# 7) map overviews
 	var shots := {
 		"sect": ["FormationArray", Vector3(46, 34, 70), Vector3(0, 2, -18)],
-		"bamboo_forest": ["RuinsGate", Vector3(-26, 18, 30), Vector3(0, 3, 0)],
+		"bamboo_forest": ["Clearing", Vector3(-20, 42, 58), Vector3(-10, 0, -10)],
 		"qingshi_town": ["MarketSquare", Vector3(-30, 22, 34), Vector3(0, 2, 0)],
-		"blood_abyss": ["DemonGate", Vector3(30, 28, 40), Vector3(0, 4, 0)],
+		"blood_abyss": ["BoneField", Vector3(-10, 38, 55), Vector3(0, -4, -25)],
 		"sky_isles": ["TribulationPeak", Vector3(-40, 24, 55), Vector3(0, 4, 0)],
 	}
 	for map_id in shots:
@@ -230,16 +238,16 @@ func _run() -> void:
 	stage.queue_free()
 	var zoo := Node3D.new()
 	game.map.add_child(zoo)
-	var i := 0
-	for kind in ["spirit_wolf", "stone_golem", "jiao_serpent"]:
-		var e = EnemyScript.create(kind)
-		e.process_mode = Node.PROCESS_MODE_DISABLED
+	var spots := [Vector3(-2.6, 0, 0.5), Vector3(0.4, 0, -1.0), Vector3(4.5, 0, -9.0)]
+	var yaws := [0.9, 0.3, -0.6]
+	for i in 3:
+		var e = EnemyScript.create(["spirit_wolf", "stone_golem", "jiao_serpent"][i])
 		zoo.add_child(e)
-		e.global_position = game.map.ground_at(base + Vector3(-5.0 + i * 3.2, 0, -2.0 - i * 3.0))
-		e.rotation.y = 0.5
-		i += 1
-	cam2.fov = 50.0
-	cam2.global_position = base + Vector3(3, 3.5, 9)
-	cam2.look_at(base + Vector3(-1, 1.2, -4))
+		e.global_position = game.map.ground_at(base + spots[i])
+		e.rotation.y = yaws[i]
+		e.set_physics_process(false)
+	cam2.fov = 55.0
+	cam2.global_position = base + Vector3(-1.0, 2.6, 7.5)
+	cam2.look_at(base + Vector3(0.8, 1.6, -3.0))
 	await _save("creatures", 30)
 	quit(0)

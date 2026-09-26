@@ -21,7 +21,7 @@ const STATS := {
 	"blood_patriarch": {"name": "The Blood Moon Patriarch", "model": "blood_patriarch", "hp": 1700, "dmg": 26, "speed": 3.9, "range": 2.1, "cd": 1.1, "hit_t": 0.4},
 	"stone_golem": {"name": "Stone Golem", "model": "stone_golem", "hp": 160, "dmg": 18, "speed": 2.3, "range": 2.2, "cd": 2.0, "hit_t": 0.45, "sfx": "golem_rumble"},
 	"ancient_guardian": {"name": "Ancient Guardian", "model": "stone_golem", "hp": 950, "dmg": 24, "speed": 2.6, "range": 3.4, "cd": 1.8, "hit_t": 0.45, "scale": 2.0, "sfx": "golem_rumble"},
-	"jiao_serpent": {"name": "Jiao, the Flood Dragon", "model": "jiao_serpent", "hp": 1500, "dmg": 24, "speed": 3.0, "range": 5.5, "cd": 1.8, "hit_t": 0.6, "radius": 1.6, "sfx": "serpent_roar"},
+	"jiao_serpent": {"name": "Jiao, the Flood Dragon", "model": "jiao_serpent", "hp": 1500, "dmg": 24, "speed": 3.4, "range": 8.0, "cd": 1.8, "hit_t": 0.6, "radius": 1.0, "scale": 1.8, "sfx": "serpent_roar"},
 	"heart_demon": {"name": "Heart Demon", "model": "player", "hp": 1100, "dmg": 22, "speed": 4.4, "range": 1.7, "cd": 1.0, "hit_t": 0.4},
 }
 const GRAVITY := 13.0
