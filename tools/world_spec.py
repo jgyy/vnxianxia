@@ -166,9 +166,17 @@ ENEMIES = {
     "ancient_guardian": "stone_golem",     # boss
     "jiao_serpent": "jiao_serpent",        # boss
     "heart_demon": "player",               # boss: a shadow of the player
+    # --- added for the 1000-quest saga (volumes II-X)
+    "rogue_cultivator": "bandit",
+    "iron_scale_disciple": "disciple_male",
+    "void_wraith": "demon_cultivator",
+    "thunder_wolf": "spirit_wolf",
+    "celestial_sentinel": "stone_golem",
+    "rung_deacon": "demon_cultivator",     # boss: a Rung of the Patriarch's Ladder
+    "void_colossus": "stone_golem",        # boss
 }
 BOSSES = {"wolf_king", "bandit_chief", "tournament_champion", "demon_elder", "blood_patriarch",
-          "ancient_guardian", "jiao_serpent", "heart_demon"}
+          "ancient_guardian", "jiao_serpent", "heart_demon", "rung_deacon", "void_colossus"}
 
 # collectible item id -> display name
 ITEMS = {
@@ -186,6 +194,10 @@ ITEMS = {
     "letter": "Sealed Letter",
     "lantern_oil": "Lantern Oil",
     "rune_fragment": "Rune Fragment",
+    "void_shard": "Void Shard",
+    "spirit_pill": "Spirit Pill",
+    "incense": "Incense Bundle",
+    "tribulation_jade": "Tribulation Jade",
 }
 
 # interactable prop id -> GLB under godot/assets/environment (None = glowing seal only)
@@ -202,6 +214,8 @@ PROPS = {
     "seal": None,
 }
 
+# Mortal plus the ten major stages of cultivation. The main story has one
+# volume per major stage (volume v breaks through into REALMS[v]).
 REALMS = [
     "Mortal",
     "Qi Condensation",
@@ -210,9 +224,13 @@ REALMS = [
     "Nascent Soul",
     "Soul Transformation",
     "Void Refinement",
+    "Body Integration",
+    "Mahayana",
     "Tribulation Transcendence",
     "Immortal Ascension",
 ]
+# Minor stages within a major realm (the story's optional ``stage`` reward).
+STAGES = ["Early", "Middle", "Late", "Peak"]
 
 OBJECTIVE_TYPES = ["talk", "reach", "defeat", "collect", "meditate", "interact", "cinematic"]
 
@@ -229,6 +247,7 @@ def as_dict():
         "items": ITEMS,
         "props": PROPS,
         "realms": REALMS,
+        "stages": STAGES,
     }
 
 

@@ -6,7 +6,9 @@
   "demon_elder",
   "heart_demon",
   "jiao_serpent",
+  "rung_deacon",
   "tournament_champion",
+  "void_colossus",
   "wolf_king"
  ],
  "creature_anims": {
@@ -33,16 +35,23 @@
   "bandit_chief": "bandit",
   "blood_guard": "demon_cultivator",
   "blood_patriarch": "blood_patriarch",
+  "celestial_sentinel": "stone_golem",
   "corrupted_wolf": "spirit_wolf",
   "demon_cultivator": "demon_cultivator",
   "demon_elder": "demon_cultivator",
   "heart_demon": "player",
+  "iron_scale_disciple": "disciple_male",
   "jiao_serpent": "jiao_serpent",
+  "rogue_cultivator": "bandit",
+  "rung_deacon": "demon_cultivator",
   "sparring_disciple": "disciple_male",
   "spirit_wolf": "spirit_wolf",
   "stone_golem": "stone_golem",
+  "thunder_wolf": "spirit_wolf",
   "tournament_champion": "disciple_male",
   "training_puppet": "stone_golem",
+  "void_colossus": "stone_golem",
+  "void_wraith": "demon_cultivator",
   "wolf_king": "spirit_wolf"
  },
  "humanoid_anims": [
@@ -61,6 +70,7 @@
   "blood_lotus": "Blood Lotus",
   "cloud_silk": "Cloud Silk",
   "demon_core": "Demon Core",
+  "incense": "Incense Bundle",
   "jade_slip": "Jade Slip",
   "lantern_oil": "Lantern Oil",
   "letter": "Sealed Letter",
@@ -68,9 +78,12 @@
   "phoenix_feather": "Phoenix Feather",
   "rune_fragment": "Rune Fragment",
   "spirit_herb": "Spirit Herb",
+  "spirit_pill": "Spirit Pill",
   "spirit_stone": "Spirit Stone",
   "star_iron": "Star Iron",
   "thunder_crystal": "Thunder Crystal",
+  "tribulation_jade": "Tribulation Jade",
+  "void_shard": "Void Shard",
   "wolf_fang": "Spirit Wolf Fang"
  },
  "maps": {
@@ -217,7 +230,15 @@
   "Nascent Soul",
   "Soul Transformation",
   "Void Refinement",
+  "Body Integration",
+  "Mahayana",
   "Tribulation Transcendence",
   "Immortal Ascension"
+ ],
+ "stages": [
+  "Early",
+  "Middle",
+  "Late",
+  "Peak"
  ]
 }
