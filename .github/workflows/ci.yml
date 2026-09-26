@@ -41,6 +41,7 @@ jobs:
   blender-build:
     name: Build assets with headless Blender ${{ env.BPY_VERSION }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -68,6 +69,7 @@ jobs:
   godot-smoke-test:
     name: Godot ${{ env.GODOT_VERSION }} smoke test & 100-quest walkthrough
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Cache Godot
@@ -110,6 +112,7 @@ jobs:
     name: In-engine screenshots (lavapipe)
     needs: godot-smoke-test
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - name: Software Vulkan + virtual display

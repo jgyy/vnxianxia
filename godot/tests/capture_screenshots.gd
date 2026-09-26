@@ -35,11 +35,14 @@ func _frames(n: int) -> void:
 		await process_frame
 
 
+## Wait for a condition with game time sped up (software rendering is slow).
 func _until(cond: Callable, limit := 2000) -> void:
+	Engine.time_scale = 8.0
 	for i in limit:
 		if cond.call():
-			return
+			break
 		await process_frame
+	Engine.time_scale = 1.0
 
 
 func _run() -> void:
@@ -66,10 +69,10 @@ func _run() -> void:
 	await _frames(3)
 	await _save("loading_screen", 2)
 	await _until(func(): return game.cinematic.active)
-	await _frames(40)
+	await _until(func(): return game.cinematic._title.modulate.a > 0.95, 400)
 	await _save("cinematic_title_card", 2)
 	await _until(func(): return game.cinematic._line.text != "", 1200)
-	await _frames(90)
+	await _until(func(): return false, 30)
 	await _save("cinematic_intro", 2)
 	game.cinematic._skip = true
 	await _until(func(): return game.runner.state == "active" and gs.objective().get("type") == "talk")
@@ -84,7 +87,7 @@ func _run() -> void:
 	player._yaw = 0.35
 	await _frames(20)
 	game._on_interact()
-	await _frames(150)
+	await _until(func(): return game.dialogue._text.visible_characters < 0, 600)
 	await _save("dialogue_voiced", 2)
 	game.dialogue._advance = true
 	gs.fast = true

@@ -251,7 +251,7 @@ def neck(bm, s, nr, fem):
             yoff = 0.012 * s * (1 - t) + 0.006 * s
             ring_.append(V((rr * sn * 1.08, -rr * c * 0.94 + yoff, z * s)))
         rows.append(ring_)
-    util.loft(bm, rows, closed=True, uv_scale=(1.0, 4.0))
+    util.loft(bm, rows, closed=True, uv_scale=(3.0, 10.0))
 
 
 # --------------------------------------------------------------------------

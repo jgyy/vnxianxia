@@ -367,7 +367,7 @@ def build():
         sky=common.Sky(top=(0.07, 0.025, 0.04), horizon=(0.5, 0.13, 0.09),
                        ground_bottom=(0.22, 0.1, 0.09), ground_horizon=(0.4, 0.14, 0.11),
                        curve=0.22, sun_angle_max=30.0),
-        ambient_energy=2.6, exposure=1.25,
+        ambient_energy=3.2, exposure=1.32,
         fog_color=(0.26, 0.08, 0.07), fog_density=0.0026, fog_height=-32.0,
         fog_height_density=0.02, fog_sun_scatter=0.3, fog_sky_affect=0.2,
         glow_intensity=0.8, saturation=0.95, contrast=1.08,
