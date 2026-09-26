@@ -27,6 +27,7 @@ const MOUSE_SENSITIVITY := 0.004
 const STRIKE_RANGE := 2.6
 const BLAST_COST := 20.0
 const QiBlast := preload("res://scripts/world/qi_blast.gd")
+const PlayerMoves := preload("res://scripts/world/player_moves.gd")
 
 ## Initial camera yaw in radians (0 = looking toward -Z).
 @export var start_yaw := 0.0
@@ -53,6 +54,8 @@ var _orbiting := false
 var _step_timer := 0.0
 var _invulnerable := 0.0
 var _med_sound: AudioStreamPlayer
+## Extended move set (combos, dodges, emotes...), see world/player_moves.gd.
+var moves: Node
 
 @onready var model_root: Node3D = $ModelRoot
 @onready var pivot: Node3D = $CameraPivot
@@ -67,6 +70,9 @@ func _ready() -> void:
 	_yaw = start_yaw
 	model_root.rotation.y = start_yaw + PI
 	spring.add_excluded_object(get_rid())
+	moves = PlayerMoves.new()
+	moves.player = self
+	add_child(moves)
 	set_character(Game.character)
 	refill()
 
@@ -115,6 +121,9 @@ func set_character(index: int) -> void:
 	anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
 	if anim:
 		ActorLook.loop_anims(anim)
+	if moves:
+		moves.on_model(anim)
+	if anim:
 		anim.play("meditate" if meditating else "idle")
 	_action_lock = 0.0
 	character_changed.emit(CHARACTERS[character_index].name)
@@ -160,6 +169,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_pitch = clampf(_pitch - mm.relative.y * MOUSE_SENSITIVITY, -1.2, 0.5)
 	if not controls_enabled:
 		return
+	if moves and moves.handle_input(event):
+		return
 	if event.is_action_pressed("switch_character"):
 		set_character(character_index + 1)
 	elif event.is_action_pressed("interact"):
@@ -179,6 +190,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Melee palm strike: damages enemies in a cone in front of the player.
 func strike() -> void:
+	if moves and moves.strike("palm"):
+		return
 	_face_nearest_enemy(4.0)
 	if play_action("attack"):
 		_strike_at = 0.32
@@ -225,6 +238,7 @@ func _face_nearest_enemy(radius: float) -> void:
 
 
 func _apply_strike() -> void:
+	print("STRIKE ", Engine.get_physics_frames(), " ", current_animation(), " ", moves._state)
 	var fwd := model_root.global_basis.z
 	var hit := false
 	for e in get_tree().get_nodes_in_group("enemies"):
@@ -232,9 +246,9 @@ func _apply_strike() -> void:
 			continue
 		var to: Vector3 = e.global_position - global_position
 		to.y = 0
-		var reach: float = STRIKE_RANGE + e.radius
+		var reach: float = STRIKE_RANGE + e.radius + (moves.extra_reach if moves else 0.0)
 		if to.length() < reach and (to.length() < 0.8 or fwd.dot(to.normalized()) > 0.25):
-			e.take_damage(Game.strike_damage(), self)
+			e.take_damage(Game.strike_damage() * (moves.damage_mult if moves else 1.0), self)
 			hit = true
 	if hit:
 		Audio.sfx("hit_flesh", -2.0, randf_range(0.9, 1.1))
@@ -245,7 +259,9 @@ func start_meditation() -> void:
 		return
 	meditating = true
 	velocity = Vector3.ZERO
-	if anim:
+	if moves:
+		moves.meditate_enter()
+	elif anim:
 		anim.play("meditate", 0.4)
 		anim.speed_scale = 1.0
 	_med_sound = Audio.sfx("meditate_loop", -10.0)
@@ -259,7 +275,9 @@ func stop_meditation() -> void:
 	if _med_sound:
 		_med_sound.stop()
 		_med_sound = null
-	if anim:
+	if moves:
+		moves.meditate_exit()
+	elif anim:
 		anim.play("idle", 0.4)
 	meditation_changed.emit(false)
 
@@ -267,6 +285,10 @@ func stop_meditation() -> void:
 func take_damage(amount: float, _from: Node = null) -> void:
 	if dead or _invulnerable > 0.0:
 		return
+	if moves:
+		amount = moves.filter_damage(amount, _from)
+		if amount <= 0.0:
+			return
 	stop_meditation()
 	hp = maxf(0.0, hp - amount)
 	hp_changed.emit(hp, Game.max_hp())
@@ -275,9 +297,11 @@ func take_damage(amount: float, _from: Node = null) -> void:
 	if hp <= 0.0:
 		dead = true
 		if anim:
-			anim.play("death", 0.1)
+			anim.play(moves.death_anim(_from) if moves else "death", 0.1)
 		_action_lock = 99.0
 		died.emit()
+	elif moves:
+		moves.hit_reaction(amount, _from)
 	elif _action_lock <= 0.0 and anim:
 		anim.play("hit", 0.05)
 		_action_lock = 0.3
@@ -288,7 +312,9 @@ func respawn(at: Vector3) -> void:
 	velocity = Vector3.ZERO
 	_action_lock = 0.0
 	refill()
-	if anim:
+	if moves:
+		moves.on_respawn()
+	elif anim:
 		anim.play("idle")
 
 
@@ -305,6 +331,11 @@ func _physics_process(delta: float) -> void:
 	var dir := (basis_yaw * Vector3(input.x, 0, input.y))
 	dir.y = 0
 	dir = dir.normalized() if dir.length() > 0.01 else Vector3.ZERO
+	if moves:
+		var d = moves.pre_physics(delta, dir, running)
+		if d == null:
+			return
+		dir = d
 	if meditating and dir != Vector3.ZERO:
 		stop_meditation()
 	if meditating:
@@ -326,7 +357,7 @@ func _physics_process(delta: float) -> void:
 		if _strike_at < 0.0:
 			_apply_strike()
 
-	var speed := RUN_SPEED if running else WALK_SPEED
+	var speed: float = (RUN_SPEED if running else WALK_SPEED) * (moves.speed_mult(running) if moves else 1.0)
 	var target := dir * speed
 	var accel := 12.0 if is_on_floor() else 3.0
 	velocity.x = move_toward(velocity.x, target.x, accel * speed * delta)
@@ -338,7 +369,7 @@ func _physics_process(delta: float) -> void:
 		Audio.sfx("jump", -8.0)
 	move_and_slide()
 
-	if dir != Vector3.ZERO:
+	if dir != Vector3.ZERO and not (moves and moves.facing_locked()):
 		var target_yaw := atan2(dir.x, dir.z)
 		model_root.rotation.y = lerp_angle(model_root.rotation.y, target_yaw, clampf(TURN_SPEED * delta, 0, 1))
 
@@ -347,6 +378,8 @@ func _physics_process(delta: float) -> void:
 
 func _update_animation(delta: float) -> void:
 	if anim == null or _action_lock > 0.0 or meditating or dead:
+		return
+	if moves and moves.update_animation(delta):
 		return
 	var planar := Vector2(velocity.x, velocity.z).length()
 	var wanted := "idle"
