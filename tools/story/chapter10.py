@@ -68,17 +68,17 @@ CHAPTER = chapter(
                        (TIE, "Iron-Fang pays his debts. Today, in full. My blade is yours until the Patriarch's head is on the floor."), at="PrisonCages"),
               ], xp=2400, items={"spirit_stone": 10}),
         # ---------------------------------------------------------------- q095
-        quest("Void Refinement",
+        quest("The Shattered Altar",
               "The Altar of Blood still feeds the Patriarch. Destroy it, and let the void teach you what remains.",
               "blood_abyss", [
                   defeat("demon_cultivator", 4, "AltarOfBlood", "Defeat the altar's last defenders"),
                   interact("blood_altar", "AltarOfBlood", "Shatter the Altar of Blood",
                            (N, "The altar cracks from top to bottom. Three hundred years of stolen blood pours out and soaks away into the stone."),
                            (YE, "It's done. His power has no root now. Only what he carries in himself.")),
-                  meditate("FortressCourt", 10, "Refine your soul in the void",
+                  meditate("FortressCourt", 10, "Still your soul in the silence of the void",
                            (N, "In the silence after the altar breaks, you sink inward. Past body, past qi, past soul, to the empty place beneath."),
                            (N, "Nothing is there. And nothing is exactly enough. You rise with the stillness of the void in your bones.")),
-              ], xp=3000, items={"spirit_stone": 10}, realm="Void Refinement"),
+              ], xp=3000, items={"spirit_stone": 10}),
         # ---------------------------------------------------------------- q096
         quest("The Blood Moon Patriarch",
               "Xue Wuji waits on his throne, and he has been waiting for three hundred years.",
@@ -135,7 +135,7 @@ CHAPTER = chapter(
                            (N, "The lightning comes. First, second, third. Your body breaks and remakes itself. Fourth, fifth, sixth. Your qi burns white."),
                            (N, "Seventh, eighth. The remnant screams as the lightning finds it, and there is nothing left of Xue Wuji but ash on the wind."),
                            (N, "The ninth bolt strikes, and it does not hurt at all. It feels like the sky, saying your name.")),
-              ], xp=6000, items={"phoenix_feather": 1}, realm="Tribulation Transcendence"),
+              ], xp=6000, items={"phoenix_feather": 1}),
         # ---------------------------------------------------------------- q100
         quest("Immortal Ascension",
               "The Ascension Stair has opened. Say your farewells, and climb.",

@@ -72,7 +72,7 @@ CINEMATICS = {
              "Acolytes in the alley! {player}, he's running for the graves!"),
     ]),
     # ================================================================ chapter 4
-    "ch04_intro": cin("bamboo_forest", title="Chapter Four", subtitle="Ruins of the Forgotten Sect", music="forest", actors=[
+    "ch04_intro": cin("bamboo_forest", title="Chapter Eleven", subtitle="Ruins of the Forgotten Sect", music="forest", actors=[
         actor(P, "ForestPath", "idle", "RuinsGate"),
         actor(LAN, "HermitHut", "meditate"),
     ], shots=[
@@ -101,7 +101,7 @@ CINEMATICS = {
              "Your mother's pendant, child, is that key. And you are the last of the Verdant Lotus."),
     ]),
     # ================================================================ chapter 5
-    "ch05_intro": cin("sect", title="Chapter Five", subtitle="The Inner Sect Tournament", music="sect", actors=[
+    "ch05_intro": cin("sect", title="Chapter Twelve", subtitle="The Inner Sect Tournament", music="sect", actors=[
         actor(YUN, "MainHall", "idle", "FormationArray"),
         actor(MO, "HallSteps", "talk", "FormationArray"),
         actor(GU, "ScholarRock", "idle", "FormationArray"),
@@ -139,7 +139,7 @@ CINEMATICS = {
              "Forty years of loyalty, Sect Master, and you never once asked why I stopped smiling. Kill them."),
     ]),
     # ================================================================ chapter 6
-    "ch06_intro": cin("blood_abyss", title="Chapter Six", subtitle="Descent into the Blood Moon", music="abyss", actors=[
+    "ch06_intro": cin("blood_abyss", title="Chapter Twenty-One", subtitle="Descent into the Blood Moon", music="abyss", actors=[
         actor(P, "PlayerSpawn", "idle", "CanyonEntrance"),
         actor(HAN, "TeleportArray", "idle", "CanyonEntrance"),
         actor(YE, "CanyonEntrance", "idle", "PlayerSpawn"),
@@ -171,7 +171,7 @@ CINEMATICS = {
              "Disciple. You should not have come. Xue Mei, keep it alive. The Patriarch needs the body intact."),
     ]),
     # ================================================================ chapter 7
-    "ch07_intro": cin("qingshi_town", title="Chapter Seven", subtitle="Siege of Qingshi", music="town", actors=[
+    "ch07_intro": cin("qingshi_town", title="Chapter Twenty-Two", subtitle="Siege of Qingshi", music="town", actors=[
         actor(ZHOU, "TownGate", "talk", "MainStreet"),
         actor(P, "MainStreet", "idle", "TownGate"),
         actor(ZHAO, "WatchTower", "idle", "Farmland"),
@@ -189,7 +189,7 @@ CINEMATICS = {
              "Then we hold. Every street, every house, every wall. Not one more grave."),
     ]),
     # ================================================================ chapter 8
-    "ch08_intro": cin("sky_isles", title="Chapter Eight", subtitle="Isles Above the Clouds", music="sky", actors=[
+    "ch08_intro": cin("sky_isles", title="Chapter Thirty-One", subtitle="Isles Above the Clouds", music="sky", actors=[
         actor(P, "TeleportArray", "idle", "CloudGate"),
         actor(HAN, "PlayerSpawn", "idle", "CloudGate"),
         actor(ZHAO, "JadeBridge", "idle", "PlayerSpawn"),
@@ -207,7 +207,7 @@ CINEMATICS = {
              "And at the highest point, the summit where heavenly tribulation strikes, waits the stair that climbs to heaven."),
     ]),
     # ================================================================ chapter 9
-    "ch09_intro": cin("sect", title="Chapter Nine", subtitle="The Heart Demon", music=None, actors=[
+    "ch09_intro": cin("sect", title="Chapter Forty-One", subtitle="The Heart Demon", music=None, actors=[
         actor(MO, "FormationArray", "cast"),
         actor(BAI, "Pagoda", "idle", "FormationArray"),
     ], shots=[
@@ -253,7 +253,7 @@ CINEMATICS = {
              "Mo Changfeng. Elder of the Outer Court. You stubborn, stubborn old man."),
     ]),
     # ================================================================ chapter 10
-    "ch10_intro": cin("blood_abyss", title="Chapter Ten", subtitle="Heavenly Tribulation", music="abyss", actors=[
+    "ch10_intro": cin("blood_abyss", title="Chapter One Hundred", subtitle="Heavenly Tribulation", music="abyss", actors=[
         actor(YUN, "TeleportArray", "idle", "CanyonEntrance"),
         actor(P, "PlayerSpawn", "salute", "TeleportArray"),
         actor(HAN, "CanyonEntrance", "idle", "PlayerSpawn"),

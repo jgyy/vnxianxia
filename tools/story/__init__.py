@@ -1,16 +1,15 @@
-"""The main story of the Azure Cloud Sect: 10 chapters x 10 quests.
+"""The main story of the Azure Cloud Sect: 10 volumes x 10 chapters x 10 quests.
 
-Authored as Python data (see dsl.py) and compiled + validated into
-godot/data/story.json by tools/build_story.py. Voice lines are synthesised
-by tools/gen_voices.py using the casting in voices.py.
+Authored as Python data (see dsl.py, saga_gen.py) and compiled + validated into
+godot/data/story.json by tools/build_story.py. The ten original chapters are
+voiced (tools/gen_voices.py, casting in voices.py); the 90 chapters added for
+the 1000-quest saga are text-only.
 """
 
-from . import (chapter01, chapter02, chapter03, chapter04, chapter05,
-               chapter06, chapter07, chapter08, chapter09, chapter10)
 from .cinematics import CINEMATICS
 from .npcs import NPCS
 from .saga import PREMISE, TITLE
 from .voices import NARRATOR, PLAYER_F, PLAYER_M, NPC_VOICES, PRONOUNCE
+from .volumes import VOLUMES
 
-CHAPTERS = [m.CHAPTER for m in (chapter01, chapter02, chapter03, chapter04, chapter05,
-                                chapter06, chapter07, chapter08, chapter09, chapter10)]
+CHAPTERS = [c for v in VOLUMES for c in v["chapters"]]
