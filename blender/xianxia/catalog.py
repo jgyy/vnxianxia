@@ -1,0 +1,30 @@
+"""Every environment asset: GLB file name -> builder callable."""
+from . import arch, nature, props
+
+ENVIRONMENT = {
+    "main_hall": arch.main_hall,
+    "sect_gate": arch.sect_gate,
+    "pavilion": arch.pavilion,
+    "pagoda": arch.pagoda,
+    "courtyard_wall": lambda: arch.wall_segment(8.0, 3.2, moon_gate=False),
+    "moon_gate_wall": lambda: arch.wall_segment(8.0, 3.2, moon_gate=True),
+    "stone_lantern": props.stone_lantern,
+    "red_lantern": props.red_lantern,
+    "incense_burner": props.incense_burner,
+    "sect_banner": props.banner,
+    "weapon_rack": props.weapon_rack,
+    "training_dummy": props.training_dummy,
+    "formation_array": props.formation_array,
+    "stone_bridge": props.stone_bridge,
+    "lotus_cluster": props.lotus_cluster,
+    "pine_tree": lambda: nature.pine_tree(1, 7.5),
+    "pine_tree_tall": lambda: nature.pine_tree(4, 10.0),
+    "plum_blossom_tree": nature.blossom_tree,
+    "bamboo_cluster": nature.bamboo_cluster,
+    "boulders": nature.boulders,
+    "scholar_rock": nature.scholar_rock,
+    "terrain": nature.terrain,
+    "floating_island": nature.floating_island,
+    "karst_peak": nature.karst_peak,
+    "cloud_sea": nature.cloud_sea,
+}
