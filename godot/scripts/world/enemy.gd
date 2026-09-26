@@ -31,6 +31,9 @@ const STATS := {
 	"celestial_sentinel": {"name": "Celestial Sentinel", "model": "stone_golem", "hp": 220, "dmg": 20, "speed": 2.6, "range": 2.3, "cd": 1.8, "hit_t": 0.45, "scale": 1.15, "tint": Color(0.75, 0.95, 0.9), "sfx": "golem_rumble"},
 	"rung_deacon": {"name": "Rung of the Ladder", "model": "demon_cultivator", "hp": 1300, "dmg": 24, "speed": 4.0, "range": 2.0, "cd": 1.1, "hit_t": 0.4, "scale": 1.12, "tint": Color(0.5, 0.25, 0.35), "glow": Color(1.0, 0.2, 0.3)},
 	"void_colossus": {"name": "Void Colossus", "model": "stone_golem", "hp": 1800, "dmg": 28, "speed": 2.4, "range": 3.6, "cd": 1.9, "hit_t": 0.5, "scale": 2.2, "tint": Color(0.38, 0.32, 0.55), "glow": Color(0.6, 0.35, 1.0), "sfx": "golem_rumble"},
+	# waves of a heavenly tribulation (world/tribulation.gd)
+	"tribulation_beast": {"name": "Tribulation Beast", "model": "spirit_wolf", "hp": 110, "dmg": 12, "speed": 5.0, "range": 1.9, "cd": 1.4, "hit_t": 0.35, "scale": 1.2, "tint": Color(0.85, 0.9, 1.3), "glow": Color(0.55, 0.8, 1.0), "sfx": "wolf_howl"},
+	"heart_shade": {"name": "Heart Shade", "model": "player", "hp": 130, "dmg": 12, "speed": 4.0, "range": 1.7, "cd": 1.3, "hit_t": 0.4},
 }
 ## The realm tier each enemy's base stats were tuned for. Fought in a later
 ## tier (story.json gives every quest the realm index at its start), an enemy
@@ -41,7 +44,7 @@ const NATIVE_TIER := {
 	"demon_cultivator": 1, "stone_golem": 1, "ancient_guardian": 1, "bandit_chief": 3, "tournament_champion": 2,
 	"blood_guard": 2, "demon_elder": 2, "jiao_serpent": 3, "heart_demon": 4, "blood_patriarch": 6,
 	"rogue_cultivator": 1, "iron_scale_disciple": 3, "void_wraith": 5, "thunder_wolf": 5, "celestial_sentinel": 4,
-	"rung_deacon": 4, "void_colossus": 6,
+	"rung_deacon": 4, "void_colossus": 6, "tribulation_beast": 4, "heart_shade": 4,
 }
 const GRAVITY := 13.0
 const AGGRO := 16.0

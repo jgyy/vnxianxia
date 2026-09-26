@@ -6,7 +6,6 @@ extends Node
 const PATH := "res://data/story.json"
 const WORLD_PATH := "res://data/world.json"
 const PLAYER_NAMES := ["Lin Feng", "Su Yue"]
-const STAGE_NAMES := ["Early", "Middle", "Late", "Peak"]
 
 var title := ""
 var premise := ""
@@ -104,16 +103,49 @@ func realm_index(realm: String) -> int:
 	return (world.realms as Array).find(realm)
 
 
-func stage_name(stage: int) -> String:
-	return STAGE_NAMES[clampi(stage, 0, STAGE_NAMES.size() - 1)]
+## Name of minor stage ``stage`` (1..10) of major realm ``realm_idx``: "7th Layer",
+## "Great Perfection"; "" for Mortal, Immortal Ascension or stage 0.
+func stage_name(realm_idx: int, stage: int) -> String:
+	if realm_idx <= 0 or realm_idx >= (world.realms as Array).size() - 1 or stage <= 0:
+		return ""
+	var names: Array = world.stages
+	return names[clampi(stage, 1, names.size() - 1)]
 
 
-## "Core Formation · Late" (Mortal and Immortal Ascension have no minor stages).
+## "Early" (1-3), "Middle" (4-6), "Late" (7-9) or "Great Perfection" (10).
+func stage_group(stage: int) -> String:
+	var groups: Array = world.stage_groups
+	return groups[clampi(stage, 0, groups.size() - 1)]
+
+
+## "Core Formation · 7th Layer (Late)", "Core Formation · Great Perfection";
+## Mortal and Immortal Ascension have no minor stages.
 func realm_label(realm: int, stage: int) -> String:
 	var r := realm_name(realm)
-	if realm <= 0 or realm >= (world.realms as Array).size() - 1:
+	var s := stage_name(realm, stage)
+	if s == "":
 		return r
-	return "%s · %s" % [r, stage_name(stage)]
+	if stage >= 10:
+		return "%s · %s" % [r, s]
+	return "%s · %s (%s)" % [r, s, stage_group(stage)]
+
+
+## "Lawful Good", "True Neutral", "Chaotic Evil" ...
+func alignment_name(id: String) -> String:
+	if id == "neutral_neutral":
+		return "True Neutral"
+	var parts := id.split("_")
+	return " ".join(Array(parts).map(func(p): return (p as String).capitalize()))
+
+
+## The lines of a conversation the player should see now: conditional lines
+## (alignment, realm, flags...) only when their condition holds.
+func visible_lines(lines: Array) -> Array:
+	var out := []
+	for l in lines:
+		if Game.cond_ok(l.get("cond")):
+			out.append(l)
+	return out
 
 
 func item_name(item: String) -> String:

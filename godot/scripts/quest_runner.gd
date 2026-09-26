@@ -21,6 +21,8 @@ var _med_time := 0.0
 var _fight_talked := false
 var _completing := false
 var _fighting := ""
+var trib: Tribulation
+var _trib_failed := false
 
 
 func clear() -> void:
@@ -39,6 +41,8 @@ func clear() -> void:
 	_med_time = 0.0
 	_fight_talked = false
 	_completing = false
+	trib = null
+	_trib_failed = false
 	game.hud.target_point = Vector3.INF
 	game.hud.show_boss("", -1.0)
 	game.hud.set_meditation(-1.0)
@@ -91,6 +95,18 @@ func activate() -> void:
 		"cinematic":
 			state = "busy"
 			_play_cinematic.call_deferred()
+		"tribulation":
+			var p: Vector3 = map.marker_position(obj.marker)
+			_beacon(p, Color(0.6, 0.72, 1.0), 2.2)
+			_point(p)
+			trib = Tribulation.create(obj, int(Game.quest().get("tier", Game.realm)))
+			map.add_child(trib)
+			trib.global_position = p
+			spawned.append(trib)
+			trib.volley_struck.connect(_on_volley)
+			trib.wave_spawned.connect(_on_wave)
+			trib.survived.connect(_on_tribulation_survived)
+			trib.failed.connect(_on_tribulation_failed)
 
 
 func _point(p: Vector3) -> void:
@@ -110,6 +126,11 @@ func _update_text() -> void:
 	match obj.type:
 		"defeat", "collect":
 			t += "  (%d/%d)" % [Game.progress, int(obj.count)]
+		"tribulation":
+			if _trib_failed:
+				t = "Return and face the tribulation again"
+			elif trib and trib.running:
+				t += "  (%d/%d)" % [trib.done, trib.volleys]
 	game.hud.set_objective(t)
 
 
@@ -217,6 +238,7 @@ func _talk() -> void:
 	var npc := target_npc
 	npc.set_quest_target(false)
 	await game.converse(obj.dialogue, npc)
+	await _choose(npc)
 	complete()
 
 
@@ -226,7 +248,33 @@ func _interact() -> void:
 	Fx.burst(game.map, prop.global_position + Vector3.UP, BEACON_GOLD, 40, 3.0)
 	if obj.get("dialogue"):
 		await game.converse(obj.dialogue)
+	await _choose()
 	complete()
+
+
+## A moral choice after the objective's dialogue: the options whose conditions
+## hold are offered, the chosen one shifts the alignment, grants its reward,
+## sets its flag and is answered by its reply lines.
+func _choose(npc: Npc = null) -> void:
+	var opts: Array = obj.get("choices", []) if obj.get("choices") else []
+	if opts.is_empty():
+		return
+	var valid: Array = Game.valid_options(opts)
+	if valid.is_empty():
+		return
+	var texts: Array = valid.map(func(o): return Story.fill(o.text))
+	var i: int = await game.choose(Story.fill(obj.get("choice_prompt", "")), texts, npc)
+	var op: Dictionary = valid[clampi(i, 0, valid.size() - 1)]
+	var before := Game.alignment()
+	Game.apply_choice(op, opts.find(op))
+	var rw: Dictionary = op.get("reward", {})
+	for item in rw.get("items", {}):
+		game.hud.toast("+%d %s" % [int(rw.items[item]), Story.item_name(item)], UiTheme.JADE)
+	if Game.alignment() != before:
+		game.hud.toast("Your path turns: " + Game.alignment_name(), UiTheme.GOLD)
+	var reply: Array = op.get("reply", [])
+	if not reply.is_empty():
+		await game.converse(reply, npc)
 
 
 func _process(delta: float) -> void:
@@ -244,7 +292,28 @@ func _process(delta: float) -> void:
 				state = "busy"
 				if obj.get("dialogue"):
 					await game.converse(obj.dialogue)
+				await _choose()
 				complete()
+		"tribulation":
+			if trib == null:
+				return
+			if trib.running:
+				var near := trib.enemies.filter(func(e): return is_instance_valid(e) and not e.dead)
+				_point(near[0].global_position if not near.is_empty() else trib.global_position)
+				game.hud.show_boss("Heavenly Tribulation", 1.0 - float(trib.done) / trib.volleys)
+			elif not trib.finished:
+				_point(trib.global_position)
+				var d := Vector2(pp.x - trib.global_position.x, pp.z - trib.global_position.z).length()
+				if d < 5.0 and absf(pp.y - trib.global_position.y) < 6.0 and not player.dead:
+					state = "busy"
+					if obj.get("dialogue") and not _fight_talked:
+						_fight_talked = true
+						await game.converse(obj.dialogue)
+					state = "active"
+					_trib_failed = false
+					_set_fight("boss")
+					trib.begin(player)
+					_update_text()
 		"defeat":
 			if obj.get("dialogue") and not _fight_talked and pp.distance_to(target_point) < 24.0:
 				_fight_talked = true
@@ -330,9 +399,16 @@ func _finish_quest(q: Dictionary) -> void:
 	Audio.sfx("quest_complete", -3.0)
 	game.hud.toast("Quest complete: " + q.title, UiTheme.GOLD)
 	if r.get("realm"):
-		Game.set_realm(r.realm)
+		Game.set_realm(r.realm, int(r.stage) if r.get("stage") != null else 1)
 	elif r.get("stage") != null:
 		Game.set_stage(int(r.stage))
+	# who the player has become shows in what the world gives back
+	for b in r.get("bonus", []):
+		if Game.cond_ok(b.get("cond")):
+			Game.add_xp(int(b.get("xp", 0)))
+			for item in b.get("items", {}):
+				Game.add_item(item, int(b.items[item]))
+			game.hud.toast(b.get("note", ""), UiTheme.JADE)
 	quest_completed.emit(q.id)
 	var vol := int(q.get("volume", 1))
 	if Story.ends_volume(q) and not Game.finished():
@@ -357,3 +433,35 @@ func _finish_quest(q: Dictionary) -> void:
 		Audio.sfx("quest_accept", -6.0)
 	else:
 		game.hud.banner("Immortal Ascension", "The saga of the Azure Cloud Sect is complete", 6.0)
+
+
+func _on_volley(_done: int, _total: int) -> void:
+	Game.progress = _done
+	_update_text()
+
+
+func _on_wave(list: Array) -> void:
+	for e in list:
+		e.aggroed.connect(_on_aggro)
+
+
+func _on_tribulation_survived() -> void:
+	if state != "active" or obj.type != "tribulation":
+		return
+	state = "busy"
+	game.hud.show_boss("", -1.0)
+	_set_fight("")
+	Audio.sfx("breakthrough", -4.0)
+	Fx.burst(game.map, game.player.global_position + Vector3.UP, Color(0.75, 0.85, 1.0), 120, 6.0, 0.06)
+	game.hud.banner("Tribulation Survived", Story.fill(obj.text).replace("Survive the ", "You endured the "), 3.5)
+	if game.player.meditating:
+		game.player.stop_meditation()
+	complete()
+
+
+func _on_tribulation_failed() -> void:
+	_trib_failed = true
+	game.hud.show_boss("", -1.0)
+	_set_fight("")
+	game.hud.toast("The lightning strikes you down. Steady yourself and face heaven again.", UiTheme.CRIMSON)
+	_update_text()

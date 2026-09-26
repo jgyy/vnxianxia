@@ -8,6 +8,7 @@ var _hp: ProgressBar
 var _qi: ProgressBar
 var _xp: ProgressBar
 var _realm: Label
+var _align: Label
 var _quest_chapter: Label
 var _quest_title: Label
 var _objective: Label
@@ -55,7 +56,11 @@ func _ready() -> void:
 	vb.add_theme_constant_override("separation", 5)
 	vit.add_child(vb)
 	_realm = UiTheme.label("Mortal", 17, UiTheme.GOLD)
+	_realm.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_child(_realm)
+	_align = UiTheme.label("True Neutral", 13, UiTheme.MUTED, 3)
+	_align.mouse_filter = Control.MOUSE_FILTER_PASS
+	vb.add_child(_align)
 	_hp = _labelled_bar(vb, "Vitality", UiTheme.CRIMSON)
 	_qi = _labelled_bar(vb, "Qi", Color(0.35, 0.75, 1.0))
 	_xp = _labelled_bar(vb, "Cultivation", UiTheme.JADE, 7.0)
@@ -192,6 +197,10 @@ func _labelled_bar(parent: Control, text: String, color: Color, h := 11.0) -> Pr
 
 func refresh() -> void:
 	_realm.text = Game.realm_label()
+	_align.text = Game.alignment_name()
+	var tip := "%s\nAlignment: %s\nLaw %+d  ·  Good %+d" % [Game.realm_label(), Game.alignment_name(), Game.law, Game.good]
+	_realm.tooltip_text = tip
+	_align.tooltip_text = tip
 	_xp.value = float(Game.xp % Game.XP_PER_REALM) / Game.XP_PER_REALM
 	var q := Game.quest()
 	if q.is_empty():

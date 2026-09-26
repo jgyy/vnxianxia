@@ -143,6 +143,9 @@ func _show_quest() -> void:
 		t += " · [color=#dcb86b]Breakthrough: %s[/color]" % r.realm
 	elif r.get("stage") != null:
 		t += " · [color=#73e6c7]%s[/color]" % Story.realm_label(int(q.tier), int(r.stage))
+	for o in objs:
+		if o.type == "tribulation":
+			t += "\n[color=#9fb4ff]A heavenly tribulation of %d bolts awaits.[/color]" % int(o.bolts)
 	_page(t)
 
 
@@ -208,13 +211,42 @@ func _show_cultivation() -> void:
 	var realms: Array = Story.world.realms
 	for i in realms.size():
 		var mark := "[color=#73e6c7]+[/color]" if i < Game.realm else ("»" if i == Game.realm else "[color=#6f6a60]·[/color]")
-		t += "%s %s\n" % [mark, realms[i] if i <= Game.realm else "[color=#6f6a60]%s[/color]" % realms[i]]
+		var name: String = realms[i] if i <= Game.realm else "[color=#6f6a60]%s[/color]" % realms[i]
+		if i == Game.realm and Game.stage > 0:
+			# the ten minor stages of the current realm
+			var pips := ""
+			for s in range(1, 11):
+				pips += "[color=#73e6c7]●[/color]" if s <= Game.stage else "[color=#6f6a60]○[/color]"
+			name += "   %s  [color=#b8ad96]%s[/color]" % [pips, Story.stage_name(Game.realm, Game.stage)]
+		t += "%s %s\n" % [mark, name]
+	t += _alignment_text()
 	t += "\n[b]Inventory[/b]\n"
 	if Game.inventory.is_empty():
 		t += "[color=#8f8a80]Empty[/color]"
 	for item in Game.inventory:
 		t += "%s ×%d\n" % [Story.item_name(item), int(Game.inventory[item])]
 	_page(t)
+
+
+## The nine alignments as a grid, the player's highlighted, with both axes.
+func _alignment_text() -> String:
+	var t := "\n[b]Alignment: [color=#dcb86b]%s[/color][/b]\n" % Game.alignment_name()
+	t += "[color=#b8ad96]Law %+d (lawful 25+, chaotic -25-)  ·  Good %+d (good 25+, evil -25-)[/color]\n" % [Game.law, Game.good]
+	var mine := Game.alignment()
+	for a in Game.ALIGN_LAW:
+		var row := "   "
+		for m in Game.ALIGN_MORAL:
+			var id: String = a + "_" + m
+			var label := Story.alignment_name(id)
+			if id == mine:
+				row += "[color=#dcb86b][b]» %s «[/b][/color]   " % label
+			else:
+				row += "[color=#6f6a60]%s[/color]   " % label
+		t += row + "\n"
+	var flags: Array = Game.flags.keys()
+	if not flags.is_empty():
+		t += "[color=#8f8a80]Remembered: %s[/color]\n" % ", ".join(flags.map(func(f): return (f as String).replace("_", " ")))
+	return t
 
 
 func _show_settings() -> void:
