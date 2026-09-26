@@ -218,7 +218,7 @@ func converse(lines: Array, npc: Npc = null) -> void:
 			if is_instance_valid(n):
 				n.set_talking(n.npc_id == speaker)
 		if player.anim and not player.dead:
-			player.anim.play("talk" if speaker == "player" else "idle", 0.3)
+			player.anim.play(player.moves.talk_anim(speaker == "player") if player.moves else ("talk" if speaker == "player" else "idle"), 0.3)
 	dialogue.line_started.connect(speaking)
 	await dialogue.play(lines)
 	dialogue.line_started.disconnect(speaking)

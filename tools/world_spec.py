@@ -121,6 +121,9 @@ MAPS = {
 
 # Humanoids share the 24-bone cultivator rig and the full humanoid animation set.
 HUMANOID_ANIMS = ["idle", "walk", "run", "salute", "cast", "attack", "hit", "death", "meditate", "talk"]
+# The two protagonists carry the extended move set (blender/xianxia/moves.py).
+PROTAGONISTS = ["cultivator_male", "cultivator_female"]
+PROTAGONIST_MIN_ANIMS = 100
 # Creatures have their own rigs.
 CREATURE_ANIMS = {
     "spirit_wolf": ["idle", "walk", "run", "attack", "hit", "death"],

@@ -70,6 +70,8 @@ def check(path):
         missing = required - anims
         if missing:
             errors.append(f"missing animations: {sorted(missing)}")
+        if path.stem in world_spec.PROTAGONISTS and len(anims) < world_spec.PROTAGONIST_MIN_ANIMS:
+            errors.append(f"protagonist has {len(anims)} animations (< {world_spec.PROTAGONIST_MIN_ANIMS})")
     return info, errors
 
 

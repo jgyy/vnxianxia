@@ -75,6 +75,18 @@ T-zone roughness and individual brow hairs. Godot renders them with subsurface s
 Humanoids have 10 animations: `idle walk run salute cast attack hit death meditate talk`. Creatures have
 `idle walk run attack hit death`. Finger poses (fist, sword seal, mudra, open palm) are animated too.
 
+The two heroes carry **136 animations** (the 10 above plus 126 from `blender/xianxia/moves.py`): locomotion
+extras (walk back, strafes, run start/stop, turns, qinggong sprint, crouch, sneak, jump start/air/fall/land,
+hard landing, somersault, glide, slide, ledge hang, climb), palm / kick / jian-sword combos, spin and flying
+kicks, a charged strike, four qi techniques, block / parry / dodges / roll / backflip, directional staggers,
+knockdown and get-up, two deaths and a revival, meditation variants, breakthrough, hand seals, flying-sword
+riding, 50+ social and daily-life emotes, a four-part dance, victory poses, idle fidgets and talk gestures.
+Each is authored as a few key poses of readable controls (IK hand and foot targets, torso angles, finger
+presets) and solved per frame with two-bone IK so planted feet stay planted, with monotone spline easing,
+overlapping-action offsets and seamless loops; the GLBs are then keyframe-reduced (about 6.7 MB each).
+
+![Animation contact sheet](docs/screenshots/animations_sheet.jpg)
+
 ![Creatures](docs/screenshots/creatures.jpg)
 
 ## Maps
@@ -168,10 +180,15 @@ godot --path godot                       # title screen → New Game
 
 | Input | Action |
 |---|---|
-| `WASD` / arrows | move (relative to camera) · `Shift` run · `Space` qinggong leap |
+| `WASD` / arrows | move (relative to camera) · `Shift` run (hold to sprint) · `Space` leap, again in the air to somersault, hold to glide; jump into a ledge to grab it |
+| `Ctrl` (hold) · `B` | crouch (slide when sprinting) · sneak toggle |
 | `E` | talk, interact, use a teleport array |
-| `F` / left click (mouse captured) | palm strike |
-| `Q` | qi blast (costs qi) |
+| `F` / left click (mouse captured) | palm combo (5 blows; crouched: uppercut) |
+| `Z` · `X` | kick combo (airborne: flying kick) · jian sword combo |
+| `H` / middle mouse (hold) | charge a heavy strike, release to unleash |
+| `R` (hold) · `Alt` | block (tap just before a hit to parry) · dodge / roll / backflip |
+| `Q` · `1`–`4` | qi blast (costs qi) · qi techniques: blast, twin-palm blast, shock wave, sword rain |
+| `V` | gesture & emote menu (bows, feelings, daily life, cultivation, dance) |
 | `C` | meditate: heals, restores qi, completes cultivation objectives |
 | `G` | salute · `Tab` switch between Lin Feng and Su Yue |
 | `J` / `Esc` | journal (current quest, Story So Far, chronicle, cultivation, settings, save) |
@@ -201,6 +218,7 @@ godot --headless --path godot --import
 godot --headless --path godot -s res://tests/smoke_test.gd         # assets, rigs, maps, voices, a play session
 godot --headless --path godot -s res://tests/walkthrough_test.gd   # plays all 1000 quests end to end
 godot --headless --path godot -s res://tests/walkthrough_test.gd -- 101 200   # one volume (CI runs 10 shards)
+godot --headless --path godot -s res://tests/animations_test.gd    # 100+ hero animations play, combos, emotes
 xvfb-run -a godot --path godot --rendering-driver vulkan \
   -s res://tests/capture_screenshots.gd -- /tmp/shots              # needs a GPU or lavapipe
 ```

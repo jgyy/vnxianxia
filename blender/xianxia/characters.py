@@ -1658,4 +1658,7 @@ def build_character(cfg):
         meshes.append(o)
     arm.name = "Armature"
     actions = build_actions(arm, J, cfg, s)
+    if cfg["name"].startswith("cultivator_"):
+        from . import moves
+        actions += moves.build_player_actions(arm, J, cfg, s)
     return arm, meshes, actions
