@@ -1,130 +1,226 @@
-# vnxianxia — Azure Cloud Sect
+# vnxianxia — Azure Cloud Sect: *The Lotus and the Blood Moon*
 
-Procedurally generated **xianxia** characters and a mountain-top sect, modelled,
-textured, rigged and animated entirely by Python scripts running in **headless
-Blender 5.2.2 LTS**, exported as `.glb`, and playable in **Godot 4.7.2**.
+A third-person **xianxia action-RPG** with a **100-quest main story**, built entirely from code.
+Headless **Blender 5.2.2** Python scripts model, texture, rig and animate every character, creature and
+building. Five generated maps, a voiced story with cinematics, and a full game runtime (quests, dialogue,
+combat, HUD, loading screens, journal) run in **Godot 4.7.2**. The music and sound effects are synthesised
+with numpy, and all 974 voice lines are neural TTS (Piper).
 
-![Third-person gameplay in Godot](docs/screenshots/gameplay_third_person.jpg)
+![Voiced dialogue in the Azure Cloud Sect](docs/screenshots/dialogue_voiced.jpg)
 
-| Sect overview | Courtyard & formation array |
+| Chapter intro cinematic | Quest HUD: tracker, compass, objective marker |
 |---|---|
-| ![overview](docs/screenshots/sect_overview.jpg) | ![courtyard](docs/screenshots/courtyard.jpg) |
-| **Pond, bridge & pagoda** | **Cliff edge above the sea of clouds** |
-| ![pond](docs/screenshots/pond_pagoda.jpg) | ![cliff](docs/screenshots/cliff_edge.jpg) |
+| ![cinematic](docs/screenshots/cinematic_intro.jpg) | ![hud](docs/screenshots/quest_hud.jpg) |
+| **Spirit wolves in the bamboo forest** | **Boss: Jiao, the Flood Dragon** |
+| ![combat](docs/screenshots/combat_forest.jpg) | ![boss](docs/screenshots/boss_jiao_serpent.jpg) |
+| **Title screen** | **Loading screen with the chapter synopsis** |
+| ![title](docs/screenshots/title_screen.jpg) | ![loading](docs/screenshots/loading_screen.jpg) |
 
-**Characters** (Cycles turnaround from headless Blender, then the same GLBs in Godot):
+## The story
 
-![Character turnaround](docs/screenshots/characters_turnaround.jpg)
+*Three hundred years ago the Blood Moon Patriarch drowned three kingdoms in blood trying to seize the heavens.
+The Azure Cloud and Verdant Lotus sects sealed him beneath the Abyss, and the world forgot the Verdant Lotus.
+Now an orphan climbs nine thousand steps to the Azure Cloud with nothing but a mother's jade pendant. The seal is
+weakening, and someone inside the sect is helping the Blood Moon.*
 
-| All five animations (idle · walk · run · salute · cast) | Close-up in engine |
+The saga has 100 main quests in 10 chapters, with 20 cinematics, 26 named NPCs and 12,769 words of voiced
+dialogue (813 lines, plus male and female takes of every line that names the hero). Play as **Lin Feng** or
+**Su Yue**; Tab switches between them and the dialogue follows. The full plot, the cast and a table of all 100
+quests are in **[docs/STORY.md](docs/STORY.md)**. In game, the journal's *Story So Far* page recaps every chapter
+and quest you have finished.
+
+```mermaid
+flowchart LR
+    C1["1 · The Outer Disciple<br/>Azure Cloud Sect<br/><i>Qi Condensation</i>"] --> C2["2 · Whispers in the Bamboo<br/>Bamboo Forest<br/>boss: Wolf King"]
+    C2 --> C3["3 · Shadows over Qingshi<br/>Qingshi Town<br/>boss: Deacon Hong"]
+    C3 --> C4["4 · Ruins of the Forgotten Sect<br/>Forest ruins + library<br/><i>Foundation Establishment</i>"]
+    C4 --> C5["5 · The Inner Sect Tournament<br/>Sect · the traitor unmasked"]
+    C5 --> C6["6 · Descent into the Blood Moon<br/>Blood Moon Abyss<br/><i>Core Formation</i>"]
+    C6 --> C7["7 · Siege of Qingshi<br/>Town defence<br/>boss: Iron-Fang"]
+    C7 --> C8["8 · Isles Above the Clouds<br/>Sky Isles · Jiao serpent<br/><i>Nascent Soul</i>"]
+    C8 --> C9["9 · The Heart Demon<br/>Heart Mirror · Elder Mo's sacrifice<br/><i>Soul Transformation</i>"]
+    C9 --> C10["10 · Heavenly Tribulation<br/>Patriarch · tribulation<br/><i>Immortal Ascension</i>"]
+```
+
+## Characters
+
+Every model is sculpted procedurally: a cross-section skull with cheekbones, a mandible angle and a squared chin
+(no more egg-shaped heads); a lofted ear with helix, antihelix and concha; and hands built as one
+Catmull-Clark-subdivided surface with knuckles, finger pads and nails, driven by 15 finger bones per hand
+(54-bone rig). Skin textures have multi-scale pores, skin lines, haemoglobin and venous tint, a beard shadow,
+T-zone roughness and individual brow hairs. Godot renders them with subsurface scattering.
+
+| Face (Cycles) | Profile | Hand |
+|---|---|---|
+| ![face](docs/screenshots/realism_face.jpg) | ![profile](docs/screenshots/realism_profile.jpg) | ![hand](docs/screenshots/realism_hand.jpg) |
+
+![Cycles turnaround of the two heroes](docs/screenshots/characters_turnaround.jpg)
+
+![The cast in engine](docs/screenshots/characters_lineup.jpg)
+
+| Model | Used for |
 |---|---|
-| ![lineup](docs/screenshots/characters_lineup.jpg) | ![portrait](docs/screenshots/characters_portrait.jpg) |
+| `cultivator_male` / `cultivator_female` | the heroes Lin Feng and Su Yue (the heart demon is a shadow clone) |
+| `elder_male`, `sect_master`, `disciple_male/female`, `villager_male/female` | 26 NPCs, re-tinted per character |
+| `bandit`, `demon_cultivator`, `blood_patriarch` | enemies and the final boss (glowing irises, horns) |
+| `stone_golem` | training puppets, stone sentinels, the Lotus Guardian (humanoid rig of rock chunks) |
+| `spirit_wolf` | spirit, corrupted and king wolves (quadruped rig) |
+| `jiao_serpent` | the flood dragon boss (spine-chain rig) |
 
-## What is generated
+Humanoids have 10 animations: `idle walk run salute cast attack hit death meditate talk`. Creatures have
+`idle walk run attack hit death`. Finger poses (fist, sword seal, mudra, open palm) are animated too.
 
-| Asset | Details |
-|---|---|
-| `cultivator_male.glb` | Disciple in a white hanfu with an ink-wash mountain hem, cross collar with huiwen embroidery, pleated skirt, wide sleeves, sash & jade pendant, jian in a lacquered scabbard, topknot with silver crown and jade pin |
-| `cultivator_female.glb` | Fairy in a plum-blossom gradient robe, crimson/gold trims, double-loop hair buns with gold buyao hairpins, forehead huadian, sheer *pibo* ribbon draped over the arms |
-| Rig | 24-bone humanoid skeleton (hips, spine, chest, neck, head, shoulders, arms, hands, legs, feet, toes, 3 hair bones), procedural skin weights; meshes include five-fingered hands, eyeballs, eyelids and layered hair |
-| Animations | `idle`, `walk`, `run` (loops), `salute` (zuoyi cupped-hand bow, two-bone IK), `cast` (sword-seal gesture + thrust) |
-| Textures | Generated with numpy: silk weave, damask clouds, embroidery, skin with painted face, eyes, hair strands, lacquer, wood, stone, roof tiles, painted beams, cliffs… packed as PBR (albedo, metal/rough, normal) |
-| Environment (25 GLBs) | main hall (double-eave hip roof, dougong brackets, lattice doors, terrace & balustrade), paifang sect gate, 7-tier pagoda, hexagonal pavilion, courtyard & moon-gate walls, stone/red lanterns, incense cauldron, banners, weapon rack, training dummy, glowing formation array, arched bridge, lotus, pines, plum trees, bamboo, rocks, cliff plateau terrain, floating islands, karst peaks, cloud sea |
-| Collisions | Blender objects named `*-convcolonly` / `*-colonly` / `*-col` become Godot static bodies on import |
+![Creatures](docs/screenshots/creatures.jpg)
+
+## Maps
+
+| Azure Cloud Sect | Whispering Bamboo Forest | Qingshi Town |
+|---|---|---|
+| ![sect](docs/screenshots/map_sect.jpg) | ![forest](docs/screenshots/map_bamboo_forest.jpg) | ![town](docs/screenshots/map_qingshi_town.jpg) |
+| **Blood Moon Abyss** | **Celestial Sky Isles** | **Meditation on the formation array** |
+| ![abyss](docs/screenshots/map_blood_abyss.jpg) | ![sky](docs/screenshots/map_sky_isles.jpg) | ![meditate](docs/screenshots/meditation.jpg) |
+
+Each map is written by a Python layout module (`tools/maps/*.py`) with named markers from
+`tools/world_spec.py`. The quests only ever refer to those markers, and CI checks that every marker stands on
+walkable ground. Jade teleport arrays link the regions.
 
 ## Pipeline
 
 ```mermaid
 flowchart LR
     subgraph Blender["Headless Blender 5.2.2 (bpy)"]
-        T[tex.py<br/>numpy PBR textures] --> M[util.py<br/>materials · lofts · UVs]
-        M --> C[characters.py<br/>model · rig · weights · 5 actions]
-        M --> A[arch.py / props.py / nature.py<br/>sect buildings · props · landscape]
+        T[tex.py<br/>numpy PBR textures] --> AN[anatomy.py<br/>skull · ears · hands]
+        AN --> CH[characters.py<br/>11 humanoids · rig · 10 actions]
+        T --> CR[creatures.py<br/>golem · wolf · jiao]
+        T --> EN[arch / props / nature<br/>lands / realms<br/>~80 environment assets]
+        CH --> PR[render_portraits.py<br/>Cycles portraits]
     end
-    C -->|glTF exporter| G1[(godot/assets/characters/*.glb)]
-    A -->|glTF exporter| G2[(godot/assets/environment/*.glb)]
-    L[tools/build_sect_scene.py<br/>level layout] --> S[godot/scenes/main.tscn]
-    G1 --> P[Godot 4.7.2<br/>player.gd · main.gd]
-    G2 --> S --> P
-    P --> Q{{CI: validate GLBs · headless smoke test · screenshots}}
+    subgraph Data["Python data (stdlib)"]
+        WS[world_spec.py<br/>maps · markers · enemies · items] --> MAPS[tools/maps/*<br/>5 map layouts]
+        WS --> ST[tools/story/*<br/>100 quests · 20 cinematics · 26 NPCs]
+        ST --> BS[build_story.py<br/>validate → story.json]
+    end
+    subgraph Audio["Audio"]
+        GA[gen_audio.py<br/>11 tracks · 42 SFX] 
+        GV[gen_voices.py<br/>Piper TTS · 974 lines]
+    end
+    CH & CR & EN -->|glTF| G[(godot/assets/*.glb)]
+    MAPS --> SC[(scenes/maps/*.tscn)]
+    BS --> SJ[(data/story.json)]
+    ST --> GV
+    G & SC & SJ & PR & GA & GV --> RT[Godot 4.7.2 runtime]
+    RT --> CI{{CI: validate · smoke test ·<br/>100-quest walkthrough · screenshots}}
 ```
+
+## Game runtime
+
+```mermaid
+stateDiagram-v2
+    [*] --> Title
+    Title --> Loading: New game / Continue / Chapter select
+    Loading --> Objective: map loaded on a thread
+    state Objective {
+        [*] --> CheckMap
+        CheckMap --> Travel: objective on another map
+        Travel --> [*]: teleport array → Loading
+        CheckMap --> Active
+        Active --> Talk: NPC with ! marker
+        Active --> Reach: golden beacon
+        Active --> Defeat: enemies spawn, battle/boss music
+        Active --> Collect: glowing pickups
+        Active --> Meditate: press C in the jade circle
+        Active --> Interact: stele, chest, altar, cage...
+        Active --> Cinematic: letterbox, camera moves, voiced subtitles
+    }
+    Objective --> Rewards: last objective done
+    Rewards --> Objective: next quest (story card, autosave)
+    Rewards --> Breakthrough: realm reward
+    Breakthrough --> Objective
+    Rewards --> [*]: q100 Immortal Ascension
+```
+
+| Script | Role |
+|---|---|
+| `autoload/story.gd` | loads `story.json` and `world.json`, fills `{player}`/`{junior}`… tokens, picks `_m`/`_f` voice takes |
+| `autoload/game_state.gd` | quest/objective progress, cultivation realm, stats, inventory, save/load (`user://save.json`) |
+| `autoload/audio.gd` | music cross-fades, SFX pool, voice channel |
+| `game.gd` | threaded map loading behind the loading screen, NPC population by story progress, travel, respawn |
+| `quest_runner.gd` | runs each objective type, spawns what it needs, grants rewards and breakthroughs |
+| `player.gd` · `world/enemy.gd` | third-person controller with palm strikes, qi blasts and meditation; data-driven enemy AI |
+| `ui/*` | HUD, voiced dialogue with portraits, cinematics, loading screen, journal/pause, travel menu |
 
 ## Play it
 
-Install [Godot 4.7](https://godotengine.org/download) (standard build), then
-run from the repository root:
+Install [Godot 4.7](https://godotengine.org/download), then from the repository root:
 
 ```bash
-godot --headless --path godot --import   # first run only: builds the .godot/ import cache (~40 s)
-godot --path godot                       # launch the game straight into the sect
+godot --headless --path godot --import   # first run only: builds the .godot/ import cache
+godot --path godot                       # title screen → New Game
 ```
-
-The import step is needed once after cloning (and again after regenerating the
-GLBs), because the `.godot/` cache is gitignored and the game can't load the GLBs
-without it. Opening the project in the editor does this automatically.
-
-Prefer the editor? Run `godot --editor --path godot` (or open
-`godot/project.godot` from the Project Manager), then press **F5**.
 
 | Input | Action |
 |---|---|
-| `WASD` / arrows | move (relative to camera) |
-| `Shift` | run |
-| `Space` | qinggong leap |
-| `Tab` | switch between Lin Feng (male) and Su Yue (female) |
-| `E` / `Q` | salute / cast |
-| right mouse drag, or click to capture | orbit camera · wheel to zoom · `Esc` releases the mouse |
+| `WASD` / arrows | move (relative to camera) · `Shift` run · `Space` qinggong leap |
+| `E` | talk, interact, use a teleport array |
+| `F` / left click (mouse captured) | palm strike |
+| `Q` | qi blast (costs qi) |
+| `C` | meditate: heals, restores qi, completes cultivation objectives |
+| `G` | salute · `Tab` switch between Lin Feng and Su Yue |
+| `J` / `Esc` | journal (current quest, Story So Far, chronicle, cultivation, settings, save) |
+| right mouse drag, or click to capture | orbit camera · wheel to zoom |
 
-## Rebuild the assets
-
-Blender is used as a Python module, so no GUI or display is needed:
+## Rebuild everything
 
 ```bash
 python3.13 -m venv .venv && . .venv/bin/activate
-pip install bpy==5.2.2                        # Blender 5.2.2 LTS, headless
-python blender/build_assets.py                # all 27 GLBs -> godot/assets (~1 min)
-python blender/build_assets.py --only pagoda,cultivator_female
-python tools/build_sect_scene.py              # regenerate godot/scenes/main.tscn
-python tools/validate_glb.py godot/assets     # structural checks
-python blender/render_previews.py             # Cycles turnaround -> docs/screenshots
+pip install bpy==5.2.2 numpy scipy soundfile piper-tts
+python blender/build_assets.py                    # every character, creature and environment GLB
+python blender/build_assets.py --only bandit,spirit_wolf
+python blender/render_portraits.py                # dialogue portraits -> godot/ui/portraits
+python tools/world_spec.py                        # godot/data/world.json
+python tools/build_maps.py                        # godot/scenes/maps/*.tscn
+python tools/build_story.py                       # validate + compile godot/data/story.json
+python tools/gen_voices.py                        # Piper voices (models from rhasspy/piper v0.0.2 in ~/voices)
+python tools/gen_audio.py                         # music + SFX
+python tools/validate_glb.py godot/assets
+godot --path godot --rendering-driver vulkan -s res://tests/capture_loading_art.gd   # loading-screen art
 ```
-
-A regular Blender binary works too:
-`blender --background --factory-startup --python blender/build_assets.py -- --only pagoda`.
 
 ## Test headlessly
 
 ```bash
 godot --headless --path godot --import
-godot --headless --path godot -s res://tests/smoke_test.gd      # exits 1 on failure
+godot --headless --path godot -s res://tests/smoke_test.gd         # assets, rigs, maps, voices, a play session
+godot --headless --path godot -s res://tests/walkthrough_test.gd   # plays all 100 quests end to end
 xvfb-run -a godot --path godot --rendering-driver vulkan \
-  -s res://tests/capture_screenshots.gd -- /tmp/shots           # needs a GPU or lavapipe
+  -s res://tests/capture_screenshots.gd -- /tmp/shots              # needs a GPU or lavapipe
 ```
 
-The smoke test loads every GLB, checks each character has one 24-bone skeleton
-and all five animations, then plays the level: the player must land on the
-ground, walk, run 8 m toward the gate, swap character and salute.
+The walkthrough drives the real systems. It travels by teleport array, walks up to NPCs and presses interact,
+palm-strikes every enemy, collects each pickup, meditates and plays every cinematic. It fails if any objective
+cannot be completed, any marker floats, or the final realm is not *Immortal Ascension*.
 
 ## Layout
 
 ```
 blender/
-  build_assets.py        entry point: builds every GLB
-  render_previews.py     Cycles character turnaround
+  build_assets.py        builds every GLB          render_portraits.py   dialogue portraits
   xianxia/
-    tex.py               procedural numpy textures
-    util.py              materials, mesh lofting, UVs, glTF export
-    characters.py        cultivators: modelling, rig, weights, animation
-    arch.py              roofs, columns, brackets, hall, gate, pagoda, pavilion, walls
-    props.py             lanterns, cauldron, banner, bridge, formation array...
-    nature.py            trees, rocks, plateau terrain, floating islands, cloud sea
-    catalog.py           asset name -> builder
+    anatomy.py           skull, face, ears, neck, hands + finger rig
+    characters.py        humanoids: variants, hair styles, outfits, rig, weights, 10 actions
+    creatures.py         stone golem, spirit wolf, Jiao serpent
+    tex.py util.py       procedural textures, materials, mesh helpers
+    arch.py props.py nature.py lands.py realms.py   buildings, props, terrain for all maps
 godot/
-  project.godot          Godot 4.7, Forward+
-  assets/                generated GLBs (committed so the project opens ready to play)
-  scenes/                main.tscn (generated layout), player.tscn
-  scripts/               player.gd (third-person controller), main.gd (HUD, VFX)
-  tests/                 smoke_test.gd, capture_screenshots.gd
-tools/                   build_sect_scene.py, validate_glb.py
-.github/workflows/ci.yml lint · Blender build · Godot smoke test · screenshots
+  scenes/                title.tscn, game.tscn, player.tscn, maps/*.tscn (generated)
+  scripts/               autoload/, ui/, world/, game.gd, quest_runner.gd, player.gd, map.gd
+  data/                  story.json, world.json (generated)
+  audio/                 music/, sfx/, voice/ (generated)
+  ui/                    portraits/, loading/
+  tests/                 smoke_test, walkthrough_test, capture_screenshots, capture_loading_art, capture_map
+tools/
+  world_spec.py          single source of truth for maps, markers, enemies, items, realms
+  maps/                  map layout modules        story/   the 100-quest saga as Python data
+  build_maps.py build_story.py gen_voices.py gen_audio.py validate_glb.py
+docs/                    STORY.md, AUDIO.md, screenshots/
 ```

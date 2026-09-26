@@ -152,9 +152,9 @@ func _run() -> void:
 	player.global_position = lair + Vector3(3.0, 0.4, 5)
 	player.refill()
 	game.hud.set_objective("Defeat Jiao, the Flood Dragon")
-	player._yaw = 0.35
-	player._pitch = -0.1
-	player.spring.spring_length = 6.0
+	player._yaw = 0.3
+	player._pitch = 0.05
+	player.spring.spring_length = 10.0
 	boss.take_damage(260.0)
 	game.hud.show_boss(boss.display_name(), boss.hp / boss.max_hp)
 	await _frames(100)

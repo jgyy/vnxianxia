@@ -590,7 +590,7 @@ def serpent_actions(arm, B):
     T = 90
     for f in range(0, T + 1, 3):
         ph = 2 * math.pi * f / T
-        dl = pose({}, ph, 12, 22 + 4 * math.sin(ph), travel=False, head_pitch=8 + 6 * math.sin(ph))
+        dl = pose({}, ph, 12, 12 + 3 * math.sin(ph), travel=False, head_pitch=4 + 5 * math.sin(ph))
         dl["jaw"] = qa(X, 6 + 4 * math.sin(ph * 2))
         poser.key(f + 1, dl)
     acts.append(act)
@@ -598,7 +598,7 @@ def serpent_actions(arm, B):
         act = start(arm, name)
         for f in range(0, T + 1, 2):
             ph = 2 * math.pi * f / T
-            dl = pose({}, ph, amp, 14, head_pitch=6)
+            dl = pose({}, ph, amp, 8, head_pitch=3)
             dl["jaw"] = qa(X, 5)
             poser.key(f + 1, dl)
         acts.append(act)
@@ -608,7 +608,7 @@ def serpent_actions(arm, B):
         t = f / T
         coil = util_smooth(t / 0.4) * (1 - util_smooth((t - 0.4) / 0.1))
         strike = util_smooth((t - 0.4) / 0.12) * (1 - util_smooth((t - 0.7) / 0.3))
-        dl = pose({}, 0.0, 10, 30 + 25 * coil - 20 * strike, travel=False, head_pitch=-10 * coil + 30 * strike)
+        dl = pose({}, 0.0, 10, 16 + 18 * coil - 12 * strike, travel=False, head_pitch=-10 * coil + 26 * strike)
         dl["jaw"] = qa(X, 10 + 45 * max(coil * 0.5, strike))
         poser.key(f + 1, dl, V((0, -2.2 * strike + 0.6 * coil, 0)))
     acts.append(act)
@@ -616,7 +616,7 @@ def serpent_actions(arm, B):
     T = 18
     for f in range(0, T + 1, 2):
         k = math.sin(math.pi * f / T)
-        dl = pose({}, 0.0, 12 + 10 * k, 22 + 12 * k, travel=False, head_pitch=-20 * k)
+        dl = pose({}, 0.0, 12 + 10 * k, 12 + 8 * k, travel=False, head_pitch=-16 * k)
         dl["jaw"] = qa(X, 30 * k)
         poser.key(f + 1, dl, V((0, 0.4 * k, 0)))
     acts.append(act)
@@ -625,7 +625,7 @@ def serpent_actions(arm, B):
     for f in range(0, T + 1, 2):
         t = f / T
         k = util_smooth(t / 0.7)
-        dl = pose({}, 0.0, 12 * (1 - k) + 25 * k, 22 * (1 - k), travel=False, head_pitch=-30 * k)
+        dl = pose({}, 0.0, 12 * (1 - k) + 25 * k, 12 * (1 - k), travel=False, head_pitch=-30 * k)
         dl["jaw"] = qa(X, 25 * k)
         dl[names[0]] = dl[names[0]] @ qa(Y, 70 * k)
         poser.key(f + 1, dl, V((0, 0, -0.35 * k)))
