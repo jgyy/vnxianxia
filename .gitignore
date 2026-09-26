@@ -15,3 +15,16 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Python / build outputs
+__pycache__/
+*.pyc
+.venv/
+build/
+*.blend1
+
+# Textures Godot extracts from the GLBs on import (regenerated automatically)
+godot/assets/**/*.jpg
+godot/assets/**/*.jpg.import
+godot/assets/**/*.png
+godot/assets/**/*.png.import
