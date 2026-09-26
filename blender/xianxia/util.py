@@ -52,10 +52,12 @@ def image_from_array(name, arr, non_color=False):
 
 def material(name, maps=None, color=None, rough=0.5, metal=0.0, normal_strength=1.0,
              emission=None, emission_strength=1.0, alpha=None, double_sided=False,
-             normal_bump=2.0, emission_map=None):
+             normal_bump=2.0, emission_map=None, detail_div=1):
     """Principled material built in the node layout the glTF exporter understands.
 
     maps: dict from tex.* (albedo/rough/metal/height) or None for flat colour.
+    detail_div: bake the metal/roughness map at 1/n and the normal map at 1/sqrt(n)...
+    of the albedo resolution (keeps file sizes sane for large face textures).
     """
     key = name
     if key in _MAT_CACHE:
@@ -82,8 +84,11 @@ def material(name, maps=None, color=None, rough=0.5, metal=0.0, normal_strength=
         if alpha is not None and np.ndim(alpha) == 2:
             nt.links.new(tn.outputs["Alpha"], bsdf.inputs["Alpha"])
         # packed metallic/roughness (glTF: G = roughness, B = metallic)
-        s = maps["rough"].shape[0]
-        mr = np.stack([np.ones((s, s), np.float32), maps["rough"], maps["metal"]], axis=-1)
+        rough_m, metal_m = maps["rough"], maps["metal"]
+        if detail_div > 1:
+            rough_m, metal_m = _downsample(rough_m, detail_div * 2), _downsample(metal_m, detail_div * 2)
+        s = rough_m.shape[0]
+        mr = np.stack([np.ones((s, s), np.float32), rough_m, metal_m], axis=-1)
         mimg = image_from_array(name + "_mr", mr, non_color=True)
         mn = nt.nodes.new("ShaderNodeTexImage")
         mn.image = mimg
@@ -94,8 +99,11 @@ def material(name, maps=None, color=None, rough=0.5, metal=0.0, normal_strength=
         nt.links.new(sep.outputs["Green"], bsdf.inputs["Roughness"])
         nt.links.new(sep.outputs["Blue"], bsdf.inputs["Metallic"])
         if maps.get("height") is not None and normal_strength > 0:
+            height = maps["height"]
+            if detail_div > 1:
+                height = _downsample(height, detail_div)
             nimg = image_from_array(name + "_normal",
-                                    tex.normal_from_height(maps["height"], normal_bump),
+                                    tex.normal_from_height(height, normal_bump),
                                     non_color=True)
             nn = nt.nodes.new("ShaderNodeTexImage")
             nn.image = nimg
@@ -129,6 +137,12 @@ def material(name, maps=None, color=None, rough=0.5, metal=0.0, normal_strength=
     mat.use_backface_culling = not double_sided
     _MAT_CACHE[key] = mat
     return mat
+
+
+def _downsample(a, n):
+    """Box-filter a square 2-D array by an integer factor."""
+    h = a.shape[0] // n
+    return a[:h * n, :h * n].reshape(h, n, h, n).mean(axis=(1, 3)).astype(np.float32)
 
 
 def srgb_to_linear(c):

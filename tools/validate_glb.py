@@ -11,7 +11,9 @@ import struct
 import sys
 from pathlib import Path
 
-REQUIRED_ANIMS = {"idle", "walk", "run", "salute", "cast"}
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import world_spec  # noqa: E402
+
 MAX_BYTES = 12 * 1024 * 1024
 
 
@@ -64,7 +66,8 @@ def check(path):
     if "characters" in path.parts:
         if not gltf.get("skins"):
             errors.append("character has no skin")
-        missing = REQUIRED_ANIMS - anims
+        required = set(world_spec.CREATURE_ANIMS.get(path.stem, world_spec.HUMANOID_ANIMS))
+        missing = required - anims
         if missing:
             errors.append(f"missing animations: {sorted(missing)}")
     return info, errors

@@ -260,56 +260,121 @@ def sheer(color, size=256, seed=5):
 # --------------------------------------------------------------------------
 # character
 # --------------------------------------------------------------------------
-def skin(tone, size=1024, seed=11, face=None):
-    """Skin with pores/mottling. `face` paints features in lat-long UV space.
+FACE_WARP = 0.6   # longitude warp: the face gets (1 + k) times the texel density of the back
 
-    face: dict(brow, lip, liner, blush, female) or None.
-    Head UV: u = 0.5 at the front of the face, v = asin(z)/pi + 0.5.
+
+def lon_to_u(lon):
+    """Head UV u for a longitude (0 = the face). Denser texels toward the front."""
+    return 0.5 + (lon + FACE_WARP * math.sin(lon)) / (2 * math.pi)
+
+
+def u_to_lon(u):
+    """Inverse of lon_to_u (vectorised Newton iterations)."""
+    target = (np.asarray(u, np.float64) - 0.5) * 2 * math.pi
+    lon = target / (1 + FACE_WARP)
+    for _ in range(8):
+        f = lon + FACE_WARP * np.sin(lon) - target
+        lon = lon - f / (1 + FACE_WARP * np.cos(lon))
+    return lon.astype(np.float32)
+
+
+def skin_detail(size, seed, scale=1.0):
+    """Micro relief shared by all skin: pores, fine skin lines and soft mottling.
+
+    Returns (height, pore mask, mottling noise).
+    """
+    c = max(8, int(size * 0.35 * scale))
+    pores_n = fbm(size, c, 2, 0.45, seed + 1)
+    pores = sstep(0.62, 0.82, pores_n)
+    lines_a = fbm(size, max(4, c // 3), 3, 0.5, seed + 3, stretch=6)
+    lines_b = np.rot90(fbm(size, max(4, c // 3), 3, 0.5, seed + 4, stretch=6))
+    lines = np.abs(lines_a - 0.5) + np.abs(lines_b - 0.5)
+    fine = fbm(size, max(8, c * 2), 2, 0.5, seed + 5) if c * 2 <= size // 2 else pores_n
+    mottle = fbm(size, 8, 5, 0.55, seed)
+    height = 0.55 - pores * 0.22 - (lines < 0.12) * 0.1 + fine * 0.12 + mottle * 0.06
+    return height.astype(np.float32), pores, mottle
+
+
+def skin(tone, size=1024, seed=11, face=None):
+    """Realistic skin: pores, skin lines, sub-dermal colour variation.
+
+    face: dict(brow, lip, liner, blush, female, beard, age) paints facial
+    features in head UV space (u warped by lon_to_u, v = asin(z)/pi + 0.5).
     """
     tone = srgb(tone)
     u, v = grid(size)
-    n = fbm(size, 8, 6, 0.55, seed)
-    pores = fbm(size, 128, 2, 0.5, seed + 1)
-    col = tone * (0.93 + 0.1 * n)[..., None]
-    # subtle warm/red mottling
+    height, pores, mottle = skin_detail(size, seed, 1.0 if face else 0.5)
     red = fbm(size, 6, 4, 0.5, seed + 2)
-    col = lerp(col, col * np.array([1.05, 0.9, 0.88], np.float32), red * 0.35)
-    rough = 0.5 + pores * 0.12
-    height = pores * 0.35 + n * 0.1
+    blue = fbm(size, 5, 4, 0.5, seed + 6)
+    col = tone * (0.94 + 0.09 * mottle)[..., None]
+    # haemoglobin (warm) and venous (cool) variation under the surface
+    col = lerp(col, col * np.array([1.06, 0.88, 0.86], np.float32), red * 0.35)
+    col = lerp(col, col * np.array([0.93, 0.97, 1.04], np.float32), blue * 0.2)
+    col = col * (1.0 - pores * 0.025)[..., None]
+    rough = 0.52 + pores * 0.1 - mottle * 0.04
+    rng = np.random.default_rng(seed + 9)
+    # a few faint freckles / moles
+    spots = np.zeros((size, size), np.float32)
+    for _ in range(40 if face else 12):
+        cx, cy = rng.random(2)
+        r = rng.uniform(0.0012, 0.003)
+        spots = np.maximum(spots, np.exp(-(((u - cx) ** 2 + (v - cy) ** 2) / r ** 2)) * rng.uniform(0.2, 0.6))
+    col = lerp(col, col * np.array([0.72, 0.58, 0.5], np.float32), spots * 0.5)
     if face:
-        du = (u - 0.5) * 2 * math.pi  # longitude, 0 at front
-        lat = (v - 0.5) * math.pi
+        du = u_to_lon(u)                     # longitude, 0 at front
+        lat = np.arcsin(np.clip(np.sin((v - 0.5) * math.pi), -1, 1))
 
         def blob(cu, cv, su, sv):
             return np.exp(-(((du - cu) / su) ** 2 + ((lat - cv) / sv) ** 2))
 
         fem = face.get("female", False)
-        # blush on cheeks
-        blush = blob(0.62, -0.28, 0.35, 0.22) + blob(-0.62, -0.28, 0.35, 0.22)
-        col = lerp(col, srgb(face["blush"]), np.clip(blush, 0, 1) * (0.45 if fem else 0.18))
-        # lips
-        lip_shape = np.exp(-((du / 0.27) ** 2) * 1.0 - (((lat + 0.66) / 0.055) ** 2))
-        upper = np.exp(-((du / 0.24) ** 2) - (((lat + 0.61) / 0.04) ** 2))
-        lips = np.clip((lip_shape + upper * 0.9) * 1.4, 0, 1)
-        col = lerp(col, srgb(face["lip"]), lips * (0.85 if fem else 0.45))
-        rough = rough - lips * (0.25 if fem else 0.1)
-        # mouth line
-        mouth = np.exp(-((du / 0.22) ** 2) - (((lat + 0.635) / 0.008) ** 2))
-        col = lerp(col, srgb(face["lip"]) * 0.45, np.clip(mouth, 0, 1) * 0.9)
-        # eyebrows: arched strokes (slanting upward outwards = sword brows)
+        age = face.get("age", 0.0)
+        beard = face.get("beard", 0.0 if fem else 0.35)
+        # warm centre of the face: nose, cheeks, ears are redder; forehead a little sallow
+        flush = blob(0.0, -0.32, 0.18, 0.14) + 0.7 * (blob(0.55, -0.28, 0.3, 0.2) + blob(-0.55, -0.28, 0.3, 0.2))
+        col = lerp(col, col * np.array([1.08, 0.86, 0.84], np.float32), np.clip(flush, 0, 1) * 0.5)
+        col = lerp(col, col * np.array([1.03, 1.0, 0.9], np.float32), blob(0.0, 0.4, 0.5, 0.2) * 0.4)
+        # blush
+        blush = blob(0.62, -0.3, 0.3, 0.2) + blob(-0.62, -0.3, 0.3, 0.2)
+        col = lerp(col, srgb(face["blush"]), np.clip(blush, 0, 1) * (0.32 if fem else 0.1))
+        # beard shadow: jaw, chin and upper lip (bluish-grey stubble)
+        if beard > 0:
+            jaw = np.clip(sstep(-0.45, -0.75, lat) * np.exp(-((du / 1.25) ** 6)) +
+                          blob(0.0, -0.52, 0.2, 0.05) * 0.8, 0, 1)
+            jaw *= 1 - np.exp(-((du / 0.24) ** 2) - (((lat + 0.64) / 0.07) ** 2))   # not on the lips
+            stub = fbm(size, max(8, size // 6), 2, 0.5, seed + 11)
+            col = lerp(col, col * np.array([0.72, 0.74, 0.8], np.float32), jaw * beard * (0.55 + 0.45 * stub))
+            height = height + jaw * beard * stub * 0.2
+        # T-zone is shinier, cheeks more matte
+        tz = np.clip(blob(0.0, 0.35, 0.4, 0.2) + blob(0.0, -0.2, 0.12, 0.25), 0, 1)
+        rough = rough - tz * 0.12
+        # lips: shape, vertical lip lines, a moist sheen
+        lip_shape = np.exp(-((du / 0.27) ** 2) - (((lat + 0.67) / 0.05) ** 2))
+        upper = np.exp(-((du / 0.24) ** 2) - (((lat + 0.6) / 0.035) ** 2))
+        cupid = np.exp(-((du / 0.06) ** 2) - (((lat + 0.575) / 0.015) ** 2)) * 0.6
+        lips = np.clip((lip_shape + upper * 0.95 - cupid) * 1.5, 0, 1)
+        lip_c = srgb(face["lip"])
+        col = lerp(col, lip_c * (0.92 + 0.12 * mottle)[..., None], lips * (0.8 if fem else 0.45))
+        lip_lines = 0.5 + 0.5 * np.sin(du * 180.0 + fbm(size, 16, 2, 0.5, seed + 12) * 6)
+        height = height + lips * (lip_lines * 0.15 - 0.05)
+        rough = rough - lips * (0.25 if fem else 0.12)
+        mouth = np.exp(-((du / 0.23) ** 2) - (((lat + 0.635) / 0.007) ** 2))
+        col = lerp(col, lip_c * 0.35, np.clip(mouth, 0, 1) * 0.85)
         for side in (-1, 1):
             c = side * 0.42
-            rel = (du - c) * side  # <0 toward the nose, >0 toward the temple
+            rel = (du - c) * side
             peak = 0.07 if fem else 0.10
             k = np.where(rel < peak, 0.55 if fem else 0.25, 2.6 if fem else 1.2)
             arch = (0.235 if fem else 0.215) - k * (rel - peak) ** 2
             tilt = rel * (0.0 if fem else 0.05)
-            width = (0.022 if fem else 0.030) * (1 - 0.5 * sstep(0.0, 0.3, rel))
+            width = (0.022 if fem else 0.032) * (1 - 0.5 * sstep(0.0, 0.3, rel))
             span = np.exp(-(((du - c) / (0.23 if fem else 0.24)) ** 6))
             brow = np.exp(-(((lat - arch - tilt) / width) ** 2)) * span
-            hair_n = fbm(size, 64, 2, 0.5, seed + 5)
-            col = lerp(col, srgb(face["brow"]), np.clip(brow * (0.8 + 0.4 * hair_n), 0, 1) * 0.95)
-            # eye liner around the eyeball opening (upper lid) + lash wing
+            # individual brow hairs: streaks running outward and slightly up
+            hairs = fbm(size, 96, 2, 0.5, seed + 5 + side, stretch=1)
+            strands = sstep(0.45, 0.7, 0.5 + 0.5 * np.sin((lat - rel * 0.3) * 900 + hairs * 8))
+            col = lerp(col, srgb(face["brow"]), np.clip(brow * (0.55 + 0.5 * strands), 0, 1) * 0.95)
+            height = height + brow * strands * 0.15
             ec = side * 0.38
             lid = np.exp(-(((lat - 0.075 - 0.5 * np.cos(np.clip((du - ec) / 0.2, -1.6, 1.6)) * 0.06)
                            / (0.018 if fem else 0.013)) ** 2))
@@ -317,40 +382,85 @@ def skin(tone, size=1024, seed=11, face=None):
             col = lerp(col, srgb(face["liner"]), np.clip(lid, 0, 1) * 0.9)
             if fem:
                 wing = np.exp(-(((du - side * 0.6) / 0.07) ** 2) - (((lat - 0.1) / 0.02) ** 2))
-                col = lerp(col, srgb(face["liner"]), np.clip(wing, 0, 1) * 0.8)
-                # soft eye shadow
+                col = lerp(col, srgb(face["liner"]), np.clip(wing, 0, 1) * 0.7)
                 shadow = blob(ec, 0.14, 0.2, 0.06)
-                col = lerp(col, srgb(face["blush"]) * 0.9, np.clip(shadow, 0, 1) * 0.35)
-                # red forehead mark (huadian)
-                mark = np.exp(-((du / 0.03) ** 2) - (((lat - 0.42) / 0.06) ** 2))
-                col = lerp(col, srgb("#c2182b"), np.clip(mark * 1.3, 0, 1))
-            # lower lid shade
-            low = np.exp(-(((lat + 0.01) / 0.02) ** 2)) * np.exp(-(((du - ec) / 0.16) ** 6))
-            col = lerp(col, col * 0.8, np.clip(low, 0, 1) * 0.4)
-        # nostrils / nose shading
-        nose = blob(0.07, -0.37, 0.05, 0.03) + blob(-0.07, -0.37, 0.05, 0.03)
-        col = lerp(col, col * 0.55, np.clip(nose, 0, 1) * 0.6)
+                col = lerp(col, srgb(face["blush"]) * 0.9, np.clip(shadow, 0, 1) * 0.3)
+                if face.get("mark", True):
+                    mark = np.exp(-((du / 0.03) ** 2) - (((lat - 0.42) / 0.06) ** 2))
+                    col = lerp(col, srgb("#c2182b"), np.clip(mark * 1.3, 0, 1))
+            # under-eye: thin skin looks darker/cooler; age adds bags and crow's feet
+            low = np.exp(-(((lat + 0.02) / 0.035) ** 2)) * np.exp(-(((du - ec) / 0.16) ** 6))
+            col = lerp(col, col * np.array([0.8, 0.76, 0.8], np.float32), np.clip(low, 0, 1) * (0.35 + 0.3 * age))
+            if age > 0:
+                crow = np.exp(-(((du - side * 0.68) / 0.08) ** 2) - (((lat - 0.05) / 0.08) ** 2))
+                wr = 0.5 + 0.5 * np.sin((lat + (du - side * 0.68) * side * 0.6) * 260)
+                height = height - crow * wr * 0.35 * age
+        # soft hairline: fine strands fading into the skin just below the scalp cap
+        if face.get("hairline"):
+            tab = face["hairline"]
+            hz = np.interp(np.abs(du), [a for a, _ in tab], [z for _, z in tab])
+            zz = np.sin(lat)
+            strands = sstep(0.35, 0.75, fbm(size, 128, 2, 0.5, seed + 21, stretch=1)
+                            * (0.6 + 0.4 * np.sin(du * 700)))
+            edge = sstep(hz - 0.07, hz + 0.01, zz)
+            hair_c = srgb(face.get("hair", "#161113"))
+            col = lerp(col, hair_c, np.clip(edge * (0.12 + 0.8 * strands) * sstep(hz - 0.07, hz - 0.02, zz), 0, 1))
+            rough = rough + edge * 0.1
+        # nostrils and nose shading
+        nose = blob(0.07, -0.385, 0.045, 0.025) + blob(-0.07, -0.385, 0.045, 0.025)
+        col = lerp(col, col * np.array([0.45, 0.32, 0.3], np.float32), np.clip(nose, 0, 1) * 0.75)
+        if age > 0:
+            # forehead lines and nasolabial creases
+            fh = 0.5 + 0.5 * np.sin(lat * 140 + fbm(size, 6, 2, 0.5, seed + 13) * 3)
+            height = height - blob(0.0, 0.45, 0.6, 0.12) * sstep(0.7, 1.0, fh) * 0.4 * age
+            for side in (-1, 1):
+                nlf = np.exp(-(((du - side * (0.16 + 0.35 * np.clip(-0.38 - lat, 0, 0.4))) / 0.02) ** 2))
+                nlf *= np.exp(-(((lat + 0.52) / 0.14) ** 2))
+                height = height - nlf * 0.4 * age
+                col = lerp(col, col * 0.88, nlf * 0.4 * age)
     return result(col, rough, 0.0, height)
 
 
-def eye(iris, size=256):
-    """Eye sphere texture: pupil at v=1 pole (sphere pole faces forward)."""
+def nail(tone, size=64):
+    """Fingernail: pale pink plate with a lighter free edge (v = 1)."""
+    u, v = grid(size)
+    base = srgb(tone) * np.array([1.02, 0.9, 0.9], np.float32)
+    col = lerp(base, np.array([0.95, 0.9, 0.86], np.float32), sstep(0.8, 0.95, v))
+    col = lerp(col * 1.08, col, sstep(0.0, 0.25, v))       # lunula
+    ridges = 0.5 + 0.5 * np.sin(u * math.pi * 14)
+    return result(col, 0.25, 0.0, ridges * 0.1)
+
+
+def eye(iris, size=512, glow=None):
+    """Eye sphere texture: pupil at v=1 pole (sphere pole faces forward).
+
+    glow: optional hex colour for a luminous (demonic) iris.
+    """
     u, v = grid(size)
     r = 1.0 - v  # 0 at the forward pole
     iris_c = srgb(iris)
-    col = np.ones((size, size, 3), np.float32) * np.array([0.93, 0.91, 0.88], np.float32)
+    col = np.ones((size, size, 3), np.float32) * np.array([0.92, 0.9, 0.87], np.float32)
     n = fbm(size, 16, 3, 0.5, 9)
-    # veins near edge
-    col = lerp(col, np.array([0.85, 0.6, 0.6], np.float32), sstep(0.35, 0.6, r) * 0.25)
-    radial = 0.75 + 0.25 * np.sin(u * 2 * math.pi * 40) * n
-    irc = iris_c[None, None, :] * (radial * (0.6 + 0.8 * r / 0.13))[..., None]
+    # sclera: slightly pink toward the corners, fine veins
+    veins = sstep(0.62, 0.7, fbm(size, 24, 4, 0.6, 12, stretch=1)) * sstep(0.3, 0.7, r)
+    col = lerp(col, np.array([0.86, 0.62, 0.6], np.float32), sstep(0.35, 0.7, r) * 0.25 + veins * 0.35)
+    # iris: radial fibres, a darker outer ring, a lighter collarette around the pupil
+    fibres = 0.6 + 0.4 * np.sin(u * 2 * math.pi * 60 + n * 4) * fbm(size, 32, 2, 0.5, 14)
+    ir = r / 0.13
+    shade = (0.55 + 0.6 * ir) * fibres
+    irc = iris_c[None, None, :] * shade[..., None]
+    collar = np.exp(-(((r - 0.075) / 0.012) ** 2))
+    irc = lerp(irc, np.minimum(iris_c * 1.8 + 0.08, 1.0), collar * 0.35)
     iris_m = 1.0 - sstep(0.12, 0.14, r)
     col = lerp(col, irc, iris_m)
-    limbal = np.exp(-(((r - 0.13) / 0.012) ** 2))
-    col = lerp(col, np.zeros(3, np.float32), limbal * 0.7)
-    pupil = 1.0 - sstep(0.05, 0.06, r)
-    col = lerp(col, np.array([0.02, 0.02, 0.02], np.float32), pupil)
-    return result(col, lerp(0.35, 0.1, iris_m), 0.0, iris_m * 0.2)
+    limbal = np.exp(-(((r - 0.132) / 0.014) ** 2))
+    col = lerp(col, np.zeros(3, np.float32), limbal * 0.75)
+    pupil = 1.0 - sstep(0.045, 0.055, r)
+    col = lerp(col, np.array([0.01, 0.01, 0.012], np.float32), pupil)
+    out = result(col, lerp(0.2, 0.05, iris_m), 0.0, iris_m * 0.25 - pupil * 0.1)
+    if glow:
+        out["emission"] = (srgb(glow)[None, None, :] * (iris_m * (1 - pupil) * shade)[..., None]).astype(np.float32)
+    return out
 
 
 def hair(color, highlight, size=512, seed=21):
@@ -622,6 +732,11 @@ def robe(top, hem, motif, accent, style="mountains", size=1024, seed=201):
 
     style 'mountains': layered ink-wash peaks and mist (male disciple robe)
     style 'blossom'  : plum-blossom branches rising from the hem (female robe)
+    style 'plain'    : tonal damask only
+    style 'clouds'   : large auspicious clouds embroidered above the hem
+    style 'flames'   : demonic flame tongues licking up from the hem
+    style 'bamboo'   : ink bamboo stalks and leaves
+    style 'hemp'     : coarse undyed hemp with patches and darning (commoners)
     """
     top_c, hem_c, mot_c, acc_c = srgb(top), srgb(hem), srgb(motif), srgb(accent)
     u, v = grid(size)
@@ -633,6 +748,61 @@ def robe(top, hem, motif, accent, style="mountains", size=1024, seed=201):
     col = lerp(col, col * 0.93, damask * 0.8)
     rough = 0.6 - damask * 0.2
     height = damask * 0.4 + n * 0.1
+    if style == "hemp":
+        coarse = weave(size, 5.0)
+        slub = fbm(size, 64, 3, 0.6, seed + 40, stretch=4)
+        col = lerp(hem_c, top_c, grad) * (0.85 + 0.12 * coarse + 0.1 * slub)[..., None]
+        rng = np.random.default_rng(seed + 41)
+        for _ in range(7):
+            cx, cy = rng.random(), rng.uniform(0.05, 0.7)
+            w_, h_ = rng.uniform(0.03, 0.07), rng.uniform(0.03, 0.06)
+            patch = (np.abs(u - cx) < w_) & (np.abs(v - cy) < h_)
+            col = np.where(patch[..., None], col * np.array([0.85, 0.8, 0.72], np.float32), col)
+            edge = patch & ((np.abs(np.abs(u - cx) - w_) < 0.004) | (np.abs(np.abs(v - cy) - h_) < 0.004))
+            col = np.where(edge[..., None], mot_c, col)
+            height = height + patch * 0.2
+        dirt = sstep(0.25, 0.0, v) * fbm(size, 8, 4, 0.5, seed + 42)
+        col = lerp(col, col * np.array([0.6, 0.52, 0.42], np.float32), dirt * 0.8)
+        return result(col, 0.85 - slub * 0.1, 0.0, coarse * 0.5 + slub * 0.3 + height * 0.2)
+    if style == "plain":
+        return result(col, rough, 0.0, height)
+    if style == "clouds":
+        big = xiangyun_mask(size, 7, seed + 50, 0.09, 0.006) * sstep(0.55, 0.3, v)
+        col = lerp(col, mot_c, np.clip(big, 0, 1) * 0.9)
+        rim = xiangyun_mask(size, 7, seed + 50, 0.09, 0.012) * sstep(0.55, 0.3, v)
+        col = lerp(col, acc_c, np.clip(rim - big, 0, 1) * 0.8)
+        return result(col, rough - big * 0.2, big * 0.3, height + big * 0.4)
+    if style == "flames":
+        fl = np.zeros((size, size), np.float32)
+        rng = np.random.default_rng(seed + 60)
+        for k in range(22):
+            cx = k / 22 + rng.uniform(-0.01, 0.01)
+            h_ = rng.uniform(0.18, 0.42)
+            wob = 0.012 * np.sin(v * 40 + k) + 0.02 * (fbm(size, 8, 3, 0.5, seed + 61 + k % 3) - 0.5)
+            width = 0.022 * (1 - np.clip(v / h_, 0, 1)) ** 0.8
+            d = np.abs(((u - cx - wob + 0.5) % 1.0) - 0.5)
+            fl = np.maximum(fl, (d < width).astype(np.float32) * (v < h_))
+        core = fl * sstep(0.25, 0.0, v)
+        col = lerp(col, mot_c, fl * 0.95)
+        col = lerp(col, acc_c, core * 0.8)
+        return result(col, rough - fl * 0.15, 0.0, height + fl * 0.3)
+    if style == "bamboo":
+        stalk = np.zeros((size, size), np.float32)
+        rng = np.random.default_rng(seed + 70)
+        for k in range(9):
+            cx = k / 9 + rng.uniform(0, 0.08)
+            hgt = rng.uniform(0.3, 0.55)
+            lean = rng.uniform(-0.05, 0.05)
+            d = np.abs(((u - cx - lean * v + 0.5) % 1.0) - 0.5)
+            node = np.abs(((v * 12 + k * 0.3) % 1.0) - 0.5) > 0.46
+            stalk = np.maximum(stalk, ((d < 0.006) & (v < hgt) & ~node).astype(np.float32))
+            for j in range(4):
+                ly = rng.uniform(0.1, hgt)
+                pts = [((cx + lean * ly + t * 0.04 * rng.choice([-1, 1])) % 1.0, ly + t * 0.012)
+                       for t in np.linspace(0, 1, 10)]
+                stamp_curve(stalk, pts, 0.004, size)
+        col = lerp(col, mot_c, np.clip(stalk, 0, 1) * 0.85)
+        return result(col, rough, 0.0, height + stalk * 0.3)
     if style == "mountains":
         layers = [(0.30, 0.10, 0.45, 5), (0.22, 0.09, 0.7, 7), (0.13, 0.07, 1.0, 9)]
         for i, (base, amp, dark, cells) in enumerate(layers):

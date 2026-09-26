@@ -15,7 +15,7 @@ sys.path.insert(0, HERE)
 
 import bpy  # noqa: E402
 
-from xianxia import catalog, characters, util  # noqa: E402
+from xianxia import catalog, characters, creatures, util  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 
@@ -37,7 +37,7 @@ def main():
     t0 = time.time()
     built = []
     if not args.skip_characters:
-        for cfg in (characters.MALE, characters.FEMALE):
+        for cfg in characters.HUMANOIDS:
             if only and cfg["name"] not in only:
                 continue
             t = time.time()
@@ -45,6 +45,14 @@ def main():
             path = util.export_glb(os.path.join(args.out, "characters", cfg["name"] + ".glb"), animations=True)
             built.append(path)
             print(f"  character {cfg['name']:<22} {time.time() - t:5.1f}s")
+        for name, fn in creatures.CREATURES.items():
+            if only and name not in only:
+                continue
+            t = time.time()
+            fn()
+            path = util.export_glb(os.path.join(args.out, "characters", name + ".glb"), animations=True)
+            built.append(path)
+            print(f"  creature  {name:<22} {time.time() - t:5.1f}s")
     if not args.skip_environment:
         for name, fn in catalog.ENVIRONMENT.items():
             if only and name not in only:

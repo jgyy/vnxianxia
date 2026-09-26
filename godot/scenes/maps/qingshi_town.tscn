@@ -1,0 +1,1048 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/environment/bamboo_cluster.glb" id="1_bamboo_cluster"]
+[ext_resource type="PackedScene" path="res://assets/environment/boulders.glb" id="2_boulders"]
+[ext_resource type="PackedScene" path="res://assets/environment/bronze_bell.glb" id="3_bronze_bell"]
+[ext_resource type="PackedScene" path="res://assets/environment/cart.glb" id="4_cart"]
+[ext_resource type="PackedScene" path="res://assets/environment/courtyard_wall.glb" id="5_courtyard_wall"]
+[ext_resource type="PackedScene" path="res://assets/environment/crates.glb" id="6_crates"]
+[ext_resource type="PackedScene" path="res://assets/environment/hermit_hut.glb" id="7_hermit_hut"]
+[ext_resource type="PackedScene" path="res://assets/environment/incense_burner.glb" id="8_incense_burner"]
+[ext_resource type="PackedScene" path="res://assets/environment/karst_peak.glb" id="9_karst_peak"]
+[ext_resource type="PackedScene" path="res://assets/environment/main_hall.glb" id="10_main_hall"]
+[ext_resource type="PackedScene" path="res://assets/environment/market_stall.glb" id="11_market_stall"]
+[ext_resource type="PackedScene" path="res://assets/environment/pagoda.glb" id="12_pagoda"]
+[ext_resource type="PackedScene" path="res://assets/environment/pavilion.glb" id="13_pavilion"]
+[ext_resource type="PackedScene" path="res://assets/environment/pine_tree.glb" id="14_pine_tree"]
+[ext_resource type="PackedScene" path="res://assets/environment/pine_tree_tall.glb" id="15_pine_tree_tall"]
+[ext_resource type="PackedScene" path="res://assets/environment/plum_blossom_tree.glb" id="16_plum_blossom_tree"]
+[ext_resource type="PackedScene" path="res://assets/environment/red_lantern.glb" id="17_red_lantern"]
+[ext_resource type="PackedScene" path="res://assets/environment/river_dock.glb" id="18_river_dock"]
+[ext_resource type="PackedScene" path="res://assets/environment/sect_banner.glb" id="19_sect_banner"]
+[ext_resource type="PackedScene" path="res://assets/environment/stone_lantern.glb" id="20_stone_lantern"]
+[ext_resource type="PackedScene" path="res://assets/environment/stone_stele.glb" id="21_stone_stele"]
+[ext_resource type="PackedScene" path="res://assets/environment/teleport_array.glb" id="22_teleport_array"]
+[ext_resource type="PackedScene" path="res://assets/environment/tombstones.glb" id="23_tombstones"]
+[ext_resource type="PackedScene" path="res://assets/environment/town_gate.glb" id="24_town_gate"]
+[ext_resource type="PackedScene" path="res://assets/environment/town_house.glb" id="25_town_house"]
+[ext_resource type="PackedScene" path="res://assets/environment/town_house_large.glb" id="26_town_house_large"]
+[ext_resource type="PackedScene" path="res://assets/environment/town_terrain.glb" id="27_town_terrain"]
+[ext_resource type="PackedScene" path="res://assets/environment/town_wall.glb" id="28_town_wall"]
+[ext_resource type="PackedScene" path="res://assets/environment/village_well.glb" id="29_village_well"]
+[ext_resource type="PackedScene" path="res://assets/environment/watchtower.glb" id="30_watchtower"]
+[ext_resource type="Script" path="res://scripts/map.gd" id="map_script"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_material"]
+sky_top_color = Color(0.36, 0.5, 0.72, 1)
+sky_horizon_color = Color(0.98, 0.82, 0.62, 1)
+sky_curve = 0.14
+ground_bottom_color = Color(0.5, 0.44, 0.38, 1)
+ground_horizon_color = Color(0.92, 0.78, 0.62, 1)
+sun_angle_max = 22
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_material")
+
+[sub_resource type="Environment" id="environment"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+ambient_light_energy = 1
+reflected_light_source = 2
+tonemap_mode = 4
+tonemap_exposure = 1.08
+tonemap_white = 6.0
+ssao_enabled = true
+ssao_radius = 1.4
+ssao_intensity = 1.6
+glow_enabled = true
+glow_intensity = 0.6
+glow_bloom = 0.08
+glow_hdr_threshold = 1.1
+fog_enabled = true
+fog_light_color = Color(0.94, 0.82, 0.68, 1)
+fog_sun_scatter = 0.45
+fog_density = 0.0016
+fog_sky_affect = 0.2
+fog_height = -5
+fog_height_density = 0.02
+adjustment_enabled = true
+adjustment_saturation = 1.1
+adjustment_contrast = 1.06
+
+[node name="Map" type="Node3D"]
+script = ExtResource("map_script")
+map_id = "qingshi_town"
+display_name = "Qingshi Town"
+music = "town"
+ambient = "petals"
+kill_y = -30
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.573576, 0, 0.819152, 0.446142, 0.838671, -0.312392, -0.686999, 0.544639, 0.481042, 0, 30, 0)
+light_color = Color(1, 0.84, 0.66, 1)
+light_energy = 1.9
+shadow_enabled = true
+shadow_blur = 1.5
+directional_shadow_max_distance = 130
+
+[node name="Level" type="Node3D" parent="."]
+
+[node name="Terrain" parent="Level" instance=ExtResource("27_town_terrain")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="TownWall1" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, -45.283, 0, 40)
+
+[node name="TownWall2" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, -38.05, 0, 40)
+
+[node name="TownWall3" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, -30.817, 0, 40)
+
+[node name="TownWall4" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, -23.583, 0, 40)
+
+[node name="TownWall5" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, -16.35, 0, 40)
+
+[node name="TownWall6" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, -9.117, 0, 40)
+
+[node name="TownWall7" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, 9.117, 0, 40)
+
+[node name="TownWall8" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, 16.35, 0, 40)
+
+[node name="TownWall9" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, 23.583, 0, 40)
+
+[node name="TownWall10" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, 30.817, 0, 40)
+
+[node name="TownWall11" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, 38.05, 0, 40)
+
+[node name="TownWall12" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.904167, 0, 0, 0, 1, 0, -0, 0, 1, 45.283, 0, 40)
+
+[node name="TownWall13" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, -45.138, 0, -48)
+
+[node name="TownWall14" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, -37.615, 0, -48)
+
+[node name="TownWall15" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, -30.092, 0, -48)
+
+[node name="TownWall16" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, -22.569, 0, -48)
+
+[node name="TownWall17" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, -15.046, 0, -48)
+
+[node name="TownWall18" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, -7.523, 0, -48)
+
+[node name="TownWall19" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0, -48)
+
+[node name="TownWall20" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, 7.523, 0, -48)
+
+[node name="TownWall21" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, 15.046, 0, -48)
+
+[node name="TownWall22" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, 22.569, 0, -48)
+
+[node name="TownWall23" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, 30.092, 0, -48)
+
+[node name="TownWall24" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, 37.615, 0, -48)
+
+[node name="TownWall25" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(0.940385, 0, 0, 0, 1, 0, -0, 0, 1, 45.138, 0, -48)
+
+[node name="TownWall26" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, -43.34)
+
+[node name="TownWall27" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, -35.82)
+
+[node name="TownWall28" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, -28.3)
+
+[node name="TownWall29" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, -20.78)
+
+[node name="TownWall30" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, -13.26)
+
+[node name="TownWall31" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, 5.26)
+
+[node name="TownWall32" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, 12.78)
+
+[node name="TownWall33" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, 20.3)
+
+[node name="TownWall34" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, 27.82)
+
+[node name="TownWall35" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, 35.34)
+
+[node name="TownWall36" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, -43.34)
+
+[node name="TownWall37" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, -35.82)
+
+[node name="TownWall38" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, -28.3)
+
+[node name="TownWall39" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, -20.78)
+
+[node name="TownWall40" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, -13.26)
+
+[node name="TownWall41" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, 5.26)
+
+[node name="TownWall42" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, 12.78)
+
+[node name="TownWall43" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, 20.3)
+
+[node name="TownWall44" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, 27.82)
+
+[node name="TownWall45" parent="Level" instance=ExtResource("28_town_wall")]
+transform = Transform3D(5.75584e-17, 0, 0.94, 0, 1, 0, -1, 0, 6.12323e-17, 48, 0, 35.34)
+
+[node name="SouthGate" parent="Level" instance=ExtResource("24_town_gate")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
+
+[node name="WestGate" parent="Level" instance=ExtResource("24_town_gate")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -48, 0, -4)
+
+[node name="EastGate" parent="Level" instance=ExtResource("24_town_gate")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 48, 0, -4)
+
+[node name="Watchtower" parent="Level" instance=ExtResource("30_watchtower")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 43.2, 0, 35.2)
+
+[node name="WatchtowerNW" parent="Level" instance=ExtResource("30_watchtower")]
+transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, -43.2, 0, -43.2)
+
+[node name="TownHouse1" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -9.25, 0, 33)
+
+[node name="TownHouse2" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -9.25, 0, 24.5)
+
+[node name="TownHouse3" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -9.25, 0, 3)
+
+[node name="DrunkenCraneInn" parent="Level" instance=ExtResource("26_town_house_large")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -10, 0, 13)
+
+[node name="TownHouse4" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 9.25, 0, 33)
+
+[node name="TownHouse5" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 9.25, 0, 24.5)
+
+[node name="GeneralStore" parent="Level" instance=ExtResource("26_town_house_large")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 10, 0, 13)
+
+[node name="TownHouse6" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 9.25, 0, 2.5)
+
+[node name="TownHouse7" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -9.25, 0, -12.5)
+
+[node name="TownHouse8" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -23.25, 0, 33)
+
+[node name="TownHouse9" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -23.25, 0, 24.5)
+
+[node name="TownHouse10" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -23.25, 0, 13)
+
+[node name="TownHouse11" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -23.25, 0, 3)
+
+[node name="GuildWarehouse" parent="Level" instance=ExtResource("26_town_house_large")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -39.5, 0, 33.5)
+
+[node name="Crates1" parent="Level" instance=ExtResource("6_crates")]
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, -44, 0, 22)
+
+[node name="Crates2" parent="Level" instance=ExtResource("6_crates")]
+transform = Transform3D(0.45, 0, 0.779423, 0, 0.9, 0, -0.779423, 0, 0.45, -34.5, 0, 25.5)
+
+[node name="Crates3" parent="Level" instance=ExtResource("6_crates")]
+transform = Transform3D(-0.0871557, 0, -0.996195, 0, 1, 0, 0.996195, 0, -0.0871557, -44.5, 0, 12)
+
+[node name="Cart1" parent="Level" instance=ExtResource("4_cart")]
+transform = Transform3D(0.819152, 0, -0.573576, 0, 1, 0, 0.573576, 0, 0.819152, -35.5, 0, 13.5)
+
+[node name="MarketStall1" parent="Level" instance=ExtResource("11_market_stall")]
+transform = Transform3D(5.51091e-17, 0, -0.9, 0, 0.9, 0, 0.9, 0, 5.51091e-17, -45, 0, 6.5)
+
+[node name="TownWell" parent="Level" instance=ExtResource("29_village_well")]
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, -21.5, 0, -17.5)
+
+[node name="TownHouse12" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -22, 0, -30.5)
+
+[node name="TownHouse13" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -35, 0, -16)
+
+[node name="TownHouse14" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -36, 0, -34.5)
+
+[node name="PlumBlossomTree1" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.612836, 0, -0.51423, 0, 0.8, 0, 0.51423, 0, 0.612836, -27, 0, -12)
+
+[node name="Yamen" parent="Level" instance=ExtResource("10_main_hall")]
+transform = Transform3D(0.6, 0, -0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, -41)
+
+[node name="CourtyardWall1" parent="Level" instance=ExtResource("5_courtyard_wall")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -13, 0, -26)
+
+[node name="CourtyardWall2" parent="Level" instance=ExtResource("5_courtyard_wall")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -13, 0, -34)
+
+[node name="CourtyardWall3" parent="Level" instance=ExtResource("5_courtyard_wall")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -13, 0, -42)
+
+[node name="CourtyardWall4" parent="Level" instance=ExtResource("5_courtyard_wall")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 13, 0, -26)
+
+[node name="CourtyardWall5" parent="Level" instance=ExtResource("5_courtyard_wall")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 13, 0, -34)
+
+[node name="CourtyardWall6" parent="Level" instance=ExtResource("5_courtyard_wall")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 13, 0, -42)
+
+[node name="CourtyardWall7" parent="Level" instance=ExtResource("5_courtyard_wall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -8.5, 0, -22)
+
+[node name="CourtyardWall8" parent="Level" instance=ExtResource("5_courtyard_wall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 8.5, 0, -22)
+
+[node name="PetitionBell" parent="Level" instance=ExtResource("3_bronze_bell")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -7, 0, -30)
+
+[node name="StoneLantern1" parent="Level" instance=ExtResource("20_stone_lantern")]
+transform = Transform3D(0.9, 0, -0, 0, 0.9, 0, 0, 0, 0.9, -4.5, 0, -23.5)
+
+[node name="SectBanner1" parent="Level" instance=ExtResource("19_sect_banner")]
+transform = Transform3D(0.8, 0, -0, 0, 0.8, 0, 0, 0, 0.8, -6.75, 0, -34.5)
+
+[node name="StoneLantern2" parent="Level" instance=ExtResource("20_stone_lantern")]
+transform = Transform3D(0.9, 0, -0, 0, 0.9, 0, 0, 0, 0.9, 4.5, 0, -23.5)
+
+[node name="SectBanner2" parent="Level" instance=ExtResource("19_sect_banner")]
+transform = Transform3D(-0.8, 0, -9.79717e-17, 0, 0.8, 0, 9.79717e-17, 0, -0.8, 6.75, 0, -34.5)
+
+[node name="MarketStall2" parent="Level" instance=ExtResource("11_market_stall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 9.5, 0, -18.5)
+
+[node name="MarketStall3" parent="Level" instance=ExtResource("11_market_stall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 15.5, 0, -19)
+
+[node name="MarketStall4" parent="Level" instance=ExtResource("11_market_stall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 21.5, 0, -18.5)
+
+[node name="MarketStall5" parent="Level" instance=ExtResource("11_market_stall")]
+transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, 27, 0, -18)
+
+[node name="MarketStall6" parent="Level" instance=ExtResource("11_market_stall")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 27.5, 0, -11)
+
+[node name="MarketStall7" parent="Level" instance=ExtResource("11_market_stall")]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 9, 0, -10)
+
+[node name="MarketStall8" parent="Level" instance=ExtResource("11_market_stall")]
+transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, 14.5, 0, -9)
+
+[node name="Cart2" parent="Level" instance=ExtResource("4_cart")]
+transform = Transform3D(-0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, -0.939693, 22, 0, -10)
+
+[node name="Crates4" parent="Level" instance=ExtResource("6_crates")]
+transform = Transform3D(0.787846, 0, -0.138919, 0, 0.8, 0, 0.138919, 0, 0.787846, 29, 0, -23.5)
+
+[node name="TownHouse15" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 38.5, 0, -14.5)
+
+[node name="TempleShrine" parent="Level" instance=ExtResource("13_pavilion")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 34, 0, -40)
+
+[node name="TemplePagoda" parent="Level" instance=ExtResource("12_pagoda")]
+transform = Transform3D(0.296985, 0, -0.296985, 0, 0.42, 0, 0.296985, 0, 0.296985, 26.5, 0, -42.5)
+
+[node name="IncenseBurnerTemple" parent="Level" instance=ExtResource("8_incense_burner")]
+transform = Transform3D(0.7, 0, -0, 0, 0.7, 0, 0, 0, 0.7, 34, 0, -34)
+
+[node name="StoneLantern3" parent="Level" instance=ExtResource("20_stone_lantern")]
+transform = Transform3D(0.9, 0, -0, 0, 0.9, 0, 0, 0, 0.9, 29.5, 0, -33)
+
+[node name="StoneLantern4" parent="Level" instance=ExtResource("20_stone_lantern")]
+transform = Transform3D(0.9, 0, -0, 0, 0.9, 0, 0, 0, 0.9, 38.5, 0, -33)
+
+[node name="PlumBlossomTree2" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.324919, 0, -0.892708, 0, 0.95, 0, 0.892708, 0, 0.324919, 41.5, 0, -44)
+
+[node name="PlumBlossomTree3" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.845723, 0, 0.307818, 0, 0.9, 0, -0.307818, 0, -0.845723, 43, 0, -30)
+
+[node name="TempleStele" parent="Level" instance=ExtResource("21_stone_stele")]
+transform = Transform3D(0.737237, 0, 0.516219, 0, 0.9, 0, -0.516219, 0, 0.737237, 42, 0, -41.5)
+
+[node name="TownHouse16" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, 0, 8)
+
+[node name="TownHouse17" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 32, 0, 8)
+
+[node name="TownHouse18" parent="Level" instance=ExtResource("25_town_house")]
+transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, 22, 0, 20.5)
+
+[node name="TeaHouse" parent="Level" instance=ExtResource("26_town_house_large")]
+transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, 34, 0, 21)
+
+[node name="PlumBlossomTree4" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.837087, 0, -0.147601, 0, 0.85, 0, 0.147601, 0, 0.837087, 16.5, 0, 33)
+
+[node name="VillageWell1" parent="Level" instance=ExtResource("29_village_well")]
+transform = Transform3D(0.9, 0, -0, 0, 0.9, 0, 0, 0, 0.9, 27, 0, 30.5)
+
+[node name="RedLantern1" parent="Level" instance=ExtResource("17_red_lantern")]
+transform = Transform3D(0.999812, 0, -0.0193719, 0, 1, 0, 0.0193719, 0, 0.999812, -6, 3.3, 31)
+
+[node name="RedLantern2" parent="Level" instance=ExtResource("17_red_lantern")]
+transform = Transform3D(0.984442, 0, -0.17571, 0, 1, 0, 0.17571, 0, 0.984442, 6, 3.3, 31)
+
+[node name="RedLantern3" parent="Level" instance=ExtResource("17_red_lantern")]
+transform = Transform3D(0.815532, 0, -0.578712, 0, 1, 0, 0.578712, 0, 0.815532, -6, 3.3, 21)
+
+[node name="RedLantern4" parent="Level" instance=ExtResource("17_red_lantern")]
+transform = Transform3D(0.476392, 0, -0.879233, 0, 1, 0, 0.879233, 0, 0.476392, 6, 3.3, 21)
+
+[node name="RedLantern5" parent="Level" instance=ExtResource("17_red_lantern")]
+transform = Transform3D(0.976371, 0, -0.216099, 0, 1, 0, 0.216099, 0, 0.976371, -6, 3.3, 11)
+
+[node name="RedLantern6" parent="Level" instance=ExtResource("17_red_lantern")]
+transform = Transform3D(0.984442, 0, -0.17571, 0, 1, 0, 0.17571, 0, 0.984442, 6, 3.3, 11)
+
+[node name="RedLantern7" parent="Level" instance=ExtResource("17_red_lantern")]
+transform = Transform3D(0.934453, 0, -0.356086, 0, 1, 0, 0.356086, 0, 0.934453, -6, 3.3, 1)
+
+[node name="RedLantern8" parent="Level" instance=ExtResource("17_red_lantern")]
+transform = Transform3D(0.371692, 0, -0.928356, 0, 1, 0, 0.928356, 0, 0.371692, 6, 3.3, 1)
+
+[node name="TeleportArray" parent="Level" instance=ExtResource("22_teleport_array")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, 0, 61)
+
+[node name="StoneLantern5" parent="Level" instance=ExtResource("20_stone_lantern")]
+transform = Transform3D(0.9, 0, -0, 0, 0.9, 0, 0, 0, 0.9, 5.5, 0, 54)
+
+[node name="StoneLantern6" parent="Level" instance=ExtResource("20_stone_lantern")]
+transform = Transform3D(0.9, 0, -0, 0, 0.9, 0, 0, 0, 0.9, -4.5, 0.108, 54)
+
+[node name="TownStele" parent="Level" instance=ExtResource("21_stone_stele")]
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, -6.5, -0.028, 64)
+
+[node name="Docks" parent="Level" instance=ExtResource("18_river_dock")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -71.882, 0, -4)
+
+[node name="Crates5" parent="Level" instance=ExtResource("6_crates")]
+transform = Transform3D(0.779423, 0, -0.45, 0, 0.9, 0, 0.45, 0, 0.779423, -66, 0, -12)
+
+[node name="Crates6" parent="Level" instance=ExtResource("6_crates")]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -65.5, 0, 5)
+
+[node name="Cart3" parent="Level" instance=ExtResource("4_cart")]
+transform = Transform3D(0.173648, 0, -0.984808, 0, 1, 0, 0.984808, 0, 0.173648, -58, 0, -14)
+
+[node name="PlumBlossomTree5" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.569806, 0, -0.757808, 0, 0.948131, 0, 0.757808, 0, 0.569806, -66.5, 0, -34)
+
+[node name="PlumBlossomTree6" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.433748, 0, 0.704496, 0, 0.827316, 0, -0.704496, 0, -0.433748, -66.5, 0, -22)
+
+[node name="PlumBlossomTree7" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.867306, 0, 0.197684, 0, 0.88955, 0, -0.197684, 0, -0.867306, -66.5, 0, 16)
+
+[node name="PlumBlossomTree8" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.85229, 0, -0.52167, 0, 0.999269, 0, 0.52167, 0, -0.85229, -66.5, 0, 30)
+
+[node name="Tombstones1" parent="Level" instance=ExtResource("23_tombstones")]
+transform = Transform3D(-0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, -0.984808, 63, 3.932, -63.5)
+
+[node name="Tombstones2" parent="Level" instance=ExtResource("23_tombstones")]
+transform = Transform3D(-0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, -0.984808, 72, 3.932, -64.5)
+
+[node name="Tombstones3" parent="Level" instance=ExtResource("23_tombstones")]
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 74.5, 3.932, -56.5)
+
+[node name="Tombstones4" parent="Level" instance=ExtResource("23_tombstones")]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 61.5, 3.932, -55)
+
+[node name="PineTree1" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.952628, 0, -0.55, 0, 1.1, 0, 0.55, 0, 0.952628, 59, 3.617, -67)
+
+[node name="PineTreeTall1" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, -0.939693, 79, 3.895, -62)
+
+[node name="IncenseBurnerGrave" parent="Level" instance=ExtResource("8_incense_burner")]
+transform = Transform3D(0.5, 0, -0, 0, 0.5, 0, 0, 0, 0.5, 68.5, 3.982, -62)
+
+[node name="FieldHut" parent="Level" instance=ExtResource("7_hermit_hut")]
+transform = Transform3D(-0.147601, 0, 0.837087, 0, 0.85, 0, -0.837087, 0, -0.147601, 59.5, 0, 34)
+
+[node name="Cart4" parent="Level" instance=ExtResource("4_cart")]
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 72.5, 1.1, 18)
+
+[node name="KarstPeak1" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(1.20949, 0, 0.480582, 0, 1.30147, 0, -0.480582, 0, 1.20949, 189.296, -26.03, -27.068)
+
+[node name="KarstPeak2" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(1.15755, 0, 0.335423, 0, 1.20517, 0, -0.335423, 0, 1.15755, 184.725, -25.661, 103.805)
+
+[node name="KarstPeak3" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(1.45564, 0, 0.435329, 0, 1.51934, 0, -0.435329, 0, 1.45564, 86.525, -22.89, 205.359)
+
+[node name="KarstPeak4" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(1.11251, 0, 0.0772089, 0, 1.11518, 0, -0.0772089, 0, 1.11251, -9.467, -15.299, 239.998)
+
+[node name="KarstPeak5" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(0.295893, 0, -1.46879, 0, 1.4983, 0, 1.46879, 0, 0.295893, -170.968, -15.404, 152.455)
+
+[node name="KarstPeak6" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(0.215569, 0, -1.09978, 0, 1.12071, 0, 1.09978, 0, 0.215569, -211.082, -23.28, 87.379)
+
+[node name="KarstPeak7" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(-0.917201, 0, 1.20968, 0, 1.51809, 0, -1.20968, 0, -0.917201, -208.249, -10.774, -48.271)
+
+[node name="KarstPeak8" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(0.310588, 0, 1.21406, 0, 1.25316, 0, -1.21406, 0, 0.310588, -129.977, -26.474, -213.099)
+
+[node name="KarstPeak9" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(-0.523648, 0, 1.02022, 0, 1.14676, 0, -1.02022, 0, -0.523648, -22.15, -26.144, -221.645)
+
+[node name="KarstPeak10" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(-0.38636, 0, 1.08084, 0, 1.14782, 0, -1.08084, 0, -0.38636, 123.021, -22.017, -189.683)
+
+[node name="KarstPeak11" parent="Level" instance=ExtResource("9_karst_peak")]
+transform = Transform3D(1.1968, 0, 0.0627219, 0, 1.19845, 0, -0.0627219, 0, 1.1968, 208.302, -20.904, -95.04)
+
+[node name="PineTree2" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.655325, 0, -1.10457, 0, 1.28434, 0, 1.10457, 0, -0.655325, 113.987, 42.726, -89.841)
+
+[node name="PineTree3" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.784434, 0, -0.923665, 0, 1.21181, 0, 0.923665, 0, 0.784434, 32.149, 33.465, -109.014)
+
+[node name="PineTree4" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.102769, 0, 1.0519, 0, 1.05691, 0, -1.0519, 0, 0.102769, 111.664, 41.375, 63.14)
+
+[node name="PineTreeTall2" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.42814, 0, -0.854976, 0, 0.956184, 0, 0.854976, 0, 0.42814, -115.36, 39.888, -29.455)
+
+[node name="PlumBlossomTree9" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.231597, 0, -0.826146, 0, 0.857995, 0, 0.826146, 0, 0.231597, 86.185, 31.831, -106.203)
+
+[node name="PlumBlossomTree10" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.192553, 0, 0.918496, 0, 0.938462, 0, -0.918496, 0, -0.192553, 84.894, -0.147, -23.27)
+
+[node name="Boulders1" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.448772, 0, 1.13636, 0, 1.22177, 0, -1.13636, 0, -0.448772, 66.816, -0.661, 57.784)
+
+[node name="BambooCluster1" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.424362, 0, 0.804874, 0, 0.909893, 0, -0.804874, 0, 0.424362, -60.711, -0.343, 65.804)
+
+[node name="PineTree5" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.314913, 0, -1.01607, 0, 1.06375, 0, 1.01607, 0, 0.314913, 27.072, 15.954, 93.312)
+
+[node name="PineTreeTall3" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.335971, 0, -1.00063, 0, 1.05553, 0, 1.00063, 0, 0.335971, -23.297, -0.555, 74.962)
+
+[node name="PineTreeTall4" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.795864, 0, 0.795031, 0, 1.12493, 0, -0.795031, 0, -0.795864, 63.97, 26.213, -102.433)
+
+[node name="PineTreeTall5" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(1.01056, 0, -0.217568, 0, 1.03372, 0, 0.217568, 0, 1.01056, 102.76, 26.997, -52.544)
+
+[node name="PineTree6" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.753146, 0, -0.710225, 0, 1.0352, 0, 0.710225, 0, -0.753146, -6.188, 46.437, -116.684)
+
+[node name="PineTreeTall6" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.198938, 0, 1.15534, 0, 1.17234, 0, -1.15534, 0, 0.198938, 97.366, 17.872, 18.737)
+
+[node name="PlumBlossomTree11" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.348551, 0, -0.842724, 0, 0.911961, 0, 0.842724, 0, 0.348551, -42.543, 16.431, -95.344)
+
+[node name="BambooCluster2" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(-1.14898, 0, 0.140262, 0, 1.15751, 0, -0.140262, 0, -1.14898, 10.016, 34.363, 104.1)
+
+[node name="Boulders2" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.398942, 0, 0.907524, 0, 0.99134, 0, -0.907524, 0, -0.398942, 48.576, 38.108, -106.641)
+
+[node name="PineTreeTall7" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.0145994, 0, -1.34912, 0, 1.3492, 0, 1.34912, 0, 0.0145994, 114.036, 41.934, 69.978)
+
+[node name="PineTreeTall8" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.935562, 0, 0.230835, 0, 0.963618, 0, -0.230835, 0, -0.935562, -44.22, 37.476, -107.425)
+
+[node name="PineTreeTall9" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-1.19907, 0, -0.151052, 0, 1.20854, 0, 0.151052, 0, -1.19907, -112.534, 38.594, 71.475)
+
+[node name="BambooCluster3" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(-0.503615, 0, -0.806266, 0, 0.950627, 0, 0.806266, 0, -0.503615, 94.577, 16.254, 77.196)
+
+[node name="PineTree7" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.947642, 0, 0.440484, 0, 1.04501, 0, -0.440484, 0, -0.947642, -96.816, 14.181, 84.734)
+
+[node name="Boulders3" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(1.31713, 0, -0.32791, 0, 1.35734, 0, 0.32791, 0, 1.31713, 104.892, 31.804, 43.463)
+
+[node name="Boulders4" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.109398, 0, 1.51506, 0, 1.51901, 0, -1.51506, 0, -0.109398, 74.717, -0.861, 55.536)
+
+[node name="PineTreeTall10" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.772825, 0, -0.715894, 0, 1.05345, 0, 0.715894, 0, -0.772825, 87.606, -0.367, 87.45)
+
+[node name="PineTreeTall11" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.169689, 0, -1.18932, 0, 1.20137, 0, 1.18932, 0, -0.169689, 108.441, 33.635, -18.624)
+
+[node name="PineTree8" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.0609589, 0, -0.974341, 0, 0.976246, 0, 0.974341, 0, -0.0609589, -37.157, -0.568, -74.041)
+
+[node name="BambooCluster4" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(-0.113601, 0, -1.12817, 0, 1.13388, 0, 1.12817, 0, -0.113601, 59.948, 0.73, -92.468)
+
+[node name="PineTree9" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.344954, 0, 1.06419, 0, 1.1187, 0, -1.06419, 0, 0.344954, -16.024, 29.476, -99.541)
+
+[node name="PlumBlossomTree12" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.410475, 0, -0.970784, 0, 1.054, 0, 0.970784, 0, -0.410475, -4.168, 35.545, -103.364)
+
+[node name="Boulders5" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-1.16904, 0, 0.391608, 0, 1.23288, 0, -0.391608, 0, -1.16904, 26.074, -0.491, 82.816)
+
+[node name="PineTree10" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.861898, 0, -0.438023, 0, 0.966816, 0, 0.438023, 0, 0.861898, 83.971, 38.711, 112.171)
+
+[node name="PlumBlossomTree13" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.435747, 0, 0.967322, 0, 1.06094, 0, -0.967322, 0, 0.435747, 110.834, 39.407, -5.996)
+
+[node name="PineTreeTall12" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.761534, 0, 0.95123, 0, 1.21851, 0, -0.95123, 0, 0.761534, 38.516, -0.558, -73.671)
+
+[node name="BambooCluster5" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(1.0545, 0, -0.505004, 0, 1.16918, 0, 0.505004, 0, 1.0545, -36.384, -0.408, 84.416)
+
+[node name="PineTreeTall13" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.462697, 0, -0.982836, 0, 1.0863, 0, 0.982836, 0, 0.462697, 73.484, -0.322, 82.101)
+
+[node name="PineTree11" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.801055, 0, -0.551992, 0, 0.972822, 0, 0.551992, 0, -0.801055, -47.743, -0.775, 75.798)
+
+[node name="PineTree12" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(1.20166, 0, 0.194626, 0, 1.21732, 0, -0.194626, 0, 1.20166, -109.399, 36.122, -100.48)
+
+[node name="PineTree13" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.899869, 0, 0.959605, 0, 1.31552, 0, -0.959605, 0, 0.899869, 94.294, 2.692, -41.199)
+
+[node name="PineTreeTall14" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.0949797, 0, -1.1479, 0, 1.15182, 0, 1.1479, 0, -0.0949797, 51.413, -0.383, 90.25)
+
+[node name="Boulders6" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.612023, 0, 0.96365, 0, 1.14158, 0, -0.96365, 0, -0.612023, 35.369, -0.418, -93.169)
+
+[node name="Boulders7" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-1.31391, 0, -0.285518, 0, 1.34457, 0, 0.285518, 0, -1.31391, 38.185, 36.011, 107.229)
+
+[node name="PineTreeTall15" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-1.22823, 0, -0.290793, 0, 1.26218, 0, 0.290793, 0, -1.22823, 15.811, 46.167, 113.583)
+
+[node name="PlumBlossomTree14" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.435085, 0, 0.936882, 0, 1.03298, 0, -0.936882, 0, -0.435085, -99.175, 14.449, 22.277)
+
+[node name="PineTree14" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.505787, 0, 1.2241, 0, 1.32448, 0, -1.2241, 0, -0.505787, 63.097, 40.1, -111.532)
+
+[node name="PineTreeTall16" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-1.12002, 0, -0.342425, 0, 1.1712, 0, 0.342425, 0, -1.12002, -51.499, 37.685, 111.435)
+
+[node name="Boulders8" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.426682, 0, 1.18841, 0, 1.26268, 0, -1.18841, 0, -0.426682, -53.285, 39.548, -109.69)
+
+[node name="PineTree15" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-1.07449, 0, -0.2388, 0, 1.10071, 0, 0.2388, 0, -1.07449, -93.831, 0.671, 94.379)
+
+[node name="Boulders9" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.482492, 0, -0.882386, 0, 1.00569, 0, 0.882386, 0, 0.482492, 41.9, -0.669, 64.39)
+
+[node name="PineTreeTall17" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.745185, 0, 0.687637, 0, 1.01397, 0, -0.687637, 0, 0.745185, 106.19, 32.634, 25.042)
+
+[node name="PlumBlossomTree15" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.312592, 0, -0.87786, 0, 0.931854, 0, 0.87786, 0, -0.312592, -101.682, 23.577, 40.247)
+
+[node name="Boulders10" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(1.16163, 0, -0.335507, 0, 1.20911, 0, 0.335507, 0, 1.16163, 61.286, -0.247, -27.949)
+
+[node name="PineTreeTall18" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.847593, 0, -0.950649, 0, 1.27364, 0, 0.950649, 0, 0.847593, 13.754, 21.793, -97.472)
+
+[node name="BambooCluster6" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.490859, 0, 1.09374, 0, 1.19884, 0, -1.09374, 0, 0.490859, -49.79, -0.502, -89.14)
+
+[node name="PineTree16" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(1.29569, 0, 0.0703991, 0, 1.29761, 0, -0.0703991, 0, 1.29569, -106.403, 30.542, -79.05)
+
+[node name="PlumBlossomTree16" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.474118, 0, 0.930911, 0, 1.04469, 0, -0.930911, 0, 0.474118, 44.093, -0.353, -64.522)
+
+[node name="Boulders11" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.730202, 0, 0.566607, 0, 0.92425, 0, -0.566607, 0, -0.730202, 46.41, -0.558, 77.609)
+
+[node name="Boulders12" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-1.1197, 0, 0.538636, 0, 1.24252, 0, -0.538636, 0, -1.1197, -65.611, 33.549, -104.655)
+
+[node name="PineTreeTall19" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.870621, 0, 0.519819, 0, 1.014, 0, -0.519819, 0, -0.870621, 87.967, -0.721, 45.032)
+
+[node name="BambooCluster7" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(-0.809235, 0, 0.618483, 0, 1.01852, 0, -0.618483, 0, -0.809235, -36.932, -0.434, 69.536)
+
+[node name="Boulders13" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.367797, 0, 0.847898, 0, 0.924233, 0, -0.847898, 0, 0.367797, -106.184, 32.663, -32.898)
+
+[node name="Boulders14" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(1.4823, 0, -0.177541, 0, 1.49289, 0, 0.177541, 0, 1.4823, 20.407, -0.66, -73.681)
+
+[node name="BambooCluster8" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.244471, 0, -0.964725, 0, 0.995219, 0, 0.964725, 0, 0.244471, -49.947, -0.452, 86.924)
+
+[node name="PineTree17" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.418711, 0, -0.9239, 0, 1.01435, 0, 0.9239, 0, -0.418711, -96.024, 7.646, 30.37)
+
+[node name="Boulders15" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.940728, 0, -0.234027, 0, 0.969401, 0, 0.234027, 0, 0.940728, 13.839, -0.262, 51.262)
+
+[node name="PineTreeTall20" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.116018, 0, 1.32079, 0, 1.32587, 0, -1.32079, 0, 0.116018, -34.103, -0.532, 55.062)
+
+[node name="PlumBlossomTree17" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.222836, 0, -0.905179, 0, 0.932205, 0, 0.905179, 0, 0.222836, 30.307, -0.532, 75.906)
+
+[node name="Boulders16" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.18462, 0, 1.0375, 0, 1.0538, 0, -1.0375, 0, -0.18462, 99.248, 18.473, -30.217)
+
+[node name="PineTreeTall21" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.938544, 0, 0.540559, 0, 1.08308, 0, -0.540559, 0, -0.938544, 47.516, 45.833, -117.937)
+
+[node name="Boulders17" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(1.13802, 0, -0.891684, 0, 1.44575, 0, 0.891684, 0, 1.13802, 26.501, -0.416, 57.097)
+
+[node name="PineTree18" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-1.01104, 0, 0.47878, 0, 1.11867, 0, -0.47878, 0, -1.01104, -98.178, 23.096, -72.415)
+
+[node name="Boulders18" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.875733, 0, 0.263399, 0, 0.914487, 0, -0.263399, 0, -0.875733, -52.858, -0.536, -77.796)
+
+[node name="Boulders19" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.926077, 0, 0.064108, 0, 0.928293, 0, -0.064108, 0, -0.926077, 96.976, 15.856, -19.296)
+
+[node name="BambooCluster9" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.555308, 0, 0.856408, 0, 1.02069, 0, -0.856408, 0, 0.555308, 74.159, -0.005, -40.664)
+
+[node name="BambooCluster10" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.153767, 0, 1.02035, 0, 1.03187, 0, -1.02035, 0, 0.153767, -113.079, 39.204, 31.935)
+
+[node name="PlumBlossomTree18" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.732103, 0, 0.440936, 0, 0.854634, 0, -0.440936, 0, 0.732103, 75.485, -0.786, 45.383)
+
+[node name="PineTree19" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.4147, 0, -1.03525, 0, 1.11522, 0, 1.03525, 0, 0.4147, -93.152, -0.274, -87.573)
+
+[node name="Boulders20" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.224657, 0, 0.944472, 0, 0.970824, 0, -0.944472, 0, 0.224657, -106.831, 27.756, -1.459)
+
+[node name="Boulders21" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.0526938, 0, 1.28951, 0, 1.29059, 0, -1.28951, 0, 0.0526938, -112.533, 34.628, -6.322)
+
+[node name="PineTree20" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(1.05819, 0, 0.374102, 0, 1.12237, 0, -0.374102, 0, 1.05819, 78.309, 33.049, 106.665)
+
+[node name="PineTree21" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.715658, 0, 0.886292, 0, 1.13916, 0, -0.886292, 0, 0.715658, -50.931, 7.137, 95.902)
+
+[node name="PineTreeTall22" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.454616, 0, -1.06532, 0, 1.15826, 0, 1.06532, 0, 0.454616, -105.712, 30.54, -53.71)
+
+[node name="BambooCluster11" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.858539, 0, -0.709741, 0, 1.11392, 0, 0.709741, 0, 0.858539, 71.9, 34.333, -106.841)
+
+[node name="PineTree22" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.747494, 0, -0.633248, 0, 0.979668, 0, 0.633248, 0, -0.747494, 100.856, 24.262, 88.407)
+
+[node name="PineTreeTall23" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.967345, 0, -0.0627249, 0, 0.969376, 0, 0.0627249, 0, -0.967345, -9.916, -0.323, -56.311)
+
+[node name="PineTree23" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.653784, 0, 0.625206, 0, 0.904608, 0, -0.625206, 0, -0.653784, 22.959, -0.608, -85.927)
+
+[node name="PineTree24" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.697303, 0, 0.794842, 0, 1.05736, 0, -0.794842, 0, -0.697303, 109.472, 37.454, -29.345)
+
+[node name="PlumBlossomTree19" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.865172, 0, 0.650062, 0, 1.08217, 0, -0.650062, 0, 0.865172, 2.46, 37.088, -106.458)
+
+[node name="Boulders22" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.300862, 0, -1.53919, 0, 1.56832, 0, 1.53919, 0, -0.300862, 116.792, 44.351, -46.457)
+
+[node name="PineTree25" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.454254, 0, 1.06964, 0, 1.1621, 0, -1.06964, 0, -0.454254, 94.473, 38.794, 111.121)
+
+[node name="PineTreeTall24" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(1.10047, 0, 0.147616, 0, 1.11032, 0, -0.147616, 0, 1.10047, 1.721, -0.422, -75.075)
+
+[node name="PineTree26" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.857449, 0, -0.527506, 0, 1.00672, 0, 0.527506, 0, -0.857449, 91.428, 10.632, 70.133)
+
+[node name="PineTree27" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.345825, 0, -0.953771, 0, 1.01453, 0, 0.953771, 0, -0.345825, 82.339, 7.179, -86.201)
+
+[node name="PlumBlossomTree20" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.775253, 0, 0.559336, 0, 0.955968, 0, -0.559336, 0, 0.775253, -103.339, 30.717, 76.968)
+
+[node name="PlumBlossomTree21" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.786084, 0, 0.260125, 0, 0.828006, 0, -0.260125, 0, 0.786084, -32.789, 37.232, 112.636)
+
+[node name="Boulders23" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.583834, 0, -0.495653, 0, 0.765855, 0, 0.495653, 0, -0.583834, 75.048, 14.912, 96.973)
+
+[node name="Boulders24" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-1.13648, 0, 0.743692, 0, 1.35818, 0, -0.743692, 0, -1.13648, 111.919, 36.524, -69.258)
+
+[node name="PineTreeTall25" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.851538, 0, -0.799368, 0, 1.16795, 0, 0.799368, 0, 0.851538, 115.759, 43.04, 8.876)
+
+[node name="PineTreeTall26" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.159835, 0, 1.15483, 0, 1.16584, 0, -1.15483, 0, -0.159835, 67.337, 29.483, 104.358)
+
+[node name="PineTree28" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-1.22876, 0, 0.405896, 0, 1.29406, 0, -0.405896, 0, -1.22876, 25.185, 40.952, 109.971)
+
+[node name="BambooCluster12" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(1.19012, 0, 0.0750844, 0, 1.19248, 0, -0.0750844, 0, 1.19012, 117.355, 42.729, -74.44)
+
+[node name="Boulders25" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.674654, 0, 0.841504, 0, 1.07856, 0, -0.841504, 0, 0.674654, 82.969, -0.322, -15.573)
+
+[node name="PineTreeTall27" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-1.06914, 0, 0.822751, 0, 1.34906, 0, -0.822751, 0, -1.06914, -19.758, 36.344, 108.242)
+
+[node name="BambooCluster13" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(-0.807171, 0, -0.761171, 0, 1.10946, 0, 0.761171, 0, -0.807171, 116.98, 43.131, 50.464)
+
+[node name="PlumBlossomTree22" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.101608, 0, -0.857197, 0, 0.863198, 0, 0.857197, 0, 0.101608, -60.559, -0.574, 74.394)
+
+[node name="PlumBlossomTree23" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(1.07552, 0, 0.0695507, 0, 1.07777, 0, -0.0695507, 0, 1.07552, -109.991, 37.228, -41.141)
+
+[node name="PineTree29" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-1.1103, 0, -0.198575, 0, 1.12792, 0, 0.198575, 0, -1.1103, 91.37, -0.076, -34.653)
+
+[node name="PlumBlossomTree24" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(-0.810089, 0, -0.0328198, 0, 0.810754, 0, 0.0328198, 0, -0.810089, -93.058, 8.16, 64.763)
+
+[node name="PineTreeTall28" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.950273, 0, 0.071785, 0, 0.952981, 0, -0.071785, 0, 0.950273, 70.925, 37.516, 111.1)
+
+[node name="Boulders26" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-1.25195, 0, -0.793285, 0, 1.48212, 0, 0.793285, 0, -1.25195, -111.089, 39.169, 47.444)
+
+[node name="PineTreeTall29" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.408385, 0, -0.965843, 0, 1.04863, 0, 0.965843, 0, 0.408385, -117.288, 47.638, 87.156)
+
+[node name="PineTreeTall30" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.393173, 0, 0.96296, 0, 1.04013, 0, -0.96296, 0, 0.393173, 94.045, 16.215, 1.059)
+
+[node name="PineTree30" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.752107, 0, -0.834128, 0, 1.12314, 0, 0.834128, 0, -0.752107, 96.689, 21.953, 100.377)
+
+[node name="PineTreeTall31" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.394163, 0, 1.12681, 0, 1.19376, 0, -1.12681, 0, -0.394163, 55.582, 31.778, 103.268)
+
+[node name="Boulders27" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.367718, 0, 1.32775, 0, 1.37773, 0, -1.32775, 0, 0.367718, -57.878, 30.369, -103.101)
+
+[node name="PlumBlossomTree25" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.793564, 0, -0.581652, 0, 0.983902, 0, 0.581652, 0, 0.793564, -99.501, 39.591, -115.155)
+
+[node name="PineTreeTall32" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-1.00476, 0, -0.008593, 0, 1.00479, 0, 0.008593, 0, -1.00476, -45.403, -0.541, 65.594)
+
+[node name="Boulders28" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.878162, 0, 0.494819, 0, 1.00798, 0, -0.494819, 0, -0.878162, -114.422, 40.726, -51.363)
+
+[node name="BambooCluster14" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.586972, 0, -0.962369, 0, 1.12725, 0, 0.962369, 0, 0.586972, 79.565, 24.731, -99.856)
+
+[node name="PineTreeTall33" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.519336, 0, 0.854157, 0, 0.999647, 0, -0.854157, 0, -0.519336, 96.366, 17.439, 41.467)
+
+[node name="PineTreeTall34" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(1.12489, 0, 0.682063, 0, 1.31552, 0, -0.682063, 0, 1.12489, 94.301, 8.857, 32.543)
+
+[node name="BambooCluster15" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(-1.15882, 0, -0.204957, 0, 1.1768, 0, 0.204957, 0, -1.15882, 44.166, -0.112, -86.434)
+
+[node name="PineTree31" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(0.789922, 0, -0.99378, 0, 1.26948, 0, 0.99378, 0, 0.789922, -18.329, -0.314, 58.377)
+
+[node name="PineTreeTall35" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.436827, 0, 0.999383, 0, 1.09068, 0, -0.999383, 0, 0.436827, 74.937, 8.414, -80.136)
+
+[node name="PineTree32" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-1.00607, 0, 0.212195, 0, 1.0282, 0, -0.212195, 0, -1.00607, 115.99, 40.584, 43.279)
+
+[node name="BambooCluster16" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.327873, 0, 0.978773, 0, 1.03223, 0, -0.978773, 0, 0.327873, -38.114, -0.361, -83.032)
+
+[node name="Boulders29" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.264256, 0, 1.29193, 0, 1.31868, 0, -1.29193, 0, -0.264256, -114.452, 41.587, 95.178)
+
+[node name="PineTreeTall36" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.904927, 0, -0.814228, 0, 1.21732, 0, 0.814228, 0, 0.904927, 54.003, -0.547, 68.497)
+
+[node name="PineTreeTall37" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(1.02149, 0, -0.207081, 0, 1.04227, 0, 0.207081, 0, 1.02149, 103.422, 43.386, -112.139)
+
+[node name="PineTreeTall38" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.874199, 0, 0.530269, 0, 1.02245, 0, -0.530269, 0, -0.874199, 72.533, 17.75, -98.806)
+
+[node name="BambooCluster17" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.871426, 0, 0.289716, 0, 0.918324, 0, -0.289716, 0, 0.871426, -94.857, 46.081, 117.68)
+
+[node name="Boulders30" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.803656, 0, -0.56419, 0, 0.981923, 0, 0.56419, 0, -0.803656, -91.289, -0.356, 36.132)
+
+[node name="PineTreeTall39" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.797539, 0, -1.07428, 0, 1.33796, 0, 1.07428, 0, 0.797539, -24.211, 45.576, -117.239)
+
+[node name="PineTree33" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-1.05637, 0, -0.632474, 0, 1.23123, 0, 0.632474, 0, -1.05637, -97.36, 6.352, -17.275)
+
+[node name="PineTree34" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(-0.900286, 0, 0.430959, 0, 0.998119, 0, -0.430959, 0, -0.900286, 112.031, 40.041, 17.951)
+
+[node name="BambooCluster18" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(1.09543, 0, 0.366738, 0, 1.15519, 0, -0.366738, 0, 1.09543, 77.616, 8.777, -72.654)
+
+[node name="PlumBlossomTree26" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.259251, 0, -0.863582, 0, 0.901657, 0, 0.863582, 0, 0.259251, -19.944, -0.437, 92.458)
+
+[node name="PineTreeTall40" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-1.17296, 0, -0.137584, 0, 1.18101, 0, 0.137584, 0, -1.17296, -101.018, 33.457, 107.906)
+
+[node name="PineTreeTall41" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.64879, 0, -1.12874, 0, 1.30191, 0, 1.12874, 0, -0.64879, 13.649, -0.31, -54.026)
+
+[node name="PineTreeTall42" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.842161, 0, -0.659627, 0, 1.06974, 0, 0.659627, 0, -0.842161, 58.018, -0.599, 60.977)
+
+[node name="PineTreeTall43" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(-0.0963951, 0, 1.21667, 0, 1.22048, 0, -1.21667, 0, -0.0963951, 76.686, -0.292, -11.848)
+
+[node name="Boulders31" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(1.1144, 0, -0.354793, 0, 1.16952, 0, 0.354793, 0, 1.1144, 14.735, 40.426, -114.035)
+
+[node name="PineTreeTall44" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.725576, 0, 0.858299, 0, 1.12389, 0, -0.858299, 0, 0.725576, -40.388, 34.01, 108.929)
+
+[node name="PineTree35" parent="Level" instance=ExtResource("14_pine_tree")]
+transform = Transform3D(1.01298, 0, 0.750112, 0, 1.26047, 0, -0.750112, 0, 1.01298, 51.225, 0.146, -74.53)
+
+[node name="PineTreeTall45" parent="Level" instance=ExtResource("15_pine_tree_tall")]
+transform = Transform3D(0.710586, 0, -0.722593, 0, 1.01345, 0, 0.722593, 0, 0.710586, -17.578, -0.333, -82.061)
+
+[node name="PlumBlossomTree27" parent="Level" instance=ExtResource("16_plum_blossom_tree")]
+transform = Transform3D(0.704413, 0, 0.83711, 0, 1.09405, 0, -0.83711, 0, 0.704413, 104.561, 31.595, -81.441)
+
+[node name="Boulders32" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.218934, 0, 0.908435, 0, 0.934444, 0, -0.908435, 0, -0.218934, 76.141, -0.158, -27.614)
+
+[node name="BambooCluster19" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(-0.797032, 0, 0.860415, 0, 1.17285, 0, -0.860415, 0, -0.797032, 101.335, 25.393, -45.035)
+
+[node name="BambooCluster20" parent="Level" instance=ExtResource("1_bamboo_cluster")]
+transform = Transform3D(0.907763, 0, 0.675394, 0, 1.13145, 0, -0.675394, 0, 0.907763, -114.419, 39.238, -88.005)
+
+[node name="Boulders33" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.303418, 0, -1.03963, 0, 1.083, 0, 1.03963, 0, 0.303418, 63.469, -0.533, 68.97)
+
+[node name="Markers" type="Node3D" parent="."]
+
+[node name="PlayerSpawn" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, 1.002, 57)
+
+[node name="TeleportArray" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, 0.9, 61)
+
+[node name="TownGate" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 1, 34.5)
+
+[node name="MainStreet" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 1.5, 1, 22)
+
+[node name="MarketSquare" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, 1, -14)
+
+[node name="Inn" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -2, 1, 11)
+
+[node name="Well" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -18.5, 1, -14)
+
+[node name="MagistrateHall" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 1, -28.5)
+
+[node name="Temple" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 34, 1, -28.5)
+
+[node name="Riverside" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -63, 1, 6)
+
+[node name="BackAlley" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -17, 1, 20)
+
+[node name="Warehouse" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -39.5, 1, 18)
+
+[node name="Graveyard" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 68, 4.982, -58)
+
+[node name="Farmland" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 72, 2.1, 12)
+
+[node name="WatchTower" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 37.5, 1, 30)

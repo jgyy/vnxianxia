@@ -16,7 +16,7 @@ env:
 
 jobs:
   lint:
-    name: Lint & validate committed GLBs
+    name: Lint & validate committed data
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -24,17 +24,24 @@ jobs:
         with:
           python-version: "3.13"
       - name: Byte-compile Python sources
-        run: python -m py_compile blender/*.py blender/xianxia/*.py tools/*.py
+        run: python -m py_compile blender/*.py blender/xianxia/*.py tools/*.py tools/maps/*.py tools/story/*.py
       - name: Validate committed GLB assets
         run: python tools/validate_glb.py godot/assets
-      - name: Generated level layout is up to date
+      - name: World spec export is up to date
+        run: python tools/world_spec.py --check
+      - name: Generated map layouts are up to date
         run: |
-          python tools/build_sect_scene.py
-          git diff --exit-code -- godot/scenes/main.tscn
+          python tools/build_maps.py
+          git diff --exit-code -- godot/scenes/maps
+      - name: Story compiles, validates and is up to date
+        run: python tools/build_story.py --check
+      - name: Every voice line is synthesised and current
+        run: python tools/gen_voices.py --check
 
   blender-build:
-    name: Build assets with headless Blender ${{ env.BPY_VERSION }}
+    name: Build assets with headless Blender (bpy 5.2.2)
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -49,7 +56,7 @@ jobs:
             libx11-6 libxrender1 libxfixes3 libxi6 libxkbcommon0 libxext6 libsm6 libgl1 libegl1
       - name: Install Blender (bpy)
         run: pip install "bpy==${BPY_VERSION}"
-      - name: Build every character and environment GLB
+      - name: Build every character, creature and environment GLB
         run: python blender/build_assets.py --out build/assets
       - name: Validate freshly built GLBs
         run: python tools/validate_glb.py build/assets | tee -a "$GITHUB_STEP_SUMMARY"
@@ -60,8 +67,9 @@ jobs:
           retention-days: 14
 
   godot-smoke-test:
-    name: Godot ${{ env.GODOT_VERSION }} headless smoke test
+    name: Godot 4.7.2 smoke test & 100-quest walkthrough
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Cache Godot
@@ -81,7 +89,13 @@ jobs:
       - name: Import project
         run: ~/godot/godot --headless --path godot --import
       - name: Run smoke test
-        run: ~/godot/godot --headless --path godot -s res://tests/smoke_test.gd | tee smoke.log
+        run: |
+          set -o pipefail
+          ~/godot/godot --headless --path godot -s res://tests/smoke_test.gd | tee smoke.log
+      - name: Play all 100 main quests headlessly
+        run: |
+          set -o pipefail
+          ~/godot/godot --headless --path godot -s res://tests/walkthrough_test.gd | tee walkthrough.log
       - name: Summary
         if: always()
         run: |
@@ -89,11 +103,16 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           cat smoke.log >> "$GITHUB_STEP_SUMMARY" || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo '### 100-quest walkthrough' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          tail -n 25 walkthrough.log >> "$GITHUB_STEP_SUMMARY" || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
   screenshots:
     name: In-engine screenshots (lavapipe)
     needs: godot-smoke-test
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - name: Software Vulkan + virtual display
@@ -122,7 +141,7 @@ jobs:
             ~/godot/godot --path godot --rendering-driver vulkan --resolution 1280x720 \
             -s res://tests/capture_screenshots.gd -- "$PWD/build/screenshots"
           ls -la build/screenshots
-          test "$(ls build/screenshots/*.png | wc -l)" -ge 8
+          test "$(ls build/screenshots/*.png | wc -l)" -ge 12
       - uses: actions/upload-artifact@v4
         with:
           name: godot-screenshots
