@@ -133,15 +133,18 @@ func _step() -> bool:
 			for e in runner.enemies:
 				var guard := 0
 				while is_instance_valid(e) and not e.dead and guard < 12:
-					_place(player, e.global_position + Vector3(0.9, 0, 0.9))
-					await _frames(2)
+					_place(player, _free_spot(e.global_position, 1.2))
+					for k in 30:
+						await physics_frame
+						if player.is_on_floor():
+							break
 					e.hp = minf(e.hp, 1.0)
 					player._action_lock = 0.0
 					player.strike()
 					await _frames(30)
 					guard += 1
 				if is_instance_valid(e) and not e.dead:
-					fail("%s: %s survived strikes" % [tag, e.kind])
+					fail("%s: %s survived strikes (enemy %s, player %s, floor %s)" % [tag, e.kind, e.global_position, player.global_position, player.is_on_floor()])
 					e.take_damage(1e9)
 		"collect":
 			for p in runner.pickups.duplicate():

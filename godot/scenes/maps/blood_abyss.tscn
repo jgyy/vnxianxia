@@ -1,0 +1,489 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/environment/abyss_terrain.glb" id="1_abyss_terrain"]
+[ext_resource type="PackedScene" path="res://assets/environment/blood_altar.glb" id="2_blood_altar"]
+[ext_resource type="PackedScene" path="res://assets/environment/bone_pile.glb" id="3_bone_pile"]
+[ext_resource type="PackedScene" path="res://assets/environment/dead_tree.glb" id="4_dead_tree"]
+[ext_resource type="PackedScene" path="res://assets/environment/demon_banner.glb" id="5_demon_banner"]
+[ext_resource type="PackedScene" path="res://assets/environment/demon_gate.glb" id="6_demon_gate"]
+[ext_resource type="PackedScene" path="res://assets/environment/demon_obelisk.glb" id="7_demon_obelisk"]
+[ext_resource type="PackedScene" path="res://assets/environment/demon_tent.glb" id="8_demon_tent"]
+[ext_resource type="PackedScene" path="res://assets/environment/fortress_wall.glb" id="9_fortress_wall"]
+[ext_resource type="PackedScene" path="res://assets/environment/heart_pool.glb" id="10_heart_pool"]
+[ext_resource type="PackedScene" path="res://assets/environment/patriarch_throne.glb" id="11_patriarch_throne"]
+[ext_resource type="PackedScene" path="res://assets/environment/prison_cage.glb" id="12_prison_cage"]
+[ext_resource type="PackedScene" path="res://assets/environment/spiky_rocks.glb" id="13_spiky_rocks"]
+[ext_resource type="PackedScene" path="res://assets/environment/teleport_array.glb" id="14_teleport_array"]
+[ext_resource type="Script" path="res://scripts/map.gd" id="map_script"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_material"]
+sky_top_color = Color(0.07, 0.025, 0.04, 1)
+sky_horizon_color = Color(0.5, 0.13, 0.09, 1)
+sky_curve = 0.22
+ground_bottom_color = Color(0.22, 0.1, 0.09, 1)
+ground_horizon_color = Color(0.4, 0.14, 0.11, 1)
+sun_angle_max = 30
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_material")
+
+[sub_resource type="Environment" id="environment"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+ambient_light_energy = 2.6
+reflected_light_source = 2
+tonemap_mode = 4
+tonemap_exposure = 1.25
+tonemap_white = 6.0
+ssao_enabled = true
+ssao_radius = 1.4
+ssao_intensity = 1.6
+glow_enabled = true
+glow_intensity = 0.8
+glow_bloom = 0.08
+glow_hdr_threshold = 1.1
+fog_enabled = true
+fog_light_color = Color(0.26, 0.08, 0.07, 1)
+fog_sun_scatter = 0.3
+fog_density = 0.0026
+fog_sky_affect = 0.2
+fog_height = -32
+fog_height_density = 0.02
+adjustment_enabled = true
+adjustment_saturation = 0.95
+adjustment_contrast = 1.08
+
+[node name="Map" type="Node3D"]
+script = ExtResource("map_script")
+map_id = "blood_abyss"
+display_name = "Blood Moon Abyss"
+music = "abyss"
+ambient = "embers"
+kill_y = -71
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.939693, 0, -0.34202, -0.29005, 0.529919, 0.796905, 0.181243, 0.848048, -0.497961, 0, 30, 0)
+light_color = Color(1, 0.55, 0.46, 1)
+light_energy = 1.35
+shadow_enabled = true
+shadow_blur = 1.5
+directional_shadow_max_distance = 160
+
+[node name="Level" type="Node3D" parent="."]
+
+[node name="Terrain" parent="Level" instance=ExtResource("1_abyss_terrain")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="TeleportArray" parent="Level" instance=ExtResource("14_teleport_array")]
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, 38, -0.132856, 106)
+
+[node name="DemonBanner1" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 22, -0.277857, 108)
+
+[node name="DemonBanner2" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(0.173648, 0, 0.984808, 0, 1, 0, -0.984808, 0, 0.173648, 48, -0.123104, 96)
+
+[node name="SpikyRocks1" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.0759549, 0, -1.34048, 0, 1.34263, 0, 1.34048, 0, -0.0759549, 20, -0.228204, 100)
+
+[node name="SpikyRocks2" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.573337, 0, 1.30421, 0, 1.42467, 0, -1.30421, 0, -0.573337, 46, -0.190009, 108)
+
+[node name="SpikyRocks3" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.438269, 0, -1.02556, 0, 1.11528, 0, 1.02556, 0, 0.438269, 34, -0.204238, 113)
+
+[node name="DeadTree1" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(0.842649, 0, -0.707066, 0, 1.1, 0, 0.707066, 0, 0.842649, 44, -0.102942, 92)
+
+[node name="BonePile1" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 26, -0.210451, 94)
+
+[node name="DemonObelisk1" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.772741, 0, 0.207055, 0, 0.8, 0, -0.207055, 0, 0.772741, 16, -1.30135, 95)
+
+[node name="DemonBanner3" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(-0.85, 0, -1.04095e-16, 0, 0.85, 0, 1.04095e-16, 0, -0.85, 2.91157, -3.61875, 94.6647)
+
+[node name="DemonBanner4" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(-0.85, 0, -1.04095e-16, 0, 0.85, 0, 1.04095e-16, 0, -0.85, -16.9284, -7.5236, 91.7847)
+
+[node name="DemonBanner5" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(-0.85, 0, -1.04095e-16, 0, 0.85, 0, 1.04095e-16, 0, -0.85, -34.2884, -10.8756, 89.2647)
+
+[node name="SpikyRocks4" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.582588, 0, -0.772491, 0, 0.967549, 0, 0.772491, 0, 0.582588, 9.94934, 2.82096, 98.5157)
+
+[node name="SpikyRocks5" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.0941075, 0, 0.934337, 0, 0.939064, 0, -0.934337, 0, -0.0941075, -8.03066, -1.5576, 95.9057)
+
+[node name="SpikyRocks6" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.945569, 0, 0.188485, 0, 0.964172, 0, -0.188485, 0, -0.945569, -26.6307, -4.17313, 93.2057)
+
+[node name="DemonBanner6" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(-0.85, 0, -1.04095e-16, 0, 0.85, 0, 1.04095e-16, 0, -0.85, -30.925, -14.6481, 76.9477)
+
+[node name="DemonBanner7" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(-0.85, 0, -1.04095e-16, 0, 0.85, 0, 1.04095e-16, 0, -0.85, -4.4918, -19.8491, 78.0491)
+
+[node name="DemonBanner8" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(-0.85, 0, -1.04095e-16, 0, 0.85, 0, 1.04095e-16, 0, -0.85, 19.298, -24.8091, 79.0404)
+
+[node name="SpikyRocks7" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.257389, 0, -0.893125, 0, 0.929474, 0, 0.893125, 0, -0.257389, -17.8166, -12.6366, 80.0962)
+
+[node name="SpikyRocks8" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.514189, 0, 0.837231, 0, 0.982521, 0, -0.837231, 0, 0.514189, 8.61654, -18.1135, 81.1976)
+
+[node name="DeadTree2" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, -50, -12.0031, 82)
+
+[node name="BonePile2" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.138919, 0, -0.787846, 0, 0.8, 0, 0.787846, 0, 0.138919, -48, -12.0558, 77)
+
+[node name="SpikyRocks9" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(1.59343, 0, -0.144891, 0, 1.6, 0, 0.144891, 0, 1.59343, 24, -25.471, 50)
+
+[node name="SpikyRocks10" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.290926, 0, -1.77633, 0, 1.8, 0, 1.77633, 0, -0.290926, 42, -20.0592, 44)
+
+[node name="SpikyRocks11" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.785695, 0, -1.0357, 0, 1.3, 0, 1.0357, 0, 0.785695, 22, -28.0464, 38)
+
+[node name="SpikyRocks12" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.828491, 0, 0.868103, 0, 1.2, 0, -0.868103, 0, 0.828491, 40, -28.0894, 60)
+
+[node name="DemonObelisk2" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 26, -28.0982, 44)
+
+[node name="DemonObelisk3" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, 40, -28.1225, 50)
+
+[node name="DeadTree3" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(-1.12763, 0, 0.410424, 0, 1.2, 0, -0.410424, 0, -1.12763, 38, -27.8419, 38)
+
+[node name="BonePile3" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.575568, 0, 1.10605, 0, 1.24685, 0, -1.10605, 0, 0.575568, -33.0698, -28.0965, 17.4879)
+
+[node name="BonePile4" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(-0.0551953, 0, -1.3088, 0, 1.30996, 0, 1.3088, 0, -0.0551953, -25.3209, -27.9837, 25.8206)
+
+[node name="BonePile5" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(-0.973011, 0, 0.414822, 0, 1.05775, 0, -0.414822, 0, -0.973011, -50.9951, -28.2058, 31.0815)
+
+[node name="BonePile6" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(-0.339457, 0, -0.801494, 0, 0.870416, 0, 0.801494, 0, -0.339457, -44.8638, -28.1836, 37.8646)
+
+[node name="BonePile7" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(1.20964, 0, 0.109123, 0, 1.21455, 0, -0.109123, 0, 1.20964, -32.3276, -28.0848, 17.8752)
+
+[node name="BonePile8" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.798435, 0, -0.90397, 0, 1.20609, 0, 0.90397, 0, 0.798435, -50.2407, -28.1252, 25.6602)
+
+[node name="BonePile9" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.326601, 0, -1.06465, 0, 1.11362, 0, 1.06465, 0, 0.326601, -45.8866, -28.1675, 32.9293)
+
+[node name="BonePile10" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(-0.817753, 0, 0.638429, 0, 1.03745, 0, -0.638429, 0, -0.817753, -38.2221, -28.227, 40.6734)
+
+[node name="BonePile11" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.0859616, 0, -0.937474, 0, 0.941407, 0, 0.937474, 0, 0.0859616, -30.5592, -28.0955, 38.0019)
+
+[node name="DeadTree4" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(0.444438, 0, -1.22167, 0, 1.3, 0, 1.22167, 0, 0.444438, -47, -28.1971, 38)
+
+[node name="DeadTree5" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(-0.668071, 0, -0.744097, 0, 1, 0, 0.744097, 0, -0.668071, -30, -28.1363, 40)
+
+[node name="DeadTree6" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(1.03025, 0, -0.510958, 0, 1.15, 0, 0.510958, 0, 1.03025, -48, -28.0678, 22)
+
+[node name="DeadTree7" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(-0.523356, 0, 0.732188, 0, 0.9, 0, -0.732188, 0, -0.523356, -24, -27.9535, 35)
+
+[node name="DeadTree8" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(1.05371, 0, 0.315733, 0, 1.1, 0, -0.315733, 0, 1.05371, -44, -28.0969, 16)
+
+[node name="SpikyRocks13" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(1.57569, 0, -0.277837, 0, 1.6, 0, 0.277837, 0, 1.57569, -52, -28.2099, 32)
+
+[node name="SpikyRocks14" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.99047, 0, -0.822656, 0, 1.28755, 0, 0.822656, 0, -0.99047, 54, -28.1402, 20)
+
+[node name="SpikyRocks15" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.928408, 0, 0.415841, 0, 1.01728, 0, -0.415841, 0, 0.928408, 30, -28.0702, 4)
+
+[node name="SpikyRocks16" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.831728, 0, -1.02814, 0, 1.32244, 0, 1.02814, 0, 0.831728, 18, -28.022, 20)
+
+[node name="DeadTree9" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, 0.34202, 52, -13.1398, 36)
+
+[node name="BonePile12" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.689365, 0, -0.121554, 0, 0.7, 0, 0.121554, 0, 0.689365, 42, -28.0989, 24)
+
+[node name="DemonObelisk4" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 7.5, -26.8776, 4)
+
+[node name="DemonObelisk5" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 3.75, -26.8744, 10.4952)
+
+[node name="DemonObelisk6" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -3.75, -26.8414, 10.4952)
+
+[node name="DemonObelisk7" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(-1.60812e-16, 0, 1, 0, 1, 0, -1, 0, -1.60812e-16, -7.5, -26.8755, 4)
+
+[node name="DemonObelisk8" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -3.75, -26.7972, -2.49519)
+
+[node name="DemonObelisk9" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 3.75, -26.8104, -2.49519)
+
+[node name="PrisonCage1" parent="Level" instance=ExtResource("12_prison_cage")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -41, -28.0464, -18)
+
+[node name="PrisonCage2" parent="Level" instance=ExtResource("12_prison_cage")]
+transform = Transform3D(0.173648, 0, -0.984808, 0, 1, 0, 0.984808, 0, 0.173648, -43, -28.1226, -10)
+
+[node name="PrisonCage3" parent="Level" instance=ExtResource("12_prison_cage")]
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, -36, -28.0877, -21)
+
+[node name="PrisonCage4" parent="Level" instance=ExtResource("12_prison_cage")]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, -28, -28.1298, -20)
+
+[node name="PrisonCage5" parent="Level" instance=ExtResource("12_prison_cage")]
+transform = Transform3D(0.642788, 0, -0.766044, 0, 1, 0, 0.766044, 0, 0.642788, -44, -28.0174, -19)
+
+[node name="DeadTree10" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(1.08329, 0, -0.191013, 0, 1.1, 0, 0.191013, 0, 1.08329, -48, -28.1291, -6)
+
+[node name="BonePile13" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.35, 0, -0.606218, 0, 0.7, 0, 0.606218, 0, 0.35, -31, -28.1146, -4)
+
+[node name="DemonBanner9" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(5.51091e-17, 0, 0.9, 0, 0.9, 0, -0.9, 0, 5.51091e-17, -26, -28.0676, -15)
+
+[node name="DemonTent1" parent="Level" instance=ExtResource("8_demon_tent")]
+transform = Transform3D(0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, 0.34202, 27.6634, -28.033, -27.7622)
+
+[node name="DemonTent2" parent="Level" instance=ExtResource("8_demon_tent")]
+transform = Transform3D(0.906308, 0, 0.422618, 0, 1, 0, -0.422618, 0, 0.906308, 33.3512, -27.9777, -33.9694)
+
+[node name="DemonTent3" parent="Level" instance=ExtResource("8_demon_tent")]
+transform = Transform3D(0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, 0.984808, 39.9101, -28.0441, -34.8329)
+
+[node name="DemonTent4" parent="Level" instance=ExtResource("8_demon_tent")]
+transform = Transform3D(-0.422618, 0, -0.906308, 0, 1, 0, 0.906308, 0, -0.422618, 47.9694, -28.0682, -19.3512)
+
+[node name="DemonTent5" parent="Level" instance=ExtResource("8_demon_tent")]
+transform = Transform3D(-0.906308, 0, -0.422618, 0, 1, 0, 0.422618, 0, -0.906308, 42.6488, -28.0058, -14.0306)
+
+[node name="DemonTent6" parent="Level" instance=ExtResource("8_demon_tent")]
+transform = Transform3D(-0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, -0.984808, 36.0899, -27.9787, -13.1671)
+
+[node name="DemonBanner10" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(0.307818, 0, 0.845723, 0, 0.9, 0, -0.845723, 0, 0.307818, 31.892, -28.0053, -26.2231)
+
+[node name="DemonBanner11" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(0.845723, 0, -0.307818, 0, 0.9, 0, 0.307818, 0, 0.845723, 40.2231, -28.087, -30.108)
+
+[node name="DemonBanner12" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(-0.307818, 0, -0.845723, 0, 0.9, 0, 0.845723, 0, -0.307818, 44.108, -28.0515, -21.7769)
+
+[node name="DemonBanner13" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(-0.845723, 0, 0.307818, 0, 0.9, 0, -0.307818, 0, -0.845723, 35.7769, -27.9497, -17.892)
+
+[node name="CampAltar" parent="Level" instance=ExtResource("2_blood_altar")]
+transform = Transform3D(0.388909, 0, 0.388909, 0, 0.55, 0, -0.388909, 0, 0.388909, 44.364, -28.0213, -17.636)
+
+[node name="BonePile14" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 53, -28.1077, -22)
+
+[node name="DemonGate" parent="Level" instance=ExtResource("6_demon_gate")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, -28.3121, -50)
+
+[node name="FortressWall1" parent="Level" instance=ExtResource("9_fortress_wall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -14, -28.5992, -50)
+
+[node name="FortressWall2" parent="Level" instance=ExtResource("9_fortress_wall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -22, -6.9454, -50)
+
+[node name="FortressWall3" parent="Level" instance=ExtResource("9_fortress_wall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -28.4693, -50)
+
+[node name="FortressWall4" parent="Level" instance=ExtResource("9_fortress_wall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, -4.70179, -50)
+
+[node name="DemonBanner14" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -8, -28.0059, -43)
+
+[node name="DemonBanner15" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 8, -27.9445, -43)
+
+[node name="SpikyRocks17" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.660397, 0, 1.06792, 0, 1.25562, 0, -1.06792, 0, 0.660397, -11, -28.0022, -30)
+
+[node name="SpikyRocks18" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.625954, 0, -0.983021, 0, 1.1654, 0, 0.983021, 0, 0.625954, 12, -27.9684, -34)
+
+[node name="SpikyRocks19" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.916238, 0, 0.997555, 0, 1.35448, 0, -0.997555, 0, 0.916238, -13, -28.0387, -22)
+
+[node name="SpikyRocks20" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.354544, 0, 1.02144, 0, 1.08122, 0, -1.02144, 0, 0.354544, 13, -27.9688, -18)
+
+[node name="DeadTree11" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 10, -28.0092, -26)
+
+[node name="DemonBanner16" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -12, -28.0439, -60)
+
+[node name="DemonBanner17" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 12, -27.957, -60)
+
+[node name="DemonBanner18" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -20, -28.1804, -70)
+
+[node name="DemonBanner19" parent="Level" instance=ExtResource("5_demon_banner")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 20, -28.08, -70)
+
+[node name="DemonObelisk10" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.606204, 0, 0.795309, 0, 1, 0, -0.795309, 0, 0.606204, -25, -24.9569, -66)
+
+[node name="DemonObelisk11" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(-0.706023, 0, -0.708189, 0, 1, 0, 0.708189, 0, -0.706023, 24, -28.1545, -86)
+
+[node name="DemonObelisk12" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(-0.208868, 0, 0.977944, 0, 1, 0, -0.977944, 0, -0.208868, 26, -28.0806, -72)
+
+[node name="DemonObelisk13" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.651798, 0, -0.758393, 0, 1, 0, 0.758393, 0, 0.651798, -24, -15.82, -100)
+
+[node name="DemonObelisk14" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.983789, 0, 0.179331, 0, 1, 0, -0.179331, 0, 0.983789, 18, -28.1535, -108)
+
+[node name="BonePile15" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(-0.795896, 0, 0.605433, 0, 1, 0, -0.605433, 0, -0.795896, 22, -27.8059, -62)
+
+[node name="BonePile16" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(-0.170602, 0, 0.98534, 0, 1, 0, -0.98534, 0, -0.170602, -28, -27.3294, -84)
+
+[node name="BonePile17" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(0.238234, 0, -0.971208, 0, 1, 0, 0.971208, 0, 0.238234, 28, -22.2912, -94)
+
+[node name="SpikyRocks21" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-1.03702, 0, 0.940528, 0, 1.4, 0, -0.940528, 0, -1.03702, -26, -5.47523, -58)
+
+[node name="SpikyRocks22" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-1.2231, 0, 0.681186, 0, 1.4, 0, -0.681186, 0, -1.2231, 27, -8.13649, -58)
+
+[node name="BloodAltar" parent="Level" instance=ExtResource("2_blood_altar")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -16, -26.9672, -87)
+
+[node name="PatriarchThrone" parent="Level" instance=ExtResource("11_patriarch_throne")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, -28.251, -99)
+
+[node name="HeartPool" parent="Level" instance=ExtResource("10_heart_pool")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -72, -28.1286, -60)
+
+[node name="SpikyRocks23" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-1.09223, 0, 0.705002, 0, 1.3, 0, -0.705002, 0, -1.09223, -80, -28.1836, -60)
+
+[node name="SpikyRocks24" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.761133, 0, -0.927727, 0, 1.2, 0, 0.927727, 0, -0.761133, -64, -28.1126, -62)
+
+[node name="SpikyRocks25" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.125727, 0, 0.891175, 0, 0.9, 0, -0.891175, 0, -0.125727, -66, -28.0042, -46)
+
+[node name="SpikyRocks26" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.542884, 0, -0.839808, 0, 1, 0, 0.839808, 0, -0.542884, -80, -28.2195, -48)
+
+[node name="SpikyRocks27" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.309047, 0, -1.05569, 0, 1.1, 0, 1.05569, 0, -0.309047, -59, -21.9166, -30)
+
+[node name="DeadTree12" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(-0.751754, 0, 0.273616, 0, 0.8, 0, -0.273616, 0, -0.751754, -82, -28.233, -52)
+
+[node name="DemonObelisk15" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(-0.564642, 0, -0.825336, 0, 1, 0, 0.825336, 0, -0.564642, 95.9674, -46.1922, -55.8127)
+
+[node name="DemonObelisk16" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(-0.959425, 0, 0.281964, 0, 1, 0, -0.281964, 0, -0.959425, 79.9115, -46.1294, -50.0883)
+
+[node name="DemonObelisk17" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(-0.0283147, 0, 0.999599, 0, 1, 0, -0.999599, 0, -0.0283147, 69.5058, -46.0379, -63.5894)
+
+[node name="DemonObelisk18" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.941925, 0, 0.335822, 0, 1, 0, -0.335822, 0, 0.941925, 79.1306, -45.9805, -77.6579)
+
+[node name="DemonObelisk19" parent="Level" instance=ExtResource("7_demon_obelisk")]
+transform = Transform3D(0.610457, 0, -0.79205, 0, 1, 0, 0.79205, 0, 0.610457, 95.4847, -46.1049, -72.8516)
+
+[node name="SpikyRocks28" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.614199, 0, -1.0309, 0, 1.2, 0, 1.0309, 0, 0.614199, 70, -45.5582, -54)
+
+[node name="SpikyRocks29" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(-0.60409, 0, 1.37298, 0, 1.5, 0, -1.37298, 0, -0.60409, 101, -46.196, -64)
+
+[node name="SpikyRocks30" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.761384, 0, -0.648301, 0, 1, 0, 0.648301, 0, 0.761384, 97, -31.6353, -46)
+
+[node name="SpikyRocks31" parent="Level" instance=ExtResource("13_spiky_rocks")]
+transform = Transform3D(0.198867, 0, -1.2847, 0, 1.3, 0, 1.2847, 0, 0.198867, 78, -45.7542, -80)
+
+[node name="BonePile18" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(1.08853, 0, -0.505087, 0, 1.2, 0, 0.505087, 0, 1.08853, 74, -46.0223, -64)
+
+[node name="BonePile19" parent="Level" instance=ExtResource("3_bone_pile")]
+transform = Transform3D(-0.744234, 0, 0.941338, 0, 1.2, 0, -0.941338, 0, -0.744234, 92, -45.9822, -76)
+
+[node name="DeadTree13" parent="Level" instance=ExtResource("4_dead_tree")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 60, -23.1708, -34)
+
+[node name="Markers" type="Node3D" parent="."]
+
+[node name="PlayerSpawn" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 30, 0.867311, 101)
+
+[node name="TeleportArray" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 38, 0.767144, 106)
+
+[node name="CanyonEntrance" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 33, -27.0159, 47)
+
+[node name="BoneField" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -38, -27.0199, 30)
+
+[node name="BloodPools" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 37, -26.9191, 21)
+
+[node name="ObeliskRing" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, -25.6694, 4)
+
+[node name="PrisonCages" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -34, -26.998, -12)
+
+[node name="DemonCamp" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 38, -26.9014, -24)
+
+[node name="DemonGate" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, -26.9518, -40)
+
+[node name="FortressCourt" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, -26.9789, -64)
+
+[node name="AltarOfBlood" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -16, -25.9391, -79)
+
+[node name="PatriarchThrone" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, -25.651, -99)
+
+[node name="HeartMirror" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -72, -27.028, -49)
+
+[node name="AbyssDepths" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 84, -44.9987, -64)
