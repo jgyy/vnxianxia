@@ -1,9 +1,13 @@
 extends SceneTree
-## Plays the entire main story headlessly through the real game systems:
-## travel by teleport array, talk to NPCs, fight, collect, meditate,
-## interact and watch cinematics — all 100 quests must complete.
+## Plays the main story headlessly through the real game systems: travel by
+## teleport array, talk to NPCs, fight, collect, meditate, interact and watch
+## cinematics — every quest in the range must complete.
 ##
 ##   godot --headless --path godot -s res://tests/walkthrough_test.gd [-- first_quest last_quest]
+##
+## Quest numbers are 1-based (1..1000). CI plays the saga in ten shards, one per
+## volume (1 100, 101 200, ...); a shard starts with the realm, minor stage and
+## rewards of every earlier quest already applied (Game.start_at).
 
 const OBJECTIVE_TIMEOUT := 1800   # physics frames
 
@@ -13,6 +17,7 @@ var gs: Node
 var game: Node
 var counts := {}
 var travels := 0
+var _first := 1
 
 
 func _initialize() -> void:
@@ -42,6 +47,7 @@ func _run() -> void:
 	gs = root.get_node("/root/Game")
 	var args := OS.get_cmdline_user_args()
 	var first := int(args[0]) if args.size() > 0 else 1
+	_first = first
 	var last: int = int(args[1]) if args.size() > 1 else story.quests.size()
 	print("Godot ", Engine.get_version_info().string, " — walkthrough of quests %d..%d" % [first, last])
 	gs.fast = true
@@ -58,7 +64,7 @@ func _run() -> void:
 		if gs.quest_index != last_q:
 			last_q = gs.quest_index
 			var q: Dictionary = gs.quest()
-			print("[%s] ch%d %s  (%s, realm %s)" % [q.id, int(q.chapter), q.title, gs.map_id, story.realm_name(gs.realm)])
+			print("[%s] v%d ch%d %s  (%s, %s)" % [q.id, int(q.get("volume", 1)), int(q.chapter), q.title, gs.map_id, gs.realm_label()])
 			# swap protagonist now and then so both voices/models are exercised
 			if gs.quest_index % 7 == 3:
 				game.player.set_character(1 - gs.character)
@@ -67,8 +73,22 @@ func _run() -> void:
 	var secs := (Time.get_ticks_msec() - t0) / 1000.0
 	print("")
 	print("objectives by type: ", counts, "  teleports: ", travels, "  time: %.1fs" % secs)
+	print("cultivation at the end: %s" % gs.realm_label())
 	if gs.quest_index < last and failures.is_empty():
 		fail("stopped at quest %d" % (gs.quest_index + 1))
+	if failures.is_empty():
+		# the realm and minor stage earned by playing must match the story's rewards
+		var er := 0
+		var es := 0
+		for i in mini(last, story.quests.size()):
+			var r: Dictionary = story.quests[i].rewards
+			if r.get("realm"):
+				er = story.realm_index(r.realm)
+				es = 0
+			elif r.get("stage") != null:
+				es = int(r.stage)
+		if gs.realm != er or gs.stage != es:
+			fail("cultivation is %s, the story says %s" % [gs.realm_label(), story.realm_label(er, es)])
 	if last >= story.quests.size() and not gs.finished():
 		fail("story not finished")
 	if last >= story.quests.size() and gs.realm != story.world.realms.size() - 1:
@@ -79,7 +99,7 @@ func _run() -> void:
 func _finish() -> void:
 	print("")
 	if failures.is_empty():
-		print("WALKTHROUGH PASSED: %d quests completed" % gs.quest_index)
+		print("WALKTHROUGH PASSED: quests %d..%d completed" % [_first, gs.quest_index])
 		quit(0)
 	else:
 		print("WALKTHROUGH FAILED: %d problem(s)" % failures.size())

@@ -108,8 +108,25 @@ func _maps() -> void:
 
 func _story() -> void:
 	print("[story]")
-	check(story.quests.size() == 100, "%d main quests" % story.quests.size())
-	check(story.chapters.size() == 10, "%d chapters" % story.chapters.size())
+	check(story.quests.size() == 1000, "%d main quests" % story.quests.size())
+	check(story.chapters.size() == 100, "%d chapters" % story.chapters.size())
+	check(story.volumes.size() == 10, "%d volumes" % story.volumes.size())
+	check(story.load_msec < 3000, "story.json parsed in %d ms" % story.load_msec)
+	var realms: Array = story.world.realms
+	check(realms.size() == 11 and realms[-1] == "Immortal Ascension", "%d realms" % realms.size())
+	for v in story.volumes:
+		check(v.title == realms[int(v.number)] and (v.chapters as Array).size() == 10,
+			"volume %d: %s, %d chapters" % [int(v.number), v.title, (v.chapters as Array).size()])
+	check(story.quests[-1].rewards.realm == "Immortal Ascension", "the last quest grants Immortal Ascension")
+	check(story.legacy_index(40) == 109 and story.quest(109).title == "Foundation Establishment",
+		"original quest 40 is quest %d of the saga" % (story.legacy_index(40) + 1))
+	var unvoiced := 0
+	for q in story.quests:
+		for o in q.objectives:
+			for l in (o.get("dialogue", []) if o.get("dialogue") else []):
+				if story.voice_path(l) == "":
+					unvoiced += 1
+	check(unvoiced > 1000, "%d text-only lines resolve to no voice file" % unvoiced)
 	var lines := 0
 	var missing := []
 	var all_lines := []
@@ -211,8 +228,39 @@ func _session() -> void:
 	check(ResourceLoader.load(story.voice_path(line)) is AudioStream, "voice line loads as audio")
 	await game.converse([line])
 	check(not game.dialogue.active and player.controls_enabled, "dialogue finishes and returns control")
+	# a text-only line of a new chapter, played at normal speed: it must advance by itself
+	var plain := {"speaker": "senior_wei", "text": "Have you eaten? You should eat.", "voice": null}
+	gs.fast = false
+	var t0 := Time.get_ticks_msec()
+	await game.converse([plain])
+	gs.fast = true
+	var waited := (Time.get_ticks_msec() - t0) / 1000.0
+	check(not game.dialogue.active and waited > 1.0 and waited < 12.0, "text-only line auto-advances (%.1fs)" % waited)
+	# cultivation: minor stages and their labels
+	var r0: int = gs.realm
+	gs.realm = 3
+	gs.stage = 0
+	gs.set_stage(2)
+	check(gs.realm_label() == "Core Formation · Late", "minor stage label: %s" % gs.realm_label())
+	gs.set_realm("Nascent Soul")
+	check(gs.stage == 0 and gs.realm_label() == "Nascent Soul · Early", "a breakthrough resets the minor stage")
+	gs.realm = r0
+	gs.stage = 0
+	# shards start mid-story with realm, stage and rewards applied
+	gs.start_at(story.chapter_first(47))
+	check(gs.realm == 5 and gs.stage == 1, "chapter 47 starts at %s" % gs.realm_label())
+	gs.start_at(0)
 	game.journal.show_page("quest")
 	check(game.journal.open and paused, "journal pauses the game")
+	# every journal page renders, late in the saga too (volumes, chronicle, cultivation)
+	var saved_q: int = gs.quest_index
+	gs.quest_index = story.chapter_first(57) + 3
+	var t_start := Time.get_ticks_msec()
+	for page in ["_show_story", "_show_chronicle", "_show_cultivation", "_show_quest"]:
+		game.journal.call(page)
+		check(game.journal._content.get_parsed_text().length() > 40, "journal %s renders at quest %d" % [page, gs.quest_index + 1])
+	check(Time.get_ticks_msec() - t_start < 2000, "journal pages render in %d ms" % (Time.get_ticks_msec() - t_start))
+	gs.quest_index = saved_q
 	game.journal.close()
 	check(not paused, "journal closes")
 	player.set_character(1)
@@ -220,3 +268,23 @@ func _session() -> void:
 	check(gs.character == 1 and player.anim.has_animation("salute"), "Su Yue swapped in")
 	check(player.play_action("salute"), "salute action plays")
 	game.queue_free()
+	await _title()
+
+
+## The title screen builds its volume -> chapter picker.
+func _title() -> void:
+	print("[title]")
+	var title := (load("res://scenes/title.tscn") as PackedScene).instantiate()
+	root.add_child(title)
+	for i in 5:
+		await physics_frame
+	title._show_volume(5)
+	await process_frame
+	var n := 0
+	for c in title._chapter_list.get_children():
+		if not c.is_queued_for_deletion():
+			n += 1
+	check(n == 10, "chapter select lists %d chapters of volume V" % n)
+	check(title._vol_title.text == "Volume V · Soul Transformation", "volume title: %s" % title._vol_title.text)
+	title.queue_free()
+	await process_frame
