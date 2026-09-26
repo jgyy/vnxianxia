@@ -1,0 +1,184 @@
+extends CanvasLayer
+## Pause menu and quest journal (Esc / J): current quest, chronicle of
+## completed quests, cultivation & inventory, settings, save and quit.
+
+signal quit_to_title
+signal closed
+
+var open := false
+var _content: RichTextLabel
+var _root: Control
+var _settings: VBoxContainer
+
+
+func _ready() -> void:
+	layer = 12
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_root = Control.new()
+	_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_root.theme = UiTheme.get_theme()
+	add_child(_root)
+	var dim := ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.55)
+	_root.add_child(dim)
+	var panel := PanelContainer.new()
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	panel.position = Vector2(-470, -290)
+	panel.custom_minimum_size = Vector2(940, 580)
+	panel.add_theme_stylebox_override("panel", UiTheme.panel(Color(0.05, 0.055, 0.08, 0.95), UiTheme.GOLD, 8, 2))
+	_root.add_child(panel)
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 20)
+	panel.add_child(hb)
+	var menu := VBoxContainer.new()
+	menu.custom_minimum_size.x = 200
+	menu.add_theme_constant_override("separation", 8)
+	hb.add_child(menu)
+	var head := UiTheme.label("Journal", 30, UiTheme.GOLD, 5)
+	menu.add_child(head)
+	for pair in [["Current Quest", _show_quest], ["Chronicle", _show_chronicle],
+			["Cultivation", _show_cultivation], ["Settings", _show_settings], ["Save Game", _save],
+			["Resume", close], ["Quit to Title", _quit]]:
+		var b := Button.new()
+		b.text = pair[0]
+		b.pressed.connect(pair[1])
+		b.pressed.connect(func(): Audio.sfx("ui_click", -6.0))
+		menu.add_child(b)
+	var right := VBoxContainer.new()
+	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hb.add_child(right)
+	_content = RichTextLabel.new()
+	_content.bbcode_enabled = true
+	_content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_content.add_theme_font_size_override("normal_font_size", 18)
+	_content.add_theme_font_size_override("bold_font_size", 22)
+	right.add_child(_content)
+	_settings = VBoxContainer.new()
+	_settings.visible = false
+	right.add_child(_settings)
+	for pair in [["Music", "music_volume"], ["Effects", "sfx_volume"], ["Voices", "voice_volume"]]:
+		var row := HBoxContainer.new()
+		var l := UiTheme.label(pair[0], 18)
+		l.custom_minimum_size.x = 120
+		row.add_child(l)
+		var s := HSlider.new()
+		s.min_value = 0.0
+		s.max_value = 1.0
+		s.step = 0.05
+		s.value = Audio.get(pair[1])
+		s.custom_minimum_size.x = 360
+		var key: String = pair[1]
+		s.value_changed.connect(func(v): Audio.set(key, v))
+		row.add_child(s)
+		_settings.add_child(row)
+	visible = false
+
+
+func toggle(page := "quest") -> void:
+	if open:
+		close()
+	else:
+		show_page(page)
+
+
+func show_page(page := "quest") -> void:
+	open = true
+	visible = true
+	get_tree().paused = true
+	Audio.sfx("ui_open", -6.0)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	match page:
+		"chronicle":
+			_show_chronicle()
+		_:
+			_show_quest()
+
+
+func close() -> void:
+	if not open:
+		return
+	open = false
+	visible = false
+	get_tree().paused = false
+	Audio.sfx("ui_close", -6.0)
+	closed.emit()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if open and (event.is_action_pressed("pause") or event.is_action_pressed("journal")):
+		close()
+		get_viewport().set_input_as_handled()
+
+
+func _page(text: String) -> void:
+	_settings.visible = false
+	_content.visible = true
+	_content.text = text
+
+
+func _show_quest() -> void:
+	var q := Game.quest()
+	if q.is_empty():
+		_page("[b]The saga is complete.[/b]\n\nYou have ascended. The realms are yours to wander.")
+		return
+	var ch := Story.chapter(int(q.chapter))
+	var t := "[color=#b8ad96]Chapter %d · %s[/color]\n[b][color=#dcb86b]%d. %s[/color][/b]\n\n%s\n\n" % [
+		int(q.chapter), ch.get("title", ""), int(q.number), q.title, Story.fill(q.summary)]
+	var objs: Array = q.objectives
+	for i in objs.size():
+		var o: Dictionary = objs[i]
+		var mark := "[color=#73e6c7]+[/color]" if i < Game.objective_index else ("»" if i == Game.objective_index else "·")
+		var where := "" if o.map == Game.map_id else "  [color=#8f8a80](%s)[/color]" % Story.map_name(o.map)
+		var col := "#8f8a80" if i < Game.objective_index else ("#f5eedb" if i == Game.objective_index else "#b8ad96")
+		t += "%s [color=%s]%s[/color]%s\n" % [mark, col, Story.fill(o.text), where]
+	var r: Dictionary = q.rewards
+	t += "\n[color=#b8ad96]Rewards:[/color] %d cultivation" % int(r.get("xp", 0))
+	for item in r.get("items", {}):
+		t += " · %s ×%d" % [Story.item_name(item), int(r.items[item])]
+	if r.get("realm"):
+		t += " · [color=#dcb86b]Breakthrough: %s[/color]" % r.realm
+	_page(t)
+
+
+func _show_chronicle() -> void:
+	var t := "[b][color=#dcb86b]Chronicle[/color][/b]\n"
+	for c in Story.chapters:
+		var n := int(c.number)
+		var first := (n - 1) * 10
+		if first > Game.quest_index:
+			t += "\n[color=#6f6a60]Chapter %d · ???[/color]" % n
+			continue
+		t += "\n[b]Chapter %d · %s[/b]\n" % [n, c.title]
+		for i in range(first, mini(first + 10, Game.quest_index + 1)):
+			var q := Story.quest(i)
+			var done := i < Game.quest_index
+			t += "   %s %d. %s\n" % ["[color=#73e6c7]+[/color]" if done else "»", int(q.number), q.title]
+	_page(t)
+
+
+func _show_cultivation() -> void:
+	var t := "[b][color=#dcb86b]%s[/color][/b]\nCultivation %d\n\nVitality %d · Qi %d · Palm strike %d · Qi blast %d\n\n[b]Inventory[/b]\n" % [
+		Story.realm_name(Game.realm), Game.xp, int(Game.max_hp()), int(Game.max_qi()),
+		int(Game.strike_damage()), int(Game.blast_damage())]
+	if Game.inventory.is_empty():
+		t += "[color=#8f8a80]Empty[/color]"
+	for item in Game.inventory:
+		t += "%s ×%d\n" % [Story.item_name(item), int(Game.inventory[item])]
+	_page(t)
+
+
+func _show_settings() -> void:
+	_content.visible = false
+	_settings.visible = true
+
+
+func _save() -> void:
+	Game.save()
+	_page("[b]Progress saved.[/b]\n\nThe sect's record keeper nods and dips the brush.")
+
+
+func _quit() -> void:
+	Game.save()
+	close()
+	quit_to_title.emit()

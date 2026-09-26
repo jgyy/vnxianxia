@@ -6,10 +6,16 @@ config_version=5
 [application]
 
 config/name="VN Xianxia - Azure Cloud Sect"
-config/description="Roam a mountain-top xianxia sect with procedurally generated Blender characters."
-run/main_scene="res://scenes/main.tscn"
+config/description="A xianxia saga in 100 main quests with procedurally generated Blender characters, maps, music and voices."
+run/main_scene="res://scenes/title.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Story="*res://scripts/autoload/story.gd"
+Game="*res://scripts/autoload/game_state.gd"
+Audio="*res://scripts/autoload/audio.gd"
 
 [display]
 

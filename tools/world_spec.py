@@ -215,3 +215,35 @@ REALMS = [
 ]
 
 OBJECTIVE_TYPES = ["talk", "reach", "defeat", "collect", "meditate", "interact", "cinematic"]
+
+
+def as_dict():
+    return {
+        "maps": {k: {"name": v["name"], "music": v["music"], "markers": sorted(v["markers"])}
+                 for k, v in MAPS.items()},
+        "humanoid_anims": HUMANOID_ANIMS,
+        "creature_anims": CREATURE_ANIMS,
+        "models": sorted(MODELS),
+        "enemies": ENEMIES,
+        "bosses": sorted(BOSSES),
+        "items": ITEMS,
+        "props": PROPS,
+        "realms": REALMS,
+    }
+
+
+if __name__ == "__main__":
+    # python tools/world_spec.py [--check]  ->  godot/data/world.json for the runtime
+    import json
+    import sys
+    from pathlib import Path
+    out = Path(__file__).resolve().parents[1] / "godot" / "data" / "world.json"
+    text = json.dumps(as_dict(), indent=1, sort_keys=True) + "\n"
+    if "--check" in sys.argv:
+        if not out.exists() or out.read_text() != text:
+            sys.exit(f"{out} is out of date: run python tools/world_spec.py")
+        print("world.json up to date")
+    else:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text)
+        print(f"wrote {out}")

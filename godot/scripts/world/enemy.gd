@@ -1,0 +1,259 @@
+class_name Enemy
+extends CharacterBody3D
+## Data-driven enemy: chases the player, attacks in range, flinches, dies.
+
+signal died(enemy: Enemy)
+signal aggroed(enemy: Enemy)
+
+## kind -> stats. model: GLB under res://assets/characters ("player" = shadow clone).
+const STATS := {
+	"spirit_wolf": {"name": "Spirit Wolf", "model": "spirit_wolf", "hp": 45, "dmg": 6, "speed": 4.6, "range": 1.9, "cd": 1.6, "hit_t": 0.35, "sfx": "wolf_growl"},
+	"corrupted_wolf": {"name": "Corrupted Wolf", "model": "spirit_wolf", "hp": 75, "dmg": 10, "speed": 4.8, "range": 1.9, "cd": 1.5, "hit_t": 0.35, "tint": Color(0.75, 0.3, 0.33), "glow": Color(1, 0.2, 0.1), "sfx": "wolf_growl"},
+	"wolf_king": {"name": "Silvermoon Wolf King", "model": "spirit_wolf", "hp": 420, "dmg": 15, "speed": 5.2, "range": 2.8, "cd": 1.4, "hit_t": 0.35, "scale": 1.7, "tint": Color(1.1, 1.1, 1.2), "sfx": "wolf_howl"},
+	"bandit": {"name": "Bandit", "model": "bandit", "hp": 60, "dmg": 8, "speed": 3.4, "range": 1.6, "cd": 1.5, "hit_t": 0.4},
+	"bandit_chief": {"name": "Bandit Chief Iron Fang", "model": "bandit", "hp": 520, "dmg": 16, "speed": 3.8, "range": 1.8, "cd": 1.3, "hit_t": 0.4, "scale": 1.15, "tint": Color(0.7, 0.55, 0.5)},
+	"training_puppet": {"name": "Training Puppet", "model": "stone_golem", "hp": 30, "dmg": 3, "speed": 2.2, "range": 1.8, "cd": 2.0, "hit_t": 0.4, "scale": 0.72, "tint": Color(0.95, 0.72, 0.5), "sfx": "golem_step"},
+	"sparring_disciple": {"name": "Sparring Disciple", "model": "disciple_male", "hp": 60, "dmg": 6, "speed": 3.4, "range": 1.6, "cd": 1.5, "hit_t": 0.4},
+	"tournament_champion": {"name": "Tournament Champion", "model": "disciple_male", "hp": 480, "dmg": 14, "speed": 4.0, "range": 1.7, "cd": 1.2, "hit_t": 0.4, "tint": Color(0.75, 0.8, 1.0)},
+	"demon_cultivator": {"name": "Blood Moon Cultivator", "model": "demon_cultivator", "hp": 95, "dmg": 12, "speed": 3.6, "range": 1.7, "cd": 1.4, "hit_t": 0.4, "sfx": "demon_laugh_ish"},
+	"blood_guard": {"name": "Blood Guard", "model": "demon_cultivator", "hp": 150, "dmg": 16, "speed": 3.4, "range": 1.8, "cd": 1.4, "hit_t": 0.4, "scale": 1.08, "tint": Color(0.7, 0.5, 0.5)},
+	"demon_elder": {"name": "Demon Elder", "model": "demon_cultivator", "hp": 850, "dmg": 20, "speed": 3.8, "range": 1.9, "cd": 1.2, "hit_t": 0.4, "scale": 1.12, "tint": Color(0.6, 0.45, 0.65)},
+	"blood_patriarch": {"name": "The Blood Moon Patriarch", "model": "blood_patriarch", "hp": 1700, "dmg": 26, "speed": 3.9, "range": 2.1, "cd": 1.1, "hit_t": 0.4},
+	"stone_golem": {"name": "Stone Golem", "model": "stone_golem", "hp": 160, "dmg": 18, "speed": 2.3, "range": 2.2, "cd": 2.0, "hit_t": 0.45, "sfx": "golem_rumble"},
+	"ancient_guardian": {"name": "Ancient Guardian", "model": "stone_golem", "hp": 950, "dmg": 24, "speed": 2.6, "range": 3.4, "cd": 1.8, "hit_t": 0.45, "scale": 2.0, "sfx": "golem_rumble"},
+	"jiao_serpent": {"name": "Jiao, the Flood Dragon", "model": "jiao_serpent", "hp": 1500, "dmg": 24, "speed": 3.0, "range": 5.5, "cd": 1.8, "hit_t": 0.6, "radius": 1.6, "sfx": "serpent_roar"},
+	"heart_demon": {"name": "Heart Demon", "model": "player", "hp": 1100, "dmg": 22, "speed": 4.4, "range": 1.7, "cd": 1.0, "hit_t": 0.4},
+}
+const GRAVITY := 13.0
+const AGGRO := 16.0
+
+var kind := ""
+var stats: Dictionary = {}
+var hp := 1.0
+var max_hp := 1.0
+var dead := false
+var boss := false
+var radius := 0.45
+var height := 1.8
+var home := Vector3.ZERO
+var model: Node3D
+var anim: AnimationPlayer
+var target: Node3D
+var _cooldown := 0.5
+var _lock := 0.0
+var _strike := -1.0
+var _aggro := false
+var _hits := 0
+var _bar_bg: MeshInstance3D
+var _bar: MeshInstance3D
+var _bar_mesh: QuadMesh
+
+
+static func create(enemy_kind: String, is_boss := false) -> Enemy:
+	var e := Enemy.new()
+	e.kind = enemy_kind
+	e.boss = is_boss
+	return e
+
+
+func _ready() -> void:
+	stats = STATS.get(kind, STATS["bandit"])
+	add_to_group("enemies")
+	collision_layer = 4
+	collision_mask = 1
+	var sc: float = stats.get("scale", 1.0)
+	max_hp = float(stats.hp)
+	hp = max_hp
+	radius = stats.get("radius", 0.4) * sc
+	height = 1.8 * sc
+	var shape := CollisionShape3D.new()
+	var cap := CapsuleShape3D.new()
+	cap.radius = minf(radius, 0.8)
+	cap.height = maxf(height, cap.radius * 2.0 + 0.1)
+	shape.shape = cap
+	shape.position.y = cap.height * 0.5
+	add_child(shape)
+	var path: String = stats.model
+	if path == "player":
+		path = "cultivator_male" if Game.character == 0 else "cultivator_female"
+	model = (load("res://assets/characters/%s.glb" % path) as PackedScene).instantiate()
+	model.scale = Vector3.ONE * sc
+	add_child(model)
+	if stats.model == "player":
+		ActorLook.shadow(model)
+	elif stats.has("tint"):
+		ActorLook.recolor(model, stats.tint, stats.get("glow", Color.BLACK))
+	else:
+		ActorLook.apply(model)
+	anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	if anim:
+		ActorLook.loop_anims(anim)
+		anim.play("idle")
+		anim.seek(randf() * 2.0)
+	if not boss:
+		_make_bar()
+	home = global_position
+
+
+func display_name() -> String:
+	return stats.get("name", kind.capitalize())
+
+
+func _make_bar() -> void:
+	var bg := QuadMesh.new()
+	bg.size = Vector2(0.9, 0.09)
+	_bar_bg = MeshInstance3D.new()
+	_bar_bg.mesh = bg
+	_bar_bg.material_override = _bar_mat(Color(0, 0, 0, 0.6))
+	_bar_mesh = QuadMesh.new()
+	_bar_mesh.size = Vector2(0.86, 0.06)
+	_bar = MeshInstance3D.new()
+	_bar.mesh = _bar_mesh
+	_bar.material_override = _bar_mat(Color(0.85, 0.15, 0.12))
+	_bar.material_override.render_priority = 1
+	for m in [_bar_bg, _bar]:
+		m.position.y = height + 0.35
+		m.visible = false
+		m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(m)
+
+
+func _bar_mat(c: Color) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.albedo_color = c
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	m.no_depth_test = true
+	return m
+
+
+func _update_bar() -> void:
+	if _bar == null:
+		return
+	var f := clampf(hp / max_hp, 0.0, 1.0)
+	_bar_mesh.size.x = 0.86 * f
+	_bar_mesh.center_offset.x = -0.43 * (1.0 - f)
+	_bar.visible = _aggro and not dead
+	_bar_bg.visible = _bar.visible
+
+
+func take_damage(amount: float, _from: Node = null) -> void:
+	if dead:
+		return
+	hp -= amount
+	_hits += 1
+	_set_aggro()
+	Fx.burst(get_parent(), global_position + Vector3.UP * height * 0.6, Color(1.0, 0.85, 0.5), 16, 3.0, 0.035)
+	if hp <= 0.0:
+		_die()
+		return
+	if anim and (not boss or _hits % 4 == 0) and _strike < 0.0:
+		anim.play("hit", 0.05)
+		_lock = 0.35
+	_update_bar()
+
+
+func _set_aggro() -> void:
+	if not _aggro:
+		_aggro = true
+		aggroed.emit(self)
+		if stats.has("sfx"):
+			Audio.sfx(stats.sfx, -4.0)
+
+
+func _die() -> void:
+	dead = true
+	hp = 0.0
+	remove_from_group("enemies")
+	_update_bar()
+	set_deferred("collision_layer", 0)
+	if anim:
+		anim.play("death", 0.1)
+		anim.speed_scale = 1.0
+	Audio.sfx("enemy_death", -4.0 if not boss else 0.0)
+	Fx.burst(get_parent(), global_position + Vector3.UP * height * 0.5, Color(0.6, 0.9, 1.0), 60 if boss else 30, 4.0)
+	died.emit(self)
+	var tw := create_tween()
+	tw.tween_interval(3.0 if not Game.fast else 0.0)
+	tw.tween_property(self, "scale", Vector3.ONE * 0.01, 0.6)
+	tw.tween_callback(queue_free)
+
+
+func _physics_process(delta: float) -> void:
+	if not is_on_floor():
+		velocity.y -= GRAVITY * delta
+	else:
+		velocity.y = -0.5
+	if dead:
+		velocity.x = 0
+		velocity.z = 0
+		move_and_slide()
+		return
+	if target == null or not is_instance_valid(target):
+		target = get_tree().get_first_node_in_group("player") as Node3D
+	var to := Vector3.ZERO
+	var dist := 999.0
+	var player_ok: bool = target != null and not target.dead and target.controls_enabled
+	if player_ok:
+		to = target.global_position - global_position
+		to.y = 0
+		dist = to.length()
+		if dist < AGGRO or (_aggro and dist < AGGRO * 2.5):
+			_set_aggro()
+	_cooldown -= delta
+	_lock -= delta
+	if _strike >= 0.0:
+		_strike -= delta
+		if _strike < 0.0 and player_ok and dist < float(stats.range) + 0.9 + radius:
+			target.take_damage(float(stats.dmg), self)
+	var want := Vector3.ZERO
+	var reach: float = float(stats.range) + radius * 0.5
+	if _aggro and player_ok and _lock <= 0.0:
+		_face(to, delta)
+		if dist > reach:
+			want = to.normalized() * float(stats.speed)
+		elif _cooldown <= 0.0:
+			_attack()
+	elif _aggro and not player_ok:
+		_aggro = false if target == null or target.dead else _aggro
+	# keep a little space from other enemies
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if e != self:
+			var d: Vector3 = global_position - e.global_position
+			d.y = 0
+			var min_d: float = radius + e.radius + 0.4
+			if d.length() < min_d and d.length() > 0.01:
+				want += d.normalized() * 1.5
+	velocity.x = move_toward(velocity.x, want.x, 20.0 * delta)
+	velocity.z = move_toward(velocity.z, want.z, 20.0 * delta)
+	move_and_slide()
+	if anim and _lock <= 0.0 and _strike < 0.0:
+		var planar := Vector2(velocity.x, velocity.z).length()
+		var a := "idle"
+		if planar > 2.5:
+			a = "run"
+		elif planar > 0.2:
+			a = "walk"
+		if anim.current_animation != a:
+			anim.play(a, 0.2)
+	_update_bar()
+
+
+func _face(to: Vector3, delta: float) -> void:
+	if to.length() > 0.01:
+		rotation.y = lerp_angle(rotation.y, atan2(to.x, to.z), clampf(8.0 * delta, 0, 1))
+
+
+func _attack() -> void:
+	_cooldown = float(stats.cd) * randf_range(0.85, 1.2)
+	if anim and anim.has_animation("attack"):
+		anim.play("attack", 0.1)
+		_lock = anim.get_animation("attack").length * 0.8
+	_strike = float(stats.hit_t)
+	if kind.contains("wolf"):
+		Audio.sfx("wolf_attack", -6.0)
+	elif stats.model == "stone_golem":
+		Audio.sfx("golem_step", -4.0)
+	else:
+		Audio.sfx("sword_swing", -8.0, 0.85)

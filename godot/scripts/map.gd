@@ -66,12 +66,55 @@ func marker_position(marker: String) -> Vector3:
 	return ground_at(m.global_position)
 
 
-## Snap a point to the first collider below it (searching from 6 m above).
-func ground_at(p: Vector3, up := 6.0, down := 60.0) -> Vector3:
+## True when the marker has walkable ground within reach below it.
+func marker_grounded(marker: String) -> bool:
+	var m := get_node_or_null("Markers/" + marker) as Node3D
+	if m == null:
+		return false
 	var space := get_world_3d().direct_space_state
-	var q := PhysicsRayQueryParameters3D.create(p + Vector3.UP * up, p + Vector3.DOWN * down)
+	var q := PhysicsRayQueryParameters3D.create(m.global_position + Vector3.UP * 1.5, m.global_position + Vector3.DOWN * 60.0)
 	q.collision_mask = 1
-	var hit := space.intersect_ray(q)
-	if hit.is_empty():
-		return p
-	return hit.position
+	q.hit_back_faces = false
+	return not space.intersect_ray(q).is_empty()
+
+
+## Snap a point to the ground below it. Probes from just above the point first
+## (so tree canopies and roofs overhead are ignored), then from higher up in
+## case the point is buried in a slope.
+func ground_at(p: Vector3, up := 1.5, down := 60.0) -> Vector3:
+	var space := get_world_3d().direct_space_state
+	for start in [up, 8.0]:
+		var q := PhysicsRayQueryParameters3D.create(p + Vector3.UP * start, p + Vector3.DOWN * down)
+		q.collision_mask = 1
+		q.hit_back_faces = false
+		var hit := space.intersect_ray(q)
+		if not hit.is_empty():
+			return hit.position
+	return p
+
+
+## True when a standing capsule fits at a ground point without touching level geometry.
+func is_open(p: Vector3, radius := 0.4) -> bool:
+	var shape := CapsuleShape3D.new()
+	shape.radius = radius
+	shape.height = 1.7
+	var q := PhysicsShapeQueryParameters3D.new()
+	q.shape = shape
+	q.transform = Transform3D(Basis(), p + Vector3.UP * 0.95)
+	q.collision_mask = 1
+	return get_world_3d().direct_space_state.intersect_shape(q, 1).is_empty()
+
+
+## A walkable, uncluttered spot near `center`, trying the preferred polar
+## position first and then spiralling outward/inward until one fits.
+func open_spot(center: Vector3, angle: float, dist: float) -> Vector3:
+	for k in 24:
+		var a := angle + k * 2.39996
+		var d := dist if k < 8 else lerpf(1.0, dist + 3.0, fmod(k * 0.37, 1.0))
+		var cand := center + Vector3(cos(a) * d, 0, sin(a) * d)
+		var g := ground_at(cand)
+		if g == cand or absf(g.y - center.y) > 2.0:
+			continue
+		if is_open(g):
+			return g
+	return center

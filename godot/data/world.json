@@ -1,0 +1,223 @@
+{
+ "bosses": [
+  "ancient_guardian",
+  "bandit_chief",
+  "blood_patriarch",
+  "demon_elder",
+  "heart_demon",
+  "jiao_serpent",
+  "tournament_champion",
+  "wolf_king"
+ ],
+ "creature_anims": {
+  "jiao_serpent": [
+   "idle",
+   "walk",
+   "run",
+   "attack",
+   "hit",
+   "death"
+  ],
+  "spirit_wolf": [
+   "idle",
+   "walk",
+   "run",
+   "attack",
+   "hit",
+   "death"
+  ]
+ },
+ "enemies": {
+  "ancient_guardian": "stone_golem",
+  "bandit": "bandit",
+  "bandit_chief": "bandit",
+  "blood_guard": "demon_cultivator",
+  "blood_patriarch": "blood_patriarch",
+  "corrupted_wolf": "spirit_wolf",
+  "demon_cultivator": "demon_cultivator",
+  "demon_elder": "demon_cultivator",
+  "heart_demon": "player",
+  "jiao_serpent": "jiao_serpent",
+  "sparring_disciple": "disciple_male",
+  "spirit_wolf": "spirit_wolf",
+  "stone_golem": "stone_golem",
+  "tournament_champion": "disciple_male",
+  "training_puppet": "stone_golem",
+  "wolf_king": "spirit_wolf"
+ },
+ "humanoid_anims": [
+  "idle",
+  "walk",
+  "run",
+  "salute",
+  "cast",
+  "attack",
+  "hit",
+  "death",
+  "meditate",
+  "talk"
+ ],
+ "items": {
+  "blood_lotus": "Blood Lotus",
+  "cloud_silk": "Cloud Silk",
+  "demon_core": "Demon Core",
+  "jade_slip": "Jade Slip",
+  "lantern_oil": "Lantern Oil",
+  "letter": "Sealed Letter",
+  "medicine": "Medicine Bundle",
+  "phoenix_feather": "Phoenix Feather",
+  "rune_fragment": "Rune Fragment",
+  "spirit_herb": "Spirit Herb",
+  "spirit_stone": "Spirit Stone",
+  "star_iron": "Star Iron",
+  "thunder_crystal": "Thunder Crystal",
+  "wolf_fang": "Spirit Wolf Fang"
+ },
+ "maps": {
+  "bamboo_forest": {
+   "markers": [
+    "AncientShrine",
+    "BanditCamp",
+    "BanditLookout",
+    "Clearing",
+    "ForestPath",
+    "HerbGrove",
+    "HermitHut",
+    "OldBridge",
+    "PlayerSpawn",
+    "RuinsGate",
+    "RuinsInner",
+    "SpiritSpring",
+    "Stream",
+    "TeleportArray",
+    "WolfDen"
+   ],
+   "music": "forest",
+   "name": "Whispering Bamboo Forest"
+  },
+  "blood_abyss": {
+   "markers": [
+    "AbyssDepths",
+    "AltarOfBlood",
+    "BloodPools",
+    "BoneField",
+    "CanyonEntrance",
+    "DemonCamp",
+    "DemonGate",
+    "FortressCourt",
+    "HeartMirror",
+    "ObeliskRing",
+    "PatriarchThrone",
+    "PlayerSpawn",
+    "PrisonCages",
+    "TeleportArray"
+   ],
+   "music": "abyss",
+   "name": "Blood Moon Abyss"
+  },
+  "qingshi_town": {
+   "markers": [
+    "BackAlley",
+    "Farmland",
+    "Graveyard",
+    "Inn",
+    "MagistrateHall",
+    "MainStreet",
+    "MarketSquare",
+    "PlayerSpawn",
+    "Riverside",
+    "TeleportArray",
+    "Temple",
+    "TownGate",
+    "Warehouse",
+    "WatchTower",
+    "Well"
+   ],
+   "music": "town",
+   "name": "Qingshi Town"
+  },
+  "sect": {
+   "markers": [
+    "CliffEdge",
+    "FormationArray",
+    "GateGuardPost",
+    "HallSteps",
+    "HerbGarden",
+    "IncenseBurner",
+    "LotusPond",
+    "MainHall",
+    "MoonGate",
+    "OuterPines",
+    "Pagoda",
+    "Pavilion",
+    "PlayerSpawn",
+    "PlumGarden",
+    "ScholarRock",
+    "SectGate",
+    "StoneBridge",
+    "TeleportArray",
+    "TrainingGround",
+    "WeaponRack"
+   ],
+   "music": "sect",
+   "name": "Azure Cloud Sect"
+  },
+  "sky_isles": {
+   "markers": [
+    "AscensionStair",
+    "CelestialRuins",
+    "CloudGate",
+    "ImmortalGarden",
+    "IsleOfWinds",
+    "JadeBridge",
+    "PlayerSpawn",
+    "SerpentLair",
+    "SpiritVein",
+    "StarPavilion",
+    "TeleportArray",
+    "TribulationPeak"
+   ],
+   "music": "sky",
+   "name": "Celestial Sky Isles"
+  }
+ },
+ "models": [
+  "bandit",
+  "blood_patriarch",
+  "cultivator_female",
+  "cultivator_male",
+  "demon_cultivator",
+  "disciple_female",
+  "disciple_male",
+  "elder_male",
+  "jiao_serpent",
+  "sect_master",
+  "spirit_wolf",
+  "stone_golem",
+  "villager_female",
+  "villager_male"
+ ],
+ "props": {
+  "blood_altar": "blood_altar",
+  "bronze_bell": "bronze_bell",
+  "demon_obelisk": "demon_obelisk",
+  "jade_slip": "jade_slip",
+  "prison_cage": "prison_cage",
+  "seal": null,
+  "spirit_stone": "spirit_stone",
+  "stone_stele": "stone_stele",
+  "teleport_array": "teleport_array",
+  "treasure_chest": "treasure_chest"
+ },
+ "realms": [
+  "Mortal",
+  "Qi Condensation",
+  "Foundation Establishment",
+  "Core Formation",
+  "Nascent Soul",
+  "Soul Transformation",
+  "Void Refinement",
+  "Tribulation Transcendence",
+  "Immortal Ascension"
+ ]
+}
