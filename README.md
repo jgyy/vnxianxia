@@ -23,8 +23,11 @@ The Azure Cloud and Verdant Lotus sects sealed him beneath the Abyss, and the wo
 Now an orphan climbs nine thousand steps to the Azure Cloud with nothing but a mother's jade pendant. The seal is
 weakening, and someone inside the sect is helping the Blood Moon.*
 
-The saga has 1000 main quests: 10 volumes, one per major stage of cultivation from Qi Condensation to Immortal
-Ascension, each of 10 chapters. It has 20 cinematics, 40 named NPCs and 12,769 words of voiced dialogue (813 lines,
+The saga has 1000 main quests: 10 volumes, one per major stage of cultivation from Qi Condensation to Tribulation
+Transcendence, each of 10 chapters, one per minor stage (1st Layer to Great Perfection), from Mortal to Immortal
+Ascension. Every major breakthrough calls down a heavenly tribulation to survive, and 278 moral choices move the hero
+along two axes, Law-Chaos and Good-Evil; elders, juniors, townsfolk and demonic cultivators react to the alignment and
+realm the hero reaches. It has 20 cinematics, 40 named NPCs and 12,769 words of voiced dialogue (813 lines,
 plus male and female takes of every line that names the hero) in the ten original chapters, and 65,000 more words of
 text-only dialogue in the 90 chapters built around them. Play as **Lin Feng** or **Su Yue**; Tab switches between
 them and the dialogue follows. The full plot, the cast and the volume and chapter lists are in
@@ -37,11 +40,11 @@ flowchart LR
     V2 --> V3["III · Core Formation<br/>Blood Beneath the Earth<br/>Abyss · siege · Nine Banners"]
     V3 --> V4["IV · Nascent Soul<br/>Isles Above the Clouds<br/>Sky Isles · soul techniques"]
     V4 --> V5["V · Soul Transformation<br/>The Heart Demon<br/>Elder Mo's sacrifice · the fold"]
-    V5 --> V6["VI · Void Refinement<br/>The Fold in the World<br/>rifts · Rungs of the Ladder"]
-    V6 --> V7["VII · Body Integration<br/>A Body Worth Stealing<br/>Brother Hollow · the Butcher"]
-    V7 --> V8["VIII · Mahayana<br/>The Great Vehicle<br/>conclave of forty sects · Lady Silk"]
-    V8 --> V9["IX · Tribulation Transcendence<br/>Heaven Takes Notice<br/>lesser tribulation · the Seventh Rung"]
-    V9 --> V10["X · Immortal Ascension<br/>The Last Blood Moon<br/>Patriarch · tribulation · the Stair"]
+    V5 --> V6["VI · Spirit Severing<br/>The Fold in the World<br/>rifts · Rungs of the Ladder"]
+    V6 --> V7["VII · Void Refinement<br/>A Body Worth Stealing<br/>Brother Hollow · the Butcher"]
+    V7 --> V8["VIII · Body Integration<br/>The Great Vehicle<br/>conclave of forty sects · Lady Silk"]
+    V8 --> V9["IX · Mahayana<br/>Heaven Takes Notice<br/>lesser tribulation · the Seventh Rung"]
+    V9 --> V10["X · Tribulation Transcendence<br/>The Last Blood Moon<br/>Patriarch · the Stair · Immortal Ascension"]
 ```
 
 ## Characters
@@ -133,6 +136,8 @@ stateDiagram-v2
         Active --> Meditate: press C in the jade circle
         Active --> Interact: stele, chest, altar, cage...
         Active --> Cinematic: letterbox, camera moves, voiced subtitles
+        Active --> Tribulation: storm clouds, lightning volleys, beast waves
+        Talk --> Choice: moral choice (1-4), alignment shifts
     }
     Objective --> Rewards: last objective done
     Rewards --> Objective: next quest (story card, autosave)
@@ -144,10 +149,11 @@ stateDiagram-v2
 | Script | Role |
 |---|---|
 | `autoload/story.gd` | loads `story.json` and `world.json`, fills `{player}`/`{junior}`… tokens, picks `_m`/`_f` voice takes |
-| `autoload/game_state.gd` | quest/objective progress, cultivation realm, stats, inventory, save/load (`user://save.json`) |
+| `autoload/game_state.gd` | quest/objective progress, cultivation realm and minor stage, alignment, choices and flags, stats, inventory, save/load (`user://save.json`) |
 | `autoload/audio.gd` | music cross-fades, SFX pool, voice channel |
 | `game.gd` | threaded map loading behind the loading screen, NPC population by story progress, travel, respawn |
-| `quest_runner.gd` | runs each objective type, spawns what it needs, grants rewards and breakthroughs |
+| `quest_runner.gd` | runs each objective type, spawns what it needs, offers moral choices, grants rewards and breakthroughs |
+| `world/tribulation.gd` | heavenly tribulations: swirling storm clouds, telegraphed lightning volleys, beast and heart-shade waves |
 | `player.gd` · `world/enemy.gd` | third-person controller with palm strikes, qi blasts and meditation; data-driven enemy AI |
 | `ui/*` | HUD, voiced dialogue with portraits, cinematics, loading screen, journal/pause, travel menu |
 

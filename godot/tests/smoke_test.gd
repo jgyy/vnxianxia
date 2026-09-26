@@ -113,7 +113,27 @@ func _story() -> void:
 	check(story.volumes.size() == 10, "%d volumes" % story.volumes.size())
 	check(story.load_msec < 3000, "story.json parsed in %d ms" % story.load_msec)
 	var realms: Array = story.world.realms
-	check(realms.size() == 11 and realms[-1] == "Immortal Ascension", "%d realms" % realms.size())
+	check(realms.size() == 12 and realms[6] == "Spirit Severing" and realms[-1] == "Immortal Ascension",
+		"%d realms (Mortal, ten major stages, Immortal Ascension)" % realms.size())
+	var tribs := 0
+	var choices := 0
+	var cond_lines := 0
+	for q in story.quests:
+		for o in q.objectives:
+			if o.type == "tribulation":
+				tribs += 1
+			if o.get("choices"):
+				choices += 1
+			for l in (o.get("dialogue", []) if o.get("dialogue") else []):
+				if l.get("cond"):
+					cond_lines += 1
+		if q.rewards.get("realm") and q.rewards.realm != "Immortal Ascension":
+			var has := false
+			for o in q.objectives:
+				has = has or o.type == "tribulation"
+			check(has, "%s breaks through with a tribulation" % q.id)
+	check(tribs == 11, "%d tribulations" % tribs)
+	check(choices > 200 and cond_lines > 100, "%d moral choices, %d conditional lines" % [choices, cond_lines])
 	for v in story.volumes:
 		check(v.title == realms[int(v.number)] and (v.chapters as Array).size() == 10,
 			"volume %d: %s, %d chapters" % [int(v.number), v.title, (v.chapters as Array).size()])
@@ -236,20 +256,54 @@ func _session() -> void:
 	gs.fast = true
 	var waited := (Time.get_ticks_msec() - t0) / 1000.0
 	check(not game.dialogue.active and waited > 1.0 and waited < 12.0, "text-only line auto-advances (%.1fs)" % waited)
-	# cultivation: minor stages and their labels
+	# cultivation: ten minor stages per realm and their labels
 	var r0: int = gs.realm
+	var seen := []
+	gs.stage_changed.connect(func(r, st): seen.append([r, st]))
 	gs.realm = 3
-	gs.stage = 0
-	gs.set_stage(2)
-	check(gs.realm_label() == "Core Formation · Late", "minor stage label: %s" % gs.realm_label())
+	gs.stage = 1
+	gs.set_stage(7)
+	check(gs.realm_label() == "Core Formation · 7th Layer (Late)", "minor stage label: %s" % gs.realm_label())
+	gs.set_stage(10)
+	check(gs.realm_label() == "Core Formation · Great Perfection", "great perfection label: %s" % gs.realm_label())
+	var p10: float = gs.power()
 	gs.set_realm("Nascent Soul")
-	check(gs.stage == 0 and gs.realm_label() == "Nascent Soul · Early", "a breakthrough resets the minor stage")
+	check(gs.stage == 1 and gs.realm_label() == "Nascent Soul · 1st Layer (Early)", "a breakthrough starts at the 1st layer")
+	check(gs.power() > p10 and p10 > 3.0, "power grows with minor and major stages (%.1f -> %.1f)" % [p10, gs.power()])
+	check(seen == [[3, 7], [3, 10], [4, 1]], "stage_changed(realm, stage) signals %s" % [seen])
+	check(story.stage_name(3, 4) == "4th Layer" and story.stage_name(0, 3) == "", "Story.stage_name")
 	gs.realm = r0
 	gs.stage = 0
 	# shards start mid-story with realm, stage and rewards applied
 	gs.start_at(story.chapter_first(47))
-	check(gs.realm == 5 and gs.stage == 1, "chapter 47 starts at %s" % gs.realm_label())
+	check(gs.realm == 5 and gs.stage == 6, "chapter 47 starts at %s" % gs.realm_label())
+	gs.start_at(story.chapter_first(52))
+	check(gs.realm == 6 and gs.stage == 1, "chapter 52 starts at %s" % gs.realm_label())
+	# alignment, conditions, choices and a save/load round trip
+	gs.start_at(story.chapter_first(12))
+	check(gs.alignment() == "neutral_neutral" and gs.alignment_name() == "True Neutral", "alignment starts true neutral")
+	gs.shift_alignment(30, -40)
+	check(gs.alignment() == "lawful_evil" and gs.alignment_name() == "Lawful Evil", "alignment moves: %s" % gs.alignment_name())
+	check(gs.cond_ok({"align": "*_evil"}) and not gs.cond_ok({"align": "*_good"}) and gs.cond_ok({"align_law": ">=30"})
+		and gs.cond_ok({"min_realm": "Qi Condensation"}) and not gs.cond_ok({"min_realm": "Core Formation"}),
+		"conditions follow alignment and realm")
+	var lines := [{"speaker": "narrator", "text": "a"}, {"speaker": "narrator", "text": "b", "cond": {"align": "*_good"}},
+		{"speaker": "narrator", "text": "c", "cond": {"align": "lawful_*"}}]
+	check(story.visible_lines(lines).map(func(l): return l.text) == ["a", "c"], "conditional lines are filtered")
+	gs.apply_choice({"align": {"law": -10, "good": 20}, "reward": {"xp": 5, "items": {"medicine": 1}},
+		"flag": "smoke_flag", "attitude": {"senior_han": 1}}, 1)
+	check(gs.flags.has("smoke_flag") and gs.cond_ok({"flag": "smoke_flag"}) and gs.cond_ok({"likes": "senior_han"}),
+		"a choice sets flags and attitudes")
+	var saved: Dictionary = JSON.parse_string(JSON.stringify(gs.save_dict()))
+	var want := [gs.law, gs.good, gs.alignment(), gs.realm, gs.stage, gs.quest_index]
 	gs.start_at(0)
+	gs.load_dict(saved)
+	check([gs.law, gs.good, gs.alignment(), gs.realm, gs.stage, gs.quest_index] == want and gs.flags.has("smoke_flag")
+		and gs.choices.size() == 1, "save/load keeps alignment, flags, choices and cultivation %s" % [want])
+	var pick: int = await game.choose("Smoke?", ["a", "b", "c"])
+	check(pick >= 0 and pick < 3, "a choice is made in fast mode (%d)" % pick)
+	gs.start_at(0)
+	await _tribulation(game, player)
 	game.journal.show_page("quest")
 	check(game.journal.open and paused, "journal pauses the game")
 	# every journal page renders, late in the saga too (volumes, chronicle, cultivation)
@@ -269,6 +323,31 @@ func _session() -> void:
 	check(player.play_action("salute"), "salute action plays")
 	game.queue_free()
 	await _title()
+
+
+## A heavenly tribulation with a wave: meditate through the bolts, strike down the beasts.
+func _tribulation(game: Node, player: CharacterBody3D) -> void:
+	var t = load("res://scripts/world/tribulation.gd").create({"bolts": 4, "waves": [{"enemy": "tribulation_beast", "count": 1, "after": 2}]}, 4)
+	game.map.add_child(t)
+	t.global_position = player.global_position
+	var ok := [false]
+	t.survived.connect(func(): ok[0] = true)
+	var struck := [0]
+	t.volley_struck.connect(func(_d, _n): struck[0] += 1)
+	await physics_frame
+	t.begin(player)
+	for i in 1500:
+		if ok[0]:
+			break
+		for e in t.enemies:
+			if is_instance_valid(e) and not e.dead:
+				e.take_damage(1e9)
+		if not player.meditating and player.is_on_floor():
+			player.start_meditation()
+		await physics_frame
+	check(ok[0] and struck[0] == 4 and player.hp > 0.0, "tribulation survived by meditating (%d volleys, hp %.0f)" % [struck[0], player.hp])
+	player.stop_meditation()
+	t.queue_free()
 
 
 ## The title screen builds its volume -> chapter picker.
