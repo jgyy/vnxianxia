@@ -39,7 +39,7 @@ jobs:
         run: python tools/gen_voices.py --check
 
   blender-build:
-    name: Build assets with headless Blender ${{ env.BPY_VERSION }}
+    name: Build assets with headless Blender (bpy 5.2.2)
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -67,7 +67,7 @@ jobs:
           retention-days: 14
 
   godot-smoke-test:
-    name: Godot ${{ env.GODOT_VERSION }} smoke test & 100-quest walkthrough
+    name: Godot 4.7.2 smoke test & 100-quest walkthrough
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
