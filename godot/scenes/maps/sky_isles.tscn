@@ -658,10 +658,10 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 28.8785, 62, -455.958)
 [node name="SunAltarDais" parent="Level" instance=ExtResource("50_sun_altar")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 215.779, 62, -457.958)
 
-[node name="CloudPier" parent="Level" instance=ExtResource("6_cloud_pier")]
+[node name="CloudPier1" parent="Level" instance=ExtResource("6_cloud_pier")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 109.3, 0, 94.2)
 
-[node name="CloudPier" parent="Level" instance=ExtResource("6_cloud_pier")]
+[node name="CloudPier2" parent="Level" instance=ExtResource("6_cloud_pier")]
 transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 143.5, 0, 72)
 
 [node name="SkyLanterns1" parent="Level" instance=ExtResource("34_sky_lanterns")]

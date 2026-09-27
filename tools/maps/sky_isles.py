@@ -362,8 +362,8 @@ def expand(old, add, markers):
     site("seal_of_heaven", seal, 0, -2, 0, "SealOfHeavenDisc")
     site("sun_altar", sun, 0, -4, 0, "SunAltarDais")
     # --- harbour and wreck, cranes, thunder, storm, swords
-    for (dx, dz, yaw) in ((0, HUGE * 0.9, 0), (HUGE * 0.9, 12, -90)):
-        site("cloud_pier", harbour, dx, dz, yaw, "CloudPier")
+    for k, (dx, dz, yaw) in enumerate(((0, HUGE * 0.9, 0), (HUGE * 0.9, 12, -90))):
+        site("cloud_pier", harbour, dx, dz, yaw, "CloudPier%d" % (k + 1))
     site("sky_lanterns", harbour, 0, 0, 0, None, 1.0, 4.0)
     site("sky_ship_wreck", wreck, 4, 0, 20, "SkyShipWreckHull")
     for k in range(7):
