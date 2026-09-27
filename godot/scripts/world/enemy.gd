@@ -319,9 +319,9 @@ func _animate_gait(planar: float) -> void:
 	var sc := 1.0
 	if _humanoid:
 		if a == "run":
-			sc = clampf(planar / (RUN_AUTHORED * _model_scale), 0.4, 1.8)
+			sc = maxf(planar / (RUN_AUTHORED * _model_scale), 0.05)
 		elif a == "walk":
-			sc = clampf(planar / (WALK_AUTHORED * _model_scale), 0.35, 2.0)
+			sc = maxf(planar / (WALK_AUTHORED * _model_scale), 0.05)
 	elif a == "run":
 		sc = clampf(planar / maxf(float(stats.speed), 0.1), 0.5, 1.5)
 	elif a == "walk":

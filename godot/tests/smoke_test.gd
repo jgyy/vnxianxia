@@ -199,9 +199,16 @@ func _session() -> void:
 	check(game.runner.state in ["active", "busy"], "quest runner active on %s" % gs.quest().get("id", "?"))
 	var start := player.global_position
 	player.scripted_input = Vector2(0, -1)
+	var steps0: int = player.footsteps
 	for i in 50:
 		await physics_frame
 	check(player.current_animation() == "walk", "walk plays when moving (%s)" % player.current_animation())
+	var walk_len: float = player.anim.get_animation("walk").length
+	for i in 120:
+		await physics_frame
+	var want_steps := 2.0 * (170.0 / 60.0) / walk_len
+	check(absf((player.footsteps - steps0) - want_steps) <= 2.0,
+		"footfalls follow the walk cycle (%d in %.1f s, cycle %.2f s)" % [player.footsteps - steps0, 170.0 / 60.0, walk_len])
 	check(absf(player.anim.speed_scale - 1.0) < 0.08,
 		"walk at %.2f m/s plays at speed_scale %.2f (feet planted)" % [Vector2(player.velocity.x, player.velocity.z).length(), player.anim.speed_scale])
 	player.scripted_run = true
@@ -457,7 +464,7 @@ func _stairs() -> void:
 		await physics_frame
 		if e.anim.current_animation in ["walk", "run"]:
 			var authored: float = 4.6 if e.anim.current_animation == "run" else 1.6
-			var want := clampf(Vector2(e.velocity.x, e.velocity.z).length() / authored, 0.35, 2.0)
+			var want := maxf(Vector2(e.velocity.x, e.velocity.z).length() / authored, 0.05)
 			gait_ok = gait_ok and absf(e.anim.speed_scale - want) < 0.05
 		if e.global_position.y > 1.2:
 			break

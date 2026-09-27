@@ -79,7 +79,10 @@ var _strike_at := -1.0
 var _yaw := 0.0
 var _pitch := -0.18
 var _orbiting := false
-var _step_timer := 0.0
+## footfalls played so far (tests)
+var footsteps := 0
+var _step_phase := -1.0
+var _step_clip := ""
 var _invulnerable := 0.0
 var _med_sound: AudioStreamPlayer
 var _jump_buffer := 0.0
@@ -113,6 +116,14 @@ func _ready() -> void:
 	add_child(moves)
 	set_character(Game.character)
 	refill()
+
+
+func _exit_tree() -> void:
+	# the meditation hum is a looping pool player of the Audio autoload: it would
+	# keep playing on the title screen after quitting mid-meditation
+	if _med_sound:
+		_med_sound.stop()
+		_med_sound = null
 
 
 static func setup_input_map() -> void:
@@ -283,7 +294,8 @@ func blast() -> void:
 		qi -= BLAST_COST
 		qi_changed.emit(qi, Game.max_qi())
 		Audio.sfx("qi_charge", -6.0)
-		get_tree().create_timer(0.62 if not Game.fast else 0.0).timeout.connect(_fire_blast)
+		# a game-time timer: pausing (journal) right after casting must not release it behind the menu
+		get_tree().create_timer(0.62 if not Game.fast else 0.0, false).timeout.connect(_fire_blast)
 
 
 func _fire_blast() -> void:
@@ -416,7 +428,10 @@ func place_at(at: Vector3) -> void:
 	global_position = at
 	velocity = Vector3.ZERO
 	_vis_offset = 0.0
+	_air_time = 0.0
 	_apply_visual_offset()
+	if moves:
+		moves.reset_state()
 
 
 func _physics_process(delta: float) -> void:
@@ -556,7 +571,8 @@ static func stride_scale(clip: String, planar: float, model_scale := 1.0) -> flo
 	var authored: float = AUTHORED_SPEED.get(clip, 0.0) * model_scale
 	if authored <= 0.0:
 		return 1.0
-	return clampf(planar / authored, 0.35, 2.0)
+	# no clamp: any other rate slides the feet (a tiny floor only keeps a pose from freezing)
+	return maxf(planar / authored, 0.05)
 
 
 func _update_animation(delta: float) -> void:
@@ -574,18 +590,29 @@ func _update_animation(delta: float) -> void:
 	anim.speed_scale = scale
 	_gait = wanted
 	if wanted != "idle" and is_grounded():
-		_step_timer -= delta
-		if _step_timer <= 0.0:
-			_step_timer = step_interval(wanted, scale)
-			Audio.sfx("footstep_stone", -14.0, randf_range(0.9, 1.1))
+		footstep_tick(wanted)
+	else:
+		_step_phase = -1.0
 
 
-## Seconds between footfalls of a gait clip playing at `scale` (two per cycle).
-func step_interval(clip: String, scale: float) -> float:
-	var l := 1.0
-	if anim and anim.has_animation(clip):
-		l = anim.get_animation(clip).length
-	return clampf(l * 0.5 / maxf(scale, 0.1), 0.2, 0.9)
+## Footfall sounds in time with the feet: two per cycle of the gait clip that is
+## playing (at the start and the middle of the cycle, where the feet plant),
+## whatever its length (it differs per character) and speed_scale.
+func footstep_tick(clip: String, volume_db := -14.0) -> void:
+	if anim == null or anim.current_animation != clip or anim.current_animation_length <= 0.0:
+		_step_phase = -1.0
+		return
+	var ph := fposmod(anim.current_animation_position / anim.current_animation_length, 1.0)
+	if _step_phase >= 0.0 and _step_clip == clip:
+		for mark in [0.0, 0.5]:
+			var crossed: bool = (_step_phase < mark and ph >= mark) if ph >= _step_phase \
+					else (mark > _step_phase or mark <= ph)
+			if crossed:
+				footsteps += 1
+				Audio.sfx("footstep_stone", volume_db, randf_range(0.9, 1.1))
+				break
+	_step_phase = ph
+	_step_clip = clip
 
 
 func current_animation() -> String:

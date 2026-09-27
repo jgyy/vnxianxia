@@ -159,6 +159,20 @@ func on_model(ap: AnimationPlayer) -> void:
 			anim.get_animation(a).loop_mode = Animation.LOOP_LINEAR
 
 
+## Forget any move in progress (ledge hang, climb, dodge, slide, charge,
+## block, queued one-shots): called when the player is teleported.
+func reset_state() -> void:
+	_state = ""
+	_charging = false
+	_blocking = false
+	_block_key = false
+	_gliding = false
+	_motion = Vector3.ZERO
+	_clear_busy()
+	if player and player._action_lock > 1.0 and not player.dead:
+		player._action_lock = 0.0
+
+
 func has(anim_name: String) -> bool:
 	return anim != null and anim.has_animation(anim_name)
 
@@ -473,7 +487,7 @@ func technique(i: int) -> void:
 	player._action_lock = l * 0.7
 	Audio.sfx("qi_charge", -6.0)
 	var delay: float = t[2] / FPS if not Game.fast else 0.0
-	get_tree().create_timer(delay).timeout.connect(_release_technique.bind(i))
+	get_tree().create_timer(delay, false).timeout.connect(_release_technique.bind(i))
 
 
 func _release_technique(i: int) -> void:
@@ -843,7 +857,7 @@ func update_animation(delta: float) -> bool:
 			_loco = "run"
 			return true
 	if not moving and _loco in ["run", "sprint"] and has("run_stop"):
-		play_once("run_stop", 0.12, true)
+		play_once("run_stop", 0.08, true)
 		return true
 	if wanted == "idle":
 		_idle_time += delta
@@ -861,14 +875,13 @@ func update_animation(delta: float) -> bool:
 		wanted = "idle"
 	if anim.current_animation != wanted:
 		var blend := 0.12 if wanted == "block_idle" else (0.25 if wanted.ends_with("idle") else 0.2)
+		if anim.current_animation == "run_start" and wanted in ["run", "sprint"]:
+			blend = 0.0          # run_start ends exactly on run's first frame
 		anim.play(wanted, blend)
 	anim.speed_scale = speed
 	_loco = wanted
 	if moving:
-		player._step_timer -= delta
-		if player._step_timer <= 0.0:
-			player._step_timer = player.step_interval(wanted, speed)
-			Audio.sfx("footstep_stone", -14.0 if not (_crouch or _sneak) else -22.0, randf_range(0.9, 1.1))
+		player.footstep_tick(wanted, -14.0 if not (_crouch or _sneak) else -22.0)
 	return true
 
 
