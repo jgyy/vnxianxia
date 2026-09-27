@@ -33,7 +33,7 @@ def _lash_layout(p: fl.FaceParams, side):
     """Deterministic clump parameters: (s, length, width, splay, curl) for upper and lower lashes."""
     rng = random.Random(p.seed * 7 + (1 if side > 0 else 2))
     out = []
-    n_up, n_lo = 32, 15
+    n_up, n_lo = (42 if p.fem and p.age < 0.3 else 32), 15
     for k in range(n_up):
         s = 0.035 + 0.43 * (k + rng.uniform(0.2, 0.8)) / n_up          # lateral -> medial along the upper lid
         t_fis = 1.0 - 2.0 * s                                           # 1 lateral .. 0 medial
@@ -138,7 +138,8 @@ def brow_cards(p: fl.FaceParams, surf, side):
     centre, half_h = brow_band(p)
     rng = random.Random(p.seed * 13 + (5 if side > 0 else 9))
 
-    n = int(96 * (1.0 + 0.2 * (not p.fem)) * (1 - 0.25 * p.age))
+    # women: fewer, finer, feathered hairs (the soft groomed Korean brow); men: dense and coarse
+    n = int(96 * (1.9 if p.fem else 1.2) * (1 - 0.25 * p.age))
     cards = []                       # per card: list of (x, z, lift), width
     for k in range(n):
         t = min(0.999, (k + rng.random()) / n) ** 1.05
@@ -157,7 +158,7 @@ def brow_cards(p: fl.FaceParams, surf, side):
             q = j / BROW_SEGS
             lift = 0.25 + 0.55 * math.sin(math.pi * min(1.0, q * 0.9)) - 0.25 * q * q
             pts.append((side * (x + d2[0] * length * q), z + d2[1] * length * q, lift))
-        cards.append((pts, rng.uniform(0.7, 1.0), t))
+        cards.append((pts, rng.uniform(0.5, 0.75) if p.fem else rng.uniform(0.7, 1.0), t))
     # put every hair point on the real sculpted surface (cast from the head centre), lifted along the ray
     flat = np.array([q for pts, _, _ in cards for q in pts])
     guess = np.stack([flat[:, 0], surf.front_y(flat[:, 0], flat[:, 1]), flat[:, 1]], axis=-1)

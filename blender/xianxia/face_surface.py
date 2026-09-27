@@ -133,13 +133,14 @@ class HeadSurface:
         zg, zt = p.gonion_z, p.canthus
         # horizontal cross-sections: the front is a superellipse quadrant from the
         # midline (y = mid(z)) to the widest point (x = width, y = mid + depth)
+        rnd = 1.0 if p.fem else 0.0
         self.width = Curve([
             (p.glabella + 30.0, rx * 0.86),
             (p.glabella, rx * 0.88),
             (zt, rx * 0.90),
             (zt - 15.0, p.zygion),
-            (p.subnasale, p.zygion - 5.5),
-            (st, (p.zygion + p.gonion_w) * 0.5 - 8.5),
+            (p.subnasale, p.zygion - 5.5 - 2.5 * rnd),
+            (st, (p.zygion + p.gonion_w) * 0.5 - 8.5 - 3.0 * rnd),
             (zg, p.gonion_w),
             (p.menton + 8.0, p.gonion_w * (0.6 if p.fem else 0.68)),         # V-line taper to the chin
         ])
@@ -165,16 +166,16 @@ class HeadSurface:
         self.flat = Curve([
             (p.glabella + 30.0, 2.0),
             (p.glabella, 2.3),
-            (zt, 2.5),
-            (zt - 16.0, 2.5),
-            (p.subnasale, 2.4),
+            (zt, 2.5 - 0.3 * rnd),                    # rounder female midface: the cheeks
+            (zt - 16.0, 2.5 - 0.4 * rnd),             # turn away sooner, the centre projects
+            (p.subnasale, 2.4 - 0.3 * rnd),
             (st, 1.85),
             (zg, 1.75 if p.fem else 2.0),
             (p.menton + 8.0, 1.6 if p.fem else 1.9),
         ])
         # the mandibular plane (under the jaw), rises from menton to the gonion
         y_men = L["menton"][1]
-        self.jaw_b = 18.0 if p.fem else 13.0          # front-view jaw line: V-line rises faster
+        self.jaw_b = 22.0 if p.fem else 13.0          # front-view jaw line: V-line rises faster
         self.jaw_a = (p.gonion_z - p.menton - self.jaw_b) / (6.0 - y_men)
         self.y_men = y_men
         # lips
@@ -199,7 +200,7 @@ class HeadSurface:
             (n[2] + 8.0, n[1] + 3.0),
             (n[2], n[1]),
             (zr, n[1] + (prn[1] - n[1]) * 0.58 - p.hump),
-            (prn[2] + 5.0, prn[1] + 2.4),
+            (prn[2] + 5.0, prn[1] + (1.5 if p.fem else 2.4)),
             (prn[2], prn[1]),
             (prn[2] - 4.5, prn[1] + 3.2),
             (sn[2] + 1.2, sn[1] - 3.0),
@@ -238,15 +239,17 @@ class HeadSurface:
         xc = p.mouth_w * 0.5
         st, up, lo = self.lips_at(x)
         across = np.clip(1.0 - (ax / (xc + 0.5)) ** 2, 0.0, 1.0)
-        # upper lip: pouts most ~40 % down from the border, rolls back into the stomion
+        # upper lip: most forward just inside the border (labrale superius), sloping down and
+        # back to the stomion, so the vermilion faces the floor and reads as a shaded band;
+        # at the border it steps back onto the white roll
         hu = np.maximum(up - st, 0.3)
         tu = np.clip((z - st) / hu, 0.0, 1.0)
-        pu = np.sin(np.pi * np.clip(tu * 0.82 + 0.1, 0, 1)) ** 0.7 * (1 - 0.35 * tu)
+        pu = sstep(-0.1, 0.78, tu) ** 0.8 * (1 - 0.45 * sstep(0.84, 1.0, tu))
         upper = p.lip_proj * pu * across ** 0.55 * sstep(st - 0.15, st + 0.15, z)
         hl = np.maximum(st - lo, 0.3)
         tl = np.clip((st - z) / hl, 0.0, 1.0)
         pl = np.sin(np.pi * np.clip(tl * 0.8 + 0.12, 0, 1)) ** 0.65
-        lower = (p.lip_proj + 0.3) * pl * across ** 0.5 * sstep(st + 0.15, st - 0.15, z)
+        lower = (p.lip_proj + 0.6) * pl * across ** 0.5 * sstep(st + 0.15, st - 0.15, z)
         verm = self.lip_mask(x, z)
         d = (upper + lower) * verm
         # the white roll: a thin ridge just outside the vermilion border
@@ -282,7 +285,7 @@ class HeadSurface:
         y = yd + prof * hw
         # the tip lobule: two domes (the lower lateral cartilages) and a softer supratip
         dome = gauss(ax, z, p.tip_w * 0.18, zt + 0.3, p.tip_w * 0.32, 4.4)
-        y -= 1.0 * dome
+        y -= (0.7 if p.fem else 1.0) * dome
         y += 0.5 * gauss(ax, z, 0.0, zt + 5.5, 3.0, 2.5) * (p.tip_up > 0)
         # beyond the root and below the base the nose recedes smoothly (keeps the field continuous)
         y += 40.0 * (np.clip(z - (zn + 6.0), 0, None) / 10.0) ** 2
@@ -301,7 +304,7 @@ class HeadSurface:
         r2 = ((ax - cx) / 4.5) ** 2 + ((z - cz) / rz_) ** 2
         tip_y = self.L["pronasale"][1]
         cy = tip_y + 11.0
-        return cy - 7.5 * np.sqrt(np.clip(1.0 - r2, 0.0, None)) + 4.0 * np.clip(r2 - 1.0, 0.0, None)
+        return cy - 6.2 * np.sqrt(np.clip(1.0 - r2, 0.0, None)) + 4.0 * np.clip(r2 - 1.0, 0.0, None)
 
     def eye_dome(self, x, z, extra=0.0):
         """y of the lidded eyeball bulge for both eyes (nan outside)."""
@@ -333,7 +336,7 @@ class HeadSurface:
         y += 2.0 * gauss(ax, z, ecx - 8.0, ecz + 6.5, 6.0, 4.0) * (1.0 - 0.6 * p.fem)   # upper-lid sulcus
         mal = self.L["malar.L"]
         y -= p.malar * gauss(ax, z, mal[0], mal[2], 13.0, 9.0)
-        y -= p.cheek_fat * gauss(ax, z, ecx - 1.0, ecz - 21.0, 16.0, 11.0)
+        y -= p.cheek_fat * gauss(ax, z, ecx - 4.0, ecz - 20.0, 14.0, 10.5)     # the "apple", under the pupil
         y += p.buccal * gauss(ax, z, w * 0.72, self.st_z + 6.0, 11.0, 14.0)
         y += p.tear_trough * gauss(ax, z, ecx - 5.0, ecz - 12.5, 7.0, 2.4) * sstep(ecx + 8, ecx - 2, ax)
         # the chin pad (mentalis), mentolabial sulcus
@@ -407,7 +410,10 @@ class HeadSurface:
         zc = p.menton - 20.0
         ync = 7.0 + 0.012 * (Z - zc)
         grow = 1.0 + 0.18 * sstep(zc, zc - 110.0, Z)            # flares toward the shoulders
-        rx_ = r * 1.09 * grow
+        # a slender female neck: narrow under the jaw (so the mandible, not the neck,
+        # draws the V-line from the front), back to full width at the collar
+        slim = 1.0 - (0.13 if p.fem else 0.03) * sstep(zc - 100.0, zc - 15.0, Z)
+        rx_ = r * 1.09 * grow * slim
         # the nape rises toward the occiput (cervical lordosis), the throat stays put
         ry_ = r * np.where(Y > ync, 1.0 + 0.45 * sstep(zc, zc + 95.0, Z), 0.98) * grow
         a = np.arctan2(X, -(Y - ync))
@@ -418,6 +424,18 @@ class HeadSurface:
         # the throat is flatter than the nape
         d += 2.0 * np.exp(-((X / 18.0) ** 2)) * (Y < ync) * sstep(zc + 10, zc - 20, Z)
         return smax(d, Z - (p.menton + 70.0), 10.0)            # ends inside the skull
+
+    def project(self, P, iters=8, h=0.05):
+        """Pull points (N, 3) near the surface onto it with Newton steps along grad F."""
+        P = np.array(P, np.float64)
+        for _ in range(iters):
+            x, y, z = P[:, 0], P[:, 1], P[:, 2]
+            f = self.F(x, y, z)
+            g = np.stack([(self.F(x + h, y, z) - self.F(x - h, y, z)),
+                          (self.F(x, y + h, z) - self.F(x, y - h, z)),
+                          (self.F(x, y, z + h) - self.F(x, y, z - h))], axis=-1) / (2 * h)
+            P -= (f / np.maximum((g * g).sum(-1), 1e-6))[:, None] * g
+        return P
 
     def F(self, X, Y, Z):
         back = smin(self.F_cranium(X, Y, Z), self.F_neck(X, Y, Z), 18.0)

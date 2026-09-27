@@ -112,7 +112,10 @@ class EyeLids:
         a = np.where(th < 0, R, np.where(u < 0, a_med, self.a_lat))
         q = (1.0 + th / R) ** 2 - (u / a) ** 2 - (w / R) ** 2
         # past the lid ellipsoid's rim the surface folds back behind the globe (a few mm at most)
-        return self.c[1] - R * np.sqrt(np.clip(q, 0.0, None)) + np.minimum(3.0 * R * np.clip(-q, 0.0, None), 5.0)
+        # (medially only ~1.8 mm: the plica / caruncle corner must stay shallow and lit, not a dark pit)
+        # only the conjunctival tuck folds back; skin loops (th > 0) stop at the rim depth
+        cap = np.where(np.asarray(th) > 0, 0.0, np.where(u < 0, 1.8, 5.0))
+        return self.c[1] - R * np.sqrt(np.clip(q, 0.0, None)) + np.minimum(3.0 * R * np.clip(-q, 0.0, None), cap)
 
     def to_head(self, u, w, y):
         """Eye-local frontal coordinates -> head mm."""
@@ -182,11 +185,14 @@ class EyeLids:
             U = [(1.8, -1.7), (0.35, -0.25), (0.0, 0.15), (0.3, 1.55), (1.1, 1.8),
                  (2.4, 2.1 + 0.4 * hood), (3.8, 2.5 + 0.6 * hood), (5.0, 2.9 + 0.5 * hood)]
         else:
+            # the double-eyelid fold: the pretarsal band tucks ~0.8 mm under the skin above it,
+            # which reads as a fine shadow line (the crease) in any top light
             U = [(1.8, -1.7), (0.35, -0.25), (0.0, 0.15), (0.3, 1.55), (0.45 * ch + 0.55, 1.72),
-                 (ch + 0.9 - 0.5 * hood, 1.8), (ch + 1.15 - 0.4 * hood, 1.4 + 0.2 * hood),
+                 (ch + 0.75 - 0.5 * hood, 1.25 + 0.3 * hood), (ch + 1.15 - 0.4 * hood, 1.95 + 0.2 * hood),
                  (ch + 2.3 - 1.0 * hood, 2.85 + 1.0 * hood)]
+        # the aegyo-sal roll: a soft pretarsal pad that fades into the cheek (no hard crease)
         Lw = [(1.8, -1.7), (0.35, -0.25), (0.0, 0.15), (0.25, 1.05), (1.15, 1.72 + 0.55 * a),
-              (2.5, 2.1 + 1.25 * a), (3.9, 1.95 + 0.8 * a), (5.1, 1.75 + 0.1 * p.tear_trough)]
+              (2.5, 2.1 + 1.0 * a), (4.0, 2.0 + 0.55 * a), (5.8, 1.85 + 0.1 * p.tear_trough)]
         out = []
         for (du, tu), (dl, tl) in zip(U, Lw):
             du = np.broadcast_to(du, s.shape)
@@ -213,6 +219,15 @@ class EyeLids:
 # --------------------------------------------------------------------------
 # eyeball meshes (built in head mm, converted by the caller's transform)
 # --------------------------------------------------------------------------
+def _orient(faces, outward):
+    """Flip faces whose normal disagrees with outward(face) (the builders' loops are not
+    consistently wound; refraction, SSS and the engine's back-face culling need it right)."""
+    for fa in faces:
+        fa.normal_update()
+        if fa.normal.dot(outward(fa)) < 0:
+            fa.normal_flip()
+
+
 def _frame(axis):
     f = Vector(axis).normalized()
     up = Vector((0, 0, 1))
@@ -221,12 +236,13 @@ def _frame(axis):
     return f, r, u
 
 
-def eyeball(bm, centre, R, fwd=(0.0, -1.0, 0.0), segs=32, rings=10, uv=None, mats=(0, 1, 2)):
+def eyeball(bm, centre, R, fwd=(0.0, -1.0, 0.0), segs=32, rings=10, uv=None, mats=(0, 1, 2), limbus=LIMBUS):
     """Sclera (slot mats[0]) + iris (mats[1]) + cornea shell (mats[2]) into bm (head mm)."""
     c = Vector(centre)
     f, r, u = _frame(fwd)
+    first = len(bm.faces)
     uvl = uv or bm.loops.layers.uv.verify()
-    lim_ang = math.asin(LIMBUS / R)                   # angular radius of the limbus
+    lim_ang = math.asin(limbus / R)                   # angular radius of the limbus
     # ---- sclera: polar rings from just outside the limbus to 130 deg (the rest sits
     # deep in the orbit behind the lids and is never seen)
     back = math.radians(130.0)
@@ -254,8 +270,8 @@ def eyeball(bm, centre, R, fwd=(0.0, -1.0, 0.0), segs=32, rings=10, uv=None, mat
     irows = []
     for k in range(iris_rings + 1):
         t = k / iris_rings
-        rad = LIMBUS * (1 - t) + PUPIL * t
-        rad = LIMBUS - 0.02 if k == 0 else rad
+        rad = limbus * (1 - t) + PUPIL * t
+        rad = limbus - 0.02 if k == 0 else rad
         dome = 0.35 * math.sin(math.pi * t) + 0.1 * t    # the pupillary zone bulges forward slightly
         groove = -0.18 if k == 1 else 0.0                # limbal groove just inside the edge
         row = []
@@ -280,7 +296,7 @@ def eyeball(bm, centre, R, fwd=(0.0, -1.0, 0.0), segs=32, rings=10, uv=None, mat
             for lp in fa.loops:
                 q = lp.vert.co - c
                 x, y = q.dot(r), q.dot(u)
-                rr = min(math.hypot(x, y), LIMBUS) / LIMBUS * 0.5
+                rr = min(math.hypot(x, y), limbus) / limbus * 0.5
                 ph = math.atan2(y, x)
                 lp[uvl].uv = (0.5 + rr * math.cos(ph), 0.5 + rr * math.sin(ph))
     cap = bm.faces.new(list(reversed(back)))
@@ -297,7 +313,7 @@ def eyeball(bm, centre, R, fwd=(0.0, -1.0, 0.0), segs=32, rings=10, uv=None, mat
             rr = 0.5 * lim_ang / (0.5 * math.pi)
             lp[uvl].uv = (0.5 + rr * math.cos(ph), 0.5 + rr * math.sin(ph))
     # ---- cornea: a corneal cap blended into a thin tear film over the front of the sclera
-    cz = R * math.cos(lim_ang) - math.sqrt(CORNEA_R ** 2 - LIMBUS ** 2)
+    cz = R * math.cos(lim_ang) - math.sqrt(CORNEA_R ** 2 - limbus ** 2)
     film = R + 0.06
     crow = []
     n_c = 10
@@ -325,24 +341,41 @@ def eyeball(bm, centre, R, fwd=(0.0, -1.0, 0.0), segs=32, rings=10, uv=None, mat
         i2 = (i + 1) % segs
         fa = bm.faces.new((tipv, crow[0][i], crow[0][i2]))
         fa.material_index = mats[2]
-    for fa in bm.faces:
+    bm.faces.ensure_lookup_table()
+    mine = [bm.faces[k] for k in range(first, len(bm.faces))]
+    for fa in mine:
         if fa.material_index == mats[2]:
             for lp in fa.loops:
                 q = lp.vert.co - c
                 lp[uvl].uv = (0.5 + q.dot(r) / (2 * R), 0.5 + q.dot(u) / (2 * R))
+    # sclera and cornea face away from the eye centre, the iris (and pupil) faces forward
+    cos_lim = math.cos(lim_ang) - 0.01
+
+    def outward(fa):
+        q = fa.calc_center_median() - c
+        # the iris and the limbus wall (sclera faces inside the limbus cone) face forward
+        if fa.material_index == mats[1] or (fa.material_index == mats[0] and q.normalized().dot(f) > cos_lim):
+            return f
+        return q
+    _orient(mine, outward)
 
 
 def caruncle(bm, lids: EyeLids, mat_index, uv=None):
     """The caruncle / plica: a small wet mound filling the medial canthus behind the lids."""
     uvl = uv or bm.loops.layers.uv.verify()
-    u_c = lids.u_en * 0.82
-    _, wu, wl = lids.margins(np.array([0.06]))
-    w_c = float(wu[0] + wl[0]) * 0.5
-    y_c = float(lids.lid_y(np.array([u_c]), np.array([w_c]), -0.9)[0])
+    # it fills the canthal angle between the globe's silhouette (u = -R) and the medial
+    # canthus, where the fissure would otherwise look into the conjunctival pocket; its
+    # lateral half slips behind the sclera so no pink shows over the white
+    R = lids.R
+    u_c = (lids.u_en - R) * 0.5
+    _, wu, wl = lids.margins(np.array([0.04]))
+    w_c = float(wu[0] + wl[0]) * 0.5 + 0.4
+    y_c = lids.c[1] + 0.8
     ctr = lids.to_head(np.array([u_c]), np.array([w_c]), np.array([y_c]))[0]
-    rad = (2.3, 2.6, 1.6)      # lateral, vertical, depth
+    rad = (abs(lids.u_en) - R) * 0.5 + 0.9, 2.9, 2.0      # lateral, vertical, depth
     n, m = 12, 7
     rows = []
+    first = len(bm.faces)
     for j in range(m + 1):
         th = math.pi * j / m
         row = []
@@ -360,6 +393,9 @@ def caruncle(bm, lids: EyeLids, mat_index, uv=None):
             fa.material_index = mat_index
             for lp in fa.loops:
                 lp[uvl].uv = (0.5, 0.5)
+    bm.faces.ensure_lookup_table()
+    cv = Vector(ctr)
+    _orient([bm.faces[k] for k in range(first, len(bm.faces))], lambda fa: fa.calc_center_median() - cv)
     return ctr
 
 
@@ -372,7 +408,7 @@ def tearline_points(lids: EyeLids, state=None):
     Returns (verts (N, 3) head mm, faces, uvs); a pure function of the lid state."""
     verts, faces, uvs = [], [], []
     M = TEAR_N
-    for lo_s, hi_s, width in ((0.53, 0.985, 0.75), (0.03, 0.47, 0.35)):
+    for lo_s, hi_s, width in ((0.53, 0.985, 0.45), (0.03, 0.47, 0.25)):
         s = np.linspace(lo_s, hi_s, M)
         u, w, _, (nu, nw) = lids.loop(s, state)
         taper = np.sin(np.pi * np.arange(M) / (M - 1)) ** 0.5
@@ -385,5 +421,5 @@ def tearline_points(lids: EyeLids, state=None):
             verts += [pa[k], pb[k]]
             uvs += [(k / (M - 1), 1.0), (k / (M - 1), 0.0)]
         for k in range(M - 1):
-            faces.append((b + 2 * k, b + 2 * k + 1, b + 2 * k + 3, b + 2 * k + 2))
+            faces.append((b + 2 * k, b + 2 * k + 2, b + 2 * k + 3, b + 2 * k + 1))     # facing the viewer
     return np.array(verts), faces, uvs

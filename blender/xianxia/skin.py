@@ -144,6 +144,16 @@ class FacePainter:
         cupid = np.exp(-((f.lon / 0.05) ** 2) - ((f.lat - lm["upper_lip"] - 0.02) / 0.009) ** 2)
         r["upper_lip"] = np.clip(up * 1.6 - cupid * 0.8, 0, 1)
         r["lower_lip"] = np.clip(lo * 1.5, 0, 1)
+        geo = self.cfg.get("_masks")
+        if geo is not None:        # exact masks from the head builder (see face_head.paint_masks)
+            m = {}
+            for k, v in geo(self.pos[self.idx]).items():
+                m[k] = np.zeros(self.cover.shape, np.float32)
+                m[k][self.idx] = v
+            r.update(m)
+        else:
+            r["lip_inner"] = r["upper_lip"] * 0.0
+            r["philtrum"] = r["columns"] = r["liner"] = r["lower_liner"] = r["lip_inner"]
         r["lips"] = np.clip(r["upper_lip"] + r["lower_lip"], 0, 1)
         r["mouth_line"] = np.exp(-((f.lon / (lm["mouth_w"] * 0.92)) ** 4) - ((f.lat - lm["lip_line"]) / 0.006) ** 2)
         # beard area: jaw, chin and upper lip, not on the lips, fading up the cheeks
@@ -201,8 +211,8 @@ class FacePainter:
         mel, hb = self.mel, self.hb
         mel += (m["mottle"] - 0.5) * 0.16
         hb += (m["cap"] - 0.5) * 0.35 + (m["mottle"] - 0.5) * 0.15
-        hb += r["cheeks"] * (0.55 if fem else 0.4) + r["nose"] * 0.75 + r["ears"] * 0.7
-        hb += r["lid_up"] * 0.35 + f.blob(0, self.lm["chin"], 0.22, 0.1) * 0.25
+        hb += r["cheeks"] * (0.42 if fem else 0.4) + r["nose"] * 0.6 + r["ears"] * 0.7
+        hb += r["lid_up"] * 0.15 + f.blob(0, self.lm["chin"], 0.22, 0.1) * 0.25
         hb -= r["forehead"] * 0.1
         mel += r["forehead"] * 0.05 + r["lid_up"] * 0.12 + r["mouth_line"] * 0.25
         self.ven += r["under_eye"] * (0.55 + 0.4 * age)
@@ -242,8 +252,12 @@ class FacePainter:
             strokes = tex.sstep(0.35, 0.8, m["vellus"] * 0.6 + 0.6 * self.solid(lambda q, i: SM.value3(
                 SM.stretch(q, self.dir_at(np.full(len(q), side * 0.35, np.float32), i), 5.0), 0.0006,
                 self.seed + 21), mask=brow))
-            dens = np.clip(brow * (0.5 + 0.8 * strokes) * (0.45 + 0.55 * head_start), 0, 1)
-            self.paint.append((tex.srgb(c["brow"]), dens * (0.85 if fem else 0.95)))
+            # an even, soft fill (feathered cards carry the hair texture); strong stroke
+            # contrast here read as scribbled dashes between the cards
+            dens = np.clip(brow * ((0.75 + 0.35 * strokes) if fem else (0.5 + 0.8 * strokes))
+                           * (0.45 + 0.55 * head_start), 0, 1)
+            # under the brow cards only a faint shadow of skin tint (cards carry the hair)
+            self.paint.append((tex.srgb(c["brow"]), dens * (0.5 if fem else 0.8)))
             self.rough += dens * 0.1
         # beard shadow: dark follicles and blue-grey hair under the skin
         stub = self.cfg.get("stubble", 0.0 if fem else 0.35)
@@ -286,6 +300,9 @@ class FacePainter:
             bag = f.blob(side * el, et - 0.11, 0.13, 0.03)
             h -= bag * 0.4 * age
         self.ao *= 1 - r["mouth_line"] * 0.6
+        # philtrum: a faint shadowed groove between two catch-light columns
+        self.ao *= 1 - r["philtrum"] * 0.12
+        h += r["columns"] * 0.15 - r["philtrum"] * 0.1
         # lips: vertical lines, wetter centre, defined edge
         lines = 0.5 + 0.5 * np.sin(f.lon * 210 + self.solid(lambda q, i: SM.value3(q, 0.002, self.seed + 61), mask=r["lips"]) * 5)
         h -= r["lips"] * tex.sstep(0.55, 1.0, lines) * 0.35
@@ -295,19 +312,26 @@ class FacePainter:
         # makeup (heroines): gradient lip tint, soft blush, liner, shadow, aegyo-sal
         mk = self.cfg.get("_makeup", 0.0)
         if mk > 0:
-            inner = np.exp(-((f.lon / (lm["mouth_w"] * 0.55)) ** 2) - ((f.lat - lm["lip_line"]) / 0.03) ** 2)
-            self.paint.append((tex.srgb(c["lip"]), np.clip(r["lips"] * (0.25 + 0.75 * inner), 0, 1) * 0.8 * mk))
+            # gradient lip: a deeper tint bleeding out from the inner centre, the border stays natural
+            deep = tex.srgb(c["lip"]) * np.array([0.78, 0.62, 0.66], np.float32)
+            self.paint.append((tex.srgb(c["lip"]), np.clip(r["lips"] * (0.15 + 0.7 * r["lip_inner"]), 0, 1) * 0.6 * mk))
+            self.paint.append((deep, np.clip(r["lip_inner"] ** 1.5, 0, 1) * 0.45 * mk))
             blush = f.pair(lm["cheek"][0] - 0.08, lm["cheek"][1] + 0.08, 0.2, 0.12)
-            self.paint.append((tex.srgb(c["blush"]), blush * 0.28 * mk))
+            self.paint.append((tex.srgb(c["blush"]), blush * 0.14 * mk))
+            if self.cfg.get("_masks") is not None:       # liner on the real lash line (face_head)
+                self.paint.append((tex.srgb(c["liner"]), np.clip(r["liner"], 0, 1) * 0.9 * mk))
+                self.paint.append((tex.srgb(c["liner"]) * 0.5 + np.array([0.2, 0.14, 0.12], np.float32),
+                                   np.clip(r["lower_liner"], 0, 1) * 0.3 * mk))
             for side in (1, -1):
                 rel = (f.lon - side * el) * side
-                lid_line = et + 0.045 * np.cos(np.clip(rel / lm["eye_w"], -1.5, 1.5) * 1.1) + 0.012 * rel
-                liner = np.exp(-((f.lat - lid_line) / 0.009) ** 2) * np.exp(-((rel - 0.02) / (lm["eye_w"] * 1.05)) ** 6)
-                wing = np.exp(-((rel - lm["eye_w"] * 1.05) / 0.035) ** 2 - ((f.lat - et - 0.035) / 0.01) ** 2)
-                self.paint.append((tex.srgb(c["liner"]), np.clip(liner + wing * 0.8, 0, 1) * 0.75 * mk))
+                if self.cfg.get("_masks") is None:
+                    lid_line = et + 0.045 * np.cos(np.clip(rel / lm["eye_w"], -1.5, 1.5) * 1.1) + 0.012 * rel
+                    liner = np.exp(-((f.lat - lid_line) / 0.009) ** 2) * np.exp(-((rel - 0.02) / (lm["eye_w"] * 1.05)) ** 6)
+                    wing = np.exp(-((rel - lm["eye_w"] * 1.05) / 0.035) ** 2 - ((f.lat - et - 0.035) / 0.01) ** 2)
+                    self.paint.append((tex.srgb(c["liner"]), np.clip(liner + wing * 0.8, 0, 1) * 0.75 * mk))
                 shadow = f.blob(side * el, et + 0.07, lm["eye_w"] * 0.95, 0.04)
-                self.paint.append((tex.srgb(c["blush"]) * np.array([0.95, 0.82, 0.78], np.float32),
-                                   shadow * 0.25 * mk))
+                # soft warm-brown lid shade (not pink: pink lids read as sore eyes)
+                self.paint.append((np.array([0.62, 0.45, 0.38], np.float32), shadow * 0.16 * mk))
                 aegyo = f.blob(side * el, et - 0.06, lm["eye_w"] * 0.8, 0.018)
                 self.paint.append((np.array([1.0, 0.9, 0.86], np.float32), aegyo * 0.12 * mk))
             if self.cfg.get("forehead_mark", fem):
@@ -344,7 +368,7 @@ class FacePainter:
         return self.compose(r, m)
 
 
-def paint_head(cfg, material, head_parts, centre, radii, size, hairline, makeup=0.0, eye_mats=()):
+def paint_head(cfg, material, head_parts, centre, radii, size, hairline, makeup=0.0, eye_mats=(), masks=None):
     """Paint the head skin texture into `material`'s images from the head meshes."""
     tris = SM.mesh_triangles(head_parts, {material})
     if tris is None:
@@ -368,7 +392,7 @@ def paint_head(cfg, material, head_parts, centre, radii, size, hairline, makeup=
     sides = [[e for e in eyes if e[0] * k > 0] for k in (1, -1)]
     centres = [np.mean(g, 0) for g in sides if g]
     lm = landmarks(cfg, centres if len(centres) == 2 else None, frame_of, points)
-    cfg = dict(cfg, _hairline=hairline, _makeup=makeup)
+    cfg = dict(cfg, _hairline=hairline, _makeup=makeup, _masks=masks)
     painter = FacePainter(pos, nrm, cover, centre, radii, cfg, lm)
     col, rough, ao, h = painter.run()
     # the gutters take the colour of their island edge (no dark seams under mip-mapping)
@@ -376,8 +400,12 @@ def paint_head(cfg, material, head_parts, centre, radii, size, hairline, makeup=
     return col, rough, ao, h
 
 
-def paint(cfg, mats, head_parts, centre, radii, hairline):
-    """Paint the head skin ("Skin"/"face" material) from the built head meshes."""
+def paint(cfg, mats, head_parts, centre, radii, hairline, masks=None):
+    """Paint the head skin ("Skin"/"face" material) from the built head meshes.
+
+    masks: optional callable(world positions (N, 3)) -> {name: (N,) mask} with exact
+    feature masks (upper_lip, lower_lip, lip_inner, philtrum, columns) that replace
+    the painter's soft landmark blobs (face_head.FaceHead.paint_masks)."""
     mat = mats["Skin"]
     size = int(mat["tex_size"])
     fem, age = cfg["female"], cfg.get("age", 0.0)
@@ -385,7 +413,7 @@ def paint(cfg, mats, head_parts, centre, radii, hairline):
     if cfg.get("beard"):
         cfg = dict(cfg, stubble=max(cfg.get("stubble", 0.0), 0.45))
     eye_mats = {mats[k] for k in ("eye", "Eye_Sclera", "Eye_Iris", "Eye_Cornea") if k in mats}
-    maps = paint_head(cfg, mat, head_parts, centre, radii, size, hairline, makeup, eye_mats)
+    maps = paint_head(cfg, mat, head_parts, centre, radii, size, hairline, makeup, eye_mats, masks)
     if maps is not None:
         paint_face_into(mat, maps, size)
 
