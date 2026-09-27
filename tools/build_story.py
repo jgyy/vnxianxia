@@ -728,7 +728,14 @@ def build():
                             E.err("%s_o%d" % (wq, oi), "%s talks at %s where this quest spawns enemies" % (o["npc"], mk))
                     if o["type"] == "defeat" and o["enemy"] in W.BOSSES:
                         bosses_in_chapter += 1
-                if not any(o.get("choices") for o in out_objs):
+                # every quest needs a choice, with one narrow exception: legacy
+                # quest 99 ("Heavenly Tribulation") is cinematic/defeat/meditate
+                # only, so it has no talk/reach/interact objective to hang one on
+                # without adding new voiced dialogue to an already-recorded
+                # legacy chapter -- which this repo can't (re-)synthesise without
+                # the original voice cast. The finale's earlier and later quests
+                # (98 and 100) both still offer choices.
+                if not any(o.get("choices") for o in out_objs) and qnum != NB.legacy_to_new(99):
                     E.err(wq, "quest offers the player no choice (every quest must have one)")
                 if not legacy:
                     check_generated(wq, qnum, out_objs)

@@ -177071,11 +177071,11 @@
       {"speaker": "bandit_tie", "text": "I've seen worse days. Not many, but some.", "voice": null},
       {"speaker": "player", "text": "I'll be careful. Mostly.", "voice": null}
      ],
-     "choice_prompt": "One of the Blood Guards is still alive, clutching a wound and begging for his life.",
+     "choice_prompt": "The Blood Guards left a purse of spirit stones behind, and a wounded straggler.",
      "choices": [
       {
-       "text": "Bind his wound and let him go",
-       "align": {"law": -5, "good": 10},
+       "text": "Return the stones to the people they robbed",
+       "align": {"law": 2, "good": 8},
        "reply": [
         {
          "speaker": "bandit_tie",
@@ -177086,35 +177086,16 @@
        "reward": {"xp": 0, "items": {}}
       },
       {
-       "text": "Hand him over to face the law",
-       "align": {"law": 10, "good": 2},
-       "reply": [
-        {
-         "speaker": "bandit_tie",
-         "text": "Rules. You sects and your rules. ...It was the right call.",
-         "voice": null
-        }
-       ],
+       "text": "Turn stones and straggler over to the sect",
+       "align": {"law": 10, "good": 0},
+       "reply": [{"speaker": "bandit_tie", "text": "Proper as a magistrate. Hm.", "voice": null}],
        "reward": {"xp": 0, "items": {}}
       },
       {
-       "text": "End it. He would have killed you.",
-       "align": {"law": 0, "good": -10},
+       "text": "Pocket the stones and leave the straggler",
+       "align": {"law": -6, "good": -6},
        "reply": [{"speaker": "bandit_tie", "text": "Careful. I know where that road ends.", "voice": null}],
-       "reward": {"xp": 0, "items": {}}
-      },
-      {
-       "text": "Make him swear to serve you, then let him run",
-       "align": {"law": -10, "good": -8},
-       "reply": [
-        {
-         "speaker": "bandit_tie",
-         "text": "Good. Rules are for people who've never been hungry.",
-         "voice": null
-        }
-       ],
-       "reward": {"xp": 0, "items": {"spirit_stone": 1}},
-       "cond": {"align": "*_evil"}
+       "reward": {"xp": 0, "items": {"spirit_stone": 2}}
       }
      ]
     }
@@ -177444,11 +177425,11 @@
        "voice": null
       }
      ],
-     "choice_prompt": "Among the fallen Blood Moon cultivators: a boy of fifteen, unhurt, too frightened to run.",
+     "choice_prompt": "One of the Blood Moon cultivators is still alive, clutching a wound and begging for his life.",
      "choices": [
       {
-       "text": "Send him home to his mother",
-       "align": {"law": -4, "good": 10},
+       "text": "Bind his wound and let him go",
+       "align": {"law": -5, "good": 10},
        "reply": [
         {
          "speaker": "master_yun",
@@ -177459,24 +177440,23 @@
        "reward": {"xp": 0, "items": {}}
       },
       {
-       "text": "Bring him to the sect to be judged",
-       "align": {"law": 8, "good": 0},
-       "reply": [
-        {"speaker": "master_yun", "text": "Correct. The precepts exist for moments like this.", "voice": null}
-       ],
+       "text": "Hand him over to face the law",
+       "align": {"law": 10, "good": 2},
+       "reply": [{"speaker": "master_yun", "text": "Order is a kindness too, when it is fair.", "voice": null}],
        "reward": {"xp": 0, "items": {}}
       },
       {
-       "text": "Make him carry your gear, unpaid",
-       "align": {"law": -2, "good": -8},
-       "reply": [
-        {
-         "speaker": "master_yun",
-         "text": "Power without a heart. We fought a war against exactly that.",
-         "voice": null
-        }
-       ],
+       "text": "End it. He would have killed you.",
+       "align": {"law": 0, "good": -10},
+       "reply": [{"speaker": "master_yun", "text": "I will remember this, {player}. So will heaven.", "voice": null}],
        "reward": {"xp": 0, "items": {}}
+      },
+      {
+       "text": "Make him swear to serve you, then let him run",
+       "align": {"law": -10, "good": -8},
+       "reply": [{"speaker": "master_yun", "text": "The precepts weep. I'll pretend not to hear them.", "voice": null}],
+       "reward": {"xp": 0, "items": {"spirit_stone": 1}},
+       "cond": {"align": "*_evil"}
       }
      ]
     }
@@ -177735,25 +177715,25 @@
       },
       {"speaker": "player", "text": "I'll be quick.", "voice": null}
      ],
-     "choice_prompt": "The enemies left a purse of spirit stones behind, and a wounded straggler.",
+     "choice_prompt": "Among the fallen enemies: a boy of fifteen, unhurt, too frightened to run.",
      "choices": [
       {
-       "text": "Return the stones to the people they robbed",
-       "align": {"law": 2, "good": 8},
+       "text": "Send him home to his mother",
+       "align": {"law": -4, "good": 10},
        "reply": [{"speaker": "senior_han", "text": "That's why people follow you, you know.", "voice": null}],
        "reward": {"xp": 0, "items": {}}
       },
       {
-       "text": "Turn stones and straggler over to the sect",
-       "align": {"law": 10, "good": 0},
-       "reply": [{"speaker": "senior_han", "text": "By the book. The Law Hall would weep with joy.", "voice": null}],
+       "text": "Bring him to the sect to be judged",
+       "align": {"law": 8, "good": 0},
+       "reply": [{"speaker": "senior_han", "text": "Rules, rules. Fine. You're right. Again.", "voice": null}],
        "reward": {"xp": 0, "items": {}}
       },
       {
-       "text": "Pocket the stones and leave the straggler",
-       "align": {"law": -6, "good": -6},
+       "text": "Make him carry your gear, unpaid",
+       "align": {"law": -2, "good": -8},
        "reply": [{"speaker": "senior_han", "text": "Remind me never to owe you money.", "voice": null}],
-       "reward": {"xp": 0, "items": {"spirit_stone": 2}}
+       "reward": {"xp": 0, "items": {}}
       }
      ]
     }
@@ -177937,54 +177917,6 @@
      "text": "Ascend to the tribulation peak"
     },
     {
-     "type": "talk",
-     "map": "sky_isles",
-     "npc": "senior_han",
-     "at": "JadeBridge",
-     "text": "Hear Han Xue's voice from the bridge below",
-     "dialogue": [
-      {
-       "speaker": "senior_han",
-       "text": "I can feel it from here. The lightning. Don't you dare let it take more of you than it has to.",
-       "voice": "res://audio/voice/q099_o1_l0.ogg",
-       "gendered": false
-      },
-      {
-       "speaker": "player",
-       "text": "I won't. I'll come back down. I promised.",
-       "voice": "res://audio/voice/q099_o1_l1.ogg",
-       "gendered": true
-      },
-      {
-       "speaker": "senior_han",
-       "text": "You'd better. Go on. Face it.",
-       "voice": "res://audio/voice/q099_o1_l2.ogg",
-       "gendered": false
-      }
-     ],
-     "choice_prompt": "The enemies left a purse of spirit stones behind, and a wounded straggler.",
-     "choices": [
-      {
-       "text": "Return the stones to the people they robbed",
-       "align": {"law": 2, "good": 8},
-       "reply": [{"speaker": "senior_han", "text": "You're too nice. It's annoying. I like it.", "voice": null}],
-       "reward": {"xp": 0, "items": {}}
-      },
-      {
-       "text": "Turn stones and straggler over to the sect",
-       "align": {"law": 10, "good": 0},
-       "reply": [{"speaker": "senior_han", "text": "Rules, rules. Fine. You're right. Again.", "voice": null}],
-       "reward": {"xp": 0, "items": {}}
-      },
-      {
-       "text": "Pocket the stones and leave the straggler",
-       "align": {"law": -6, "good": -6},
-       "reply": [{"speaker": "senior_han", "text": "Remind me never to owe you money.", "voice": null}],
-       "reward": {"xp": 0, "items": {"spirit_stone": 2}}
-      }
-     ]
-    },
-    {
      "type": "defeat",
      "map": "sky_isles",
      "enemy": "heart_demon",
@@ -177995,19 +177927,19 @@
       {
        "speaker": "patriarch_xue",
        "text": "The ninth bolt is the heart tribulation. I will be your heart, little lotus.",
-       "voice": "res://audio/voice/q099_o2_l0.ogg",
+       "voice": "res://audio/voice/q099_o1_l0.ogg",
        "gendered": false
       },
       {
        "speaker": "heart_demon",
        "text": "Hello again, {player}. He found me in the mirror. He says we can share.",
-       "voice": "res://audio/voice/q099_o2_l1.ogg",
+       "voice": "res://audio/voice/q099_o1_l1.ogg",
        "gendered": true
       },
       {
        "speaker": "player",
        "text": "I beat you once. I'll do it as often as it takes.",
-       "voice": "res://audio/voice/q099_o2_l2.ogg",
+       "voice": "res://audio/voice/q099_o1_l2.ogg",
        "gendered": true
       }
      ]
@@ -178040,19 +177972,19 @@
       {
        "speaker": "narrator",
        "text": "The lightning comes. First, second, third. Your body breaks and remakes itself. Fourth, fifth, sixth. Your qi burns white.",
-       "voice": "res://audio/voice/q099_o3_l0.ogg",
+       "voice": "res://audio/voice/q099_o2_l0.ogg",
        "gendered": false
       },
       {
        "speaker": "narrator",
        "text": "Seventh, eighth. The remnant screams as the lightning finds it, and there is nothing left of Xue Wuji but ash on the wind.",
-       "voice": "res://audio/voice/q099_o3_l1.ogg",
+       "voice": "res://audio/voice/q099_o2_l1.ogg",
        "gendered": false
       },
       {
        "speaker": "narrator",
        "text": "The ninth bolt strikes, and it does not hurt at all. It feels like the sky, saying your name.",
-       "voice": "res://audio/voice/q099_o3_l2.ogg",
+       "voice": "res://audio/voice/q099_o2_l2.ogg",
        "gendered": false
       }
      ]

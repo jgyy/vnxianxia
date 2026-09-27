@@ -92,8 +92,13 @@ def _legacy_chapter(k):
                 attach_choice(q, choice, gn, at=oi)
         # every quest offers a choice, voiced ones included; most of the
         # original ten chapters get theirs from the templates, same as a
-        # generated chapter's quests would
-        ensure_choice(q, gn, GEN.rotor)
+        # generated chapter's quests would -- except legacy quest 99
+        # ("Heavenly Tribulation"), whose objectives are cinematic/defeat/
+        # meditate only, with no talk/reach/interact to hang a choice on
+        # without adding new voiced dialogue to an already-recorded legacy
+        # chapter (see the matching exception in build_story.py)
+        if n != 99:
+            ensure_choice(q, gn, GEN.rotor)
     # this chapter's new quests (module EXTRA, if written) slot in between
     # the original lead-in quests and the tail quest(s), which always stay
     # last, in order (see NB.LEGACY_LEAD_QUESTS / LEGACY_TAIL_QUESTS)

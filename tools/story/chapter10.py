@@ -128,10 +128,6 @@ CHAPTER = chapter(
               "The heavenly tribulation descends on the summit, and the Patriarch's remnant rides the lightning.",
               "sky_isles", [
                   cinematic("ch10_tribulation", "Ascend to the tribulation peak"),
-                  talk(HAN, "Hear Han Xue's voice from the bridge below",
-                       (HAN, "I can feel it from here. The lightning. Don't you dare let it take more of you than it has to."),
-                       (P, "I won't. I'll come back down. I promised."),
-                       (HAN, "You'd better. Go on. Face it."), at="JadeBridge"),
                   defeat("heart_demon", 1, "TribulationPeak", "Survive the heart tribulation and destroy the remnant",
                          (PATRIARCH, "The ninth bolt is the heart tribulation. I will be your heart, little lotus."),
                          (DEMON, "Hello again, {player}. He found me in the mirror. He says we can share."),
