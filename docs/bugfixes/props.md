@@ -1,0 +1,21 @@
+# Props & items workstream: bug log
+
+Numbered defects found in the prop / item pipeline, one line each: symptom -> cause -> fix (file:line).
+
+1. All 30 new quest props in `world_spec.PROPS` (notice_board, pill_furnace, tortoise_stele ...) showed up in game as the flat glowing seal disc -> their GLBs did not exist and `quest_props.ASSETS` was empty, so `prop.gd` fell back to its CylinderMesh -> each prop is now modelled, textured and exported (blender/xianxia/quest_props.py:2932).
+2. 15 of the 18 collectibles (wolf_fang, demon_core, letter ...) bobbed as untextured primitive spheres/prisms -> `items.ITEMS` was empty, so no `assets/items/<id>.glb` existed -> each item now has its own model (blender/xianxia/items.py:497).
+3. Picking up spirit_stone put a solid static body in the player's path -> the pickup reused `environment/spirit_stone.glb`, a 0.6 m ground prop with a `CrystalCol-convcolonly` collider (spirit_herb and jade_slip were ground-scale set dressing too) -> hand-held, collision-free item versions (blender/xianxia/items.py:100, items.py:55).
+4. `build_assets.py --only spirit_herb` (also spirit_stone, jade_slip) rebuilt the world workstream's environment GLB along with the item, and there was no way to build just one of them -> a bare id matched both the environment loop and the item loop -> items match `item_<id>`, or a bare id only when no environment asset shares it (blender/build_assets.py:70).
+5. A quest prop or item named in world_spec but never built passed CI silently and appeared in game as a seal / primitive -> validate_glb only checked files that exist -> `missing_models()` fails for every PROPS / ITEMS GLB absent from the tree (tools/validate_glb.py:176).
+6. A quest prop without collision passed validation (the player walks through it) -> validate_glb had no notion of prop collision -> quest props taller than 0.5 m must carry a `-colonly` / `-convcolonly` node, and must not float above their origin (tools/validate_glb.py:163).
+7. Item models could ship with colliders, off-centre pivots or at ground-prop scale without any warning -> no item checks at all -> items must be collision-free, at most 0.6 m, and rest on a bottom-centre origin (tools/validate_glb.py:143).
+8. A collision mesh whose suffix sits only on the node name (which is what Godot's `-colonly` import hint reads) was treated as a visible mesh and failed with "primitive without material" -> the collision test looked only at the mesh name -> meshes used by `*colonly` nodes are skipped too (tools/validate_glb.py:98).
+9. A 10 MB prop would pass validation (only a 12 MB global cap) and bloat the build -> no per-category budget -> quest props are capped at 1.5 MB and items at 512 KB (tools/validate_glb.py:21).
+10. Building a convex collision hull with `lands.convex_mesh` crashed ("geom: found the same BMVert used multiple times") on geometry whose hull leaves a vert both interior and unused (the fishing boat hull) -> it passes `geom_interior + geom_unused` straight to `bmesh.ops.delete` -> `quest_props.hull()` de-duplicates the verts first (blender/xianxia/quest_props.py:613; the same one-line fix is needed in blender/xianxia/lands.py:121, owned by the world workstream).
+11. A 128 px `tex.stone` texture came out as NaN garbage (the cork of the lantern-oil flask) -> `tex.fbm(size, 128, ...)` breaks out of its octave loop before adding anything when cells > size / 2, then divides by `total == 0` (blender/xianxia/tex.py:59) -> item stone textures are generated at 256 px (blender/xianxia/items.py:358); tex.py is owned by the hair+skin workstream, which should guard `total == 0`.
+
+## Reported to the runtime workstream (godot/scripts/world/pickup.gd, not fixed here)
+
+- GLB pickups never bob: `_process` only moves `_body` when it is a `MeshInstance3D`, and a GLB body sits at y = 0 while primitives hover at 0.6 m. Item GLBs have their origin at their bottom centre, so place the instance at ~0.45 m and bob it like the primitive.
+- `COLORS` has no entry for void_shard, spirit_pill, incense or tribulation_jade (they glow the default cyan). Suggested glow colours: void_shard #b060ff, spirit_pill #ffd040, incense #ff6a1a, tribulation_jade #c8b0ff.
+- `MODELS` should go: load `res://assets/items/<id>.glb` for every item (world.json `item_model_dir`).

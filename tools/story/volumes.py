@@ -16,6 +16,7 @@ from . import vol01, vol02, vol03, vol04, vol05, vol06, vol07, vol08, vol09, vol
 from . import morality as MO
 from . import tribulations as TR
 from .choices import LEGACY as LEGACY_CHOICES
+from .dsl import fill_with
 from .saga_gen import GEN, attach_choice, build_chapter, build_extra, ensure_choice
 
 LEGACY_MODULES = (chapter01, chapter02, chapter03, chapter04, chapter05,
@@ -148,6 +149,8 @@ def _added(obj):
 
 def build_volumes():
     from world_spec import REALMS
+    # the hand-written chapters' markers are fixed: the generator spreads everything else around them
+    GEN.seed(LEGACY)
     vols = []
     new_iter = [iter(v) for v in NEW]
     for v in range(1, NB.VOLUMES + 1):
@@ -162,6 +165,10 @@ def build_volumes():
                 ch = build_chapter(spec, number, realm=realm, stage=stage)
             # the end of every chapter rewards the player's alignment a little
             ch["quests"][-1]["rewards"]["bonus"] = MO.chapter_bonus()
+            # whoever speaks in an objective is present for it (story.json "with")
+            for q in ch["quests"]:
+                for o in q["objectives"]:
+                    fill_with(o)
             chapters.append(ch)
         for it in new_iter[v - 1]:
             raise ValueError("volume %d has too many new chapters (%r)" % (v, it["title"]))

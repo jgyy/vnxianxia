@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -21,7 +21,10 @@ CHAPTER = chapter(
                        (SAGE, "Visitors. Sixty years, and they still come puffing up the stairs like it's a surprise."),
                        (SAGE, "I am Qing Luan. I was a sage of these isles, once. Now I'm mostly a very persistent memory."),
                        (SAGE, "The isles test those who cross. Your heart must be clear, your sword sharp, and your shoes sturdy."),
-                       (SAGE, "Two out of three is usually fine. Go on, lotus child. I'll be in my pavilion, watching."), at="CloudGate"),
+                       (SAGE, "Two out of three is usually fine. Go on, lotus child. I'll be in my pavilion, watching."),
+                       added(ZHAO, "A persistent memory? Is she a ghost? {player}, is she a ghost? Nobody said ghosts."),
+                       added(HAN, "Bow to the sage, Zhao Kang."),
+                       added(P, "Thank you, Sage. We'll keep our shoes sturdy."), at="CloudGate"),
               ], xp=700),
         # ---------------------------------------------------------------- q072
         quest("The Jade Bridge",
@@ -30,7 +33,8 @@ CHAPTER = chapter(
                   reach("JadeBridge", "Cross the jade bridge",
                         (ZHAO, "It's very high. Isn't it very high? Why is there no railing? Who builds a bridge with no railing?"),
                         (HAN, "Immortals who can fly, Zhao Kang."),
-                        (ZHAO, "Well, that's elitist.")),
+                        (ZHAO, "Well, that's elitist."),
+                        added(P, "Keep walking, Zhao Kang. And don't look down.")),
                   defeat("demon_cultivator", 3, "JadeBridge", "Fight off the Blood Moon pursuers on the bridge",
                          (HAN, "Blood Moon! They followed us through the array. Gu must have told them where we were going.")),
                   reach("IsleOfWinds", "Catch your breath with Han Xue",
@@ -49,7 +53,8 @@ CHAPTER = chapter(
                        (ZHAO, "I've been thinking. It happens occasionally. I've been an insufferable brat to you for two years."),
                        (ZHAO, "My brother would have liked you. He always said pride is a wall you build to keep yourself small."),
                        (ZHAO, "So. I'm sorry. There. Never tell anyone. I'll deny it with my last breath."),
-                       (P, "Apology accepted, Zhao Kang. Friend."), at="IsleOfWinds"),
+                       (P, "Apology accepted, Zhao Kang. Friend."),
+                       added(HAN, "I heard all of that, Zhao Kang. I'm telling no one. I'm writing it down."), at="IsleOfWinds"),
               ], xp=720, items={"cloud_silk": 2}),
         # ---------------------------------------------------------------- q074
         quest("The Star-Gazer's Riddle",
@@ -58,7 +63,8 @@ CHAPTER = chapter(
                   talk(SAGE, "Visit Qing Luan at the star pavilion",
                        (SAGE, "A riddle! I've waited sixty years to ask someone. What climbs higher the more you take away?"),
                        (P, "A hole? No... a debt? Wait. A cultivator. The more attachments we let go, the higher we rise."),
-                       (SAGE, "Wrong, but I like your answer better than mine. It was a staircase with the bottom steps removed. Read my chart.")),
+                       (SAGE, "Wrong, but I like your answer better than mine. It was a staircase with the bottom steps removed. Read my chart."),
+                       added(ZHAO, "A staircase? That's not a riddle. That's carpentry.")),
                   interact("jade_slip", "StarPavilion", "Study the star chart",
                            (N, "Constellations drift across the jade. The star iron fell with the palace. The thunder grows where the vein runs."),
                            (N, "In the chart's corner, a seven-star pattern glows red. It is labelled: the Patriarch's Ladder.")),
@@ -77,7 +83,9 @@ CHAPTER = chapter(
                   collect("star_iron", 5, "CelestialRuins", "Gather the star iron"),
                   interact("stone_stele", "CelestialRuins", "Read the palace inscription",
                            (N, "Whoever climbs the stair must carry nothing that is not theirs. Not a stolen body. Not a stolen name. Not a stolen heaven."),
-                           (HAN, "Stolen body? What kind of warning is that?")),
+                           (HAN, "Stolen body? What kind of warning is that?"),
+                           added(ZHAO, "A warning for thieves. The Blood Moon would ignore it on principle."),
+                           added(P, "Or for someone who means to steal a body. Remember it.")),
               ], xp=740, items={"star_iron": 1}),
         # ---------------------------------------------------------------- q076
         quest("The Spirit Vein",
@@ -89,7 +97,8 @@ CHAPTER = chapter(
                   interact("spirit_stone", "SpiritVein", "Examine the miners' cache",
                            (N, "Crates of thunder crystals, carefully packed, each stamped with the same seven-star mark as the red stars."),
                            (HAN, "Thunder crystals are only good for one thing: channelling heavenly lightning into a formation."),
-                           (P, "Our formation needs them too. Why would the Blood Moon build the same thing we're building?")),
+                           (P, "Our formation needs them too. Why would the Blood Moon build the same thing we're building?"),
+                           added(ZHAO, "Same stamp as the red stars. I don't like coincidences. They're never coincidences.")),
               ], xp=760, items={"thunder_crystal": 1}),
         # ---------------------------------------------------------------- q077
         quest("Garden of Immortals",
@@ -101,7 +110,9 @@ CHAPTER = chapter(
                   talk(SAGE, "Heed Qing Luan in the garden",
                        (SAGE, "You have the feathers. Good. Now you have a problem. The Jiao smelled them. It smells everything."),
                        (SAGE, "It was a noble beast, guardian of these isles for a thousand years. Then the Blood Moon fed it their blood."),
-                       (SAGE, "It is suffering. It will kill you because it is suffering. Please free it."), at="ImmortalGarden"),
+                       (SAGE, "It is suffering. It will kill you because it is suffering. Please free it."),
+                       added(HAN, "Free it, not kill it. That's harder, Sage."),
+                       added(P, "Then we do the harder thing."), at="ImmortalGarden"),
               ], xp=700),
         # ---------------------------------------------------------------- q078
         quest("The Jiao's Lair",
@@ -110,7 +121,8 @@ CHAPTER = chapter(
                   reach("SerpentLair", "Enter the serpent's lair",
                         (N, "The isle shudders. Scales the colour of storm clouds slide past, and a head the size of a house rises over the edge."),
                         (ZHAO, "Nobody told me the serpent was THAT big."),
-                        (HAN, "Everyone told you, Zhao Kang.")),
+                        (HAN, "Everyone told you, Zhao Kang."),
+                        added(P, "Stay behind me, both of you. It's hurting, not hunting.")),
                   defeat("jiao_serpent", 1, "SerpentLair", "Defeat the corrupted Jiao serpent",
                          (SAGE, "Its heart is still in there, lotus child. Strike the blood from it, not the life!"),
                          (P, "I hear you. Hold on, great one. I'll set you free.")),
@@ -133,6 +145,7 @@ CHAPTER = chapter(
                   talk(SAGE, "Say farewell to Qing Luan",
                        (SAGE, "Show me the design your sect intends to build. Hm. Hmm. The stars disagree with it."),
                        (SAGE, "Here, where it should turn inward, it turns outward. As if it were meant to open rather than close."),
+                       added(HAN, "Like a door instead of a lock. {player}, that archive belonged to the Law Hall."),
                        (P, "It was rebuilt from the sect's Law Hall archive."),
                        (SAGE, "Then ask who kept the archive. Go carefully, lotus child. Heaven is watching you now.")),
               ], xp=800, items={"star_iron": 1}),
@@ -148,6 +161,7 @@ CHAPTER = chapter(
                        (MO, "Star iron. Thunder crystal. Phoenix feathers. And a dragon's heart, you show-off. The formation will be finished in a week."),
                        (P, "Elder, the star-gazer said the design is wrong. That it opens instead of closing. It was taken from the Law Hall archive."),
                        (MO, "Bai checked it against the archive copy, sealed and certified. The Law Hall... hm. Gu kept that archive for thirty years."),
+                       added(BAI, "Certified by me. But I only checked the copy against itself, Mo. A forger's favourite kind of scholar."),
                        (MO, "Leave it with me. I'll check every rune myself. Go, see the Sect Master. You've earned your cake."), at="FormationArray", map="sect"),
                   talk(YUN, "Report to the Sect Master",
                        (YUN, "A nascent soul at your age. The elders are furious with envy. It's wonderful."),
