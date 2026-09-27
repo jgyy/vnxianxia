@@ -7,9 +7,9 @@ extends Node
 ## everyone else turns to the speaker. end() hands the gameplay camera back.
 
 const HEAD := 1.58
-const OTS_BACK := 0.9
-const OTS_SIDE := 0.55
-const OTS_UP := 0.2
+const OTS_BACK := 1.15
+const OTS_SIDE := 0.62
+const OTS_UP := 0.16
 ## NPC speakers farther than this from the player are not pulled into the scene
 const JOIN_RADIUS := 16.0
 
@@ -204,15 +204,47 @@ func _shot(s: Node3D, l: Node3D, sid: String, lid: String) -> void:
 		# the same side of the pair's axis for both reverse shots (the 180 degree rule)
 		var side := 1.0 if sid < lid else -1.0
 		look = sh.lerp(lh, 0.1) - Vector3.UP * 0.1
-		from = lh - d * OTS_BACK + right * side * OTS_SIDE + Vector3.UP * OTS_UP
-		var clear := _unblock(look, from)
-		if clear.distance_to(look) < from.distance_to(look) * 0.7:
-			# a wall behind the listener: try the other shoulder
-			var other := _unblock(look, lh - d * OTS_BACK - right * side * OTS_SIDE + Vector3.UP * OTS_UP)
-			clear = other if other.distance_to(look) > clear.distance_to(look) else clear
-		from = clear
+		# candidates: over the listener's shoulder, the other shoulder, a higher and
+		# wider angle, and a frontal single of the speaker; the first one that sees
+		# the speaker past walls and the other people wins
+		var cands: Array[Vector3] = [
+			lh - d * OTS_BACK + right * side * OTS_SIDE + Vector3.UP * OTS_UP,
+			lh - d * OTS_BACK - right * side * OTS_SIDE + Vector3.UP * OTS_UP,
+			lh - d * (OTS_BACK + 0.7) + right * side * (OTS_SIDE + 0.5) + Vector3.UP * 0.75,
+			sh - d * 1.3 + right * side * 1.2 + Vector3.UP * 0.05,
+		]
+		from = cands[0]
+		var best := -1.0
+		for c in cands:
+			var clear := _unblock(look, c)
+			var score := clear.distance_to(look) / c.distance_to(look)
+			if _occluded(clear, sh, [s, l]):
+				score -= 1.0
+			if score > best + 0.001:
+				best = score
+				from = clear
+			if score > 0.95:
+				break
 	from = _unblock(look, from)
 	_set_cam(from, look)
+
+
+## Is anyone (but `skip`) standing between the camera and the speaker's head?
+func _occluded(cam_pos: Vector3, target: Vector3, skip: Array) -> bool:
+	for id in members:
+		var n := _node(id)
+		if n == null or skip.has(n):
+			continue
+		var seg := target - cam_pos
+		var len2 := seg.length_squared()
+		if len2 < 0.01:
+			continue
+		for h in [1.0, 1.5]:
+			var q: Vector3 = n.global_position + Vector3.UP * h
+			var t := clampf((q - cam_pos).dot(seg) / len2, 0.0, 1.0)
+			if t > 0.05 and t < 0.95 and q.distance_to(cam_pos + seg * t) < 0.3:
+				return true
+	return false
 
 
 ## An establishing shot of the whole group from behind the player.

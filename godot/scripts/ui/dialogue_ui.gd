@@ -57,7 +57,7 @@ func _ready() -> void:
 	# placed by _fit() in viewport pixels: anchored top-left, sized to content
 	_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
-	_panel.add_theme_stylebox_override("panel", UiTheme.panel(Color(0.04, 0.05, 0.08, 0.86), UiTheme.GOLD, 8))
+	_panel.add_theme_stylebox_override("panel", UiTheme.panel(Color(0.04, 0.05, 0.08, 0.93), UiTheme.GOLD, 8))
 	root.add_child(_panel)
 	_row = HBoxContainer.new()
 	_row.add_theme_constant_override("separation", 18)

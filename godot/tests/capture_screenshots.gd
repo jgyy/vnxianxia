@@ -315,8 +315,12 @@ func _stairs_shot(player: CharacterBody3D) -> void:
 	# walk toward the door (input is camera-relative: steer with the stick, not the camera)
 	player.scripted_input = Vector2(sin(0.5), -cos(0.5))
 	var start_y := player.global_position.y
-	await _until(func(): return player.global_position.y > start_y + 0.5 or \
-			Vector2(player.global_position.x - to.x, player.global_position.z - to.z).length() < 1.5, 900)
+	# real time (no time_scale): catch the hero on the steps, not at the top
+	for i in 900:
+		if player.global_position.y > start_y + 0.35 or \
+				Vector2(player.global_position.x - to.x, player.global_position.z - to.z).length() < 1.5:
+			break
+		await physics_frame
 	await _save("stairs_main_hall", 2)
 	player.scripted_input = Vector2.ZERO
 	player.spring.spring_length = 4.5
