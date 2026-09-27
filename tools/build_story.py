@@ -34,6 +34,7 @@ import world_spec as W  # noqa: E402
 import story  # noqa: E402
 from story import numbering as NB  # noqa: E402
 from story import morality as MO  # noqa: E402
+from story import threads as TH  # noqa: E402
 
 OUT = os.path.join(ROOT, "godot", "data", "story.json")
 VOICE_DIR = "res://audio/voice/"
@@ -582,12 +583,36 @@ def compile_npcs(used):
     return out
 
 
+def check_threads():
+    """Validate tools/story/threads.py: known quest ids, strictly increasing per
+    thread (a recap must follow the events it recaps), each thread with 3+ beats."""
+    seen_ids = set()
+    for t in TH.THREADS:
+        where = "thread %s" % t["id"]
+        if t["id"] in seen_ids:
+            E.err(where, "duplicate thread id")
+        seen_ids.add(t["id"])
+        check_text(where + " title", t["title"], max_words=8)
+        if len(t["beats"]) < 3:
+            E.err(where, "needs at least 3 beats, has %d" % len(t["beats"]))
+        last = 0
+        for n, text in t["beats"]:
+            wb = "%s beat %s" % (where, qid(n))
+            check_text(wb, text, max_words=40)
+            if not (1 <= n <= NB.TOTAL_QUESTS):
+                E.err(wb, "quest number %r out of range 1-%d" % (n, NB.TOTAL_QUESTS))
+            elif n <= last:
+                E.err(wb, "beats must land on strictly increasing quests (last was %s)" % qid(last))
+            last = n
+
+
 def build():
     used = set()
     voices = set()
     speakers_used = set()
     cin_uses = {}
 
+    check_threads()
     npcs = compile_npcs(used)
     cinematics = {}
     for cid, raw in story.CINEMATICS.items():
@@ -803,7 +828,7 @@ def build():
             E.warn("map %s" % m, "markers never used: %s" % ", ".join(unused))
 
     return {"version": 2, "title": story.TITLE, "premise": story.PREMISE, "volumes": volumes, "chapters": chapters,
-            "npcs": npcs, "quests": quests, "cinematics": cinematics}
+            "npcs": npcs, "quests": quests, "cinematics": cinematics, "threads": TH.compiled()}
 
 
 # ------------------------------------------------------------------ output

@@ -12,6 +12,7 @@ const LoadingScript := preload("res://scripts/ui/loading_screen.gd")
 const JournalScript := preload("res://scripts/ui/journal.gd")
 const TravelScript := preload("res://scripts/ui/travel_menu.gd")
 const RunnerScript := preload("res://scripts/quest_runner.gd")
+const MonologueScript := preload("res://scripts/world/monologue.gd")
 
 var map: Node3D
 var hud: CanvasLayer
@@ -21,6 +22,7 @@ var loading: CanvasLayer
 var journal: CanvasLayer
 var travel: CanvasLayer
 var runner: Node
+var monologue: Node
 var busy := true
 var npcs := {}                 ## npc id -> Npc on the current map
 var first_load := true
@@ -38,7 +40,9 @@ func _ready() -> void:
 	travel = TravelScript.new()
 	runner = RunnerScript.new()
 	runner.game = self
-	for n in [hud, dialogue, cinematic, loading, journal, travel, runner]:
+	monologue = MonologueScript.new()
+	monologue.game = self
+	for n in [hud, dialogue, cinematic, loading, journal, travel, runner, monologue]:
 		add_child(n)
 	hud.player = player
 	player.controls_enabled = false

@@ -339,6 +339,7 @@ In `godot/data/story.json`:
 | dialogue line `cond` | the line shows only when the condition holds |
 | objective `choice_prompt`, `choices[]` | `{text, align: {law, good}, reply: [lines], reward: {xp, items}, flag?, attitude?: {npc: delta}, cond?}` |
 | `npcs[].greetings[]` | `{text, cond}` idle greetings |
+| `threads[]` | `{id, title, beats: [{quest, number, text}]}`, recurring plot threads spanning several volumes (`tools/story/threads.py`); see below |
 
 Condition keys (all must hold): `align` (`"lawful_good"`, `"chaotic_*"`, `"*_evil"`, or a list of them), `align_law` /
 `align_good` (`">=30"`, `"<=-25"`), `min_realm` / `max_realm` (a realm name), `min_stage` / `max_stage` (1-10), `flag` /
@@ -350,6 +351,20 @@ In `Game` (`game_state.gd`): `realm` (0-11), `stage` (0 for Mortal and Immortal,
 `alignment()`, `alignment_name()`, `cond_ok(cond)`, `apply_choice()`, `power()`. `Story.stage_name(realm_idx, stage)`,
 `Story.realm_label(realm, stage)` and `Story.visible_lines(lines)` do the naming and filtering. Saves are version 3 and
 keep the alignment, flags and choices; older saves load with cultivation recomputed from the story.
+
+### Threads: reading 1000 quests as one novel
+
+Each chapter is written and played on its own, but eight named threads run underneath all ten volumes: the traitor
+Gu Hanshan, the Lotus Key pendant, Elder Mo's sacrifice, the Patriarch's seven-runged Ladder, and the arcs of Han
+Xue, Zhao Kang, the heart demon and the Great Vehicle alliance (`tools/story/threads.py`). Each thread is a handful
+of *beats* — one-line recaps landed on the quest where that beat of the story happens. `Story.threads_so_far()`
+exposes only the beats the player has already reached, so the journal's **Story So Far** page never spoils ahead of
+where they are; `Story.latest_beat()` finds the single most recent one, which `quest_runner.gd` uses to open every
+new chapter with a quiet "Previously..." recap, the way a serialised novel reminds its reader what came before.
+The same continuity carries into exploration: `godot/scripts/world/monologue.gd` has the protagonist think out loud
+while roaming — about wherever they are, what they're meant to be doing, who they're becoming, and (through its own
+`CALLBACKS` list, unlocked as the saga advances) what they've already lived through. It never interrupts dialogue,
+cinematics, combat, meditation or menus.
 
 ## Editing the story
 

@@ -14,6 +14,9 @@ var chapters: Array = []
 var quests: Array = []
 var npcs: Dictionary = {}
 var cinematics: Dictionary = {}
+## Recurring plot threads spanning several volumes (tools/story/threads.py),
+## each {"id", "title", "beats": [{"quest", "number", "text"}, ...]}.
+var threads: Array = []
 ## tools/world_spec.py mirrored as JSON: maps, markers, enemies, items, realms.
 var world: Dictionary = {}
 ## milliseconds spent parsing story.json at startup
@@ -32,6 +35,7 @@ func _ready() -> void:
 	quests = data.quests
 	npcs = data.npcs
 	cinematics = data.cinematics
+	threads = data.get("threads", [])
 	world = JSON.parse_string(FileAccess.get_file_as_string(WORLD_PATH))
 	for i in chapters.size():
 		_chapter_index[int(chapters[i].number)] = i
@@ -194,6 +198,38 @@ func voice_path(line: Dictionary) -> String:
 ## Seconds an unvoiced line stays on screen before it advances by itself.
 func reading_time(text: String) -> float:
 	return clampf(1.6 + 0.3 * text.split(" ", false).size(), 2.5, 11.0)
+
+
+## Every thread that has landed at least one beat by ``quest_index`` (0-based,
+## quests before it completed), each as {"title", "beats": [reached beat
+## texts, in order], "done": whether every beat of the thread has landed}.
+## Threads with no beat reached yet are left out entirely, so nothing is
+## spoiled ahead of where the player has actually read.
+func threads_so_far(quest_index: int) -> Array:
+	var out := []
+	for t in threads:
+		var reached := []
+		for b in (t.beats as Array):
+			if int(b.number) <= quest_index:
+				reached.append(b.text)
+		if not reached.is_empty():
+			out.append({"title": t.title, "beats": reached, "done": reached.size() == (t.beats as Array).size()})
+	return out
+
+
+## The single most recent thread beat reached by ``quest_index`` (highest
+## quest number not exceeding it), or "" if none has landed yet. Used for the
+## "Previously..." recap shown as a new chapter opens.
+func latest_beat(quest_index: int) -> String:
+	var best_n := 0
+	var best_text := ""
+	for t in threads:
+		for b in (t.beats as Array):
+			var n := int(b.number)
+			if n <= quest_index and n > best_n:
+				best_n = n
+				best_text = b.text
+	return best_text
 
 
 static func roman(n: int) -> String:

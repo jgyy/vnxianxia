@@ -427,6 +427,10 @@ func _finish_quest(q: Dictionary) -> void:
 			Audio.play_music("victory", 0.5)
 			get_tree().create_timer(12.0).timeout.connect(func(): if game.map: Audio.play_music(game.map.music))
 	if not Game.finished():
+		if Story.ends_chapter(q):
+			var recap := Story.latest_beat(Game.quest_index)
+			if recap != "":
+				game.hud.toast("Previously... " + recap, UiTheme.MUTED, 6.0)
 		var nq := Game.quest()
 		game.hud.toast("New quest: " + nq.title, UiTheme.JADE)
 		game.hud.quest_card(nq)

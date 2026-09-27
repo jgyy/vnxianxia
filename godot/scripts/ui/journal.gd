@@ -171,7 +171,24 @@ func _show_story() -> void:
 				for i in range(first, mini(first + 10, Game.quest_index)):
 					var q := Story.quest(i)
 					t += "[color=#b8ad96]   %d. %s[/color] — %s\n" % [int(q.number), q.title, Story.fill(q.summary)]
+	t += _threads_text()
 	_page(t)
+
+
+## Recurring threads (the traitor, the pendant, the Patriarch's Ladder...):
+## every beat reached so far, oldest first, so the saga reads like one story
+## even when its 1000 quests are played one at a time.
+func _threads_text() -> String:
+	var reached: Array = Story.threads_so_far(Game.quest_index)
+	if reached.is_empty():
+		return ""
+	var t := "\n\n[b][color=#dcb86b]Threads of the story[/color][/b]\n"
+	for th in reached:
+		var mark := "[color=#73e6c7]—[/color]" if th.done else "[color=#dcb86b]…[/color]"
+		t += "\n%s [b]%s[/b]\n" % [mark, th.title]
+		for beat in (th.beats as Array):
+			t += "   %s\n" % beat
+	return t
 
 
 ## Every quest reached in the current volume; earlier volumes are folded into
