@@ -1,6 +1,6 @@
 """Render the xianxia HUD kit to godot/ui/hud/ (headless Blender + numpy).
 
-    python blender/render_hud.py [--out godot/ui/hud] [--only panel,gauge_hp] [--samples 48]
+    python blender/render_hud.py [--out godot/ui/hud] [--only panel,gauges] [--samples 48]
 
 Every piece is modelled as small 3D geometry (bevelled lacquer slabs, round
 gold-leaf wires, jade cabochons, bevelled brush-font glyphs, ruyi cloud-scroll
