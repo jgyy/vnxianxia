@@ -185,7 +185,7 @@ def platform(name, hw, hd, h, mats, stairs_w=4.0, stairs_side=True, rails=True):
     """Stone terrace with front stairs and marble balustrade. Top at z = h."""
     objs = []
     bm = bmesh.new()
-    util.box(bm, (hw * 2, hd * 2, h), loc=(0, 0, h / 2))
+    util.box(bm, (hw * 2, hd * 2, h - 0.15), loc=(0, 0, (h - 0.15) / 2))
     util.box(bm, (hw * 2 + 0.3, hd * 2 + 0.3, 0.2), loc=(0, 0, 0.1))
     o = util.mesh_object(name + "Base", bm, mats["brick"], smooth=False)
     util.box_uv(o, 0.5)
@@ -197,7 +197,7 @@ def platform(name, hw, hd, h, mats, stairs_w=4.0, stairs_side=True, rails=True):
     for k in range(steps):
         sh = h * (k + 1) / steps
         depth = run * (steps - k)
-        util.box(bm, (stairs_w, depth, sh), loc=(0, -hd - depth / 2, sh / 2))
+        util.box(bm, (stairs_w, depth, sh), loc=(0, -hd - 0.1 - depth / 2, sh / 2))
     o = util.mesh_object(name + "Stairs", bm, mats["stone"], smooth=False)
     util.box_uv(o, 0.6)
     objs.append(o)
@@ -253,10 +253,21 @@ def platform(name, hw, hd, h, mats, stairs_w=4.0, stairs_side=True, rails=True):
     ln = math.hypot(h, total)
     c = util.collider(name + "StairCol", (stairs_w + 0.8, ln, 0.2), (0, 0, 0))
     c.rotation_euler = (ang, 0, 0)
-    c.location = (0, -hd - total / 2, h / 2 - 0.1)
+    c.location = (0, -hd - 0.1 - total / 2, h / 2 - 0.1)
     util.apply_transform(c)
     objs.append(c)
     return objs
+
+
+def frustum_col(name, sides, r_top, z_top, r_bot, z_bot, rot=0.0):
+    """Convex collider shaped like a stepped plinth's outline: walkable slopes instead of risers."""
+    bm = bmesh.new()
+    for r, z in ((r_top, z_top), (r_bot, z_bot)):
+        for k in range(sides):
+            a = rot + 2 * math.pi * k / sides
+            bm.verts.new(V((r * math.cos(a), r * math.sin(a), z)))
+    bmesh.ops.convex_hull(bm, input=bm.verts)
+    return util.mesh_object(name + "-convcolonly", bm, None, smooth=False)
 
 
 def plaque_board(mats, loc, w=2.4, h=0.9, tilt=12):
@@ -266,7 +277,7 @@ def plaque_board(mats, loc, w=2.4, h=0.9, tilt=12):
     util.box_uv(o_frame, 1.0)
     bm = bmesh.new()
     uv = bm.loops.layers.uv.verify()
-    vs = [bm.verts.new(V((x * w / 2, -0.05, z * h / 2))) for x, z in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+    vs = [bm.verts.new(V((x * w / 2, -0.075, z * h / 2))) for x, z in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
     f = bm.faces.new(vs)
     for loop, (uu, vv) in zip(f.loops, ((0, 0), (1, 0), (1, 1), (0, 1))):
         loop[uv].uv = (uu, vv)
@@ -492,7 +503,7 @@ def pavilion():
     objs.append(o)
     objs += poly_roof("PavilionRoof", 0, 0, r + 1.1, 6, 2.8, mats, base_z=3.8, rot=R(30), lift=0.55,
                       lift_len=1.3, curve=1.8, per_edge=12, rows=12)
-    objs.append(util.collider("PavilionBase", (2 * (r + 0.5), 2 * (r + 0.5) * 0.87, 0.5), (0, 0, 0.25)))
+    objs.append(frustum_col("PavilionBase", 6, r + 0.5, 0.5, r + 1.6, -0.1))
     for (x, y) in pts:
         objs.append(util.collider("PavilionPillar", (0.34, 0.34, 3.2), (x, y, 2.1)))
     return objs
@@ -504,7 +515,8 @@ def pagoda(tiers=7):
     objs = []
     bm = bmesh.new()
     util.box(bm, (7.0, 7.0, 0.8), loc=(0, 0, 0.4))
-    util.box(bm, (2.4, 1.2, 0.4), loc=(0, -4.0, 0.2))
+    for k in range(4):
+        util.box(bm, (2.4, 0.3 * (4 - k) + 0.02, 0.2 * (k + 1)), loc=(0, -3.5 - 0.15 * (4 - k) + 0.01, 0.1 * (k + 1)))
     o = util.mesh_object("PagodaBase", bm, mats["stone"], smooth=False)
     util.box_uv(o, 0.6)
     objs.append(o)
@@ -524,8 +536,8 @@ def pagoda(tiers=7):
             ang = R(90 * k)
             rot = Matrix.Rotation(ang, 3, "Z")
             pw, ph = w * 0.7, h * 0.65
-            corners = [V((-pw / 2, -w + 0.14, z + 0.2)), V((pw / 2, -w + 0.14, z + 0.2)),
-                       V((pw / 2, -w + 0.14, z + 0.2 + ph)), V((-pw / 2, -w + 0.14, z + 0.2 + ph))]
+            corners = [V((-pw / 2, -w + 0.12, z + 0.2)), V((pw / 2, -w + 0.12, z + 0.2)),
+                       V((pw / 2, -w + 0.12, z + 0.2 + ph)), V((-pw / 2, -w + 0.12, z + 0.2 + ph))]
             vs = [bm_l.verts.new(rot @ c) for c in corners]
             f = bm_l.faces.new(vs)
             for loop, (uu, vv) in zip(f.loops, ((0, 0), (2, 0), (2, 1), (0, 1))):
@@ -555,6 +567,12 @@ def pagoda(tiers=7):
     util.box_uv(o, 1.0)
     objs.append(o)
     objs.append(util.collider("PagodaBase", (7.0, 7.0, 0.8), (0, 0, 0.4)))
+    ln = math.hypot(0.8, 1.35)
+    ramp = util.collider("PagodaRamp", (2.6, ln, 0.3), (0, 0, 0))
+    ramp.rotation_euler = (math.atan2(0.8, 1.35), 0, 0)
+    ramp.location = (0, -3.5 - 1.35 / 2, 0.4 - 0.15 * 1.35 / ln)
+    util.apply_transform(ramp)
+    objs.append(ramp)
     objs.append(util.collider("PagodaBody", (5.0, 5.0, 12.0), (0, 0, 6.8)))
     return objs
 

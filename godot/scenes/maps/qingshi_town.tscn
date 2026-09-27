@@ -122,7 +122,10 @@ transform = Transform3D(0.573576, 0, 0.819152, 0.446142, 0.838671, -0.312392, -0
 light_color = Color(1, 0.84, 0.66, 1)
 light_energy = 1.9
 shadow_enabled = true
+shadow_bias = 0.06
+shadow_normal_bias = 1.6
 shadow_blur = 1.5
+directional_shadow_blend_splits = true
 directional_shadow_max_distance = 150
 
 [node name="Level" type="Node3D" parent="."]

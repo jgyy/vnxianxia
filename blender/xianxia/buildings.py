@@ -200,7 +200,8 @@ def podium(p, m, hw, hd, h, stairs=(("front", 4.0),), rail=True, base="brick", c
         col = stair_ramp(p + "StairCol" + side, sw + 0.3, h)
         # built climbing +Y to y = 0; turn so it climbs toward the podium edge on that side
         for o in (o1, o2, col):
-            o.matrix_basis = Matrix.Rotation(yaw, 4, "Z") @ Matrix.Translation(V((0, -edge - 0.09, 0)))
+            # the top step ends exactly at the cap slab's edge (overlapping it, both z-fought at height h)
+            o.matrix_basis = Matrix.Rotation(yaw, 4, "Z") @ Matrix.Translation(V((0, -edge - 0.11, 0)))
             util.apply_transform(o)
         objs += [o1, o2, col]
     if rail:
@@ -1196,7 +1197,6 @@ ASSETS = {
     "treasure_tower": lambda: _tower(p="TreasureTower", style="sect", sides=8, storeys=9, r0=4.6, shrink=0.9,
                                      storey_h=3.3, base_h=1.2, base_r=7.0, eave=1.5),
     "inner_sect_gate": lambda: paifang("InnerGate", "sect", bays=3, span=12.0, height=8.5),
-    "stone_stairs_6": lambda: stair_run(6.0, 5.0, "sect"),
     "stone_stairs_14": lambda: stair_run(14.0, 7.0, "sect"),
     "drum_tower": lambda: _tower(p="DrumTower", style="sect", sides=4, storeys=2, r0=3.4, storey_h=3.4,
                                  base="arch", base_h=6.5, base_r=5.2, spire=False, eave=1.5, open_first=True,

@@ -99,7 +99,7 @@ CARVES += [
     (14.0, [(-276, -110, -22.0)]),
     # the shadow market beside the grotto passage, and the slave mines in the canyon wall
     (6.0, [(-64, -26, F), (-100, -46, F)]),
-    (22.0, [(-112, -52, F)]),
+    (22.0, [(-100, -52, F)]),
     (12.0, [(-148, 30, RIVER_Y), (-160, 30, RIVER_Y)]),
     (14.0, [(-150, -20, RIVER_Y), (-164, -30, RIVER_Y)]),
     # north: the elders' palace behind the throne, the forge, the sacrifice pit, library and shrine,
@@ -310,13 +310,14 @@ S.add("skull_tower", 114, 72, 0, -18.0, name="SkullTowerSpire")
 S.add("iron_pens", 100, -126, 0, F, name="BeastPensIron")
 for _i, (_x, _z) in enumerate(((-236, -50), (-262, -30), (-250, -18), (-226, -28), (-262, -52))):
     S.add("ghost_house", _x, _z, (_i * 71) % 360, -22.0, name=f"GhostHouse{_i + 1}")
-for _i, (_x, _z, _yw) in enumerate(((-128, -44, 90), (-100, -62, 0), (-124, -62, 30), (-98, -40, 200))):
+# (the market used to straddle the blood river: two stalls stood on the far bank and the marker in the water)
+for _i, (_x, _z, _yw) in enumerate(((-86, -45, 210), (-100, -63, 0), (-88, -61, -30), (-99, -41, 160))):
     S.add("shadow_stall", _x, _z, _yw, F, name=f"ShadowStall{_i + 1}")
 
 # regions
 G.region("abyss_blocks", Rect(0, -85, 14, 12, 0, 3))                 # the fortress court
 G.region("abyss_blocks", Disc(0, -166, 24))                          # the palace terrace
-G.region("abyss_blocks", Disc(-112, -52, 16))                        # the shadow market
+G.region("abyss_blocks", Disc(-95, -53, 15))                        # the shadow market
 G.region("abyss_blocks", Disc(0, -250, 14))                          # the red moon terrace
 G.region("abyss_blocks", Disc(-66, -246, 10))
 G.region("abyss_blocks", Disc(196, 150, 22, wobble=0.2, seed=7))     # the ruined sect's courtyard
@@ -548,7 +549,7 @@ NEW_MARKERS = {
     "SacrificePit": (-78.0, -160.0),
     "DemonLibrary": (42.0, -166.0),
     "ElderPalace": (0.0, -150.0),
-    "ShadowMarket": (-112.0, -51.0),
+    "ShadowMarket": (-96.0, -53.0),
     "BloodMoonShrine": (50.0, -212.0),
     "CorpseForest": (-160.0, 118.0),
     "RuinedSectGate": (196.0, 122.0),
@@ -641,4 +642,4 @@ def build_districts(add, gy, rnd):
     # the first patriarch's bone throne, the shadow market's lanterns
     add("bone_pile", -80, -250, yaw=40)
     add("bone_pile", -52, -252, yaw=120)
-    add("demon_banner", -112, -34, yaw=180)
+    add("demon_banner", -95, -35, yaw=180)

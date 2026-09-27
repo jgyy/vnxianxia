@@ -451,7 +451,7 @@ def blood_moon_shrine():
     bm = bmesh.new()
     realms.prism(bm, [(7.5, -0.6), (7.5, 0.5), (6.6, 0.5), (6.6, 0.9)], sides=24, rot=0, cap_top=True, v_scale=0.5)
     objs = [B.obj("Dais", bm, m["blocks"], uv=0.4)]
-    objs.append(realms._frustum_collider("DaisCol", 7.2, 0.9, 8.6, -0.6))
+    objs.append(realms._frustum_collider("DaisCol", 7.2, 0.9, 10.2, -0.6))
     bm, bm_s = bmesh.new(), bmesh.new()
     for k in range(6):
         a = 2 * math.pi * k / 6

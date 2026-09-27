@@ -696,8 +696,8 @@ def blood_altar():
     objs.append(finish("AltarChains", bm_c, m["iron"], uv=3.0, smooth=True))
     objs.append(finish("AltarEyes", bm_e, m["eye"]))
     objs.append(finish("AltarFlames", bm_f, m["fire"]))
-    objs.append(util.collider("AltarTier1", (5.2, 5.2, 0.48), (0, 0, 0.24)))
-    objs.append(util.collider("AltarTier2", (4.1, 4.1, 0.96), (0, 0, 0.48)))
+    # the two 0.48 m tiers were box colliders nobody could step up: one walkable frustum
+    objs.append(_frustum_collider("AltarTiers", 2.1, 0.96, 3.9, -0.05))
     objs.append(util.collider("AltarBasin", (3.1, 3.1, 2.1), (0, 0, 1.05)))
     return objs
 
@@ -964,7 +964,7 @@ def demon_gate():
     # plinth course
     bm = bmesh.new()
     for sx in (-1, 1):
-        x0, x1 = sorted((sx * hw, sx * 11.3))
+        x0, x1 = sorted((sx * (hw + 0.03), sx * 11.3))
         util.box(bm, (x1 - x0, 2 * dep + 1.0, 1.2), loc=((x0 + x1) / 2, 0, 0.6))
     objs.append(finish("GatePlinth", bm, m["rock"], uv=0.4))
     # glowing arrow slits and a rune cornice on the tower faces
@@ -984,7 +984,7 @@ def demon_gate():
     objs.append(finish("GateCornice", bm_r, m["runes"], uv=0.5))
     # glowing rune trim around the arch (front and back) and a band under the merlons
     bm = bmesh.new()
-    for y in (-dep - 0.08, dep + 0.08):
+    for y in (-dep - 0.12, dep + 0.12):
         path = [V((0, y, 0)) + V((p.x * 1.06, 0, spring + (p.z - spring) * 1.06)) for p in arcs[0]]
         path = [V((path[0].x, y, 0.3))] + path + [V((path[-1].x, y, 0.3))]
         util.tube(bm, path, (0.16, 0.08), n=6, power=4.0, closed_ends=True)
@@ -1061,7 +1061,7 @@ def fortress_wall(length=8.0, height=7.5):
     tapered_box(bm, -1.1, 1.1, -t - 1.4, -t, 0.0, height - 0.8, sides=(0.2, 0.2, 0.5, 0.0))
     objs.append(finish("WallStone", bm, m["blocks"], uv=0.25))
     bm = bmesh.new()
-    util.box(bm, (length + 0.02, 2 * t + 0.62, 1.0), loc=(0, 0, 0.5))
+    util.box(bm, (length + 0.12, 2 * t + 0.62, 1.0), loc=(0, 0, 0.5))
     objs.append(finish("WallPlinth", bm, m["rock"], uv=0.4))
     bm = bmesh.new()
     util.box(bm, (length + 0.04, 0.12, 0.35), loc=(0, -t - 0.02, height - 0.6))
@@ -1583,7 +1583,8 @@ def jade_bridge(length=30.0, width=4.4, rise=1.0, belvedere=0.0):
     objs = []
     n = int(length / 1.0)
     ys = [-length / 2 + length * i / n for i in range(n + 1)]
-    zs = [_deck_z(y, length, rise, belvedere) for y in ys]
+    # 4 cm proud of the isle tops the ends rest on (flush, the two surfaces z-fought)
+    zs = [_deck_z(y, length, rise, belvedere) + 0.04 for y in ys]
     hw = width / 2
     cross = [(-hw, 0.0), (hw, 0.0), (hw, -0.45), (hw - 0.5, -0.8), (-hw + 0.5, -0.8), (-hw, -0.45)]
     bm = bmesh.new()
@@ -1596,7 +1597,7 @@ def jade_bridge(length=30.0, width=4.4, rise=1.0, belvedere=0.0):
     for sx in (-1, 1):
         util.tube(bm_j, [V((sx * (hw + 0.02), y, z - 0.22)) for y, z in zip(ys, zs)], (0.04, 0.16), n=4,
                   power=4.0)
-        util.tube(bm_g, [V((sx * (hw + 0.03), y, z - 0.02)) for y, z in zip(ys, zs)], (0.035, 0.035), n=6)
+        util.tube(bm_g, [V((sx * (hw + 0.06), y, z - 0.02)) for y, z in zip(ys, zs)], (0.035, 0.035), n=6)
     # balustrade
     bm_p = bmesh.new()
     rail_len = length / 2 - 2.6
@@ -1638,12 +1639,13 @@ def jade_bridge(length=30.0, width=4.4, rise=1.0, belvedere=0.0):
         zb = rise
         oct_pts = [V((cr * math.cos(R(22.5 + 45 * k)), cr * math.sin(R(22.5 + 45 * k)), 0)) for k in range(8)]
         bm = bmesh.new()
-        prism(bm, [(cr + 0.25, zb - 0.9), (cr + 0.25, zb - 0.15), (cr, zb)], sides=8, rot=R(22.5), cap_top=True)
+        prism(bm, [(cr + 0.25, zb - 0.9), (cr + 0.25, zb - 0.15), (cr, zb + 0.02)], sides=8, rot=R(22.5),
+              cap_top=True)
         prism(bm, [(cr + 0.25, zb - 0.9), (cr * 0.6, zb - 2.6), (0.6, zb - 4.4), (0.05, zb - 5.2)], sides=8,
               rot=R(22.5), cap_top=False)
         objs.append(finish("BelvedereBase", bm, m["marble"], uv=0.3))
         bm = bmesh.new()
-        disc(bm, (0, 0), ap - 0.6, 48, z=zb + 0.012)
+        disc(bm, (0, 0), ap - 0.6, 48, z=zb + 0.075)
         objs.append(finish("BelvedereInlay", bm, _mat("belvedere_star", star_map(512, 542), 1.5)))
         for k in range(8):
             a, b = oct_pts[k] * ((ap - 0.18) / ap), oct_pts[(k + 1) % 8] * ((ap - 0.18) / ap)
@@ -1717,7 +1719,7 @@ def ascension_stair(rise=26.0, run=56.0, width=5.0, seed=51):
         depth = run / n - 0.14
         vs = util.box(bm_s, (width, depth, 0.42), loc=(0, 0, -0.21))
         vs += util.box(bm_s, (width * 0.8, depth * 0.7, 0.3), loc=(0, 0, -0.55))
-        g = util.box(bm_g, (width + 0.02, 0.08, 0.1), loc=(0, -depth / 2 + 0.03, -0.04))
+        g = util.box(bm_g, (width + 0.08, 0.08, 0.1), loc=(0, -depth / 2 + 0.015, -0.035))
         yaw = R(rnd.uniform(-1.5, 1.5))
         xform_verts(bm_s, vs, (x, y, z), yaw=yaw)
         xform_verts(bm_g, g, (x, y, z), yaw=yaw)
@@ -1731,14 +1733,14 @@ def ascension_stair(rise=26.0, run=56.0, width=5.0, seed=51):
                 util.sphere(bm_l, 0.2, loc=p + V((0, 0, 1.36)), segs=10, rings=6)
                 util.lathe(bm_g, [(0.001, 0), (0.14, -0.2), (0.001, -0.5)], segs=8, loc=p - V((0, 0, 0.4)))
     for y0, z in ((-4.0, 0.0), (run, rise)):
-        util.box(bm_s, (width + 0.6, 4.0, 0.5), loc=(0, y0 + 2.0, z - 0.25))
+        util.box(bm_s, (width + 0.6, 4.0, 0.5), loc=(0, y0 + 2.0, z - 0.21))
         util.box(bm_s, (width, 3.4, 0.5), loc=(0, y0 + 2.0, z - 0.7))
         util.box(bm_g, (width + 0.64, 4.04, 0.08), loc=(0, y0 + 2.0, z - 0.3))
     objs = [finish("StairSlabs", bm_s, m["marble"], uv=0.4), finish("StairGold", bm_g, m["gold"], uv=2.0),
             finish("StairLamps", bm_l, m["lamp"], smooth=True), finish("StairClouds", bm_c, cloud, uv=0.5, smooth=True)]
     objs.append(ramp_collider("StairRamp", width, 0.0, rise, 0.0, run))
-    objs.append(util.collider("LandingLow", (width + 0.6, 4.0, 0.5), (0, -2.0, -0.25)))
-    objs.append(util.collider("LandingHigh", (width + 0.6, 4.0, 0.5), (0, run + 2.0, rise - 0.25)))
+    objs.append(util.collider("LandingLow", (width + 0.6, 4.0, 0.5), (0, -2.0, -0.21)))
+    objs.append(util.collider("LandingHigh", (width + 0.6, 4.0, 0.5), (0, run + 2.0, rise - 0.21)))
     return objs
 
 
@@ -1774,7 +1776,7 @@ def celestial_ruins(seed=61):
     _octagon_base(bm, 2, 6.6, step_w=0.8, step_h=0.25, z_top=0.5, bottom=-0.5)
     objs.append(finish("RuinsDais", bm, m["cracked"], uv=0.3))
     bm = bmesh.new()
-    disc(bm, (0, 0), 6.3, 48, z=0.508)
+    disc(bm, (0, 0), 6.3, 48, z=0.53)
     maps = cracked_marble(512, 523)
     u, v = tex.grid(512)
     r = np.sqrt((u - 0.5) ** 2 + (v - 0.5) ** 2)
@@ -1851,7 +1853,7 @@ def star_pavilion():
     _octagon_base(bm, 3, 5.6, step_w=0.5, step_h=0.15, z_top=0.45, bottom=-0.3)
     objs.append(finish("PavilionBase", bm, m["marble"], uv=0.4))
     bm = bmesh.new()
-    disc(bm, (0, 0), 5.2, 64, z=0.458)
+    disc(bm, (0, 0), 5.2, 64, z=0.48)
     objs.append(finish("StarFloor", bm, _mat("star_map", star_map(1024), 2.0, normal_strength=0.5)))
     cr = 4.9
     pts = [V((cr * math.cos(R(22.5 + 45 * k)), cr * math.sin(R(22.5 + 45 * k)), 0)) for k in range(8)]
@@ -1999,7 +2001,7 @@ def tribulation_altar():
     objs.append(finish("AltarBase", bm, util.material("altar_granite", tex.stone("#b9b5ab", 512, 574, 0.25),
                                                       normal_strength=0.6), uv=0.3))
     bm = bmesh.new()
-    disc(bm, (0, 0), 8.8, 64, z=0.758)
+    disc(bm, (0, 0), 8.8, 64, z=0.78)
     objs.append(finish("TaijiDisc", bm, _mat("taiji_bagua", taiji_bagua(1024), 2.0, normal_strength=0.4)))
     bm_p, bm_r, bm_o, bm_t = bmesh.new(), bmesh.new(), bmesh.new(), bmesh.new()
     uvl = bm_t.loops.layers.uv.verify()

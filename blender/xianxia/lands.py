@@ -1883,10 +1883,10 @@ def town_house(w=8.0, d=5.5, seed=1):
     bm = bmesh.new()
     for sx in (-1, 1):
         for sy in (-1, 1):
-            util.box(bm, (0.24, 0.24, wz - base), loc=(sx * hw, sy * hd, (base + wz) / 2))
-        util.box(bm, (0.2, 0.26, 2.35), loc=(sx * 0.9, -hd - 0.01, base + 1.17))
-        util.box(bm, (0.14, 0.26, 1.3), loc=(sx * 3.3, -hd - 0.01, base + 1.75))
-        util.box(bm, (0.14, 0.26, 1.3), loc=(sx * 1.8, -hd - 0.01, base + 1.75))
+            util.box(bm, (0.3, 0.3, wz - base), loc=(sx * hw, sy * hd, (base + wz) / 2))
+        util.box(bm, (0.2, 0.32, 2.35), loc=(sx * 0.88, -hd - 0.01, base + 1.17))
+        util.box(bm, (0.14, 0.32, 1.3), loc=(sx * 3.3, -hd - 0.01, base + 1.75))
+        util.box(bm, (0.14, 0.32, 1.3), loc=(sx * 1.8, -hd - 0.01, base + 1.75))
         util.box(bm, (1.6, 0.3, 0.12), loc=(sx * 2.55, -hd - 0.02, base + 1.15))
         util.box(bm, (1.6, 0.3, 0.12), loc=(sx * 2.55, -hd - 0.02, base + 2.35))
     util.box(bm, (2.0, 0.28, 0.2), loc=(0, -hd - 0.02, base + 2.35))
@@ -2001,11 +2001,12 @@ def town_house_large(w=11.0, d=7.0):
     objs += roof
     # signs: horizontal plaque over the entrance, vertical board at the corner, a wine flag
     bm = bmesh.new()
-    panel(bm, -1.6, 1.6, -hd - 1.45, f1 - 0.95, f1 - 0.25)
+    panel(bm, -1.6, 1.6, -hd - 1.485, f1 - 0.95, f1 - 0.25)
     objs.append(util.mesh_object("InnPlaque", bm, sign_h, smooth=False))
     bm = bmesh.new()
-    panel(bm, -hw - 0.35, -hw + 0.35, -hd - 1.5, 0.9, f1 - 0.6)
-    panel(bm, -hw - 0.35, -hw + 0.35, -hd - 1.54, 0.9, f1 - 0.6, flip=True)
+    # the corner board used to sit inside its own 8 cm frame (both faces hidden or flickering)
+    panel(bm, -hw - 0.35, -hw + 0.35, -hd - 1.585, 0.9, f1 - 0.6)
+    panel(bm, -hw - 0.35, -hw + 0.35, -hd - 1.455, 0.9, f1 - 0.6, flip=True)
     objs.append(util.mesh_object("InnSign", bm, sign_v, smooth=False))
     bm = bmesh.new()
     util.box(bm, (3.4, 0.12, 0.8), loc=(0, -hd - 1.4, f1 - 0.6))
@@ -2166,7 +2167,7 @@ def town_gate():
     for sx in (-1, 1):
         x = sx * (ow / 2 + pw / 2)
         bevel_box(bm_s, (pw + 0.2, pd + 0.2, 0.5), loc=(x, 0, 0.25), bevel=0.04)
-        util.box(bm_b, (pw, pd, ph - 0.5), loc=(x, 0, 0.5 + (ph - 0.5) / 2))
+        util.box(bm_b, (pw, pd, ph - 0.62), loc=(x, 0, 0.5 + (ph - 0.62) / 2))
         bevel_box(bm_s, (pw + 0.15, pd + 0.15, 0.2), loc=(x, 0, ph - 0.1), bevel=0.03)
     objs.append(obj("GatePiers", bm_b, m["brick"], uv=0.5))
     objs.append(obj("GateStone", bm_s, m["stone"], uv=0.7))

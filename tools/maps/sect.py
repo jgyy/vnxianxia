@@ -245,8 +245,8 @@ def build_layout():
     add("formation_array", (0, 0.0, 8), name="FormationArray")
     add("incense_burner", (0, 0.0, -22), name="IncenseBurner")
     add("stone_bridge", (18, -0.15, 2), name="StoneBridge")
-    add("lotus_cluster", (14.5, -0.44, -1.5))
-    add("lotus_cluster", (21.5, -0.44, 5.5), yaw=70)
+    add("lotus_cluster", (14.5, -0.41, -1.5))
+    add("lotus_cluster", (21.5, -0.41, 5.5), yaw=70)
 
     # courtyard walls: the south side leaves room for the gate, the west side has a moon gate
     def run(x0, z0, x1, z1, gap=None, moon_at=None):
@@ -260,7 +260,7 @@ def build_layout():
             if gap and gap[0] < x < gap[1]:
                 continue
             asset = "moon_gate_wall" if moon_at is not None and k == moon_at else "courtyard_wall"
-            add(asset, (x, 0, z), yaw=yaw)
+            add(asset, (x, 0, z), yaw=yaw, scale=(length / n / 8.0, 1.0, 1.0))
 
     run(-WALL_HALF_X, WALL_NORTH, WALL_HALF_X, WALL_NORTH)
     run(-WALL_HALF_X, WALL_SOUTH, -5.0, WALL_SOUTH)
@@ -322,7 +322,7 @@ def build_layout():
             add("bamboo_cluster", (x, 0, z), yaw=rnd.uniform(0, 360))
         placed += 1
     add("scholar_rock", (26, 0, 10), yaw=30)
-    add("scholar_rock", (-12, 0, -14), yaw=200, scale=0.8)
+    add("scholar_rock", (-14.5, 0, -16.5), yaw=200, scale=0.8)
     for pos in ((-45, 0, 40), (47, 0, 18), (30, 0, 56), (-30, 0, -58), (50, 0, -35), (-52, 0, -12)):
         add("boulders", pos, yaw=rnd.uniform(0, 360), scale=rnd.uniform(0.8, 1.6))
     # the sky: floating islets and distant karst pillars rising from the cloud sea
@@ -415,7 +415,7 @@ def build_districts(add, rnd):
     add("scholar_rock", -110, -207, 140, 1.2, "ReflectionRock", N_Y)
     add("pine_tree", -98, -210, 40, 1.2, None, N_Y - 0.2)
     # switchback and bridge to Sword Peak
-    for t in range(4, 190, 22):
+    for t in range(4, int(SWITCHBACK.length) - 4, 22):
         (x, z), (tx, tz) = SWITCHBACK.at(t)
         px, pz = x - tz * 3.8, z + tx * 3.8
         add("stone_lantern", px, pz, 0, 0.8, None, gy(px, pz))
@@ -581,7 +581,8 @@ def build() -> common.MapDef:
                              exempt=("CableBridge",))
     if problems:
         raise SystemExit("sect marker problems:\n  " + "\n  ".join(problems))
-    env = common.Env(shadow_distance=160.0)
+    # the terraces reach 36 m below the old plateau: keep the height fog down in the sea of clouds
+    env = common.Env(shadow_distance=170.0, fog_density=0.0007, fog_height=-58.0, fog_height_density=0.03)
     return common.MapDef("sect", "Azure Cloud Sect", "sect", items, markers, env=env, ambient="motes", kill_y=KILL_Y)
 
 

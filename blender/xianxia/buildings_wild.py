@@ -72,7 +72,7 @@ def stilt_house(w=7.0, d=5.5, deck=2.2, seed=1, veranda=True):
     objs.append(B.obj("Walls", bm, m["mat"], uv=0.6))
     bm = bmesh.new()
     for x in (-w / 2, -0.6, 0.6, w / 2):
-        util.box(bm, (0.14, 0.14, wh + 0.2), loc=(x, -d / 2, deck + wh / 2))
+        util.box(bm, (0.2, 0.2, wh + 0.2), loc=(x, -d / 2, deck + wh / 2))
     if veranda:
         for x in [-w / 2 + w * i / 6 for i in range(7)]:
             util.box(bm, (0.07, 0.07, 0.9), loc=(x, -d / 2 - vd, deck + 0.45))
@@ -162,13 +162,13 @@ def lake_pavilion():
         dvec = b_ - a_
         ang = math.atan2(dvec.y, dvec.x)
         ln = dvec.length
-        util.box(bm_w, (ln + 1.6, 1.6, 0.16), loc=((a_ + b_) / 2 - V((0, 0, 0.08))), rot=Matrix.Rotation(ang, 4, "Z"))
+        util.box(bm_w, (ln + 1.6, 1.6, 0.16), loc=((a_ + b_) / 2 - V((0, 0, 0.11))), rot=Matrix.Rotation(ang, 4, "Z"))
         for t in (0.0, 0.5, 1.0):
             p = a_.lerp(b_, t)
             for s in (-0.7, 0.7):
                 q = p + V((-math.sin(ang) * s, math.cos(ang) * s, 0))
                 util.cylinder(bm, 0.1, 0.1, 3.4, loc=(q.x, q.y, deck - 1.7), segs=6)
-        objs.append(util.collider("Walk", (ln + 1.6, 1.6, 0.3), ((a_ + b_) / 2 - V((0, 0, 0.15))), rot_z=ang))
+        objs.append(util.collider("Walk", (ln + 1.6, 1.6, 0.3), ((a_ + b_) / 2 - V((0, 0, 0.18))), rot_z=ang))
     objs.append(B.obj("Piles", bm, m["log"], uv=1.0, smooth=True))
     objs.append(B.obj("Walkway", bm_w, m["planks"], uv=0.8))
     bm_p, bm_s = bmesh.new(), bmesh.new()
@@ -765,7 +765,6 @@ ASSETS = {
     "lingzhi_ring": lingzhi_ring,
     "buried_temple": buried_temple,
     "buddha_cliff": buddha_cliff,
-    "rope_bridge": rope_bridge,
     "rope_bridge_long": lambda: rope_bridge(42.0, 2.0, 2.2),
     "battlefield_debris": battlefield,
     "burial_mounds": burial_mounds,

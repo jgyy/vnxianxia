@@ -323,8 +323,8 @@ def build() -> common.MapDef:
     add("scholar_rock", gx2 + 7.5, gz2 - 7, 300, 0.7)
     px_, pz_, pr_ = POOL
     add("spring_pool", px_, pz_, 0, name="SpiritSpring", y=pool_level())
-    add("lotus_cluster", px_ - 1.5, pz_ + 1, 30, 0.8, y=pool_level() + 0.02)
-    add("lotus_cluster", px_ + 2.0, pz_ - 1.5, 200, 0.6, y=pool_level() + 0.02)
+    add("lotus_cluster", px_ - 1.5, pz_ + 1, 30, 0.8, y=pool_level() + 0.05)
+    add("lotus_cluster", px_ + 2.0, pz_ - 1.5, 200, 0.6, y=pool_level() + 0.05)
     for k in range(9):
         a = k * 0.7 + 1.2
         add("boulders", px_ + math.cos(a) * (pr_ + 1.2), pz_ + math.sin(a) * (pr_ + 1.2), k * 40, 0.45, dy=-0.25)

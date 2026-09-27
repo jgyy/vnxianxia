@@ -115,7 +115,10 @@ transform = Transform3D(0.906308, 0, 0.422618, 0.333028, 0.615661, -0.71418, -0.
 light_color = Color(1, 0.96, 0.86, 1)
 light_energy = 1.8
 shadow_enabled = true
+shadow_bias = 0.06
+shadow_normal_bias = 1.6
 shadow_blur = 1.5
+directional_shadow_blend_splits = true
 directional_shadow_max_distance = 130
 
 [node name="Level" type="Node3D" parent="."]
@@ -460,10 +463,10 @@ transform = Transform3D(0.35, 0, 0.606218, 0, 0.7, 0, -0.606218, 0, 0.35, -42.5,
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -44, -0.562, 69)
 
 [node name="LotusCluster1" parent="Level" instance=ExtResource("32_lotus_cluster")]
-transform = Transform3D(0.69282, 0, -0.4, 0, 0.8, 0, 0.4, 0, 0.69282, -45.5, -0.542, 70)
+transform = Transform3D(0.69282, 0, -0.4, 0, 0.8, 0, 0.4, 0, 0.69282, -45.5, -0.512, 70)
 
 [node name="LotusCluster2" parent="Level" instance=ExtResource("32_lotus_cluster")]
-transform = Transform3D(-0.563816, 0, 0.205212, 0, 0.6, 0, -0.205212, 0, -0.563816, -42, -0.542, 67.5)
+transform = Transform3D(-0.563816, 0, 0.205212, 0, 0.6, 0, -0.205212, 0, -0.563816, -42, -0.512, 67.5)
 
 [node name="Boulders49" parent="Level" instance=ExtResource("6_boulders")]
 transform = Transform3D(0.45, 0, -0, 0, 0.45, 0, 0, 0, 0.45, -41.21, -0.682, 76.177)

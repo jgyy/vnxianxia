@@ -209,8 +209,8 @@ def formation_array():
     bm = bmesh.new()
     uv = bm.loops.layers.uv.verify()
     n = 64
-    c = bm.verts.new(V((0, 0, 0.465)))
-    ring = [bm.verts.new(V((4.1 * math.cos(2 * math.pi * k / n), 4.1 * math.sin(2 * math.pi * k / n), 0.465)))
+    c = bm.verts.new(V((0, 0, 0.49)))
+    ring = [bm.verts.new(V((4.1 * math.cos(2 * math.pi * k / n), 4.1 * math.sin(2 * math.pi * k / n), 0.49)))
             for k in range(n)]
     for k in range(n):
         f = bm.faces.new((c, ring[k], ring[(k + 1) % n]))
@@ -242,7 +242,8 @@ def formation_array():
     cr = util.mesh_object("SpiritCrystal", bm, crystal_m, smooth=False)
     cr.location = (0, 0, 3.2)
     objs.append(cr)
-    objs.append(util.collider("FormationCol", (8.6, 8.6, 0.46), (0, 0, 0.23)))
+    from . import arch
+    objs.append(arch.frustum_col("FormationCol", 24, 4.35, 0.49, 5.6, -0.05))
     return objs
 
 

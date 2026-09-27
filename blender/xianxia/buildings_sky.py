@@ -26,7 +26,7 @@ def chain_bridge(length=48.0, width=2.6, sag=2.0, style="sect"):
 
     def z_at(y):
         t = (y + length / 2) / length
-        return -sag * 4 * t * (1 - t)
+        return 0.04 - sag * 4 * t * (1 - t)
     n = int(length / 0.4)
     rnd = random.Random(7)
     bm = bmesh.new()
@@ -81,7 +81,7 @@ def sky_bridge(length=40.0, width=4.0, colours=None, name="Rainbow"):
     bw = width / len(colours)
     for k, c in enumerate(colours):
         bm = bmesh.new()
-        util.box(bm, (bw, length, 0.12), loc=(-width / 2 + bw * (k + 0.5), 0, -0.06))
+        util.box(bm, (bw, length, 0.12), loc=(-width / 2 + bw * (k + 0.5), 0, -0.02))
         mat = util.material(f"{name}_band{k}", color=c, rough=0.2, emission=c, emission_strength=1.4, alpha=0.75)
         objs.append(util.mesh_object(f"Band{k}", bm, mat, smooth=False))
     bm = bmesh.new()
@@ -95,7 +95,7 @@ def sky_bridge(length=40.0, width=4.0, colours=None, name="Rainbow"):
     for sx in (-1, 1):
         util.box(bm, (0.06, length, 0.06), loc=(sx * (width / 2 - 0.1), 0, 0.95))
     objs.append(B.obj("Posts", bm, sm["gold"], uv=1.0, smooth=True))
-    objs.append(util.collider("Deck", (width, length + 1.0, 0.4), (0, 0, -0.2)))
+    objs.append(util.collider("Deck", (width, length + 1.0, 0.4), (0, 0, -0.16)))
     for sx in (-1, 1):
         objs.append(util.collider("Rail", (0.3, length, 1.2), (sx * (width / 2 - 0.1), 0, 0.6)))
     return objs
@@ -106,15 +106,15 @@ def stepping_stone(seed=1, r=2.4):
     sm = realms.sky_mats()
     rnd = random.Random(seed)
     bm = bmesh.new()
-    realms.disc(bm, (0, 0), r, 16, z=0.0, uv_size=3.0, wobble=0.06, seed=seed)
+    realms.disc(bm, (0, 0), r, 16, z=0.04, uv_size=3.0, wobble=0.06, seed=seed)
     top = B.obj("Top", bm, sm["grass"], uv=None)
     bm = bmesh.new()
-    prof = [(r * 1.0, 0.0), (r * 1.02, -0.3), (r * 0.8, -1.2), (r * 0.45, -2.4), (0.05, -3.4)]
+    prof = [(r * 1.0, 0.04), (r * 1.02, -0.3), (r * 0.8, -1.2), (r * 0.45, -2.4), (0.05, -3.4)]
     rings = realms.prism(bm, prof, sides=12, rot=0, cap_top=False, jitter=0.1, seed=seed)
     del rings
     rock = B.obj("Rock", bm, sm["cliff"], uv=0.5, smooth=True)
     del rnd
-    return [top, rock, realms._frustum_collider("Stone", r * 0.92, 0.0, r * 0.7, -1.2)]
+    return [top, rock, realms._frustum_collider("Stone", r * 0.92, 0.04, r * 0.7, -1.2)]
 
 
 def armillary(bm, c, r):
@@ -384,7 +384,7 @@ def cloud_pier(length=24.0, width=5.0):
     sm = realms.sky_mats()
     objs = []
     bm = bmesh.new()
-    util.box(bm, (width, length, 0.8), loc=(0, -length / 2, -0.4))
+    util.box(bm, (width, length, 0.8), loc=(0, -length / 2, -0.36))
     realms.prism(bm, [(0.3, -0.8), (width * 0.3, -3.0), (0.05, -5.0)], sides=6, rot=0, loc=(0, -length * 0.6, 0))
     objs.append(B.obj("Pier", bm, sm["marble"], uv=0.4))
     bm, bm_l = bmesh.new(), bmesh.new()
@@ -399,7 +399,7 @@ def cloud_pier(length=24.0, width=5.0):
                 util.cylinder(bm, 0.07, 0.07, 2.4, loc=(sx * (width / 2 - 0.3), y - 1.5, 1.2), segs=6)
                 util.sphere(bm_l, 0.25, loc=(sx * (width / 2 - 0.3), y - 1.5, 2.6), segs=10, rings=6)
     objs += [B.obj("Posts", bm, sm["gold"], uv=1.0, smooth=True), B.obj("Lamps", bm_l, sm["lamp"], uv=None, smooth=True)]
-    objs.append(util.collider("Pier", (width, length, 0.8), (0, -length / 2, -0.4)))
+    objs.append(util.collider("Pier", (width, length, 0.8), (0, -length / 2, -0.36)))
     for sx in (-1, 1):
         objs.append(util.collider("Edge", (0.4, length, 1.1), (sx * (width / 2 - 0.3), -length / 2, 0.55)))
     return objs
@@ -493,7 +493,7 @@ def _mirror_pool(r=7.0):
     bm = bmesh.new()
     realms.disc(bm, (0, 0), r + 0.02, 48, z=0.4)
     objs.append(B.obj("MirrorWater", bm, mirror, uv=None))
-    objs.append(_cone_col("MirrorRim", r + 0.5, 0.55, r + 1.0, -0.3))
+    objs.append(_cone_col("MirrorRim", r + 0.5, 0.55, r + 2.4, -0.3))
     return objs
 
 
