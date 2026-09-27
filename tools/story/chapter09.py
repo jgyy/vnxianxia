@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     9, "The Heart Demon",
@@ -161,4 +162,54 @@ CHAPTER = chapter(
                        (YUN, "In three days we march on the Abyss, every disciple who can hold a sword. We end this, as our founders could not."),
                        (YUN, "Mo believed in you before any of us. Let's prove him right, {player}.")),
               ], xp=2000, items={"spirit_stone": 10}, realm="Soul Transformation"),
+    ])
+
+# Three days remain before the blood moon rises. The sect gathers its
+# strength and buries its grief before marching. Spliced in between
+# "The Five Oaths" and "Soul Transformation".
+EXTRA = C(
+    "The Five Oaths", "sect",
+    "Three days remain before the blood moon rises. The sect counts its dead, arms its living, and readies "
+    "itself to march on the Abyss it has feared for ten thousand years.",
+    cast=[YUN, HAN, ZHAO, HUA, MAN, SHI, QIAN, WEI, BAI, LU],
+    foes=["blood_guard", "demon_cultivator", "corrupted_wolf"],
+    items=["spirit_stone", "medicine", "lantern_oil"],
+    props=["bronze_bell", "jade_slip", "seal"],
+    beats=[
+        B("gather", "Spirit Stones From Every Disciple",
+          "Steward Qian asks every disciple, not just you, to give what spirit stones they can spare for the march.",
+          item="spirit_stone", v=0),
+        B("hunt", "Blood Guard Scouts on the Mountain Road",
+          "Blood Moon scouts test the mountain's defenses one last time before the blood moon rises.",
+          foe="blood_guard", v=0),
+        B("social", "Wei Tong's Dumplings, Finally",
+          "Wei Tong finishes the dumplings he'd been practicing for Elder Mo's birthday, and insists on sharing them before the march.",
+          (WEI, "They're not perfect. He'd have said adequate. I'll take adequate. Eat one. For him."),
+          v=0),
+        B("gather", "Medicine Bundles, the Second Batch",
+          "Xiao Man's medicine bundles run short of the army's need. Elder Hua asks for a second batch before dawn.",
+          item="medicine", v=0),
+        B("probe", "Bai Ling's Map of the Abyss",
+          "Bai Ling, working from Xiao Shi's memory and the Law Hall's oldest scrolls, draws a map of the Abyss for the march.",
+          (BAI, "Shi's memory and Gu's old scrolls, together. I think this is close. I hope it's close. Lives depend on close."),
+          v=0),
+        B("hunt", "Corrupted Wolves at the Mountain's Foot",
+          "Corrupted wolves gather at the mountain's foot, drawn by the blood moon's coming light.",
+          foe="corrupted_wolf", v=0),
+        B("social", "The Sect Master's Address",
+          "Before the army departs, the Sect Master speaks to every disciple gathered in the plaza, crown on, voice steady.",
+          (YUN, "Ten thousand years our founders held this seal with what they had. Tonight we hold it with everything we are."),
+          (YUN, "Mo Changfeng bought us three days with his whole life. Let's not waste a single hour of them."),
+          v=0),
+        B("hunt", "Demon Cultivators, One Last Skirmish",
+          "A final skirmish breaks out at the outer gate as demon cultivators probe the sect's readiness.",
+          foe="demon_cultivator", v=0),
+        B("social", "Lu Ping's Ledger of the Dead",
+          "Lu Ping insists on reading, aloud, the names of everyone the sect has lost since the seal first cracked.",
+          (LU, "Someone has to say their names before we march. I volunteered. I didn't know it would be this long a list."),
+          v=0),
+        B("cultivate", "Steadying Every Heart",
+          "Before the army departs, you walk the ranks and steady whichever hearts need steadying, including your own.",
+          (HAN, "You don't have to be steady for all of us. Just walk with us. That's steady enough."),
+          v=0),
     ])
