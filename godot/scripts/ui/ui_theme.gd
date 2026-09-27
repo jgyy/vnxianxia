@@ -141,7 +141,7 @@ static func _ratio(c: Color, ref: Color) -> Color:
 ## is kept for compatibility; ``border_w`` >= 2 brightens the gilt a little.
 static func panel(bg := INK, border := GOLD, radius := 6, border_w := 1) -> StyleBox:
 	var fill := _ratio(bg, INK)
-	fill.a = clampf(bg.a / INK.a, 0.0, 1.0) * 0.93
+	fill.a = clampf(bg.a / INK.a, 0.0, 1.0)
 	var frame := _ratio(border, GOLD)
 	frame.a = border.a
 	if border_w >= 2:

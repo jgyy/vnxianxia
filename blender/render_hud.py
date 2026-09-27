@@ -23,7 +23,7 @@ Kit (logical sizes):
   scroll                     300x150 quest-tracker hanging scroll, margins
                              26/28/26/28 (rollers live in the top/bottom margins).
   button_{normal,hover,pressed,disabled}  120x34, margins 12/10.
-  toast                      240x36 ribbon (arrow tip / swallowtail), margins 22/9/18/9.
+  toast                      240x40 ribbon (arrow tip / swallowtail), margins 24/10/18/10.
   prompt                     220x40 capsule plate, margins 24/14.
   chip                       30x28 keycap, margins 9.
   portrait_frame             144x144, 128x128 opening at (8,8), margins 26.
@@ -161,17 +161,17 @@ def build_buttons():
 
 
 def build_toast():
-    W, H = 240, 36
+    W, H = 240, 40
     cv = Canvas(W, H)
-    poly = [(16, 8), (234, 8), (225, 18), (234, 28), (16, 28), (6, 18)]
+    poly = [(16, 5), (234, 5), (224, 20), (234, 35), (16, 35), (5, 20)]
     A.slab(cv, [poly], 2.0, 0.8, mat("lacquer"))
-    A.tube(cv, [(15, 10.2), (229, 10.2)], 0.5, mat("gold"), z=2.0)
-    A.tube(cv, [(15, 25.8), (229, 25.8)], 0.5, mat("gold"), z=2.0)
-    A.tube(cv, [(16.5, 8.5), (8, 18), (16.5, 27.5)], 0.55, mat("gold"), z=2.0)
-    A.sphere(cv, 15.5, 18, 2.2, 3.0, mat("jade"), squash=0.7)
+    A.tube(cv, [(15, 7.4), (230, 7.4)], 0.5, mat("gold"), z=2.0)
+    A.tube(cv, [(15, 32.6), (230, 32.6)], 0.5, mat("gold"), z=2.0)
+    A.tube(cv, [(16.5, 5.6), (7.6, 20), (16.5, 34.4)], 0.55, mat("gold"), z=2.0)
+    A.sphere(cv, 15.5, 20, 2.2, 3.0, mat("jade"), squash=0.7)
     cv.render(out("toast"))
-    record("toast", kind="box", size=[W, H], margins=[24, 11, 18, 11], pad=[0, 0, 0, 0],
-           content=[25, 5, 22, 5], layers=["toast.png"])
+    record("toast", kind="box", size=[W, H], margins=[24, 10, 18, 10], pad=[0, 0, 0, 0],
+           content=[25, 10, 22, 10], layers=["toast.png"])
 
 
 def build_prompt():

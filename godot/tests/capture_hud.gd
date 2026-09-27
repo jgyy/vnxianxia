@@ -5,12 +5,16 @@ extends SceneTree
 ## software Vulkan (lavapipe); under CI run inside xvfb-run:
 ##
 ##   xvfb-run -a -s "-screen 0 2560x1440x24" godot --path godot --rendering-driver vulkan \
-##       -s res://tests/capture_hud.gd -- out_dir [WxH,WxH,...]
+##       -s res://tests/capture_hud.gd -- out_dir [WxH,WxH,...] [quick]
+##
+## ``quick`` skips the game world: the HUD alone over a plain backdrop (fast,
+## light on memory), for iterating on the art and layout.
 
 var out_dir := "user://hud_shots"
 var sizes := [Vector2i(1280, 720), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(1024, 768), Vector2i(2560, 1080)]
 var gs: Node
 var game: Node
+var quick := false
 
 
 func _initialize() -> void:
@@ -22,8 +26,9 @@ func _initialize() -> void:
 		for s in args[1].split(","):
 			var p := s.split("x")
 			sizes.append(Vector2i(int(p[0]), int(p[1])))
+	quick = args.size() > 2 and args[2] == "quick"
 	DirAccess.make_dir_recursive_absolute(out_dir)
-	_run.call_deferred()
+	(_run_quick if quick else _run).call_deferred()
 
 
 func _save(file: String, settle := 8) -> void:
@@ -53,6 +58,34 @@ func _until(cond: Callable, limit := 2000) -> void:
 func _resize(s: Vector2i) -> void:
 	root.size = s
 	await _frames(6)
+
+
+func _run_quick() -> void:
+	gs = root.get_node("/root/Game")
+	gs.reset()
+	await _resize(sizes[0])
+	var bg := ColorRect.new()
+	bg.color = Color(0.42, 0.5, 0.46)
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(bg)
+	var hud: CanvasLayer = (load("res://scripts/ui/hud.gd") as GDScript).new()
+	root.add_child(hud)
+	await _frames(2)
+	hud.set_objective("Speak with the gate disciple")
+	hud.set_vitals(100, 100, 100, 100)
+	hud.set_hp(55, 100)
+	hud.toast("+3 Spirit Stones", UiTheme.JADE, 600.0)
+	hud.toast("Your path turns: Walker of the Middle Way", UiTheme.GOLD, 600.0)
+	hud.toast("Previously... the gate disciple warned you about the fainting candidates, and the elder is watching.", UiTheme.MUTED, 600.0)
+	hud.show_boss("Jiao, the Flood Dragon", 0.62)
+	hud.set_prompt("E  Talk to Lu Ping")
+	hud.set_meditation(0.6)
+	hud.banner("Azure Cloud Sect", "Outer Court", 600.0)
+	await _frames(30)
+	for s in sizes:
+		await _resize(s)
+		await _save("quick_%dx%d" % [s.x, s.y], 4)
+	quit()
 
 
 func _run() -> void:
@@ -103,7 +136,7 @@ func _run() -> void:
 	hud.set_prompt("")
 	hud._card.visible = false
 	hud._stage_busy = false
-	hud.banner("Azure Cloud Sect", "Outer Court")
+	hud.banner("Azure Cloud Sect", "Outer Court", 600.0)
 	await _frames(40)
 	for s in [sizes[0], sizes[sizes.size() - 1]]:
 		await _resize(s)

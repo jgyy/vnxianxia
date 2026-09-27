@@ -11,7 +11,7 @@ extends CanvasLayer
 
 const M := 14.0  ## screen-edge margin
 const TRACKER_W := 300.0
-const TOAST_W := 330.0
+const TOAST_W := 300.0
 const MAX_TOASTS := 4
 const RING_SIZE := 96.0
 const KEY_RE := "^(\\S{1,6})\\s{2,}(.+)$"
@@ -343,7 +343,7 @@ func _build_stage() -> void:
 	_stage.alignment = BoxContainer.ALIGNMENT_CENTER
 	_root.add_child(_stage)
 	_banner_box = Control.new()
-	_banner_box.custom_minimum_size = Vector2(700, 107)
+	_banner_box.custom_minimum_size = Vector2(640, 98)  # clear of the toast column (x <= 314)
 	_banner_box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_banner_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_banner_box.modulate.a = 0.0
