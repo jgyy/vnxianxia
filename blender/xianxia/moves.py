@@ -607,8 +607,17 @@ def build_player_actions(arm, J, cfg, s):
         arm.animation_data_create()
     keep = arm.animation_data.action
     acts = []
+    from . import gait
     for clip in clips(cfg["female"]):
-        acts.append(bake(rig, clip))
+        spec = getattr(clip, "gait", None)
+        if spec:
+            kind, arms = spec[0], spec[1]
+            g = gait.attach(rig, clip, cfg, kind, arms=arms, direction=spec[2] if len(spec) > 2 else None)
+            act = gait.bake(rig, clip, g.p["speed"])
+            gait.check(arm, act, g)
+            acts.append(act)
+        else:
+            acts.append(bake(rig, clip))
     arm.animation_data.action = keep
     return acts
 
@@ -757,20 +766,19 @@ def loco(fem):
     REST = rest_of(fem)
 
     # ---- walk backward: toe-first contact, shorter stride, slightly upright
-    c = Clip("walk_back", 36, loop=True, base=S,
-             extra=gait(36, (0, -1), 0.42, 0.06, 0.62, 14, 18, 0.018, 0.01, toe_first=True, arms=0.07, twist=4))
-    c.k(0, root=(0, 0.02, -0.03), spine=(-2, 0, 0), chest=(-1, 0, 0), head=(3, 0, 0), elb=(0.5, -0.7, -0.4),
-        wr=(10, 0, 0), fg="soft", hand=(0.235, 0.03, 0.93))
-    c.k(18, head=(3, 3, 0))
+    # (legs, pelvis and arm swing from gait.py; planted at 1.0 m/s)
+    c = Clip("walk_back", 30, loop=True, base=S)
+    c.gait = ("back", True)
+    c.k(0, root=(0, 0.02, -0.03), spine=(-2, 0, 0), chest=(-1, 0, 0), head=(3, 0, 0), wr=(10, 0, 0), fg="soft")
     out.append(c)
 
-    # ---- strafes: side-step, lead foot opens, trailing foot closes
+    # ---- strafes: side-shuffle (lead foot opens, trailing foot closes, the
+    # feet never cross), planted at 1.0 m/s
     for name, tx in (("strafe_l", 1.0), ("strafe_r", -1.0)):
-        c = Clip(name, 30, loop=True, base=S,
-                 extra=gait(30, (tx, 0), 0.26, 0.055, 0.6, 0, 14, 0.016, 0.0, width=0.035))
-        c.k(0, root=(0, 0, -0.04), hips=(0, 4 * tx, 2 * tx), spine=(2, -2 * tx, -2 * tx), chest=(0, 0, 0),
-            head=(0, -6 * tx, 0), elb=(0.6, -0.6, -0.4), fg="soft", hand=(0.25, 0.08, 0.95), fyaw=4)
-        c.k(15, head=(0, -4 * tx, 0))
+        c = Clip(name, 16, loop=True, base=S)
+        c.gait = ("strafe", False, (tx, 0.0))
+        c.k(0, root=(0, 0, -0.04), hips=(0, 4 * tx, 0), spine=(2, -2 * tx, -2 * tx), chest=(0, 0, 0),
+            head=(0, -6 * tx, 0), elb=(0.6, -0.6, -0.4), fg="soft", hand=(0.25, 0.08, 0.95))
         out.append(c)
 
     # ---- run start: lean in, drive off the back foot
@@ -816,12 +824,13 @@ def loco(fem):
     out.append(c.mirrored("turn_r"))
 
     # ---- qinggong sprint: long leaning strides, arms swept back like wings
-    c = Clip("sprint", 18, loop=True, base=S,
-             extra=gait(18, (0, 1), 0.95, 0.2, 0.42, -6, 30, 0.035, 0.0, twist=5, knee_lift=0.5))
-    c.k(0, root=(0, 0.06, -0.06), hips=(16, 0, 0), spine=(8, 0, 0), chest=(4, 0, 0), neck=(-6, 0, 0),
+    # (legs and pelvis from gait.py; planted at 6.2 m/s)
+    c = Clip("sprint", 18, loop=True, base=S)
+    c.gait = ("sprint", False)
+    c.k(0, root=(0, 0.06, 0.0), hips=(16, 0, 0), spine=(8, 0, 0), chest=(4, 0, 0), neck=(-6, 0, 0),
         head=(-10, 0, 0), hand=(0.3, -0.42, 1.08), elb=(0.4, 0.3, 1.0), hw=0.7, hdir=(0.2, -1, -0.2),
         palm=(0, 0, 1), fg="flat", sh=(4, -6))
-    c.k(9, hand=(0.3, -0.44, 1.12))
+    c.sway = dict(hand_L=(0.0, 0.035, 0.02), hand_R=(0.0, -0.035, 0.02))
     out.append(c)
 
     # ---- crouch idle / crouch walk / sneak
@@ -837,18 +846,19 @@ def loco(fem):
     c.k(75, head=(-16, 0, 0), neck=(-12, 0, 0))
     out.append(c)
 
-    c = Clip("crouch_walk", 40, loop=True, base=S,
-             extra=gait(40, (0, 1), 0.44, 0.08, 0.62, -8, 16, 0.02, 0.02, arms=0.05, twist=4))
-    c.kd(0, {**crouch, "foot_L": (0.05, 0, 0), "foot_R": (0.05, 0, 0), "fp_R": 0, "root": (0, 0.0, -0.34),
-             "fyaw_L": 10, "fyaw_R": 10})
+    c = Clip("crouch_walk", 40, loop=True, base=S)
+    c.gait = ("crouch", False)
+    c.kd(0, {k: v for k, v in crouch.items() if not k.startswith(("foot", "fp", "fyaw", "knee"))})
+    c.k(0, root=(0, 0.0, -0.3))
+    c.sway = dict(hand_L=(0.0, 0.03, 0.0), hand_R=(0.0, -0.03, 0.0))
     out.append(c)
 
-    c = Clip("sneak", 44, loop=True, base=S,
-             extra=gait(44, (0, 1), 0.46, 0.1, 0.64, 12, 20, 0.02, 0.018, toe_first=True, arms=0.03, twist=3))
+    c = Clip("sneak", 44, loop=True, base=S)
+    c.gait = ("sneak", False)
     c.k(0, root=(0, -0.02, -0.12), hips=(14, 0, 0), spine=(10, 0, 0), chest=(4, 0, 0), neck=(-8, 0, 0),
         head=(-10, 0, 0), hand_L=(0.16, 0.26, 1.18), hand_R=(0.18, 0.2, 1.1), fg="claw",
-        elb=(0.9, -0.2, -0.6), wr=(24, 0, 0), sh=(4, 4), fyaw=10)
-    c.k(22, head=(-10, 10, 0))
+        elb=(0.9, -0.2, -0.6), wr=(24, 0, 0), sh=(4, 4))
+    c.sway = dict(hand_L=(0.0, 0.02, 0.01), hand_R=(0.0, -0.02, 0.01))
     out.append(c)
 
     # ---- jumping
