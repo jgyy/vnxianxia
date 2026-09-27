@@ -7,10 +7,11 @@ import math
 
 import bmesh
 import bpy
+import numpy as np
 from mathutils import Matrix, Quaternion, Vector
 from mathutils.bvhtree import BVHTree
 
-from . import anatomy, tex, util
+from . import anatomy, hair_cards, hair_groom, hair_styles, hair_tex, skin, skin_eyes, tex, util
 
 V = Vector
 R = math.radians
@@ -97,7 +98,7 @@ VARIANTS = {
                     metal="#e0c068", ribbon="#f3e3b3", lip="#b34a50"),
         robe_style="clouds"),
     "disciple_male": variant(
-        MALE, "disciple_male", face_tex=1024, jaw=0.48, face=dict(nose=0.95, brow=0.9),
+        MALE, "disciple_male", hair_style="disciple", face_tex=1024, jaw=0.48, face=dict(nose=0.95, brow=0.9),
         colors=dict(skin="#e6c0a0", robe_top="#d3dbe2", robe_hem="#8397ab", robe_motif="#3d5268",
                     robe_accent="#b4c3d1", trim="#34475e", belt="#2a3a50", metal="#aeb4bb"),
         robe_style="plain"),
@@ -307,23 +308,6 @@ def w_hand(p, bones, s, side):
 
 def w_leg(p, bones, s, side):
     return seg_weights(p, bones, [f"shin.{side}", f"foot.{side}", f"toe.{side}"], power=6.0, top=2)
-
-
-def w_hair(p, bones, s):
-    z = p.z / s
-    if z > 1.62:
-        return {"head": 1.0}
-    w = seg_weights(p, bones, ["head", "hair.1", "hair.2", "hair.3"], power=4.0, top=2)
-    f = util_smooth((1.62 - z) / 0.12)
-    w = {n: v * f for n, v in w.items()}
-    _add(w, {"head": 1 - f})
-    return w
-
-
-def w_sidelock(p, bones, s):
-    z = p.z / s
-    f = util_smooth((1.56 - z) / 0.2) * 0.6
-    return {"head": 1 - f, "chest": f}
 
 
 def w_neck(p, bones, s):
@@ -540,274 +524,26 @@ def hairline_table(fem):
             (1.65, -0.10), (1.85, -0.35), (2.4, -0.55), (math.pi, -0.62)]
 
 
-def hairline(lon, fem):
-    """Minimum unit-sphere z where the scalp hair starts, by |longitude|."""
+def hairline_fn(fem):
+    """Vectorised |longitude| -> unit-sphere z of the hairline."""
     table = hairline_table(fem)
-    a = abs(lon)
-    for (a0, z0), (a1, z1) in zip(table[:-1], table[1:]):
-        if a <= a1:
-            t = (a - a0) / (a1 - a0)
-            return z0 + (z1 - z0) * t
-    return table[-1][1]
+    xs, zs = [a for a, _ in table], [z for _, z in table]
+    return lambda a: np.interp(a, xs, zs).astype(np.float32)
 
 
-def build_hair(cfg, mats, centre, radii, s):
-    """Scalp cap plus a hair style, optional beard and horns (see cfg hair_style/beard/horns)."""
-    fem = cfg["female"]
-    style = cfg.get("hair_style", "buns" if fem else "topknot")
-    rx, ry, rz = radii
-    parts = []
-    fshape = cfg.get("face")
+def build_hair(cfg, mats, centre, radii, s, head_parts=(), J=None):
+    """Strand-card hair groom, beard and hair accessories (see hair_styles / hair_groom).
 
-    def scalp(name, mat, lift=1.0, lo=None):
-        """Shell from the hairline (or unit-sphere z `lo`) up to the crown."""
-        bm = bmesh.new()
-        uv = bm.loops.layers.uv.verify()
-        cols, rows = 72, 16
-        grid = []
-        for j in range(rows + 1):
-            row = []
-            for i in range(cols):
-                lon = -math.pi + 2 * math.pi * i / cols
-                z0 = hairline(lon, fem) if lo is None else lo(lon)
-                t = j / rows
-                z = min(z0 + (1 - z0) * t ** 0.85, 0.995)
-                r = math.sqrt(1 - z * z)
-                d = V((math.sin(lon) * r, -math.cos(lon) * r, z))
-                q = head_shape(d, fem, cfg["jaw"], fshape)
-                infl = (1.035 + 0.045 * max(0.0, z) ** 2 + 0.02 * max(0.0, d.y)
-                        - 0.02 * (1 - t) ** 3) * lift
-                row.append(bm.verts.new(centre + V((q.x * rx * infl, q.y * ry * infl, q.z * rz * infl))))
-            grid.append(row)
-        for j in range(rows):
-            for i in range(cols):
-                i2 = (i + 1) % cols
-                f = bm.faces.new((grid[j][i], grid[j][i2], grid[j + 1][i2], grid[j + 1][i]))
-                for loop, (uu, vv) in zip(f.loops, ((i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1))):
-                    loop[uv].uv = (uu / cols * 4.0, vv / rows * 1.2)
-        f = bm.faces.new(grid[rows])
-        for loop in f.loops:
-            loop[uv].uv = (0.5, 1.2)
-        o = util.mesh_object(name, bm, mat)
-        util.solidify(o, 0.004 * s, offset=1.0)
-        return o
-
-    def surf(dx, dz, infl=1.0):
-        d = V((dx, -math.sqrt(max(0.0, 1 - dx * dx - dz * dz)), dz))
-        q = head_shape(d, fem, cfg["jaw"], fshape)
-        return centre + V((q.x * rx * infl, q.y * ry * infl, q.z * rz * infl))
-
-    def around(lon, z, infl=1.0):
-        """Point on the head at longitude lon (0 = face) and unit height z, pushed out by infl."""
-        r = math.sqrt(1 - z * z)
-        q = head_shape(V((math.sin(lon) * r, -math.cos(lon) * r, z)), fem, cfg["jaw"], fshape)
-        return centre + V((q.x * rx * infl, q.y * ry * infl, q.z * rz * infl))
-
-    if style != "scarf":
-        parts.append(("head", scalp("HairCap", mats["hair"])))
-
-    top = centre + V((0, 0.0, rz * 1.02))
-    back = centre + V((0, ry * 0.9, -rz * 0.2))
-
-    def lock(name, path, r0, r1, flat=0.35, weight="hair", n=10, mat="hair"):
-        bm = bmesh.new()
-        pts = util.catmull([V(p) for p in path], 6)
-
-        def rad(t):
-            r = r0 + (r1 - r0) * t ** 0.8
-            return (r, r * flat)
-        util.tube(bm, pts, rad, n=n, up=(0, 1, 0), uv_scale=(1.0, 6.0))
-        o = util.mesh_object(name, bm, mats[mat])
-        parts.append((weight, o))
-        return o
-
-    def solid(name, bm, mat, uvs=8.0, weight="head"):
-        o = util.mesh_object(name, bm, mats[mat])
-        if uvs:
-            util.box_uv(o, uvs)
-        parts.append((weight, o))
-        return o
-
-    def back_hair(xs_list, length, spread=1.3, depth=0.162):
-        mid = (len(xs_list) - 1) / 2
-        for i, x in enumerate(xs_list):
-            xs = x * s
-            ln = length + 0.05 * abs(i - mid) / max(mid, 1) - 0.03 * (i % 2)
-            path = [back + V((xs * 0.6, -0.03 * s, 0.09 * s)), back + V((xs, 0.012 * s, -0.05 * s)),
-                    V((xs * 1.2, (depth - 0.04) * s, 1.47 * s)), V((xs * spread, depth * s, 1.34 * s))]
-            if ln < 1.2:
-                path.append(V((xs * spread, (depth + 0.016) * s, 1.15 * s)))
-            path.append(V((xs * (spread - 0.1) + 0.006 * s * (i - mid), (depth + 0.028) * s, ln * s)))
-            lock(f"HairBack{i}", path, 0.034 * s, 0.012 * s, flat=0.38)
-
-    def side_locks(r0, reach, thick=0.0065):
-        for side in (1, -1):
-            path = [centre + V((side * rx * 0.72, -ry * 0.62, rz * 0.55)),
-                    centre + V((side * rx * 0.98, -ry * 0.62, rz * 0.12)),
-                    centre + V((side * rx * 1.06, -ry * 0.50, -rz * 0.35)),
-                    centre + V((side * rx * 1.02, -ry * 0.42, -rz * reach))]
-            for k, off in enumerate((-0.006, 0.0, 0.006)):
-                p2 = [q + V((side * abs(off) * 0.4 * s, off * s, -0.004 * s * k)) for q in path]
-                lock("SideLock", p2, thick * s, 0.0012 * s, flat=0.3, weight="side", n=8)
-
-    def topknot(size=1.0, crown=True, pin=True, bun_mat="hair"):
-        bun_c = top + V((0, 0.012 * s, 0.018 * s * size))
-        bm = bmesh.new()
-        util.sphere(bm, 0.036 * s * size, loc=bun_c, segs=20, rings=12, scale=(0.95, 1.0, 0.85))
-        solid("Topknot", bm, bun_mat)
-        if crown:
-            bm = bmesh.new()
-            prof = [(0.030, -0.012), (0.036, 0.0), (0.038, 0.02), (0.030, 0.040), (0.018, 0.052),
-                    (0.004, 0.056)]
-            util.lathe(bm, [(r * s * size, z * s * size) for r, z in prof], segs=20, loc=bun_c, cap_top=True)
-            bmesh.ops.scale(bm, vec=(0.75, 1.15, 1.0), verts=bm.verts, space=Matrix.Translation(-bun_c))
-            solid("Crown", bm, "metal", 0)
-        if pin:
-            bm = bmesh.new()
-            util.cylinder(bm, 0.004 * s, 0.003 * s, 0.14 * s, loc=bun_c + V((0, 0, 0.026 * s * size)),
-                          rot=Matrix.Rotation(R(90), 4, "Y"), segs=8)
-            util.sphere(bm, 0.008 * s, loc=bun_c + V((0.07 * s, 0, 0.026 * s * size)), segs=10, rings=6)
-            solid("Hairpin", bm, "jade", 0)
-        return bun_c
-
-    if style in ("topknot", "elder"):
-        topknot(1.15 if style == "elder" else 1.0)
-        back_hair((-0.05, -0.025, 0.0, 0.025, 0.05), 1.20, spread=1.25, depth=0.152)
-        side_locks(0.0065, 0.85)
-    elif style == "buns":
-        for side in (1, -1):
-            loop_c = top + V((side * 0.04 * s, 0.03 * s, 0.025 * s))
-            pts = [V((math.cos(a) * 0.028 * s, 0, math.sin(a) * 0.036 * s))
-                   for a in [2 * math.pi * k / 24 for k in range(25)]]
-            bm = bmesh.new()
-            rot = Matrix.Rotation(R(-25 * side), 3, "Y") @ Matrix.Rotation(R(20), 3, "X")
-            util.tube(bm, [loop_c + rot @ p for p in pts], 0.013 * s, n=10, uv_scale=(1.0, 4.0),
-                      closed_ends=False)
-            solid("HairLoop", bm, "hair", 0)
-        bm = bmesh.new()
-        util.sphere(bm, 0.042 * s, loc=top + V((0, 0.045 * s, 0.0)), segs=20, rings=12, scale=(1.3, 1.0, 0.8))
-        solid("HairBun", bm, "hair")
-        if cfg.get("ornaments", True):
-            bm = bmesh.new()
-            for side in (1, -1):
-                base = top + V((side * 0.06 * s, 0.02 * s, 0.01 * s))
-                tip = base + V((side * 0.07 * s, -0.02 * s, 0.03 * s))
-                util.tube(bm, [base, tip], 0.0025 * s, n=6)
-                for k in range(5):
-                    a = 2 * math.pi * k / 5
-                    util.sphere(bm, 0.009 * s, loc=tip + V((math.cos(a) * 0.01 * s, 0, math.sin(a) * 0.01 * s)),
-                                segs=8, rings=5, scale=(1, 0.4, 1))
-                for k in range(3):
-                    bead = tip + V((side * 0.004 * k * s, -0.004 * s, -0.02 * s * (k + 1)))
-                    util.sphere(bm, 0.0045 * s, loc=bead, segs=8, rings=5)
-                    util.tube(bm, [tip, bead], 0.0008 * s, n=4)
-            solid("Ornament", bm, "metal", 0)
-            bm = bmesh.new()
-            fl = top + V((0.07 * s, -0.01 * s, -0.01 * s))
-            for k in range(5):
-                a = 2 * math.pi * k / 5
-                util.sphere(bm, 0.011 * s, loc=fl + V((math.cos(a) * 0.012 * s, -0.004 * s, math.sin(a) * 0.012 * s)),
-                            segs=8, rings=5, scale=(1, 0.35, 1))
-            solid("Blossom", bm, "accent", 0)
-        back_hair((-0.075, -0.05, -0.025, 0.0, 0.025, 0.05, 0.075), 0.97)
-        side_locks(0.0085, 0.9, 0.0085)
-    elif style == "crown":
-        # a tall single bun held by an ornate phoenix crown
-        bun_c = topknot(1.35, crown=False, pin=True)
-        bm = bmesh.new()
-        prof = [(0.042, -0.02), (0.05, 0.0), (0.052, 0.03), (0.046, 0.06), (0.03, 0.08), (0.006, 0.09)]
-        util.lathe(bm, [(r * s, z * s) for r, z in prof], segs=24, loc=bun_c, cap_top=True)
-        bmesh.ops.scale(bm, vec=(0.8, 1.2, 1.0), verts=bm.verts, space=Matrix.Translation(-bun_c))
-        for side in (1, -1):   # phoenix wings sweeping back from the crown
-            wing = [bun_c + V((side * 0.04 * s, 0, 0.04 * s)), bun_c + V((side * 0.09 * s, 0.03 * s, 0.07 * s)),
-                    bun_c + V((side * 0.12 * s, 0.07 * s, 0.05 * s))]
-            util.tube(bm, util.catmull(wing, 4), lambda t: (0.006 - 0.004 * t) * s, n=6)
-        solid("Crown", bm, "metal", 0)
-        back_hair((-0.075, -0.05, -0.025, 0.0, 0.025, 0.05, 0.075), 0.92)
-        side_locks(0.0075, 0.9, 0.0075)
-    elif style == "ponytail":
-        tie = top + V((0, 0.07 * s, -0.01 * s))
-        bm = bmesh.new()
-        util.sphere(bm, 0.02 * s, loc=tie, segs=14, rings=8)
-        solid("Tie", bm, "hair")
-        for k, x in enumerate((-0.012, 0.0, 0.012)):
-            path = [tie + V((x * s, 0, 0)), tie + V((x * 1.5 * s, 0.05 * s, -0.04 * s)),
-                    V((x * 2 * s, 0.14 * s, 1.52 * s)), V((x * 2.5 * s, 0.16 * s, 1.36 * s)),
-                    V((x * 2.8 * s, 0.155 * s, 1.24 * s))]
-            lock(f"Ponytail{k}", path, 0.02 * s, 0.006 * s, flat=0.5)
-        # headband round the brow, knotted at the back with trailing tails
-        bm = bmesh.new()
-        ring_ = [around(a, 0.36, 1.06) for a in [2 * math.pi * k / 36 - math.pi for k in range(37)]]
-        util.tube(bm, ring_, (0.004 * s, 0.012 * s), n=8, up=(0, 0, 1), closed_ends=False)
-        knot = centre + V((0, ry * 1.05, 0.36 * rz))
-        for side in (1, -1):
-            util.tube(bm, util.catmull([knot, knot + V((side * 0.02 * s, 0.03 * s, -0.06 * s)),
-                                        knot + V((side * 0.03 * s, 0.04 * s, -0.16 * s))], 4),
-                      (0.0025 * s, 0.01 * s), n=6, up=(0, 1, 0))
-        solid("Headband", bm, "band", 30)
-        side_locks(0.006, 0.6)
-    elif style == "loose":
-        back_hair((-0.09, -0.065, -0.04, -0.015, 0.015, 0.04, 0.065, 0.09), 0.9, spread=1.35, depth=0.17)
-        side_locks(0.009, 1.6, 0.009)
-        for side in (1, -1):   # bangs swept to the sides
-            path = [centre + V((0, -ry * 0.8, rz * 0.9)), centre + V((side * rx * 0.5, -ry * 1.02, rz * 0.62)),
-                    centre + V((side * rx * 0.95, -ry * 0.82, rz * 0.3))]
-            lock("Bangs", path, 0.012 * s, 0.003 * s, flat=0.3, weight="head", n=8)
-    elif style == "scarf":
-        parts.append(("head", scalp("Scarf", mats["scarf"], 1.08, lo=lambda lon: 0.25 if abs(lon) < 1.3 else -0.35)))
-        knot = centre + V((0, ry * 1.02, 0.1 * rz))
-        bm = bmesh.new()
-        util.sphere(bm, 0.024 * s, loc=knot, segs=12, rings=8, scale=(1.3, 0.8, 1.0))
-        for side in (1, -1):
-            util.tube(bm, util.catmull([knot, knot + V((side * 0.03 * s, 0.03 * s, -0.08 * s)),
-                                        knot + V((side * 0.035 * s, 0.035 * s, -0.17 * s))], 4),
-                      (0.004 * s, 0.018 * s), n=6, up=(0, 1, 0))
-        solid("ScarfKnot", bm, "scarf", 20)
-        side_locks(0.006, 0.4)
-    elif style == "hat":
-        topknot(0.8, crown=False, pin=False)
-        bm = bmesh.new()   # douli: a conical bamboo hat
-        hc = top + V((0, 0.01 * s, 0.01 * s))
-        prof = [(0.25, -0.03), (0.23, -0.02), (0.16, 0.03), (0.08, 0.07), (0.01, 0.1)]
-        util.lathe(bm, [(r * s, z * s) for r, z in prof], segs=32, loc=hc, cap_top=True)
-        solid("Hat", bm, "straw", 6)
-        bm = bmesh.new()
-        chin = surf(0.0, -0.95, 1.02)
-        strap = [surf(0.97, -0.1, 1.04), surf(0.8, -0.7, 1.05), chin + V((0, 0.004 * s, -0.005 * s)),
-                 surf(-0.8, -0.7, 1.05), surf(-0.97, -0.1, 1.04)]
-        util.tube(bm, util.catmull(strap, 4), 0.0018 * s, n=5)
-        solid("HatStrap", bm, "band", 30)
-        back_hair((-0.02, 0.0, 0.02), 1.3, spread=1.1, depth=0.15)
-    # beards: moustache and chin locks
-    beard = cfg.get("beard")
-    if beard:
-        mcol = "beard"
-        for side in (1, -1):
-            path = [surf(side * 0.05, -0.5, 1.01), surf(side * 0.2, -0.56, 1.03), surf(side * 0.3, -0.68, 1.03)]
-            if beard == "long":
-                path.append(surf(side * 0.32, -0.86, 1.08) + V((0, -0.01 * s, -0.03 * s)))
-            lock("Moustache", path, 0.0065 * s, 0.0015 * s, flat=0.45, weight="head", n=8, mat=mcol)
-        n_locks = 11 if beard == "long" else 5
-        length = 0.19 if beard == "long" else 0.035
-        rnd = __import__("random").Random(5)
-        for k in range(n_locks):
-            x = (k - (n_locks - 1) / 2) * (0.05 if beard == "long" else 0.06)
-            root = surf(x, -0.86, 1.0)
-            ln = length * (1 - 0.45 * (abs(x) / 0.25) ** 2) * rnd.uniform(0.85, 1.1)
-            tipv = root + V((x * 0.01 * s, -0.02 * s, -ln * s))
-            path = [surf(x * 1.3, -0.72, 1.02), root + V((0, -0.008 * s, 0)),
-                    root.lerp(tipv, 0.5) + V((0, -0.016 * s, 0)), tipv]
-            thick = 0.014 if beard == "long" else 0.008
-            lock("Beard", path, thick * s, 0.002 * s, flat=0.4, weight="head", n=8, mat=mcol)
-    if cfg.get("horns"):
-        bm = bmesh.new()
-        for side in (1, -1):
-            root = surf(side * 0.45, 0.62, 1.0)
-            path = [root, root + V((side * 0.03 * s, 0.03 * s, 0.07 * s)), root + V((side * 0.07 * s, 0.1 * s, 0.12 * s)),
-                    root + V((side * 0.1 * s, 0.2 * s, 0.13 * s)), root + V((side * 0.1 * s, 0.27 * s, 0.1 * s))]
-            util.tube(bm, util.catmull(path, 5), lambda t: (0.022 - 0.02 * t) * s, n=10)
-        solid("Horns", bm, "horn", 10)
-    return parts
+    Returns [(weight kind, object)]: accessories are "head"; the card meshes come
+    already skinned (kind "cards", see hair_cards.hair_weights).
+    """
+    head = hair_groom.Head(head_parts, centre, radii, hairline_fn(cfg["female"]))
+    body = hair_groom.Body(cfg, J, s)
+    budget = 1.0 if cfg.get("face_tex", 2048) >= 2048 else 0.55
+    parts, cards = hair_styles.build(cfg, mats, head, body, s, hair_tex.layout(), budget)
+    if cfg.get("hair_style") != "scarf":
+        parts.append(("head", hair_cards.scalp_cap(head, mats["hair_cap"])))
+    return parts + [("cards", o) for o in cards]
 
 
 # --------------------------------------------------------------------------
@@ -1091,19 +827,16 @@ def make_materials(cfg):
     fem = cfg["female"]
     p = cfg["name"] + "_"
     m = {}
-    face = dict(brow=c["brow"], lip=c["lip"], liner=c["liner"], blush=c["blush"], female=fem,
-                beard=cfg.get("stubble", 0.0 if fem else 0.35), age=cfg.get("age", 0.0),
-                mark=cfg.get("forehead_mark", fem), hairline=hairline_table(fem), hair=c["hair"])
-    m["face"] = util.material(p + "face", tex.skin(c["skin"], cfg.get("face_tex", 2048), 11, face),
-                              normal_strength=0.6, normal_bump=1.2, detail_div=cfg.get("face_tex", 2048) // 1024)
-    m["skin"] = util.material(p + "skin", tex.skin(c["skin"], 512, 12), normal_strength=0.5)
-    m["nail"] = util.material(p + "nail", tex.nail(c["skin"]), normal_strength=0.2)
-    eye = tex.eye(c["iris"], glow=cfg.get("eye_glow"))
-    m["eye"] = util.material(p + "eye", eye, normal_strength=0.0, emission_map=eye.get("emission"),
-                             emission_strength=3.0)
-    m["lid"] = util.material(p + "eyelid", tex.eyelid(c["skin"], c["liner"]), normal_strength=0.0)
-    m["hair"] = util.material(p + "hair", tex.hair(c["hair"], c["hair_hl"], 512), normal_strength=0.6,
-                              double_sided=True)
+    size = cfg.get("face_tex", 2048)
+    # head skin: images are painted from the head mesh after build_head (skin.paint)
+    m["face"] = m["Skin"] = skin.face_material(p + "face", c["skin"], size)
+    m["skin"] = skin.body_material(p + "skin", c["skin"], 512, cfg.get("age", 0.0))
+    m["nail"] = skin.nail_material(p + "nail", c["skin"])
+    m["lid"] = skin.eyelid_material(p + "eyelid", c["skin"], c["liner"])
+    m.update(skin_eyes.materials(p, c, cfg.get("eye_glow"), 512 if size >= 2048 else 256))
+    grey = 0.15 if cfg.get("hair_style") == "elder" else 0.0
+    m["hair"], m["hair_cap"], _ = hair_tex.materials(p, c["hair"], c["hair_hl"], 1024, grey=grey)
+    m["beard"] = m["hair"]
     m["robe"] = util.material(p + "robe", tex.robe(c["robe_top"], c["robe_hem"], c["robe_motif"],
                                                    c["robe_accent"], cfg["robe_style"], 1024),
                               normal_strength=0.5, double_sided=True)
@@ -1122,8 +855,6 @@ def make_materials(cfg):
     m["scarf"] = util.material(p + "scarf", tex.silk(c.get("scarf", c["trim"]), c["thread"], 256, 7, 5, 0.08),
                                normal_strength=0.5, double_sided=True)
     m["straw"] = util.material(p + "straw", tex.wood("#b8995e", 256, 63, rings=40), normal_strength=0.8,
-                               double_sided=True)
-    m["beard"] = util.material(p + "beard", tex.hair(c["hair"], c["hair_hl"], 256, 23), normal_strength=0.4,
                                double_sided=True)
     m["horn"] = util.material(p + "horn", tex.lacquer(c.get("horn", "#2a2224"), 256, 52, wear=0.4), normal_strength=0.6)
     if "ribbon" in c:
@@ -1569,7 +1300,8 @@ def build_character(cfg):
     arm = build_armature(cfg, J)
 
     head_parts, centre, radii = build_head(cfg, J, mats, s)
-    hair_parts = build_hair(cfg, mats, centre, radii, s)
+    skin.paint(cfg, mats, head_parts, centre, radii, hairline_fn(cfg["female"]))
+    hair_parts = build_hair(cfg, mats, centre, radii, s, head_parts, J)
     outfit, bvh, ring_at = build_outfit(cfg, J, mats, s)
 
     body, hair, clothes, acc = [], [], [], []
@@ -1577,8 +1309,8 @@ def build_character(cfg):
         assign(o, lambda p, b, s_: {"head": 1.0}, J, s)
         body.append(o)
     for kind, o in hair_parts:
-        fn = {"head": lambda p, b, s_: {"head": 1.0}, "hair": w_hair, "side": w_sidelock}[kind]
-        assign(o, fn, J, s)
+        if kind != "cards":             # card meshes are skinned by hair_cards.hair_weights
+            assign(o, lambda p, b, s_: {"head": 1.0}, J, s)
         hair.append(o)
     for item in outfit:
         kind, o = item[0], item[1]

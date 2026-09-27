@@ -57,7 +57,7 @@ def pine_tree(seed=1, height=7.0):
     m = mats()
     bm_t, bm_f = bmesh.new(), bmesh.new()
     lean = V((rnd.uniform(-1, 1), rnd.uniform(-1, 1), 0)).normalized() * height * 0.18
-    pts = [V((0, 0, 0)), V((0.1, 0, height * 0.3)) + lean * 0.3, V((0, 0.1, height * 0.6)) + lean * 0.8,
+    pts = [V((0, 0, -0.35)), V((0.1, 0, height * 0.3)) + lean * 0.3, V((0, 0.1, height * 0.6)) + lean * 0.8,
            V((0, 0, height)) + lean * 0.6]
     trunk = util.catmull(pts, 6)
     util.tube(bm_t, trunk, lambda t: 0.32 * height / 7 * (1 - 0.75 * t) + 0.02, n=12, uv_scale=(1, 0.5))
