@@ -67,7 +67,9 @@ def main():
             print(f"  environment {name:<20} {time.time() - t:5.1f}s")
     if not args.skip_environment:
         for name, fn in catalog.ITEMS.items():
-            if only and name not in only and "item_" + name not in only:
+            # 'item_<id>' selects an item; a bare id only when no environment asset shares it
+            # (spirit_herb / spirit_stone / jade_slip exist as both)
+            if only and "item_" + name not in only and (name not in only or name in catalog.ENVIRONMENT):
                 continue
             t = time.time()
             util.reset_scene()

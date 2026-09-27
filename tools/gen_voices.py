@@ -13,7 +13,7 @@ A file is regenerated only when that hash changes, so an interrupted run
 simply resumes.
 
 Only lines with a "voice" path are synthesised: the 90 chapters added for the
-1000-quest saga are text-only ("voice": null) and are skipped.
+2000-quest saga are text-only ("voice": null) and are skipped.
 
 Gendered lines (spoken by the protagonist, or containing {player}-style
 tokens) get two files, <key>_m.ogg and <key>_f.ogg. Casting lives in
@@ -97,7 +97,7 @@ def spoken(text):
 
 
 def iter_story_lines(data):
-    """Every voiced line. Lines of the chapters added for the 1000-quest saga are
+    """Every voiced line. Lines of the chapters added for the 2000-quest saga are
     text-only ("voice": null) and are skipped: they need no synthesis."""
     for q in data["quests"]:
         for o in q["objectives"]:

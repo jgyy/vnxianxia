@@ -477,7 +477,7 @@ ASSETS = {
     "sky_platform_crystal": lambda: realms.sky_platform(28.0, 83, top="crystal"),
     "mirror_pool": lambda: _mirror_pool(),
     "cypress_tree": lambda: _cypress(),
-    "crane_statue": lambda: _crane(),
+    "crane_figure": lambda: _crane(),
 }
 
 

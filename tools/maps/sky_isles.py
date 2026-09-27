@@ -370,7 +370,7 @@ def expand(old, add, markers):
         a = 2 * math.pi * k / 7 + 0.3
         site("pine_tree_tall" if k % 2 else "pine_tree", crane, math.cos(a) * 28, math.sin(a) * 28, rnd.uniform(0, 360),
              scale=rnd.uniform(1.0, 1.3))
-        site("crane_statue", crane, math.cos(a + 0.4) * 14, math.sin(a + 0.4) * 14, rnd.uniform(0, 360))
+        site("crane_figure", crane, math.cos(a + 0.4) * 14, math.sin(a + 0.4) * 14, rnd.uniform(0, 360))
     site("thunder_rods", thunder, 0, -9, 0, "ThunderRods")
     for k in range(8):
         a = 2 * math.pi * k / 8

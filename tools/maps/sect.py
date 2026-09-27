@@ -388,7 +388,7 @@ def build_districts(add, rnd):
     # --- east terrace
     for k in range(8):
         a = 2 * math.pi * k / 8
-        add("rune_pillar", 162 + math.cos(a) * 15.5, -52 + math.sin(a) * 15.5, math.degrees(a), 1.0, None, 0.0)
+        add("formation_pillar", 162 + math.cos(a) * 15.5, -52 + math.sin(a) * 15.5, math.degrees(a), 1.0, None, 0.0)
     for (x, z) in ((104, -18), (104, 8), (146, -18), (146, 8)):
         add("sect_banner", x, z, 0 if x < 125 else 180, 1.1, None, 0.0)
     for (x, z) in ((80, 30), (80, -30), (100, 30), (100, -34)):
@@ -439,7 +439,7 @@ def build_districts(add, rnd):
     for (x, z) in ((220, 132), (226, 140), (216, 142), (228, 131)):
         add("pine_tree_tall", x, z, rnd.uniform(0, 360), 1.2, None, gy(x, z) - 0.2)
     for (x, z, yaw) in ((219, 137, 30), (224, 136, 200), (206, 170, 80), (212, 182, 250), (196, 172, 120)):
-        add("crane_statue", x, z, yaw, 1.0, None, gy(x, z))
+        add("crane_figure", x, z, yaw, 1.0, None, gy(x, z))
     for (x, z) in ((108, 80), (230, 100), (230, 190), (110, 185)):
         add("bamboo_cluster", x, z, rnd.uniform(0, 360), 1.1, None, gy(x, z))
     # --- tea terraces and the peach orchard

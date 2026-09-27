@@ -715,7 +715,7 @@ ASSETS = {
     "execution_platform": execution_platform,
     "tannery_racks": tannery_racks,
     "pottery_kiln": pottery_kiln,
-    "wine_jars": wine_jars,
+    "brewery_jars": wine_jars,
     "lantern_line": lantern_line,
     "willow_tree": willow_tree,
     "town_hall_small": lambda: B.hall("Orphanage", "town", w=12.0, d=8.0, col_h=3.4, bays=5, podium_h=0.45,

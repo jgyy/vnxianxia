@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" path="res://assets/environment/cloud_gate.glb" id="5_cloud_gate"]
 [ext_resource type="PackedScene" path="res://assets/environment/cloud_pier.glb" id="6_cloud_pier"]
 [ext_resource type="PackedScene" path="res://assets/environment/cloud_sea.glb" id="7_cloud_sea"]
-[ext_resource type="PackedScene" path="res://assets/environment/crane_statue.glb" id="8_crane_statue"]
+[ext_resource type="PackedScene" path="res://assets/environment/crane_figure.glb" id="8_crane_figure"]
 [ext_resource type="PackedScene" path="res://assets/environment/crystal_cluster.glb" id="9_crystal_cluster"]
 [ext_resource type="PackedScene" path="res://assets/environment/dragon_bones.glb" id="10_dragon_bones"]
 [ext_resource type="PackedScene" path="res://assets/environment/elixir_spring.glb" id="11_elixir_spring"]
@@ -670,43 +670,43 @@ transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 11
 [node name="PineTree3" parent="Level" instance=ExtResource("27_pine_tree")]
 transform = Transform3D(-0.0533556, 0, -1.11995, 0, 1.12122, 0, 1.11995, 0, -0.0533556, 230.649, 0, 68.2746)
 
-[node name="CraneStatue1" parent="Level" instance=ExtResource("8_crane_statue")]
+[node name="CraneFigure1" parent="Level" instance=ExtResource("8_crane_figure")]
 transform = Transform3D(0.0865676, 0, 0.996246, 0, 1, 0, -0.996246, 0, 0.0865676, 214.608, 0, 69.019)
 
 [node name="PineTreeTall5" parent="Level" instance=ExtResource("28_pine_tree_tall")]
 transform = Transform3D(-0.733529, 0, -0.96042, 0, 1.2085, 0, 0.96042, 0, -0.733529, 214.109, 0, 86.0726)
 
-[node name="CraneStatue2" parent="Level" instance=ExtResource("8_crane_statue")]
+[node name="CraneFigure2" parent="Level" instance=ExtResource("8_crane_figure")]
 transform = Transform3D(0.88288, 0, 0.469598, 0, 1, 0, -0.469598, 0, 0.88288, 203.525, 0, 73.995)
 
 [node name="PineTree4" parent="Level" instance=ExtResource("27_pine_tree")]
 transform = Transform3D(0.856607, 0, -0.922906, 0, 1.25918, 0, 0.922906, 0, 0.856607, 189.881, 0, 84.2375)
 
-[node name="CraneStatue3" parent="Level" instance=ExtResource("8_crane_statue")]
+[node name="CraneFigure3" parent="Level" instance=ExtResource("8_crane_figure")]
 transform = Transform3D(-0.810241, 0, 0.586097, 0, 1, 0, -0.586097, 0, -0.810241, 192.724, 0, 68.4324)
 
 [node name="PineTreeTall6" parent="Level" instance=ExtResource("28_pine_tree_tall")]
 transform = Transform3D(-0.0206427, 0, 1.18223, 0, 1.18241, 0, -1.18223, 0, -0.0206427, 176.209, 0, 64.151)
 
-[node name="CraneStatue4" parent="Level" instance=ExtResource("8_crane_statue")]
+[node name="CraneFigure4" parent="Level" instance=ExtResource("8_crane_figure")]
 transform = Transform3D(-0.838555, 0, -0.544818, 0, 1, 0, 0.544818, 0, -0.838555, 190.339, 0, 56.5201)
 
 [node name="PineTree5" parent="Level" instance=ExtResource("27_pine_tree")]
 transform = Transform3D(0.857225, 0, -0.594323, 0, 1.0431, 0, 0.594323, 0, 0.857225, 183.39, 0, 40.9387)
 
-[node name="CraneStatue5" parent="Level" instance=ExtResource("8_crane_statue")]
+[node name="CraneFigure5" parent="Level" instance=ExtResource("8_crane_figure")]
 transform = Transform3D(0.458826, 0, -0.888526, 0, 1, 0, 0.888526, 0, 0.458826, 198.166, 0, 47.2282)
 
 [node name="PineTreeTall7" parent="Level" instance=ExtResource("28_pine_tree_tall")]
 transform = Transform3D(0.458287, 0, -0.937649, 0, 1.04365, 0, 0.937649, 0, 0.458287, 206.015, 0, 32.08)
 
-[node name="CraneStatue6" parent="Level" instance=ExtResource("8_crane_statue")]
+[node name="CraneFigure6" parent="Level" instance=ExtResource("8_crane_figure")]
 transform = Transform3D(0.263392, 0, -0.964689, 0, 1, 0, 0.964689, 0, 0.263392, 210.31, 0, 47.5537)
 
 [node name="PineTree6" parent="Level" instance=ExtResource("27_pine_tree")]
 transform = Transform3D(-1.14194, 0, 0.460162, 0, 1.23117, 0, -0.460162, 0, -1.14194, 227.047, 0, 44.2456)
 
-[node name="CraneStatue7" parent="Level" instance=ExtResource("8_crane_statue")]
+[node name="CraneFigure7" parent="Level" instance=ExtResource("8_crane_figure")]
 transform = Transform3D(0.296835, 0, 0.954929, 0, 1, 0, -0.954929, 0, 0.296835, 217.628, 0, 57.2516)
 
 [node name="ThunderRods" parent="Level" instance=ExtResource("53_thunder_rods")]

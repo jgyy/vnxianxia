@@ -1,9 +1,9 @@
-"""The main story of the Azure Cloud Sect: 10 volumes x 10 chapters x 10 quests.
+"""The main story of the Azure Cloud Sect: 10 volumes x 10 chapters x 20 quests.
 
 Authored as Python data (see dsl.py, saga_gen.py) and compiled + validated into
 godot/data/story.json by tools/build_story.py. The ten original chapters are
 voiced (tools/gen_voices.py, casting in voices.py); the 90 chapters added for
-the 1000-quest saga are text-only.
+the 2000-quest saga are text-only.
 """
 
 from .cinematics import CINEMATICS

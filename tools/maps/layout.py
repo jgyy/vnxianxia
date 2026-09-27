@@ -42,7 +42,7 @@ FOOT = {
     "inner_sect_gate": (6.8, 1.0, 1.0),
     "martial_stage": (12.8, 12.8, 12.8),
     "arena_stands": (12.2, 2.4, 4.9),
-    "rune_pillar": (0.9, 0.9, 0.9),
+    "formation_pillar": (0.9, 0.9, 0.9),
     "pill_kiln": (3.1, 3.1, 3.1),
     "beast_pen": (6.2, 4.2, 4.2),
     "ancestral_tomb": (4.7, 4.7, 6.6),
@@ -77,7 +77,7 @@ FOOT = {
     "execution_platform": (5.2, 4.2, 6.4),
     "tannery_racks": (6.2, 2.2, 2.2),
     "pottery_kiln": (2.0, 8.5, 10.5),
-    "wine_jars": (4.4, 2.3, 2.3),
+    "brewery_jars": (4.4, 2.3, 2.3),
     "town_hall_small": _hall(12, 8, 0.45, 1.4),
     # buildings_wild.py
     "stilt_house": (3.8, 3.0, 7.0),

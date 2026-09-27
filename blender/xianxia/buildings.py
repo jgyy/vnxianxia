@@ -1209,7 +1209,7 @@ ASSETS = {
                                      base_h=1.2, base_r=9.5, spire=True, eave=2.0),
     "martial_stage": martial_stage,
     "arena_stands": arena_stands,
-    "rune_pillar": rune_pillar,
+    "formation_pillar": rune_pillar,
     "pill_kiln": pill_kiln,
     "beast_pen": beast_pen,
     "waterfall": waterfall,

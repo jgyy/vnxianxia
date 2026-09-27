@@ -529,7 +529,7 @@ def build_districts(add, rnd):
     # granary sacks, the pawnshop's cart, the bathhouse's jars
     add("crates", -52, -80, 20, 1.0, None, y=0.0)
     add("cart", -28, -76, 80, 1.0, None, y=0.0)
-    add("wine_jars", -28, 132, 0, 1.0, "BreweryJars", y=0.0)
+    add("brewery_jars", -28, 132, 0, 1.0, "BreweryJars", y=0.0)
     # river: the lower docks, sampans, the mill wheel's race, kilns' pots, the tannery
     bank_x = RIVER.point(RIVER.distance(-72, 108)[1])[0] + BANK
     add("river_dock", bank_x, 108, -90, 1.0, "LowerDocksPier", y=0.0)
