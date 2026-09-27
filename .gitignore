@@ -28,3 +28,6 @@ godot/assets/**/*.jpg
 godot/assets/**/*.jpg.import
 godot/assets/**/*.png
 godot/assets/**/*.png.import
+
+# Claude Code session-local state (agent worktrees etc.), not project content
+.claude/
