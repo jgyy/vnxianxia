@@ -427,7 +427,7 @@ def expand(old, add, markers):
         "CrystalIsle": top(crystal, 0, 6), "LotusLake": top(lotus, 0, 16), "WaterfallIsle": top(falls, 0, 6),
         "PhoenixNest": top(phoenix, 0, 10), "CraneIsle": top(crane), "MoonIsle": top(moon),
         "SunAltar": top(sun, 0, 11), "ThunderIsle": top(thunder, 0, 6),
-        "RainbowBridge": (lantern.link[0], lantern.link[1] + 1.0, lantern.link[2]),
+        "RainbowBridge": (lantern.link[0], lantern.y, lantern.link[2] + RAINBOW / 2 + 5.0),   # its lantern-isle bridgehead
         "ChainIsles": top(chain2, -2, 2), "ImmortalPalace": top(palace, 0, 32), "PalaceCourt": top(palace, 0, 4),
         "HallOfRecords": top(records, 0, 12), "StarObservatory": top(observatory, 0, 11),
         "WindTemple": top(winds, 0, 16), "CloudHarbour": top(harbour, -8, 0), "SkyShipWreck": top(wreck, -12, 4),
@@ -448,7 +448,7 @@ def expand(old, add, markers):
             if math.hypot(x - sx, z - sz) < 2.2:
                 best = max(best, sy)
         return best
-    problems = check_markers("sky_isles", new, ground, solids, exempt=("RainbowBridge", "HermitIsle", "ChainIsles"))
+    problems = check_markers("sky_isles", new, ground, solids, exempt=("HermitIsle", "ChainIsles"))
     if problems:
         raise SystemExit("sky_isles marker problems:" + "".join("\n  " + p for p in problems))
     return isles

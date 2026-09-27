@@ -1075,7 +1075,7 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 215.779, 63, -442.958)
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 203.9, 11, -19.1)
 
 [node name="RainbowBridge" type="Marker3D" parent="Markers"]
-transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 1, 99)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, 126)
 
 [node name="ChainIsles" type="Marker3D" parent="Markers"]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -257.407, -9, 11.462)
