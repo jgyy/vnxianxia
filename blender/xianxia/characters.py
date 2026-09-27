@@ -37,7 +37,7 @@ MALE = dict(
           (1.525, 0.072, 0.068, 0.008, 2.0), (1.55, 0.073, 0.069, 0.008, 2.0)],
     sleeve_cuff=(0.145, 0.10),
     colors=dict(
-        skin="#e8c3a4", hair="#120e10", hair_hl="#40363c", iris="#3a2414",
+        skin="#e0b595", hair="#120e10", hair_hl="#40363c", iris="#3a2414",
         lip="#a9585a", brow="#17100f", liner="#150e0e", blush="#d4908a",
         robe_top="#f3f6f8", robe_hem="#a7bccd", robe_motif="#4f6780", robe_accent="#dfe8ef",
         trim="#1f3150", thread="#c9d2dc", belt="#1c2b45", boots="#1b1c22", sole="#e9e4da",
@@ -62,8 +62,8 @@ FEMALE = dict(
           (1.52, 0.064, 0.060, 0.008, 2.0), (1.545, 0.066, 0.062, 0.008, 2.0)],
     sleeve_cuff=(0.17, 0.11),
     colors=dict(
-        skin="#f1d2bd", hair="#140f10", hair_hl="#4a3a3c", iris="#2e1a12",
-        lip="#c0404e", brow="#2a1c1a", liner="#1a0f10", blush="#e89aa0",
+        skin="#e4b898", hair="#140f10", hair_hl="#4a3a3c", iris="#3e2415",
+        lip="#c24856", brow="#3d2b23", liner="#1a0f10", blush="#eca08e",
         robe_top="#fbf7fa", robe_hem="#e9b3c6", robe_motif="#5a3b35", robe_accent="#d0467a",
         trim="#7a1f3d", thread="#dcb863", belt="#c43d62", boots="#f2ece6", sole="#b8a58a",
         metal="#d9b25a", jade="#6fbf9f", ribbon="#f4c3d4",
@@ -94,18 +94,18 @@ VARIANTS = {
     "sect_master": variant(
         FEMALE, "sect_master", hair_style="crown", age=0.2, face_tex=1024, scale=0.96, accessory="ribbon",
         face=dict(nose=1.0, cheek=1.1, chin=0.8),
-        colors=dict(skin="#f0d6c2", robe_top="#f8f5ec", robe_hem="#dccb9c", robe_motif="#9c7a34",
+        colors=dict(skin="#e9c6aa", robe_top="#f8f5ec", robe_hem="#dccb9c", robe_motif="#9c7a34",
                     robe_accent="#e8cf86", trim="#5e4a1c", thread="#f2d57e", belt="#a8843a",
                     metal="#e0c068", ribbon="#f3e3b3", lip="#b34a50"),
         robe_style="clouds"),
     "disciple_male": variant(
         MALE, "disciple_male", hair_style="disciple", face_tex=1024, jaw=0.48, face=dict(nose=0.95, brow=0.9),
-        colors=dict(skin="#e6c0a0", robe_top="#d3dbe2", robe_hem="#8397ab", robe_motif="#3d5268",
+        colors=dict(skin="#dfb393", robe_top="#d3dbe2", robe_hem="#8397ab", robe_motif="#3d5268",
                     robe_accent="#b4c3d1", trim="#34475e", belt="#2a3a50", metal="#aeb4bb"),
         robe_style="plain"),
     "disciple_female": variant(
         FEMALE, "disciple_female", face_tex=1024, accessory="none", forehead_mark=False, ornaments=False,
-        colors=dict(skin="#efd0ba", robe_top="#eef5ec", robe_hem="#a3c7aa", robe_motif="#3f6b4d",
+        colors=dict(skin="#e8c1a3", robe_top="#eef5ec", robe_hem="#a3c7aa", robe_motif="#3f6b4d",
                     robe_accent="#6fa37e", trim="#2f5a40", thread="#d7e6d2", belt="#3f7a57", lip="#b24c55"),
         robe_style="bamboo"),
     "villager_male": variant(
@@ -460,20 +460,27 @@ def hairline_table(fem):
             (1.65, -0.10), (1.85, -0.35), (2.4, -0.55), (math.pi, -0.62)]
 
 
-def hairline_fn(fem):
-    """Vectorised |longitude| -> unit-sphere z of the hairline."""
+def hairline_fn(fem, face=None):
+    """Vectorised |longitude| -> unit-sphere z of the hairline.
+
+    With the built head (face_head.FaceHead) the front of the table is moved onto the
+    sculpted trichion, fading out toward the temples, so the hair starts where the
+    forehead ends (the bare table sat ~25 mm low, over the forehead)."""
     table = hairline_table(fem)
     xs, zs = [a for a, _ in table], [z for _, z in table]
+    if face is not None:
+        d = face.trichion_z() - zs[0]
+        zs = [z + d * max(0.0, 1.0 - (a / 1.25) ** 2) for a, z in zip(xs, zs)]      # a rounded front
     return lambda a: np.interp(a, xs, zs).astype(np.float32)
 
 
-def build_hair(cfg, mats, centre, radii, s, head_parts=(), J=None):
+def build_hair(cfg, mats, centre, radii, s, head_parts=(), J=None, face=None):
     """Strand-card hair groom, beard and hair accessories (see hair_styles / hair_groom).
 
     Returns [(weight kind, object)]: accessories are "head"; the card meshes come
     already skinned (kind "cards", see hair_cards.hair_weights).
     """
-    head = hair_groom.Head(head_parts, centre, radii, hairline_fn(cfg["female"]))
+    head = hair_groom.Head(head_parts, centre, radii, hairline_fn(cfg["female"], face))
     body = hair_groom.Body(cfg, J, s)
     budget = 1.0 if cfg.get("face_tex", 2048) >= 2048 else 0.55
     parts, cards = hair_styles.build(cfg, mats, head, body, s, hair_tex.layout(), budget)
@@ -1234,9 +1241,9 @@ def build_character(cfg):
     face = build_head(cfg, J, mats, s)
     face_rig.add_eye_bones(arm, face.eye_centres_world(), 0.02 * s)
     centre, radii = face.centre, face.radii
-    skin.paint(cfg, mats, [face.obj], centre, radii, hairline_fn(cfg["female"]))
+    skin.paint(cfg, mats, [face.obj], centre, radii, hairline_fn(cfg["female"], face), masks=face.paint_masks)
     scalp = face.scalp_proxy()            # skin, eyes and ears only: the hair lies on these
-    hair_parts = build_hair(cfg, mats, centre, radii, s, [scalp], J)
+    hair_parts = build_hair(cfg, mats, centre, radii, s, [scalp], J, face)
     util.delete_objects([scalp])
     outfit, bvh, ring_at = build_outfit(cfg, J, mats, s)
 

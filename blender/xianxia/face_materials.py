@@ -26,7 +26,7 @@ DEFAULTS = {
     "Eye_Tearline": dict(color="#f4dcd6", rough=0.03, alpha=0.3),
     "Teeth": dict(color="#e9e3d6", rough=0.28),
     "Tongue": dict(color="#b4555c", rough=0.45),
-    "Mouth_Inner": dict(color="#b4646a", rough=0.3),
+    "Mouth_Inner": dict(color="#c47c7c", rough=0.3),
     "Lashes": dict(color="#1a1010", rough=0.6),
     "Brows": dict(color="#2a1c1a", rough=0.6),
 }

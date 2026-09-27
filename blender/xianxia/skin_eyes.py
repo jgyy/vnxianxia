@@ -184,11 +184,13 @@ def materials(prefix, colors, glow=None, eye_size=512):
         emission_img=_img(prefix + "eye_emit", emit) if emit is not None else None, emission_strength=3.0,
         coat=1.0, sss=0.3, sss_radius=(1.0, 0.5, 0.35), sss_scale=0.001)
     col, h, emit = iris_texture(iris, eye_size, glow)
-    rough = np.full(h.shape, 0.35, np.float32)
+    # the iris lies under the aqueous humour: its own surface is matte (the gloss is the
+    # cornea's); a specular iris washes a dark brown iris out to grey under a soft key light
+    rough = np.full(h.shape, 0.7, np.float32)
     m["Eye_Iris"] = skin_shading.simple_material(
         prefix + "eye_iris", _img(prefix + "eye_iris_albedo", col),
         _img(prefix + "eye_iris_orm", skin_shading.orm(np.ones_like(rough), rough), True),
-        _img(prefix + "eye_iris_normal", tex.normal_from_height(h, 1.5), True), normal_strength=0.6,
+        _img(prefix + "eye_iris_normal", tex.normal_from_height(h, 1.5), True), normal_strength=0.6, spec=0.05,
         emission_img=_img(prefix + "eye_iris_emit", emit) if emit is not None else None, emission_strength=3.0)
     col, h = sclera_texture(iris, eye_size)
     rough = np.full(h.shape, 0.3, np.float32)
@@ -210,10 +212,12 @@ def materials(prefix, colors, glow=None, eye_size=512):
         _img(prefix + "tongue_orm", skin_shading.orm(np.ones_like(rough), rough), True),
         _img(prefix + "tongue_normal", tex.normal_from_height(h, 1.0), True), normal_strength=0.5,
         sss=0.6, sss_radius=(1.0, 0.3, 0.2), sss_scale=0.003)
-    lash = strand_card_texture(colors["liner"], 256, 70, curl=0.35, seed=19, length=(0.55, 1.0), radius=1.3)
+    # a card is one mascara'd clump ~0.65 mm wide: a few lashes ~0.07 mm thick, dense at the
+    # root; hair-thin strands (the old 70 x 1.3 px) averaged with the skin into a brown haze
+    lash = strand_card_texture(colors["liner"], 256, 34, curl=0.35, seed=19, length=(0.55, 1.0), radius=4.2)
     m["Lashes"] = skin_shading.simple_material(prefix + "lashes", _img(prefix + "lashes_albedo", lash),
-                                               double_sided=True, alpha_cutoff=0.35, spec=0.4)
-    brow = strand_card_texture(colors["brow"], 256, 110, curl=0.15, seed=23, length=(0.4, 0.95), radius=1.2)
+                                               double_sided=True, alpha_cutoff=0.35, spec=0.12)
+    brow = strand_card_texture(colors["brow"], 256, 60, curl=0.15, seed=23, length=(0.4, 0.95), radius=2.4)
     m["Brows"] = skin_shading.simple_material(prefix + "brows", _img(prefix + "brows_albedo", brow),
-                                              double_sided=True, alpha_cutoff=0.35, spec=0.4)
+                                              double_sided=True, alpha_cutoff=0.35, spec=0.15)
     return m

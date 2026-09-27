@@ -183,7 +183,7 @@ def linear(hexstr, k=1.0):
 # material recipes
 # --------------------------------------------------------------------------
 def skin_material(name, albedo_img, orm_img, normal_img, sss=1.0, oil=0.08,
-                  normal_strength=1.0, radius=(1.0, 0.37, 0.19), scale=0.0042, vellus=0.12):
+                  normal_strength=1.0, radius=(1.0, 0.37, 0.19), scale=0.0042, vellus=0.05):
     """Layered skin: random-walk subsurface, textured base specular and a thin oil coat.
 
     radius/scale follow measured skin mean free paths (~3.7 / 1.4 / 0.7 mm red/green/blue,

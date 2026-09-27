@@ -336,8 +336,9 @@ def style_topknot(g, tail_len=0.6, guan_size=1.0, grey=False):
     # front: combed straight back over the crown (volume at the crown, no parting)
     g.gathered(900, (-PI, PI), (-0.6, 1.57), tie, bulge=0.016, width=0.02, tie_radius=0.014, margin=0.02)
     # a second, looser top layer for depth
-    g.gathered(420, (-1.6, 1.6), (0.1, 1.5), tie, bulge=0.024, width=0.016, tie_radius=0.016,
-               strips=("medium", "medium2", "wisp"))
+    # (it lies close and smooth: a high bulge with wispy strips stood up as stiff spikes)
+    g.gathered(420, (-1.6, 1.6), (0.1, 1.5), tie, bulge=0.013, width=0.018, tie_radius=0.016,
+               strips=("dense", "dense2", "medium"), sections=40, groove=0.18)
     knot = tie + up * 0.018 * s
     g.bun(220, knot, up, 0.022, 0.03, turns=1.4)
     hair_props.guan(g.parts, g.mats, knot + up * 0.006 * s, up, s, size=guan_size)

@@ -22,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import bpy  # noqa: E402
-from mathutils import Vector  # noqa: E402
+from mathutils import Matrix, Vector  # noqa: E402
 
 from xianxia import characters, face_rig, preview  # noqa: E402
 
@@ -83,6 +83,16 @@ def upgrade_materials(cfg):
             b.inputs["Roughness"].default_value = 0.0
             b.inputs["IOR"].default_value = 1.376
             mat.surface_render_method = "DITHERED"
+        elif mname.endswith(("_lashes", "_brows")) and b.inputs["Alpha"].links:
+            # the engine clips these cards (glTF alpha MASK); Cycles would blend the soft alpha
+            # and the lashes would read as a faint brown haze instead of a dark lash line
+            src = b.inputs["Alpha"].links[0].from_socket
+            if src.node.type != "MATH":
+                clip = mat.node_tree.nodes.new("ShaderNodeMath")
+                clip.operation = "GREATER_THAN"
+                clip.inputs[1].default_value = 0.35
+                mat.node_tree.links.new(src, clip.inputs[0])
+                mat.node_tree.links.new(clip.outputs[0], b.inputs["Alpha"])
         elif mname.endswith(("eye_sclera", "teeth", "tongue", "mouth_inner")) and sss.default_value == 0.0:
             sss.default_value = 0.25
             b.inputs["Subsurface Scale"].default_value = 0.002 * s
@@ -114,7 +124,12 @@ def eye_contact(arm, meshes, cam_loc):
     head = next((m for m in meshes if m.name == "Head"), None)
     pitch_avg = 0.0
     for bone in face_rig.EYE_BONES:
-        d = cam_loc - bone_world(arm, bone)
+        # eye rotations are relative to the (posed) head: express the view direction in the
+        # head's rest frame, or a turned head makes the eyes over-rotate and diverge
+        par = arm.pose.bones[bone].parent
+        posed = (arm.matrix_world @ par.matrix).to_3x3().normalized()
+        rest = (arm.matrix_world @ par.bone.matrix_local).to_3x3().normalized()
+        d = (rest @ posed.inverted()) @ (cam_loc - bone_world(arm, bone))
         yaw = max(-30.0, min(30.0, math.degrees(math.atan2(d.x, -d.y))))
         pitch = max(-20.0, min(20.0, math.degrees(math.atan2(d.z, math.hypot(d.x, d.y)))))
         pb = arm.pose.bones[bone]
@@ -126,6 +141,23 @@ def eye_contact(arm, meshes, cam_loc):
         kb["lid_look_up"].value = max(0.0, pitch_avg) / 25.0
         kb["lid_look_down"].value = max(0.0, -pitch_avg) / 25.0
     bpy.context.view_layer.update()
+
+
+def turn_head(arm, cam_loc, share=0.4):
+    """Turn the neck and head part of the way toward the lens (about world Z), so the eyes
+    need not look out of their corners: a sitter turns the face a little toward the camera."""
+    mid = (bone_world(arm, "eye.L") + bone_world(arm, "eye.R")) * 0.5
+    d = cam_loc - mid
+    yaw = math.atan2(d.x, -d.y) * share          # 0 = the face looks straight down -Y
+    for bone, part in (("neck", 0.35), ("head", 0.65)):
+        pb = arm.pose.bones.get(bone)
+        if pb is None:
+            continue
+        M = arm.matrix_world @ pb.matrix
+        pivot = M.translation.copy()
+        R = Matrix.Translation(pivot) @ Matrix.Rotation(yaw * part, 4, "Z") @ Matrix.Translation(-pivot)
+        pb.matrix = arm.matrix_world.inverted() @ R @ M
+        bpy.context.view_layer.update()
 
 
 def bone_world(arm, name, tail=False):
@@ -141,8 +173,8 @@ def portrait(cfg, args):
     upgrade_materials(cfg)
     s = cfg["scale"]
     scene = preview.setup(res=(args.size * 2, args.size * 2), samples=args.samples, sky=(0.1, 0.11, 0.13),
-                          strength=0.35, look="AgX - Medium High Contrast")
-    scene.view_settings.exposure = -0.35
+                          strength=0.35, look="AgX - Punchy")
+    scene.view_settings.exposure = -0.45
     scene.cycles.max_bounces = 8
     scene.cycles.transmission_bounces = 8
     scene.cycles.use_denoising = True
@@ -155,13 +187,17 @@ def portrait(cfg, args):
     dist = 0.82 * s
     cam_loc = face + Vector((math.sin(az) * dist, -math.cos(az) * dist, 0.02 * s))
     target = mid + Vector((0.012 * s, 0.0, -0.035 * s))
+    turn_head(arm, cam_loc)
+    eye_l = bone_world(arm, "eye.L")
     preview.camera(cam_loc, target, lens=85, focus=eye_l + Vector((0.0, -0.012 * s, 0.0)), fstop=2.2)
     eye_contact(arm, meshes, cam_loc)
     # short lighting: the big soft key comes from the far side of the face (the side turned away
     # from the camera) and high, so the visible cheek falls into gentle shadow and the face models;
     # a broad dim fill from the camera side lifts the shadows; rim + hair lights from behind
-    preview.area(face + Vector((-0.55 * s, -0.85 * s, 0.5 * s)), face, energy=42, size=1.0, color=(1.0, 0.95, 0.9))
-    preview.area(face + Vector((0.95 * s, -0.5 * s, 0.1 * s)), face, energy=12, size=1.6, color=(0.92, 0.95, 1.0))
+    # (loop lighting: ~55 deg to the side and high, so the cheek-to-ear planes fall off and the
+    # face models instead of reading as a flat disc; the fill only lifts the shadow side)
+    preview.area(face + Vector((-0.85 * s, -0.6 * s, 0.55 * s)), face, energy=46, size=0.9, color=(1.0, 0.95, 0.9))
+    preview.area(face + Vector((0.95 * s, -0.5 * s, 0.1 * s)), face, energy=7, size=1.6, color=(0.92, 0.95, 1.0))
     preview.area(face + Vector((0.5 * s, 0.7 * s, 0.35 * s)), face + Vector((0, 0, 0.03 * s)), energy=70, size=0.4,
                  color=rim)
     preview.area(face + Vector((0.2 * s, 0.45 * s, 0.9 * s)), face, energy=40, size=0.5, color=(1.0, 0.95, 0.9))
