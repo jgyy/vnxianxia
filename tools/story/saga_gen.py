@@ -305,6 +305,7 @@ class Gen:
         self.use = {}
         # how often each collectible has been gathered so far
         self.items = {}
+        self.relocs = []   # (quest, map, pinned, moved to, ...): for review only
 
     def rotor(self, name, pool):
         if name not in self.rot:
@@ -656,7 +657,12 @@ class Gen:
         if b and marker == b[2]:
             return True
         text = " ".join([ctx["beat"]["title"], seg["text"] or ""] + [ln[1] for ln in seg["lines"]])
-        return bool(PL.keywords(m, marker) & _words(text.lower()))
+        if PL.keywords(m, marker) & _words(text.lower()):
+            return True
+        # the summary pins the place only when it names it in full ("you sit at the cliff edge")
+        phrase = PL.name(m, marker).lower()
+        phrase = phrase[4:] if phrase.startswith("the ") else phrase
+        return bool(re.search(r"\b%s\b" % re.escape(phrase), ctx["beat"]["summary"].lower()))
 
     def _pin(self, st, ctx, kind, accept=None):
         """The marker an outline pinned this step to, or where it moves: a pin the step's lines are
@@ -677,6 +683,7 @@ class Gen:
         cands = [c for c in PL.POOLS[m][kind] if PL.TAGS[m][c] & tags and c not in used
                  and (accept is None or accept(c)) and self.allowed(m, c, q, kind)]
         new = self.best(m, sorted(set(cands) | {mk}), q, ("pin", mk))
+        self.relocs.append((q, m, mk, new, seg["text"], [ln[1] for ln in seg["lines"]][:2], ctx["beat"]["summary"]))
         ctx["reloc"][(m, mk)] = new
         return new
 
@@ -816,7 +823,8 @@ class Gen:
                 key = "giver"
             elif role == "back" or (earlier and nid == earlier[0] and prev != "T"):
                 key = "back"
-            elif prev in ("F", "F2", "X"):
+            elif prev in ("F", "F2", "X") and (nid in earlier or nid in ctx.get("cried", ())):
+                # "Regroup with ..." only for someone who was actually in the fight
                 key = "after"
             elif prev in ("I", "G", "R") and ctx["beat"]["kind"] in ("probe", "delve", "hunt", "chase", "rescue"):
                 key = "found"
@@ -852,6 +860,7 @@ class Gen:
                 ally = self._companion(ctx, steps)
                 if ally and h(q, "cry") % 3:
                     lines = [(ally, fmt(self.rotor("cry", FL.CRY).next(), foes=foes, player="{player}"))]
+                    ctx.setdefault("cried", set()).add(ally)
                 else:
                     lines = [(N, fmt(self.rotor("cryn", FL.CRY_N).next(), foes=foes))]
             return defeat(enemy, count, st["marker"], text, *lines, map=m)
@@ -1003,7 +1012,7 @@ class Gen:
                 and not (near and home["map"] in NEAR_MAPS and m in NEAR_MAPS):
             return False
         if not home and nid not in EN.ROAM and nid not in ctx["speakers_on"].get(m, set()) \
-                and nid not in ctx["spec"]["cast"]:
+                and nid not in ctx["spec"]["cast"] and nid not in EN.ROVERS.get(m, ()):
             return False
         return True
 
@@ -1109,6 +1118,10 @@ class Gen:
         if room < 1 or total_room < 1:
             return
         first = next((i for i in plain if dl[i]["speaker"] == giver), plain[0])
+        # companions speak once the person the player came to see has had a word (and the player has answered it)
+        at = first + 1
+        if at < len(dl) and dl[at]["speaker"] == P and not dl[at].get("cond"):
+            at += 1
         new = []
         c1 = comps[0]
         gname, cname = short(giver), short(c1)
@@ -1125,7 +1138,7 @@ class Gen:
                                                                             NPCS[giver]["home"]["marker"]))))
             r = h(q, oi, "resp") % 100
             # the player answers only if the next line isn't the player's already
-            if 55 <= r < 85 and first + 1 < len(dl) and dl[first + 1]["speaker"] == P:
+            if 55 <= r < 85 and ((at < len(dl) and dl[at]["speaker"] == P) or dl[at - 1]["speaker"] == P):
                 r = 0
             if r < 55:
                 pool = EN.RESP_GIVER[group].get(intent)
@@ -1144,16 +1157,23 @@ class Gen:
         cond = []
         ccat = MO.category(c1, q)
         if EN.COND.get(ccat) and h(q, oi, "cond") % 100 < COND_LINE and total_room - len(new) >= 1:
-            c, text = self.rotor("cond/" + ccat, EN.COND[ccat]).next()
-            cond = [(c1, fmt(text, giver=gname, comp=cname), c)]
-        # companions speak once the person the player came to see has had a word
-        at = first + 1
+            c, text = self.rotor("cond/" + ccat, EN.COND[ccat]).next(lambda e: MO.can_hold(e[0], q))
+            if MO.can_hold(c, q):
+                cond = [(c1, fmt(text, giver=gname, comp=cname), c)]
         ins = _lines(new + cond)
         o["dialogue"] = dl[:at] + ins + dl[at:]
         if not any(ln["speaker"] == P and not ln.get("cond") for ln in o["dialogue"]) and len(plain) + len(new) < 7 \
                 and len(o["dialogue"]) < 10:
-            pool = FL.AFTER_REPLY if scene is EN.END else FL.REPLY if key == "giver" else FL.MEET_REPLY
-            o["dialogue"].append({"speaker": P, "text": self.rotor("close/" + key, pool).next()})
+            if gcat == "demonic":
+                pool, key = EN.DEFY, "villain"
+            else:
+                pool = FL.AFTER_REPLY if scene is EN.END else FL.REPLY if key == "giver" else FL.MEET_REPLY
+            line = {"speaker": P, "text": self.rotor("close/" + key, pool).next()}
+            if scene is EN.END or gcat == "demonic":
+                o["dialogue"].append(line)
+            else:
+                # an answer to the one who spoke first, before the others chime in
+                o["dialogue"].insert(first + 1, line)
 
     @staticmethod
     def _mood(scene, ctx):

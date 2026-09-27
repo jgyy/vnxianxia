@@ -1,7 +1,10 @@
 # The Main Story: *The Lotus and the Blood Moon*
 
 The main quest line of **Azure Cloud Sect** is a journey from mortal to immortal in **2000 quests**: 10 volumes, one
-per major stage of cultivation, each of 10 chapters of 20 quests. It has 20 cinematics and a cast of 40 named NPCs.
+per major stage of cultivation, each of 10 chapters of 20 quests. It has 20 cinematics and a cast of 66 NPCs: 40 named
+characters and 26 people of the enlarged world's districts (deacons, cooks, keepers, townsfolk, spirit servants).
+Every quest has at least one conversation with two or more NPCs and the player, and the quests are spread over the
+~230 places of the five enlarged exterior maps.
 
 The ten chapters of the original story are voiced (every line, with the protagonist's lines recorded twice for Lin
 Feng and Su Yue) and keep their cinematics. The other 90 chapters are text-only: each one is a hand-written outline
@@ -13,7 +16,7 @@ objectives, markers, enemies, pickups and connecting dialogue. A complete list o
 |---|---|
 | Source | `tools/story/`: the ten original chapters (`chapter01..10.py`, DSL in `dsl.py`) and the outlines of the 90 new ones (`vol01..vol10.py`) |
 | Structure | `volumes.py` (which chapter goes where, breakthroughs, minor stages), `numbering.py` (quest ids `q0001..q2000`) |
-| Generator | `saga_gen.py` (quest patterns, marker choice, NPC placement), `places.py`, `fillers.py` |
+| Generator | `saga_gen.py` (quest patterns, marker choice, NPC placement), `places.py` (every place, its props, finds and who haunts it), `fillers.py`, `ensemble.py` (who else is present in a conversation, and what they say) |
 | Compiler / validator | `python3 tools/build_story.py` writes `godot/data/story.json` (`--check` is used in CI, `--quests docs/QUESTS.md` writes the quest list) |
 | Morality | `morality.py` (alignment vocabulary, NPC temperaments and reactions, greetings, choice templates), `choices.py` (hand-written choices) |
 | Tribulations | `tribulations.py` (bolts and waves per major stage); runtime in `godot/scripts/world/tribulation.gd` |
@@ -72,6 +75,17 @@ Added for the 2000-quest saga (text-only):
 | **Zhao Tianlu** | Ancestor of the Zhao clan, 112 and counting | Comes to take his great-grandson home and frames his monthly letters instead (vol. III-IX) |
 | **Jing Xuan** | Abbess of the Moon-Well Nunnery | Tests the heir with a week of anonymous service; the Great Vehicle's conscience (vol. VI-X) |
 | **The Seven Rungs** | Luo Hui, Tie Shan the Rust Monk, Jiu Rong (Madam Ninefold), Kong Yi (Brother Hollow), Wen Tu the Butcher, Si Rou (Lady Silk), Xue Chen | The Patriarch's Ladder: seven servants each holding one red star, a ladder for his soul to climb the heir's lightning. They fall one per arc, from the First Rung in vol. V to Xue Chen, the Patriarch's Shadow and the heir's cousin from Willow Creek, in vol. X |
+
+The minor cast of the enlarged world (text-only, `npcs.MINOR`) lives in the new districts and joins the named cast's
+conversations as bystanders; none of them gives a quest:
+
+| Where | Who |
+|---|---|
+| Azure Cloud Sect | Deacon Shen Guo (mission hall), Kiln-Mistress Tao Hongyu (pill kiln yard), Old Bao (refectory), Ling Qiu (spirit beast garden), Zhong Ming (bell tower), Old Qiu (sword tomb), Auntie Ruo (tea terraces), and the outer disciples Fan Rui and Tang Ling |
+| Whispering Bamboo Forest | Headman Kuang (bamboo village), Big Shu (woodcutters' camp), Meng Sanniang (hunter's lodge), Qu Wanqing (alchemist's cottage), Pei Yuan (forest watchpost) |
+| Qingshi Town | Ouyang Ci (academy), Qiao Niang (silk workshop), Wang Pu (pharmacy), Yu Hongxiu (opera stage), Matron Bi (orphanage), Captain Lei Zhen (militia barracks), Huo Da (riverside tavern) |
+| Blood Moon Abyss | Ku Sheng (shadow market broker), Hei Yan (a Blood Moon acolyte who stands at the Rungs' shoulders) |
+| Celestial Sky Isles | Qingyi (spirit servant of the jade terraces), He Lingyun (crane warden), Shu Wenlan (scribe of the hall of records) |
 
 ## The ten volumes
 
@@ -344,6 +358,7 @@ In `godot/data/story.json`:
 | `quests[].tier` | the realm index when the quest starts (enemy scaling) |
 | objective `{"type": "tribulation", "marker", "bolts", "waves": [{enemy, count, after}]}` | a tribulation: `bolts` strikes in up to nine volleys, a wave spawns after volley `after` |
 | dialogue line `cond` | the line shows only when the condition holds |
+| objective `with` | the NPCs present for the objective's conversation besides its `npc`: the runtime stands them around the talk target or the objective's marker. Every NPC who speaks in the dialogue or a choice reply is the `npc` or in `with` |
 | objective `choice_prompt`, `choices[]` | `{text, align: {law, good}, reply: [lines], reward: {xp, items}, flag?, attitude?: {npc: delta}, cond?}` |
 | `npcs[].greetings[]` | `{text, cond}` idle greetings |
 | `threads[]` | `{id, title, beats: [{quest, number, text}]}`, recurring plot threads spanning several volumes (`tools/story/threads.py`); see below |
@@ -391,7 +406,10 @@ unless it sets `map=`, and a cinematic objective takes its map from the cinemati
 `(speaker, text)` tuples, where `P` is the active protagonist and `N` is the narrator. Their voice keys keep the
 original chapter's own objective numbering (`q017_o2_l1` is original quest 17, objective 2, line 1) no matter where
 that quest ends up in the 2000-quest saga once a chapter's `EXTRA` beats are spliced in around it, so editing a line
-re-synthesises only that line. `appear_from` / `hidden_after` of the original cast use three-digit original ids
+re-synthesises only that line. A line written later into a voiced objective is marked `added(SPEAKER, "text")`: it
+is voiced too, keyed after the objective's original lines (`q017_o2_l4` if it had four), so no original key moves.
+Every original quest has such a group scene (Wei Tong on the hall steps on day one, Elder Mo contradicting Gu over the
+array, Ye Wuming speaking from the bamboo before he is met, Han Xue kneeling by the dying Gu). `appear_from` / `hidden_after` of the original cast use three-digit original ids
 (`q085`), which `build_story` maps to the saga's numbering (`q0405`); new ids use four digits.
 
 ### The new chapters
@@ -415,7 +433,28 @@ with a single segment is wrapped in the pattern named by its kind (`orders`, `ga
 `defend`, `delve`, `boss`, `break`, `stage`, ...). The generator fills everything left open (markers from per-map
 pools, enemy counts, pickup counts, objective text from templates, and connecting dialogue from `fillers.py`) and
 places every talking NPC at home or on a free marker. Everything is a pure function of the outlines, so a rebuild is
-byte-identical. New lines are written to story.json with `"voice": null`; the runtime shows them as text that
+byte-identical.
+
+How the generator uses the enlarged world (`places.py`, `saga_gen.py`):
+
+- **places**: every exterior marker has a phrase, the objective kinds it suits (meet, fight, gather, meditate, prop,
+  reach), tags ("gate", "wild", "water", "medicine", ...) and arrival narrations. A step is placed on the least-used
+  suitable marker, preferring places the beat's own words name (a beat about kilns likes the kiln yard). A marker
+  pinned by an outline (`"@R:SectGate"`) stays when the step's lines, its text or the beat's title name the place;
+  otherwise it moves to a less-used marker sharing a tag, so the saga does not keep returning to the same few spots;
+- **talks** are staged away from home more often than not, at the places a character haunts (`places.HAUNTS`: Elder
+  Hua in the medicine valley or the kiln yard, Wei Tong in the refectory), or on the spot where the action was;
+- **props**: `places.PROPS_AT` names the quest props that belong at a place (the notice board of the mission hall, the
+  pill furnace of the kiln yard, the tortoise steles of the ancestral tombs, the armillary sphere of the observatory).
+  An interact step examines the place's own prop, and most arrivals at a place with a prop become an investigation of
+  it; `places.ITEMS_AT` does the same for collectibles (spirit pills in the kiln yard, feathers at the phoenix nest);
+- **group conversations** (`ensemble.py`): each talk gets one or two companions from the quest's other characters,
+  the chapter's cast and the locals of the place, filtered by the timeline, geography and the beat (someone the beat
+  talks about but never lets speak is elsewhere). A companion's line has an intent (tease, advice, worry, offer,
+  doubt, joke, agree before the action; praise, relief, question after it) and the giver or the protagonist answers
+  it in their own register; signature pairs (Wei Tong and Han Xue, Madam Fang and Constable Du ...) have their own
+  exchanges; nobody jokes at a graveside. Companions may react to the player's alignment and realm (conditional
+  lines) and add an aside after a moral choice. `with_=(...)` on any DSL objective adds silent bystanders. New lines are written to story.json with `"voice": null`; the runtime shows them as text that
 advances by itself after a reading time.
 
 A line written as `(speaker, text, cond)` is conditional, e.g. `(GU, "You gave me water once...", {"flag":
@@ -443,4 +482,9 @@ The validator checks every id against `tools/world_spec.py`. It also enforces th
   sacrifice, the Rungs after they fall); the Sky Isles only after they open; the Blood Moon fortress is folded into
   the void between the failed blood moon and the final march;
 - lines are at most 32 words, tracker text at most 64 characters; only the known tokens are allowed;
-- every chapter of the original story still opens with its intro cinematic on the chapter's map.
+- every chapter of the original story still opens with its intro cinematic on the chapter's map;
+- every NPC who speaks in an objective (choice replies included) is its `npc` or listed in its `with`; `with` names
+  known NPCs, at most four, never the objective's own `npc`, all in the story at that time; every quest has a
+  conversation with two or more NPC speakers and the player (counted on unconditional lines, so it holds for every
+  alignment); collect objectives carry no dialogue;
+- no line is conditioned on a realm the player cannot have during its quest (it would never show).

@@ -114,7 +114,7 @@ CRY = [
     "Left side's mine. Right side's yours. Middle is whoever's faster.",
     "Steady. Breathe. Then hit them very hard.",
     "More {foes}? Heaven must think we're bored.",
-    "Stay close! I am not writing to your family.",
+    "Stay close! I am not explaining your death to the Sect Master.",
 ]
 
 # narration when a fight starts and no ally is there

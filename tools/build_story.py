@@ -6,10 +6,15 @@
     python3 tools/build_story.py --quiet    # no stats
     python3 tools/build_story.py --quests docs/QUESTS.md   # also write the quest list
 
-The saga has 10 volumes (one per major cultivation stage) x 10 chapters x 10
-quests = 1000 quests, ids q0001..q1000. The ten original chapters keep their
-voice files under their original keys (q017_o2_l1 ...); lines of the 90 new
-chapters are text-only ("voice": null).
+The saga has 10 volumes (one per major cultivation stage) x 10 chapters x 20
+quests = 2000 quests, ids q0001..q2000. The ten original chapters keep their
+voice files under their original keys (q017_o2_l1 ...), and lines added to them
+later are keyed after the original ones; lines of the 90 new chapters are
+text-only ("voice": null).
+
+Every objective lists the NPCs present for its conversation ("with"); every
+NPC who speaks must be present, and every quest has at least one conversation
+with two or more NPCs and the player.
 
 Cultivation follows a fixed schedule (chapter c of volume v ends at minor stage
 c of REALMS[v]; chapter 1 is the breakthrough, with a heavenly tribulation), and
@@ -465,7 +470,7 @@ def compile_choices(where, t, raw, o, voices, speakers_used, flags):
 
 
 def expected_cultivation(chapter, qi):
-    """(realm, stage) the ``qi``-th quest (0-9) of ``chapter`` must grant: chapter c of volume v
+    """(realm, stage) the ``qi``-th quest (0-19) of ``chapter`` must grant: chapter c of volume v
     ends at minor stage c of REALMS[v], chapter 1 being the breakthrough into it; the last
     chapter reaches Great Perfection on its ninth quest and Immortal Ascension on its tenth."""
     v = NB.volume_of_chapter(chapter)
@@ -610,7 +615,7 @@ def compile_npcs(used):
             if v is not None:
                 window[k] = NB.resolve_id(v)
                 if window[k] is None:
-                    E.err(where, "%s %r is not a quest id (q001..q100 legacy or q0001..q1000)" % (k, v))
+                    E.err(where, "%s %r is not a quest id (q001..q100 legacy or q0001..q2000)" % (k, v))
         if window.get("appear_from") and window.get("hidden_after") and window["appear_from"] > window["hidden_after"]:
             E.err(where, "appear_from is after hidden_after")
         if window.get("appear_from") and window.get("gone_after") and window["appear_from"] > window["gone_after"]:
@@ -810,6 +815,15 @@ def build():
                     if not (isinstance(n, int) and n > 0):
                         E.err(wq, "reward count must be a positive int")
                 tier = realm_idx
+                # a line conditioned on a realm the player cannot have during this quest never shows
+                for oi, o in enumerate(out_objs):
+                    lines = o.get("dialogue", []) + [ln for op in o.get("choices", []) for ln in op["reply"]]
+                    for ln in lines:
+                        c = ln.get("cond") or {}
+                        if ("min_realm" in c and W.REALMS.index(c["min_realm"]) > tier) or \
+                                ("max_realm" in c and W.REALMS.index(c["max_realm"]) < tier):
+                            E.err("%s_o%d" % (wq, oi), "line can never show (%r while the player is %s): %r"
+                                  % (c, W.REALMS[tier], ln["text"]))
                 st = r.get("stage")
                 want = expected_cultivation(ci, qi)
                 if (r["realm"], st) != want:
@@ -973,6 +987,22 @@ def stats(data):
     out.append("moral choices: %d (%d options, %d with flags), in %d of %d chapters"
                % (len(choices), sum(len(o["choices"]) for o in choices),
                   sum(1 for o in choices for op in o["choices"] if op.get("flag")), len(per_ch), len(data["chapters"])))
+    talky = [o for o in objs if o.get("dialogue")]
+    multi = [o for o in talky if len(npc_speakers(o, replies=False)) >= 2]
+    out.append("group conversations: %d of %d dialogues have 2+ NPC speakers; %d of %d quests have a group scene; "
+               "%d objectives carry 'with'" % (len(multi), len(talky),
+                                               sum(1 for q in data["quests"] if any(is_group_scene(o) for o in q["objectives"])),
+                                               len(data["quests"]), sum(1 for o in objs if o.get("with"))))
+    places = Counter()
+    for o in objs:
+        mk = o.get("marker") or o.get("at") or (data["npcs"][o["npc"]]["home"]["marker"] if o["type"] == "talk" else None)
+        if mk:
+            places[(o["map"], mk)] += 1
+    out.append("places: %d distinct markers; busiest: %s" % (len(places), ", ".join(
+        "%s %d" % (mk, n) for (m, mk), n in places.most_common(10))))
+    props = Counter(o["object"] for o in objs if o["type"] == "interact")
+    items = Counter(o["item"] for o in objs if o["type"] == "collect")
+    out.append("interact props: %d distinct; collectibles: %d distinct" % (len(props), len(items)))
     cond = [ln for o in objs for ln in o.get("dialogue", []) if ln.get("cond")]
     out.append("conditional lines: %d; npc greetings: %d; alignment bonuses: %d"
                % (len(cond), sum(len(n["greetings"]) for n in data["npcs"].values()),

@@ -89,7 +89,7 @@ REACT = {
     "elder": {
         "good": ["That was kindly done. Remember how it felt.", "Good. Heaven notices kindness, even when people don't.",
                  "Mercy costs something. You paid it without complaint. Well done."],
-        "evil": ["(a long silence) I did not teach you that.", "I will remember this, {player}. So will heaven.",
+        "evil": ["(a long silence) That was not learned on any righteous mountain.", "I will remember this, {player}. So will heaven.",
                  "Power without a heart. We fought a war against exactly that."],
         "lawful": ["Correct. The precepts exist for moments like this.", "By the rules, and rightly so.",
                    "Order is a kindness too, when it is fair."],
@@ -335,9 +335,32 @@ GREET_KINDS = {"orders", "gather", "hunt", "probe", "train", "cultivate", "journ
                "rescue"}
 
 
+def realm_at(q):
+    """Index in world_spec.REALMS of the player's realm when quest ``q`` starts: volume v breaks
+    through into REALMS[v] on the last quest of its first chapter."""
+    from .numbering import QUESTS_PER_CHAPTER, first_quest, volume_of_quest, CHAPTERS_PER_VOLUME
+    v = volume_of_quest(q)
+    breakthrough = first_quest((v - 1) * CHAPTERS_PER_VOLUME + 1) + QUESTS_PER_CHAPTER - 1
+    return v if q > breakthrough else v - 1
+
+
+def can_hold(cond, q):
+    """False when a condition can never hold during quest ``q`` (a realm the player cannot have yet,
+    or has already left behind): such a line would never be shown."""
+    from world_spec import REALMS
+    r = realm_at(q)
+    if "min_realm" in cond and REALMS.index(cond["min_realm"]) > r:
+        return False
+    if "max_realm" in cond and REALMS.index(cond["max_realm"]) < r:
+        return False
+    return True
+
+
 def greeting_lines(nid, q):
     """0-2 conditional opening lines for a talk with ``nid`` in quest ``q``."""
     pool = GREET.get(category(nid, q))
+    if pool:
+        pool = [(cond, texts) for cond, texts in pool if can_hold(cond, q)]
     if not pool or h(q, nid, "greet") % 3:
         return []
     k = h(q, nid, "which") % len(pool)

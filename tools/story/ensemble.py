@@ -123,7 +123,7 @@ CHIME = {
         ("praise", "Ha! Knew it! I bet Lu Ping a bun you'd be back before dusk. That's my bun."),
         ("relief", "There you are! I was about to go looking with a torch and a very large spoon."),
         ("question", "Was it scary? Tell me it was scary. I need a good story for dinner."),
-        ("joke", "I trained three puppets this morning. One of them cried. Well. Creaked sadly."),
+        ("joke", "Old Bao gave me three rice balls for luck. I ate the luck. I feel very lucky."),
         ("advice", "Fight for him too, {junior}. Elder Mo would say adequate. I'll say it louder.", AFTER_MO),
         ("worry", "Come back, all right? I've buried enough people this year. I don't want to be good at it.", AFTER_MO),
         ("praise", "He'd have grunted and looked away. That's how he said proud. I'll just say it. Proud!", AFTER_MO),
@@ -434,6 +434,10 @@ CHIME = {
     ],
     NP.HEI: [
         ("tease", "The moon is watching you, heir. It's very fond of you. Hungrily fond."),
+        ("tease", "Kneel now, heir. It hurts less later. I would know."),
+        ("doubt", "The Rung is too gentle with you. I would not be."),
+        ("agree", "As the Rung says. As the moon wills."),
+        ("joke", "Your friends are loud. The Abyss likes loud things. They echo so nicely."),
     ],
     NP.QINGYI: [
         ("advice", "Please keep to the paths. The clouds between isles bruise, and they remember who stepped on them."),
@@ -623,15 +627,26 @@ ASIDE = {
 # an ally standing beside the player when the talk is with a demonic cultivator
 CONFRONT = {
     "elder": ["Say what you came to say. Then leave this place, while you still have legs to leave on.",
-              "Mind your tongue before the heir. My patience is older than your master's grudge."],
+              "Mind your tongue before the heir. My patience is older than your master's grudge.",
+              "I have buried better servants of the Blood Moon than you. Speak quickly.",
+              "The Azure Cloud stands behind {player}. All of it. Remember that when you choose your words."],
     "peer": ["Keep talking. I'm counting the ways this ends badly for you.",
              "Stand behind me, {player}. No? Fine. Beside me, then.",
-             "Say one more word about {their} blood and you'll be picking up your teeth."],
-    "junior": ["(voice shaking) We're not afraid of you. Well. I'm a little afraid. But we're not moving."],
-    "town": ["(clutching a broom) The immortal isn't alone. Remember that."],
+             "Say one more word about {their} blood and you'll be picking up your teeth.",
+             "One wrong move and we find out whose sword is faster.",
+             "We're listening. Don't mistake that for trust."],
+    "junior": ["(voice shaking) We're not afraid of you. Well. I'm a little afraid. But we're not moving.",
+               "(gripping a sleeve) Don't listen to it, {senior}. Whatever it says."],
+    "town": ["(clutching a broom) The immortal isn't alone. Remember that.",
+             "(very pale, very stubborn) This is our town. You can say your piece from there."],
     "rogue": ["I know your kind. I used to take your money. Talk fast.",
-              "Heh. Big words. Your master used to say those too. Look where he is."],
+              "Heh. Big words. Your master used to say those too. Look where he is.",
+              "Keep your hands where I can see them. All of them.",
+              "I've sold to the Blood Moon and I've bled for it. I know which I prefer. Speak."],
 }
+# the protagonist's last word to a servant of the Blood Moon
+DEFY = ["I've heard you. Now hear me: no.", "Say the rest to the Sect Master. In chains.", "We'll see.",
+        "You talk as if you've already won.", "Go home, if you still have one.", "I'm not afraid of you. Not any more."]
 
 # ---------------------------------------------------------------- at the scene, without a quest giver
 # two companions share a moment at a reach / interact objective

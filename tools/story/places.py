@@ -40,7 +40,7 @@ MARKERS = {
                       ["The hall steps are worn into shallow bowls by three hundred years of hurrying feet.",
                        "Incense drifts down the hall steps. Above, the double eaves hold up the sky with practised ease."]),
         "MainHall": ("the main hall", "mpr", "hall",
-                     ["Inside the main hall, the founder's tablet gleams. The faded green lotus beside it seems a little brighter today."]),
+                     ["Through the open doors of the main hall, the founder's tablet gleams. The faded green lotus beside it seems a little brighter today."]),
         "TrainingGround": ("the training ground", "mfpr", "training",
                            ["The training ground smells of sweat, sawdust and Wei Tong's lunch.",
                             "Straw dummies lean at tired angles across the training ground. One of them is wearing a hat."]),
@@ -633,6 +633,7 @@ MARKERS = {
 }
 
 # ---------------------------------------------------------------- props and items that belong somewhere
+# (the big props - wishing_tree, stone_tablet_array, tortoise_stele - need 5-7 m of open ground)
 
 PROPS_AT = {
     "sect": {
@@ -657,7 +658,7 @@ PROPS_AT = {
         "RuinsGate": ["guardian_lion"], "AncientShrine": ["stone_stele"], "RuinsInner": ["rune_pillar"],
         "WoodcutterCamp": ["map_table"], "CharcoalKilns": ["treasure_chest"], "BambooVillage": ["loom", "wine_jars"],
         "VillageShrine": ["offering_table", "ancestral_tablet"], "MistyLake": ["fishing_boat"],
-        "LakePavilion": ["bronze_mirror"], "FishingJetty": ["fishing_boat"], "BanyanGiant": ["wishing_tree"],
+        "LakePavilion": ["bronze_mirror"], "FishingJetty": ["fishing_boat"], "BanyanGiant": ["offering_table"],
         "SpiderHollow": ["sealed_coffin"], "MushroomRing": ["spirit_lamp"],
         "ForestWatchpost": ["map_table", "war_drum"], "HunterLodge": ["herb_drying_rack", "map_table"],
         "BuriedTemple": ["guardian_lion", "stone_tablet_array"], "TempleUndercroft": ["sealed_coffin", "rune_pillar"],
@@ -668,13 +669,14 @@ PROPS_AT = {
         "ForestGate": ["stone_stele"],
     },
     "qingshi_town": {
-        "TownGate": ["notice_board"], "Well": ["wishing_tree"], "Riverside": ["fishing_boat"],
+        "TownGate": ["notice_board"], "Riverside": ["fishing_boat"],
         "WatchTower": ["bronze_bell"], "Farmland": ["herb_drying_rack"], "Orphanage": ["offering_table"], "MagistrateHall": ["notice_board"],
         "Temple": ["offering_table"], "Warehouse": ["treasure_chest", "abacus_desk"],
         "Graveyard": ["ancestral_tablet"], "NorthGate": ["war_drum"], "SouthMarket": ["spirit_lamp"],
         "Granary": ["abacus_desk"], "SilkWorkshop": ["loom"], "DyeYard": ["loom"], "Pharmacy": ["medicine_cabinet"],
-        "Academy": ["scroll_rack", "stone_stele"], "ExamHall": ["stone_tablet_array"],
-        "MerchantManor": ["guardian_lion", "jade_screen"], "ManorGarden": ["jade_screen"], "OperaStage": ["war_drum"],
+        "Academy": ["scroll_rack", "stone_stele"], "ExamHall": ["scroll_rack"],
+        "MerchantManor": ["guardian_lion", "abacus_desk"], "ManorGarden": ["jade_screen"],
+        "OperaStage": ["puppet_frame", "war_drum"],
         "TempleFair": ["wishing_tree"], "CityGodTemple": ["offering_table", "bronze_ding"],
         "BellPavilion": ["bronze_bell"], "Pawnshop": ["abacus_desk"], "Tavern": ["wine_jars"],
         "Brewery": ["wine_jars"], "BoatYard": ["fishing_boat"], "LowerDocks": ["fishing_boat", "chain_anchor"],
@@ -693,7 +695,7 @@ PROPS_AT = {
         "BloodMoonShrine": ["blood_altar", "offering_table"], "CorpseForest": ["soul_lantern"],
         "RuinedSectGate": ["guardian_lion"], "RuinedSectHall": ["ancestral_tablet"], "ChainBridge": ["chain_anchor"],
         "WatchSpire": ["map_table"], "SealStones": ["seal", "tortoise_stele"],
-        "GhostVillage": ["spirit_lamp", "ancestral_tablet"], "RedMoonTerrace": ["bronze_mirror"],
+        "GhostVillage": ["soul_lantern", "ancestral_tablet"], "RedMoonTerrace": ["bronze_mirror"],
         "CaveOfEchoes": ["bronze_mirror"], "BoneThrone": ["sealed_coffin"],
     },
     "sky_isles": {
@@ -708,7 +710,7 @@ PROPS_AT = {
         "MirrorLake": ["bronze_mirror"], "FloatingForest": ["spirit_lamp"], "SealOfHeaven": ["seal", "tortoise_stele"],
         "GateOfHeaven": ["guardian_lion"], "SwordIsle": ["sword_in_stone"], "ElixirSpring": ["spirit_fountain"],
         "StormCloudPlateau": ["rune_pillar"], "LanternIsle": ["soul_lantern", "spirit_lamp"],
-        "TreeOfAges": ["wishing_tree"],
+        "TreeOfAges": ["offering_table"],
     },
 }
 
@@ -873,8 +875,8 @@ def keywords(map_id, marker):
     import re
     words = set(re.findall(r"[a-z]+", NAMES.get(map_id, {}).get(marker, "").lower()))
     words |= {w.lower() for w in re.findall(r"[A-Z][a-z]+", marker)}
-    words |= set(EXTRA_KEYWORDS.get(marker, ()))
-    return {w for w in words if len(w) > 2 and w not in _STOP} - GENERIC_WORDS
+    words = {w for w in words if len(w) > 2 and w not in _STOP} - GENERIC_WORDS
+    return words | set(EXTRA_KEYWORDS.get(marker, ()))
 
 
 # words too common in the saga's prose to tie a line to a place
@@ -892,6 +894,7 @@ EXTRA_KEYWORDS = {
     "MountainRoad": ["road"], "ForestPath": ["path"], "SwordPeakPath": ["switchback"], "CliffPath": ["ledge"],
     "HallOfRecords": ["records"], "IsleOfWinds": ["winds", "pines"], "OuterPines": ["pines", "pine"],
     "StoneSteps": ["stairway", "steps"], "HallSteps": ["steps"], "Clearing": ["clearing", "grass"],
+    "Graveyard": ["graves", "grave", "tomb", "tombs", "graveyard"], "Temple": ["temple"], "Pagoda": ["pagoda"],
     "AbyssDepths": ["depths", "bottom"], "CanyonEntrance": ["canyon"],
 }
 
