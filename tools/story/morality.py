@@ -41,13 +41,35 @@ for _nid in (NP.YE, NP.TIE, NP.GOU):
 for _nid in (NP.PATRIARCH, NP.XUEMEI, NP.DEMON, NP.RUNG1, NP.RUNG2, NP.RUNG3, NP.RUNG4, NP.RUNG5, NP.RUNG6,
              NP.RUNG7):
     CATEGORY[_nid] = "demonic"
+# the minor cast of the enlarged world
+for _nid in (NP.SHEN, NP.QIU, NP.HE, NP.SHUREC):
+    CATEGORY[_nid] = "elder"
+for _nid in (NP.TAO, NP.LING, NP.ZHONG, NP.QU):
+    CATEGORY[_nid] = "peer"
+for _nid in (NP.FAN, NP.TANG, NP.PEI, NP.QINGYI):
+    CATEGORY[_nid] = "junior"
+for _nid in (NP.BAO, NP.RUO, NP.KUANG, NP.SHU, NP.MENG, NP.OUYANG, NP.QIAO, NP.WANG, NP.YU, NP.BI, NP.LEI, NP.HUO):
+    CATEGORY[_nid] = "town"
+CATEGORY[NP.KU] = "rogue"
+CATEGORY[NP.HEI] = "demonic"
 # the traitor in chains, and your own heart demon: they react, but never greet
 CATEGORY[NP.GU] = "prisoner"
 CATEGORY[NP.DEMON] = "prisoner"
 
 
-def category(nid):
+def category(nid, q=None):
+    """``nid``'s temperament during quest ``q`` (None: the one used for idle greetings).
+    Gu Hanshan is a respected Law Hall elder until he is unmasked at the tournament and only
+    then a prisoner; before, reacting to a disciple's choices with a prisoner's regrets
+    ("Kinder than I was, at your age") would give the traitor away in chapter one."""
+    if nid == NP.GU and q is not None and q <= _gu_unmasked():
+        return "elder"
     return CATEGORY.get(nid, "town")
+
+
+def _gu_unmasked():
+    from .numbering import resolve_id
+    return resolve_id(NP.NPCS[NP.GU]["hidden_after"])
 
 
 def h(*key):
@@ -122,8 +144,8 @@ REACT["prisoner"] = {
 }
 
 
-def reaction(nid, law, good, salt=()):
-    pool = REACT[category(nid)][direction(law, good)]
+def reaction(nid, law, good, salt=(), q=None):
+    pool = REACT[category(nid, q)][direction(law, good)]
     return pool[h(nid, law, good, *salt) % len(pool)]
 
 
@@ -192,7 +214,7 @@ GREET_KINDS = {"orders", "gather", "hunt", "probe", "train", "cultivate", "journ
 
 def greeting_lines(nid, q):
     """0-2 conditional opening lines for a talk with ``nid`` in quest ``q``."""
-    pool = GREET.get(category(nid))
+    pool = GREET.get(category(nid, q))
     if not pool or h(q, nid, "greet") % 3:
         return []
     k = h(q, nid, "which") % len(pool)

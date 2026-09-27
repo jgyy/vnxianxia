@@ -33,6 +33,7 @@ stable hashes, so a rebuild produces byte-identical story.json.
 import hashlib
 import re
 
+from . import ensemble as EN
 from . import fillers as FL
 from . import numbering as NB
 from . import places as PL
@@ -40,6 +41,9 @@ from . import morality as MO
 from . import tribulations as TR
 from .choices import NEW as CHOICES
 from .dsl import N, P, _lines, chapter, collect, defeat, interact, meditate, quest, reach, talk
+from .dsl import speakers as dsl_speakers
+from .npcs import DEMON as NP_DEMON
+from .npcs import MINOR
 from .npcs import NPCS
 
 try:
@@ -113,6 +117,17 @@ THINGS = {
     "demon_obelisk": "the obelisk", "prison_cage": "the cage", "jade_slip": "the jade slip",
     "bronze_bell": "the bronze bell", "spirit_stone": "the spirit stone", "teleport_array": "the array",
     "seal": "the seal",
+    "notice_board": "the notice board", "ancestral_tablet": "the ancestral tablets", "pill_furnace": "the pill furnace",
+    "sword_in_stone": "the sword in the stone", "tortoise_stele": "the tortoise stele",
+    "guardian_lion": "the guardian lion", "bronze_ding": "the bronze ding", "bronze_mirror": "the bronze mirror",
+    "spirit_lamp": "the spirit lamp", "scroll_rack": "the scroll rack", "war_drum": "the war drum",
+    "sealed_coffin": "the sealed coffin", "offering_table": "the offering table", "rune_pillar": "the rune pillar",
+    "armillary_sphere": "the armillary sphere", "medicine_cabinet": "the medicine cabinet",
+    "wine_jars": "the wine jars", "loom": "the loom", "map_table": "the map table", "crane_statue": "the crane statue",
+    "spirit_fountain": "the spirit fountain", "puppet_frame": "the puppet frame",
+    "herb_drying_rack": "the drying racks", "chain_anchor": "the chain anchor", "soul_lantern": "the soul lantern",
+    "abacus_desk": "the abacus desk", "fishing_boat": "the fishing boat", "wishing_tree": "the wishing tree",
+    "jade_screen": "the jade screen", "stone_tablet_array": "the stone tablets",
 }
 PROP_VERBS = {
     "stone_stele": ["Read {thing}", "Study {thing}", "Decipher {thing}"],
@@ -125,6 +140,36 @@ PROP_VERBS = {
     "spirit_stone": ["Draw qi from {thing}", "Attune {thing}"],
     "teleport_array": ["Repair {thing}", "Realign {thing}"],
     "seal": ["Activate {thing}", "Inspect {thing}", "Trace {thing}"],
+    "notice_board": ["Read {thing}", "Search {thing}", "Check {thing}"],
+    "ancestral_tablet": ["Pay respects at {thing}", "Read {thing}", "Kneel before {thing}"],
+    "pill_furnace": ["Tend {thing}", "Stoke {thing}", "Open {thing}"],
+    "sword_in_stone": ["Grip {thing}", "Test {thing}", "Listen to {thing}"],
+    "tortoise_stele": ["Read {thing}", "Decipher {thing}", "Study {thing}"],
+    "guardian_lion": ["Examine {thing}", "Touch {thing}", "Wake {thing}"],
+    "bronze_ding": ["Light incense in {thing}", "Examine {thing}", "Read the rim of {thing}"],
+    "bronze_mirror": ["Look into {thing}", "Polish {thing}", "Study {thing}"],
+    "spirit_lamp": ["Light {thing}", "Trim {thing}", "Refill {thing}"],
+    "scroll_rack": ["Search {thing}", "Browse {thing}", "Sort {thing}"],
+    "war_drum": ["Beat {thing}", "Sound {thing}"],
+    "sealed_coffin": ["Inspect {thing}", "Check the seals of {thing}", "Open {thing}"],
+    "offering_table": ["Leave an offering at {thing}", "Examine {thing}", "Light incense at {thing}"],
+    "rune_pillar": ["Read {thing}", "Charge {thing}", "Trace {thing}"],
+    "armillary_sphere": ["Turn {thing}", "Align {thing}", "Read {thing}"],
+    "medicine_cabinet": ["Search {thing}", "Check {thing}", "Open {thing}"],
+    "wine_jars": ["Check {thing}", "Search {thing}", "Taste {thing}"],
+    "loom": ["Examine {thing}", "Check the thread on {thing}"],
+    "map_table": ["Study {thing}", "Read {thing}", "Mark {thing}"],
+    "crane_statue": ["Examine {thing}", "Touch {thing}"],
+    "spirit_fountain": ["Drink from {thing}", "Examine {thing}", "Cleanse {thing}"],
+    "puppet_frame": ["Test {thing}", "Repair {thing}", "Examine {thing}"],
+    "herb_drying_rack": ["Search {thing}", "Turn {thing}", "Check {thing}"],
+    "chain_anchor": ["Check {thing}", "Test {thing}", "Examine {thing}"],
+    "soul_lantern": ["Examine {thing}", "Free the soul in {thing}", "Snuff {thing}"],
+    "abacus_desk": ["Check the accounts at {thing}", "Search {thing}", "Read the ledgers at {thing}"],
+    "fishing_boat": ["Search {thing}", "Check {thing}", "Examine {thing}"],
+    "wishing_tree": ["Read the ribbons on {thing}", "Tie a wish to {thing}", "Search {thing}"],
+    "jade_screen": ["Study {thing}", "Examine {thing}", "Look behind {thing}"],
+    "stone_tablet_array": ["Read {thing}", "Study {thing}", "Compare {thing}"],
 }
 
 TXT = {
@@ -180,6 +225,26 @@ PATTERNS = {
 # blood_abyss markers that fold into the void after the failed blood moon (ch42) until the final march
 FORTRESS = {"DemonGate", "FortressCourt", "AltarOfBlood", "PatriarchThrone", "PrisonCages"}
 RESERVED = {"PlayerSpawn", "TeleportArray", "TribulationPeak", "AscensionStair"}
+# the doors of the building interiors: walking onto one carries the player inside
+DOORS = {"ElderQuarters", "AlchemyPavilion", "WeaponsHall", "DiscipleDormitory", "TeaHouse", "Blacksmith", "HerbShop",
+         "Inn"}
+
+NEAR_MAPS = {"sect", "bamboo_forest", "qingshi_town"}
+
+KIND_OF = {"R": "reach", "F": "fight", "F2": "fight", "X": "fight", "G": "gather", "M": "med", "I": "prop"}
+
+# spreading the saga over the map: a marker the scene's own words point at (or a character's
+# haunt) counts this many uses fewer when the least-used place is chosen
+PREFER_BONUS = 10
+# an NPC is met at home at most this often; after that, only at their haunts
+HOME_CAP = 30
+# percentages of the deterministic hash
+REACH_TO_INTERACT = 55   # an arrival at a place with a fitting prop becomes an investigation of it
+LOCAL_PROP = 60          # an interact step examines the place's own prop rather than the chapter's
+LOCAL_ITEM = 45          # a gather step collects what lies around the place rather than the chapter's item
+TWO_COMPANIONS = 35      # a conversation has two companions, not one
+COND_LINE = 30           # a companion reacts to who the player has become
+ASIDE_RATE = 45          # a companion adds an aside to the reaction after a moral choice
 
 XP_BASE = [0, 110, 280, 480, 760, 1060, 1450, 1900, 2450, 3100, 3800]
 
@@ -231,11 +296,35 @@ class Gen:
     def __init__(self):
         self.rot = {}
         self.used_titles = set()
+        # how often each (map, marker) has hosted an objective so far, for spreading the saga out
+        self.use = {}
 
     def rotor(self, name, pool):
         if name not in self.rot:
             self.rot[name] = Rotor(pool, name)
         return self.rot[name]
+
+    def seed(self, chapters):
+        """Count the markers of the hand-written chapters, which the generator cannot move."""
+        for ch in chapters:
+            cur = ch["map"]
+            for q in ch["quests"]:
+                cur = q["map"]
+                for o in q["objectives"]:
+                    cur = o.get("map") or cur
+                    mk = o.get("marker") or o.get("at")
+                    if o["type"] == "talk" and mk is None and NPCS[o["npc"]]["home"]:
+                        mk = NPCS[o["npc"]]["home"]["marker"]
+                    if mk and o["type"] != "cinematic":
+                        self.count(cur, mk)
+
+    def count(self, m, mk):
+        self.use[(m, mk)] = self.use.get((m, mk), 0) + 1
+
+    def best(self, m, cands, q, salt, prefer=(), bonus=PREFER_BONUS):
+        """The least-used of ``cands`` on map ``m`` (a preferred one counts ``bonus`` uses fewer)."""
+        prefer = set(prefer)
+        return min(cands, key=lambda c: (self.use.get((m, c), 0) - (bonus if c in prefer else 0), h(q, salt, c)))
 
     # --- presence --------------------------------------------------------
     @staticmethod
@@ -244,6 +333,13 @@ class Gen:
         a = NB.resolve_id(n["appear_from"]) if n["appear_from"] else None
         hid = NB.resolve_id(n["hidden_after"]) if n["hidden_after"] else None
         return a, hid
+
+    @staticmethod
+    def active(nid, q):
+        n = NPCS[nid]
+        a = NB.resolve_id(n["appear_from"]) if n["appear_from"] else None
+        gone = NB.resolve_id(n["gone_after"]) if n.get("gone_after") else None
+        return not ((a and q < a) or (gone and q > gone))
 
     def at_home(self, nid, map_id, q):
         n = NPCS[nid]
@@ -258,6 +354,8 @@ class Gen:
 
     def allowed(self, map_id, marker, q, kind, explicit=False):
         if marker in RESERVED and not explicit:
+            return False
+        if marker in DOORS and not explicit:
             return False
         if map_id == "blood_abyss":
             if marker in FORTRESS and q > NB.legacy_to_new(90) and not explicit:
@@ -283,7 +381,7 @@ class Gen:
             if authored:
                 attach_choice(qd, authored, q, spec, beat)
             else:
-                fam = choice_family(qd, beat)
+                fam = choice_family(qd, beat, q)
                 if fam:
                     name, extra = fam
                     variants = MO.TEMPLATES[name]
@@ -326,11 +424,10 @@ class Gen:
             pattern = variants[(v if v is not None else h(q, kind)) % len(variants)]
             steps = [self._parse_step(s) for s in pattern]
             self._assign(steps, segs, q)
-            # a pattern's optional interact/collect with nothing authored for it would be noise: drop it
+            # a pattern's optional collect with nothing authored for it would be noise: drop it
+            # (an optional interact is kept while its place may still turn out to hold a prop)
             keep = []
             for st in steps:
-                if "seg" not in st and st["t"] == "I" and not (kw.get("prop") or kw.get("thing")):
-                    continue
                 if "seg" not in st and st["t"] == "G" and kind not in ("gather", "hunt", "festival", "break") \
                         and not (kw.get("item") or kw.get("noun")):
                     continue
@@ -338,8 +435,10 @@ class Gen:
             if len(keep) >= 2:
                 steps = keep
         base_map = kw.get("map", spec["map"])
+        scene = " ".join([beat["title"], beat["summary"]] + [s["text"] or "" for s in segs]
+                         + [ln[1] for s in segs for ln in s["lines"]]).lower()
         ctx = {"q": q, "vol": vol, "spec": spec, "beat": beat, "kw": kw, "roles": {}, "npcs": {},
-               "fights": set(), "base_map": base_map}
+               "fights": set(), "base_map": base_map, "reloc": {}, "scene": scene, "words": _words(scene)}
         # resolve maps and places in order
         cur_map = base_map
         for idx, st in enumerate(steps):
@@ -350,9 +449,10 @@ class Gen:
             if st["t"] == "T":
                 st["npc"] = self._talk_npc(st, ctx, idx, steps)
             else:
-                st["marker"] = self._place(st, ctx)
+                st["marker"] = self._place(st, ctx, steps)
                 if st["t"] in ("F", "F2", "X"):
                     ctx["fights"].add((st["map"], st["marker"]))
+        steps = self._props(steps, ctx)
         for idx, st in enumerate(steps):
             if st["t"] == "T":
                 st["at"] = self._talk_at(st, ctx, steps, idx)
@@ -364,6 +464,11 @@ class Gen:
             greet = MO.greeting_lines(objs[0]["npc"], q)
             if greet:
                 objs[0]["dialogue"] = _lines(greet) + objs[0]["dialogue"]
+        # everyone who is there takes part: companions join the conversations
+        self._ensemble(objs, steps, ctx)
+        for o in objs:
+            mk = o.get("marker") or o.get("at") or (NPCS[o["npc"]]["home"]["marker"] if o["type"] == "talk" else None)
+            self.count(o["map"], mk)
         if realm:
             # a major breakthrough calls down its heavenly tribulation, right after the breakthrough meditation
             med = [i for i, o in enumerate(objs) if o["type"] == "meditate"]
@@ -379,8 +484,12 @@ class Gen:
                             key=lambda mk: h(q, mk, "storm"))[0]
             trib = TR.make(ri, realm, tm, base["map"])
             if len(objs) >= 6:
-                # keep the quest at six objectives: the breakthrough's gathering step makes way
-                drop = next(i for i, o in enumerate(objs) if o["type"] in ("collect", "interact", "reach"))
+                # keep the quest at six objectives: the breakthrough's gathering step makes way,
+                # but never the only group conversation of the quest
+                drop = next((i for i, o in enumerate(objs) if o["type"] in ("collect", "interact", "reach")
+                             and not is_group(o)), None)
+                if drop is None:
+                    raise ValueError("q%04d: no step can make way for the tribulation" % q)
                 objs.pop(drop)
                 if drop < at:
                     at -= 1
@@ -472,42 +581,105 @@ class Gen:
         return cast[start]
 
     def _talk_at(self, st, ctx, steps, idx):
-        """Where a talk NPC stands: the authored marker if it is free, else at
-        home, else near the previous objective, else any free meeting place.
-        Never on another present NPC's home, nor where this quest fights."""
+        """Where a talk NPC stands. An outline's own marker is kept when its lines are tied
+        to it (and otherwise moved within its district, see _pin); the ally met "at" the
+        place of the action stands there; someone met again stands where they stood before.
+        Everyone else is staged either at home or, more often, at one of the places the
+        character haunts (Elder Hua in the medicine valley, Wei Tong in the refectory),
+        spreading the saga's conversations over the whole map. Never on another present
+        NPC's home, nor where this quest fights."""
         q, m, nid = ctx["q"], st["map"], st["npc"]
-        seg = st.get("seg")
-        explicit = seg["marker"] if seg and seg["marker"] else None
         home = NPCS[nid]["home"]
         home_mk = home["marker"] if home and home["map"] == m and self.at_home(nid, m, q) else None
+        if home_mk and (m, home_mk) in ctx["fights"]:
+            home_mk = None  # this quest fights on the doorstep: meet somewhere else
         homes = self.homes(m, q)
+
+        def free(c, explicit=False):
+            if (m, c) in ctx["fights"]:
+                return False
+            if c in homes and homes[c] != nid:
+                return False
+            return explicit or self.allowed(m, c, q, "meet")
+
+        explicit = self._pin(st, ctx, "meet", accept=lambda c: free(c, True))
+        if explicit and (explicit == home_mk or free(explicit, True)):
+            return None if explicit == home_mk else explicit
         want = None
         if st["place"]:
             want = ctx["roles"].get((m, st["place"]))
-        if want is None and idx > 0 and steps[idx - 1]["map"] == m and steps[idx - 1].get("marker"):
-            want = steps[idx - 1]["marker"]
-        pool = PL.POOLS[m]["meet"]
-        cands = ([explicit] if explicit else []) + ([home_mk] if home_mk else []) + ([want] if want else []) \
-            + sorted(pool, key=lambda k: h(q, nid, k))
-        for c in cands:
-            if (m, c) in ctx["fights"]:
-                continue
-            if c == home_mk:
-                return None
-            if c in homes and homes[c] != nid:
-                continue
-            if c != explicit and not self.allowed(m, c, q, "meet"):
-                continue
-            return c
+        if want and free(want):
+            return want
+        # someone met again in the same quest stands where they stood before
+        for s in steps[:idx]:
+            if s["t"] == "T" and s.get("npc") == nid and s["map"] == m and "at" in s:
+                if (s["at"] is None and home_mk) or (s["at"] and free(s["at"])):
+                    return s["at"]
+        prev = steps[idx - 1] if idx > 0 else None
+        if prev and prev["map"] == m and prev.get("marker") and prev["t"] != "T" and h(ctx["q"], nid, "spot") % 2 \
+                and free(prev["marker"]):
+            # met on the spot, right where the action was
+            return prev["marker"]
+        if home_mk and self.use.get((m, home_mk), 0) < HOME_CAP and h(q, nid, "home") % 3 == 0:
+            return None
+        haunts = [c for c in PL.HAUNTS.get(nid, {}).get(m, []) if free(c)]
+        pool = [c for c in PL.POOLS[m]["meet"] if free(c)]
+        scene = self._scene_markers(m, ctx)
+        if haunts or pool:
+            return self.best(m, sorted(set(haunts + pool)), q, nid, prefer=set(haunts) | scene)
+        if home_mk:
+            return None
         raise ValueError("q%04d: no place for %s to stand on %s" % (q, nid, m))
 
     # --- places ----------------------------------------------------------
-    def _place(self, st, ctx):
-        q, m = ctx["q"], st["map"]
+    def _scene_markers(self, m, ctx):
+        """Markers of map ``m`` the beat's own words point at (a beat about kilns likes the kiln yard)."""
+        key = ("scene", m)
+        if key not in ctx:
+            ctx[key] = {mk for mk in PL.NAMES.get(m, {}) if PL.keywords(m, mk) & ctx["words"]}
+        return ctx[key]
+
+    def _bound(self, m, marker, seg, ctx):
+        """True when an outline's marker is part of the story: the step's own lines, its text or
+        the beat's title name the place, or it is a place the plot reserves. (The summary is not
+        enough: "the Great Azure Formation" in a summary does not nail every step to the plaza.)"""
+        if marker in FORTRESS or marker in RESERVED or marker == "HeartMirror":
+            return True
+        b = ctx["spec"]["boss"]
+        if b and marker == b[2]:
+            return True
+        text = " ".join([ctx["beat"]["title"], seg["text"] or ""] + [ln[1] for ln in seg["lines"]])
+        return bool(PL.keywords(m, marker) & _words(text.lower()))
+
+    def _pin(self, st, ctx, kind, accept=None):
+        """The marker an outline pinned this step to, or where it moves: a pin the step's lines are
+        not tied to may move to a less-used marker of the same character (sharing a tag), so the
+        saga spreads over the enlarged maps. Every step of a quest pinned to the same marker moves
+        together. None if the step is not pinned."""
         seg = st.get("seg")
-        if seg and seg["marker"]:
-            ctx["roles"].setdefault((m, st["place"] or "p1"), seg["marker"])
-            return seg["marker"]
+        if not (seg and seg["marker"]):
+            return None
+        m, q, mk = st["map"], ctx["q"], seg["marker"]
+        if (m, mk) in ctx["reloc"]:
+            return ctx["reloc"][(m, mk)]
+        if mk not in PL.TAGS.get(m, {}) or self._bound(m, mk, seg, ctx):
+            ctx["reloc"][(m, mk)] = mk
+            return mk
+        tags = PL.TAGS[m][mk]
+        used = set(ctx["roles"].values())
+        cands = [c for c in PL.POOLS[m][kind] if PL.TAGS[m][c] & tags and c not in used
+                 and (accept is None or accept(c)) and self.allowed(m, c, q, kind)]
+        new = self.best(m, sorted(set(cands) | {mk}), q, ("pin", mk))
+        ctx["reloc"][(m, mk)] = new
+        return new
+
+    def _place(self, st, ctx, steps):
+        q, m = ctx["q"], st["map"]
+        kind = KIND_OF[st["t"]]
+        pinned = self._pin(st, ctx, kind, accept=lambda c: self.allowed(m, c, q, kind))
+        if pinned:
+            ctx["roles"].setdefault((m, st["place"] or "p1"), pinned)
+            return pinned
         if st["t"] == "X":
             b = ctx["spec"]["boss"]
             mk = ctx["kw"].get("arena") or (b[2] if b else None)
@@ -525,16 +697,51 @@ class Gen:
             mk = ctx["kw"][kwkey]
             ctx["roles"][key] = mk
             return mk
-        kind = {"R": "reach", "F": "fight", "F2": "fight", "X": "fight", "G": "gather", "M": "med", "I": "prop"}[st["t"]]
         used = set(ctx["roles"].values())
-        rot = self.rotor("%s/%s" % (m, kind), PL.POOLS[m][kind])
-        mk = rot.next(lambda c: c not in used and self.allowed(m, c, q, kind))
+        cands = [c for c in PL.POOLS[m][kind] if c not in used and self.allowed(m, c, q, kind)]
+        if not cands:
+            cands = [c for c in PL.POOLS[m][kind] if self.allowed(m, c, q, kind)]
+        prefer = set(self._scene_markers(m, ctx))
+        # a place shared with an interact step (R:p1 then I:p1) should hold something to examine
+        if any(s["t"] == "I" and (s["place"] or "p1") == role for s in steps):
+            prefer |= {c for c in cands if c in PL.PROPS_AT.get(m, {})}
+        if st["t"] == "G":
+            item = ctx["kw"].get("item")
+            if item:
+                prefer |= {c for c in cands if item in PL.ITEMS_AT.get(m, {}).get(c, ())}
+        mk = self.best(m, cands, q, ("place", st["t"], role), prefer=prefer)
         ctx["roles"].setdefault(key, mk)
         return mk
 
     def _fits(self, st, m, mk, q):
-        kind = {"R": "reach", "F": "fight", "F2": "fight", "X": "fight", "G": "gather", "M": "med", "I": "prop"}[st["t"]]
-        return self.allowed(m, mk, q, kind, explicit=True)
+        return self.allowed(m, mk, q, KIND_OF[st["t"]], explicit=True)
+
+    # --- props -------------------------------------------------------------
+    def _props(self, steps, ctx):
+        """Choose what each interact step examines, turn some arrivals at a place with a
+        fitting prop into an investigation of it, and drop optional interact steps whose
+        place holds nothing to examine."""
+        q, kw, spec = ctx["q"], ctx["kw"], ctx["spec"]
+        out = []
+        has_i = {(s["map"], s.get("marker")) for s in steps if s["t"] == "I"}
+        for idx, st in enumerate(steps):
+            seg = st.get("seg")
+            here = PL.PROPS_AT.get(st["map"], {}).get(st.get("marker"), [])
+            if st["t"] == "R" and here and not (seg and seg["text"]) and (st["map"], st["marker"]) not in has_i \
+                    and h(q, idx, "r2i") % 100 < REACH_TO_INTERACT:
+                st = dict(st, t="I", prop=here[h(q, idx, "which") % len(here)], converted=True)
+                has_i.add((st["map"], st["marker"]))
+            if st["t"] == "I" and "prop" not in st:
+                prop = infer_prop(seg["text"] if seg else None, st["map"]) or kw.get("prop")
+                if prop is None and here and (spec["props"] == ["seal"] or h(q, idx, "local") % 100 < LOCAL_PROP):
+                    prop = here[h(q, idx, "which") % len(here)]
+                if prop is None:
+                    if not seg and not kw.get("thing") and len(steps) > 2:
+                        continue  # nothing authored and nothing there to examine: drop the step
+                    prop = spec["props"][h(q, idx, "prop") % len(spec["props"])]
+                st["prop"] = prop
+            out.append(st)
+        return out if len(out) >= 2 else steps
 
     # --- objectives --------------------------------------------------------
     def _text(self, pool_key, st, ctx, **slots):
@@ -552,6 +759,30 @@ class Gen:
     def _lines(self, st):
         seg = st.get("seg")
         return list(seg["lines"]) if seg else []
+
+    def _item(self, st, ctx, idx):
+        """The collectible of a gather step: the outline's, else something that lies around the
+        place (spirit pills in the kiln yard, feathers at the phoenix nest), else the chapter's."""
+        if "item" in st:
+            return st["item"]
+        kw, spec, q = ctx["kw"], ctx["spec"], ctx["q"]
+        item = kw.get("item")
+        if item is None:
+            local = [it for it in PL.ITEMS_AT.get(st["map"], {}).get(st.get("marker"), [])
+                     if ctx["vol"] >= PL.ITEM_FROM_VOLUME.get(it, 1)]
+            if local and h(q, idx, "localitem") % 100 < LOCAL_ITEM:
+                item = local[h(q, idx, "li") % len(local)]
+            else:
+                item = spec["items"][h(q, idx, "item") % len(spec["items"])]
+        st["item"] = item
+        return item
+
+    def _noun(self, st, ctx, idx):
+        item = self._item(st, ctx, idx)
+        kw, spec = ctx["kw"], ctx["spec"]
+        if kw.get("noun") and (kw.get("item") in (None, item)):
+            return kw["noun"]
+        return spec["nouns"].get(item) or ITEM_NOUNS[item]
 
     def _objective(self, st, ctx, steps, idx):
         t, m, q, spec, kw = st["t"], st["map"], ctx["q"], ctx["spec"], ctx["kw"]
@@ -573,6 +804,7 @@ class Gen:
                 key = "found"
             else:
                 key = "ally"
+            st["key"] = key
             text = self._text(key, st, ctx, name=name, place=place)
             if not lines:
                 lines = self._filler_talk(nid, {"after": "ally", "found": "ally"}.get(key, key), st, ctx, steps, idx)
@@ -606,8 +838,8 @@ class Gen:
                     lines = [(N, fmt(self.rotor("cryn", FL.CRY_N).next(), foes=foes))]
             return defeat(enemy, count, st["marker"], text, *lines, map=m)
         if t == "G":
-            item = kw.get("item") or spec["items"][h(q, idx, "item") % len(spec["items"])]
-            noun = kw.get("noun") or spec["nouns"].get(item) or ITEM_NOUNS[item]
+            item = self._item(st, ctx, idx)
+            noun = self._noun(st, ctx, idx)
             count = kw.get("gcount") or (3 + h(q, idx, "g") % 4)
             text = self._text("collect", st, ctx, noun=noun, place=place)
             return collect(item, count, st["marker"], text, map=m)
@@ -624,18 +856,22 @@ class Gen:
             return meditate(st["marker"], secs, text, *lines, map=m)
         if t == "I":
             seg = st.get("seg")
-            prop = infer_prop(seg["text"] if seg else None) or kw.get("prop") \
-                or spec["props"][h(q, idx, "prop") % len(spec["props"])]
-            thing = kw.get("thing") or spec["things"].get(prop) or THINGS[prop]
-            if seg and seg["text"]:
+            prop = st["prop"]
+            generic = st.get("converted") or prop not in (spec["props"] + [kw.get("prop")])
+            thing = (None if generic else (kw.get("thing") or spec["things"].get(prop))) or THINGS[prop]
+            if seg and seg["text"] and not st.get("converted"):
                 text = seg["text"]
             else:
                 verbs = PROP_VERBS[prop]
                 text = fmt(verbs[h(q, idx, "verb") % len(verbs)], thing=thing)
+                if st.get("converted") and len(text) + len(place) + 4 <= MAX_TEXT:
+                    text += " at " + place
                 if len(text) > MAX_TEXT:
                     text = fmt("Examine {thing}", thing=thing)[:MAX_TEXT]
             if not lines:
                 lines = [(N, fmt(self.rotor("int/" + prop, FL.INTERACT[prop]).next(), thing=thing))]
+            elif st.get("converted"):
+                lines = lines + [(N, fmt(self.rotor("int/" + prop, FL.INTERACT[prop]).next(), thing=thing))]
             return interact(prop, st["marker"], text, *lines, map=m)
         raise ValueError(t)
 
@@ -652,7 +888,7 @@ class Gen:
 
     def _companion(self, ctx, steps):
         for s in steps:
-            if s["t"] == "T" and s.get("npc") and NPCS[s["npc"]]["model"] not in ("demon_cultivator", "blood_patriarch"):
+            if s["t"] == "T" and s.get("npc") and MO.category(s["npc"], ctx["q"]) not in ("demonic", "prisoner"):
                 return s["npc"]
         return None
 
@@ -684,16 +920,21 @@ class Gen:
             if quirks and h(q, "qb") % 2:
                 out.append((nid, self.rotor("q/" + nid, quirks).next()))
             else:
-                out.append((P, self.rotor("reply2", ["Glad to help.", "Any time.", "It was nothing. Well, it was something.",
-                                                     "Just doing my part.", "I learned a lot, actually.",
-                                                     "Next time, maybe something easier?"]).next()))
+                out.append((P, self.rotor("reply2", FL.REPLY2).next()))
             return out
-        place = PL.name(st["map"], st["at"]) if st["at"] else "here"
-        out = [(nid, fmt(self.rotor("regroup", FL.REGROUP).next(), place=place))]
+        place = PL.name(st["map"], st["at"] or NPCS[nid]["home"]["marker"])
+        prev = steps[idx - 1]["t"] if idx > 0 else None
+        if prev in (None, "T"):
+            # nothing has happened since the last conversation: a greeting, not an after-action regroup
+            out = [(nid, fmt(self.rotor("meet", FL.MEET).next(), place=place))]
+            reply = (P, self.rotor("meetreply", FL.MEET_REPLY).next())
+        else:
+            out = [(nid, fmt(self.rotor("regroup", FL.REGROUP).next(), place=place))]
+            reply = (P, self.rotor("afterreply", FL.AFTER_REPLY).next())
         if quirks and h(q, "qa") % 2:
             out.append((nid, self.rotor("q/" + nid, quirks).next()))
         else:
-            out.append((P, self.rotor("reply", FL.REPLY).next()))
+            out.append(reply)
         return out
 
     def _peek_text(self, st, ctx, steps, idx):
@@ -712,10 +953,7 @@ class Gen:
             foes = ctx["kw"].get("foes_name") or ctx["spec"]["foe_names"].get(enemy) or FOE_NAMES[enemy]
             return "deal with the %s at %s" % (foes, place)
         if st["t"] == "G":
-            kw, spec, q = ctx["kw"], ctx["spec"], ctx["q"]
-            item = kw.get("item") or spec["items"][h(q, idx, "item") % len(spec["items"])]
-            noun = kw.get("noun") or spec["nouns"].get(item) or ITEM_NOUNS[item]
-            return "bring me %s from %s" % (noun, place)
+            return "bring me %s from %s" % (self._noun(st, ctx, idx), place)
         if st["t"] == "M":
             return "go and meditate at %s" % place
         if st["t"] == "I":
@@ -733,14 +971,259 @@ class Gen:
             return (P, self.rotor("reply", FL.REPLY).next())
         return (P, self.rotor("ack", ACK).next())
 
+    # --- group conversations -------------------------------------------------
+    def _present(self, nid, m, q, ctx, near=False):
+        """Can ``nid`` plausibly stand in a scene of quest ``q`` on map ``m``? With ``near``, someone
+        from the sect, the forest or the town may also have walked over to one of the other two."""
+        if nid == NP_DEMON or not self.active(nid, q):
+            return False
+        a, hid = self.window(nid)
+        if (a and q < a) or (hid and q > hid):
+            return False
+        home = NPCS[nid]["home"]
+        if home and home["map"] != m and nid not in EN.ROAM and nid not in ctx["speakers_on"].get(m, set()) \
+                and not (near and home["map"] in NEAR_MAPS and m in NEAR_MAPS):
+            return False
+        if not home and nid not in EN.ROAM and nid not in ctx["speakers_on"].get(m, set()) \
+                and nid not in ctx["spec"]["cast"]:
+            return False
+        return True
+
+    def _absent(self, ctx):
+        """Cast members the beat talks about but never lets speak: they are elsewhere."""
+        if "absent" not in ctx:
+            speak = {ln[0] for s in ctx["beat"]["segs"] for ln in s["lines"]}
+            text = " ".join([ctx["beat"]["title"], ctx["beat"]["summary"]]
+                            + [ln[1] for s in ctx["beat"]["segs"] for ln in s["lines"]])
+            out = set()
+            for nid in ctx["spec"]["cast"]:
+                if nid in speak:
+                    continue
+                names = {SHORT.get(nid, ""), NPCS[nid]["name"]}
+                names = {n.replace("the ", "") for n in names if n}
+                if any(re.search(r"\b%s\b" % re.escape(n), text) for n in names if len(n) > 2):
+                    out.add(nid)
+            ctx["absent"] = out
+        return ctx["absent"]
+
+    def _companions(self, giver, m, mk, ctx, want, taken):
+        """Up to ``want`` companions for a scene with ``giver`` (None: no quest giver) at ``mk``."""
+        q = ctx["q"]
+        gcat = MO.category(giver, q) if giver else None
+        villain = gcat == "demonic"
+
+        def ok(n, near=False):
+            if n in taken or n == giver or n in self._absent(ctx) or not self._present(n, m, q, ctx, near):
+                return False
+            c = MO.category(n, q)
+            if villain:
+                return c in ("elder", "peer", "junior", "rogue")
+            return c not in ("demonic", "prisoner")
+
+        quest_npcs = [n for n in ctx["quest_npcs"] if ok(n)]
+        local = [n for n, (dm, ds) in sorted(EN.DISTRICT.items()) if dm == m and mk in ds and ok(n)]
+        cast = [n for n in ctx["spec"]["cast"] if ok(n)]
+        rovers = [n for n in EN.ROVERS.get(m, []) if ok(n) and gcat in (None, "elder", "peer", "junior", "town")]
+        # last resorts: anyone who lives on this map, then the cast from a neighbouring map
+        map_minor = [n for n, (dm, ds) in sorted(EN.DISTRICT.items()) if dm == m and ok(n)]
+        near_cast = [n for n in ctx["spec"]["cast"] if ok(n, near=True)]
+        out = []
+        salt = (q, giver, mk)
+        for _ in range(want):
+            tiers = []
+            r = h(salt, len(out), "tier") % 100
+            if local and r < 45:
+                tiers.append(local)
+            if quest_npcs and r % 2 == 0:
+                tiers.append(quest_npcs)
+            tiers += [cast, quest_npcs, local, rovers, map_minor, near_cast]
+            pick = None
+            for tier in tiers:
+                cands = [n for n in tier if n not in out]
+                if cands:
+                    # every giver cycles through everyone in a stable order, so the same pair rarely repeats
+                    pick = self.rotor("comp/%s" % giver, sorted(NPCS)).next(lambda n: n in cands)
+                    break
+            if pick is None:
+                break
+            out.append(pick)
+        return out
+
+    def _ensemble(self, objs, steps, ctx):
+        """Bring companions into the quest's conversations (see ensemble.py)."""
+        q = ctx["q"]
+        ctx["quest_npcs"] = []
+        ctx["speakers_on"] = {}
+        for o in objs:
+            for sp in dsl_speakers(o) + ([o["npc"]] if o["type"] == "talk" else []):
+                ctx["speakers_on"].setdefault(o["map"], set()).add(sp)
+                if sp not in ctx["quest_npcs"]:
+                    ctx["quest_npcs"].append(sp)
+        for oi, o in enumerate(objs):
+            if o["type"] != "talk":
+                continue
+            st = steps[oi]
+            already = len({ln["speaker"] for ln in o["dialogue"] if not ln.get("cond")} - {P, N}) >= 2
+            if already and h(q, oi, "more") % 100 >= 40:
+                continue
+            mk = o["at"] or NPCS[o["npc"]]["home"]["marker"]
+            want = 2 if h(q, oi, "two") % 100 < TWO_COMPANIONS else 1
+            comps = self._companions(o["npc"], o["map"], mk, ctx, want, taken=set(dsl_speakers(o)))
+            if comps:
+                self._join(o, comps, st.get("key", "ally"), ctx, oi)
+        if not any(is_group(o) for o in objs):
+            self._field_scene(objs, ctx)
+
+    def _join(self, o, comps, key, ctx, oi):
+        q, giver = ctx["q"], o["npc"]
+        scene = EN.END if key in ("back", "after", "found") else EN.START
+        gcat = MO.category(giver, q)
+        group = EN.GIVER_GROUP.get(gcat, "town")
+        dl = o["dialogue"]
+        plain = [i for i, ln in enumerate(dl) if not ln.get("cond")]
+        room = 7 - len(plain)
+        total_room = 10 - len(dl)
+        if room < 1 or total_room < 1:
+            return
+        first = next((i for i in plain if dl[i]["speaker"] == giver), plain[0])
+        new = []
+        c1 = comps[0]
+        gname, cname = short(giver), short(c1)
+        pair = EN.PAIRS.get((c1, giver))
+        if gcat == "demonic":
+            pool = EN.CONFRONT.get(MO.category(c1, q), EN.CONFRONT["peer"])
+            new.append((c1, fmt(self.rotor("confront/%s" % MO.category(c1, q), pool).next(), giver=gname)))
+        elif pair and h(q, oi, "pair") % 100 < 55:
+            a, b = self.rotor("pair/%s/%s" % (c1, giver), pair).next()
+            new += [(c1, fmt(a, giver=gname, comp=cname)), (giver, fmt(b, giver=gname, comp=cname))]
+        else:
+            intent, line = self._chime(c1, scene, q, giver)
+            new.append((c1, fmt(line, giver=gname, comp=cname, place=PL.name(o["map"], o["at"] or
+                                                                            NPCS[giver]["home"]["marker"]))))
+            r = h(q, oi, "resp") % 100
+            # the player answers only if the next line isn't the player's already
+            if 55 <= r < 85 and first + 1 < len(dl) and dl[first + 1]["speaker"] == P:
+                r = 0
+            if r < 55:
+                pool = EN.RESP_GIVER[group].get(intent)
+                if pool:
+                    new.append((giver, fmt(self.rotor("rg/%s/%s" % (group, intent), pool).next(), comp=cname,
+                                           giver=gname)))
+            elif r < 85:
+                new.append((P, self.rotor("rp/" + intent, EN.RESP_PLAYER[intent]).next()))
+        for c2 in comps[1:]:
+            if len(new) + 1 > room:
+                break
+            intent, line = self._chime(c2, scene, q, giver)
+            new.append((c2, fmt(line, giver=gname, comp=short(c2), place=PL.name(o["map"], o["at"] or
+                                                                                 NPCS[giver]["home"]["marker"]))))
+        new = new[:room]
+        cond = []
+        ccat = MO.category(c1, q)
+        if EN.COND.get(ccat) and h(q, oi, "cond") % 100 < COND_LINE and total_room - len(new) >= 1:
+            c, text = self.rotor("cond/" + ccat, EN.COND[ccat]).next()
+            cond = [(c1, fmt(text, giver=gname, comp=cname), c)]
+        # companions speak once the person the player came to see has had a word
+        at = first + 1
+        ins = _lines(new + cond)
+        o["dialogue"] = dl[:at] + ins + dl[at:]
+        if not any(ln["speaker"] == P and not ln.get("cond") for ln in o["dialogue"]) and len(plain) + len(new) < 7 \
+                and len(o["dialogue"]) < 10:
+            o["dialogue"].append({"speaker": P, "text": self.rotor("reply", FL.REPLY).next()})
+
+    def _chime(self, nid, scene, q, giver):
+        """One of ``nid``'s own lines whose intent suits the scene (before or after the action)."""
+        def fits(e):
+            return e[0] in scene and _era_ok(e, q) and (giver or ("{giver}" not in e[1] and "{Giver}" not in e[1]))
+        full = EN.CHIME.get(nid, [])
+        if not any(fits(e) for e in full):
+            full = GENERIC_CHIME.get(MO.category(nid, q), GENERIC_CHIME["town"])
+        i = self.rotor("chime/%s/%d" % (nid, len(full)), list(range(len(full)))).next(lambda i: fits(full[i]))
+        return full[i][0], full[i][1]
+
+    def _field_scene(self, objs, ctx):
+        """No conversation of the quest has two NPCs yet: two companions share the moment at a
+        reach or interact objective (or a meditation, when there is nothing else)."""
+        q = ctx["q"]
+        hosts = [i for i, o in enumerate(objs) if o["type"] in ("reach", "interact")] + \
+                [i for i, o in enumerate(objs) if o["type"] == "talk"] + \
+                [i for i, o in enumerate(objs) if o["type"] == "meditate"]
+        for i in hosts:
+            o = objs[i]
+            mk = o.get("marker") or o.get("at") or NPCS[o["npc"]]["home"]["marker"]
+            giver = o.get("npc")
+            taken = set(dsl_speakers(o))
+            comps = self._companions(giver, o["map"], mk, ctx, 2 if giver is None else 1, taken)
+            present = [sp for sp in dsl_speakers(o) if sp != giver]
+            if giver:
+                present = [giver] + present
+            speakers_now = list(dict.fromkeys(present + comps))
+            if len(speakers_now) < 2:
+                continue
+            a, b = speakers_now[0], speakers_now[1]
+            lines = []
+            if a not in dsl_speakers(o):
+                lines.append((a, self.rotor("field/" + MO.category(a, q),
+                                            EN.FIELD.get(MO.category(a, q), EN.FIELD["town"])).next()))
+            lines.append((b, self.rotor("fieldans/" + MO.category(b, q),
+                                        EN.FIELD_ANSWER.get(MO.category(b, q), EN.FIELD_ANSWER["town"])).next()))
+            lines.append((P, self.rotor("fieldp", EN.FIELD_PLAYER).next()))
+            dl = o.get("dialogue") or []
+            plain = sum(1 for ln in dl if not ln.get("cond"))
+            if plain + len(lines) > 7 or len(dl) + len(lines) > 10:
+                continue
+            o["dialogue"] = dl + _lines(lines)
+            if is_group(o):
+                return
+        raise ValueError("q%04d %r: could not stage a group conversation (cast %s, objectives %s)"
+                         % (q, ctx["beat"]["title"], ctx["spec"]["cast"],
+                            [(o["type"], o.get("npc"), o["map"], len(o.get("dialogue") or [])) for o in objs]))
+
+
+# the generic companion lines of a category, for characters without their own
+GENERIC_CHIME = {
+    "elder": [("advice", "Go carefully. Carelessness is the only enemy that never retreats."),
+              ("agree", "Sound. Proceed."), ("praise", "Well done. Truly."), ("relief", "Good. Good.")],
+    "peer": [("offer", "Need a hand? I've two. One's even clean."), ("tease", "Try not to trip."),
+             ("praise", "Nice work."), ("relief", "About time.")],
+    "junior": [("worry", "Be careful, {senior}!"), ("praise", "You're amazing, {senior}!"),
+               ("question", "What was it like?")],
+    "town": [("worry", "Heavens keep you safe, immortal."), ("praise", "Heaven bless you!"),
+             ("agree", "That's right, that is."), ("relief", "Oh, thank the ancestors.")],
+    "rogue": [("advice", "Watch your back."), ("praise", "Not bad."), ("doubt", "Smells like a trap.")],
+    "demonic": [("tease", "The moon is watching."), ("praise", "Enjoy it, heir.")],
+}
+
 
 def kind_is(ctx, k):
     return ctx["beat"]["kind"] == k
 
 
+def _words(text):
+    return set(re.findall(r"[a-z]+", text))
+
+
+def _era_ok(entry, q):
+    if len(entry) < 3:
+        return True
+    lo, hi = entry[2]
+    return lo <= q <= hi
+
+
+def short(nid):
+    return SHORT.get(nid, NPCS[nid]["name"])
+
+
+def is_group(o):
+    """Two or more NPCs speak (unconditionally) and the player takes part."""
+    plain = [ln for ln in o.get("dialogue") or [] if not ln.get("cond")]
+    npcs = {ln["speaker"] for ln in plain} - {P, N}
+    return len(npcs) >= 2 and (any(ln["speaker"] == P for ln in plain) or bool(o.get("choices")))
+
+
 # ---------------------------------------------------------------- moral choices
 
-def choice_family(qd, beat):
+def choice_family(qd, beat, q):
     """Which template family of morality.TEMPLATES fits a built quest, with its
     slots, or None. Every quest must end up with a choice (see ensure_choice),
     so each branch only requires what its own templates actually need -- e.g.
@@ -775,7 +1258,7 @@ def choice_family(qd, beat):
         last_talk = talks[-1]
         if last_talk["npc"] in MO.OFFICIALS:
             return "social_official", {}
-        return MO.SOCIAL_BY_CATEGORY[MO.category(last_talk["npc"])], {}
+        return MO.SOCIAL_BY_CATEGORY[MO.category(last_talk["npc"], q)], {}
     return fam, {}
 
 
@@ -795,7 +1278,7 @@ def _last_choice_host(objs, q):
     raise ValueError("q%04d: no talk/reach/interact objective to hang a choice on" % q)
 
 
-def infer_family(qd):
+def infer_family(qd, q):
     """Which TEMPLATES family fits a fully-built quest (any quest, hand-written
     or generated), read straight from its objectives -- used to guarantee
     every quest offers a choice even when it wasn't authored with one."""
@@ -819,7 +1302,7 @@ def infer_family(qd):
         nid = talks[-1]["npc"]
         if nid in MO.OFFICIALS:
             return "social_official", {}
-        return MO.SOCIAL_BY_CATEGORY[MO.category(nid)], {}
+        return MO.SOCIAL_BY_CATEGORY[MO.category(nid, q)], {}
     if any(o["type"] in ("interact", "reach") for o in objs):
         return "find", {}
     return None
@@ -832,7 +1315,7 @@ def ensure_choice(qd, q, rotor):
     family don't repeat a dilemma."""
     if any(o.get("choices") for o in qd["objectives"]):
         return
-    fam = infer_family(qd)
+    fam = infer_family(qd, q)
     if fam is None:
         raise ValueError("q%04d: %r has no objective to hang a fallback choice on" % (q, qd["title"]))
     name, extra = fam
@@ -853,12 +1336,27 @@ def attach_choice(qd, choice, q, spec=None, beat=None, foes="", noun="", item=No
     nid = o.get("npc")
     name = SHORT.get(nid, NPCS[nid]["name"]) if nid else ""
     o["choice_prompt"] = _cap(fmt(choice["prompt"], foes=foes, noun=noun, name=name))
+    # the others present react too: after the person the player answered, or on their own at a
+    # reach / interact objective, where nobody else would
+    others = [sp for sp in dsl_speakers(o) if sp != nid and MO.category(sp, q) != "prisoner"]
     opts = []
     for k, opt in enumerate(choice["options"]):
         law, good = opt["align"]["law"], opt["align"]["good"]
         reply = [tuple(r) for r in opt["reply"]]
         if nid:
-            reply.append((nid, MO.reaction(nid, law, good, salt=(q, k))))
+            reply.append((nid, MO.reaction(nid, law, good, salt=(q, k), q=q)))
+        if others and len(reply) < 3 and (nid is None or h(q, k, "aside") % 100 < ASIDE_RATE):
+            comp = others[h(q, k, "who") % len(others)]
+            ccat = MO.category(comp, q)
+            direction = MO.direction(law, good)
+            asides = [a for a in EN.ASIDE.get(ccat, {}).get(direction, []) if nid or "{giver}" not in a]
+            # the minor cast always speaks in asides: the named cast's reactions mention their own lives
+            if asides and (comp in MINOR or h(q, k, "asidekind") % 2):
+                reply.append((comp, fmt(asides[h(q, k, comp) % len(asides)], giver=short(nid) if nid else "")))
+            else:
+                line = MO.reaction(comp, law, good, salt=(q, k, "c"), q=q)
+                if not reply or line != reply[-1][1]:
+                    reply.append((comp, line))
         items = {}
         for it, n in opt["reward"]["items"].items():
             items[item if it == "@item" else it] = n
@@ -873,25 +1371,58 @@ def attach_choice(qd, choice, q, spec=None, beat=None, foes="", noun="", item=No
 
 # objective text keyword -> the world_spec prop that should stand there
 PROP_WORDS = [
-    (("bell",), "bronze_bell"),
-    (("cage", "pen", "cell"), "prison_cage"),
-    (("obelisk",), "demon_obelisk"),
-    (("altar",), "blood_altar"),
-    (("chest", "strongbox", "coffer", "box", "crate", "sack", "hoard", "cache", "tent"), "treasure_chest"),
+    # (words, prop, maps it applies on or None); the first match wins, so specific words come first
+    (("bell",), "bronze_bell", None),
+    (("notice", "noticeboard", "posting", "bounty"), "notice_board", None),
+    (("ancestral", "memorial", "spirit tablet"), "ancestral_tablet", None),
+    (("tortoise",), "tortoise_stele", None),
+    (("furnace", "kiln"), "pill_furnace", None),
+    (("ding", "tripod", "censer", "cauldron"), "bronze_ding", None),
+    (("mirror",), "bronze_mirror", None),
+    (("soul lantern",), "soul_lantern", None),
+    (("lamp", "lantern"), "spirit_lamp", None),
+    (("drum",), "war_drum", None),
+    (("coffin", "sarcophagus", "casket"), "sealed_coffin", None),
+    (("offering", "offerings"), "offering_table", None),
+    (("armillary", "orrery", "astrolabe", "star chart"), "armillary_sphere", None),
+    (("medicine cabinet", "drawers", "apothecary"), "medicine_cabinet", None),
+    (("wine", "jar"), "wine_jars", None),
+    (("loom",), "loom", None),
+    (("map", "chart"), "map_table", None),
+    (("statue",), "crane_statue", None),
+    (("fountain",), "spirit_fountain", None),
+    (("puppet", "dummy", "dummies"), "puppet_frame", None),
+    (("drying",), "herb_drying_rack", None),
+    (("anchor", "winch"), "chain_anchor", None),
+    (("abacus", "ledger", "accounts", "tallies", "tally"), "abacus_desk", None),
+    (("boat", "barge", "nets"), "fishing_boat", None),
+    (("wishing", "ribbon"), "wishing_tree", None),
+    (("screen",), "jade_screen", None),
+    (("lion",), "guardian_lion", None),
+    (("shelf", "shelves", "archive", "library"), "scroll_rack", None),
+    (("cage", "pen", "cell"), "prison_cage", None),
+    (("obelisk",), "demon_obelisk", None),
+    (("altar",), "blood_altar", ("blood_abyss",)),
+    (("altar", "shrine"), "offering_table", None),
+    (("chest", "strongbox", "coffer", "box", "crate", "sack", "hoard", "cache", "tent"), "treasure_chest", None),
+    (("pillar",), "rune_pillar", None),
+    (("tablets",), "stone_tablet_array", None),
     (("stele", "tablet", "mural", "inscription", "carving", "results", "question", "stone face", "plaque"),
-     "stone_stele"),
-    (("slip", "scroll", "letter", "ledger", "tallies", "book", "chronicle", "map", "notes", "manual", "records"),
-     "jade_slip"),
-    (("teleport", "array"), "teleport_array"),
-    (("spirit stone", "crystal", "vein", "pillar-stone", "lodestone"), "spirit_stone"),
+     "stone_stele", None),
+    (("slip", "scroll", "letter", "book", "chronicle", "notes", "manual", "records"), "jade_slip", None),
+    (("teleport", "array"), "teleport_array", None),
+    (("spirit stone", "crystal", "vein", "pillar-stone", "lodestone"), "spirit_stone", None),
 ]
 
 
-def infer_prop(text):
+def infer_prop(text, map_id=None):
+    """The prop an objective's text names ("Read the notice board" -> notice_board), or None."""
     if not text:
         return None
     low = text.lower()
-    for words, prop in PROP_WORDS:
+    for words, prop, maps in PROP_WORDS:
+        if maps and map_id not in maps:
+            continue
         for w in words:
             if re.search(r"\b%s(s|es)?\b" % re.escape(w), low):
                 return prop
@@ -911,6 +1442,14 @@ SHORT = {
     "master_ruan": "Sect Master Ruan", "abbess_jing": "Abbess Jing", "ancestor_zhao": "Ancestor Zhao",
     "rung_luo": "Luo Hui", "rung_shan": "the Rust Monk", "rung_rong": "Madam Ninefold", "rung_kong": "Brother Hollow",
     "rung_wen": "the Butcher", "rung_si": "Lady Silk", "rung_chen": "Xue Chen",
+    "deacon_shen": "Deacon Shen", "kiln_tao": "Kiln-Mistress Tao", "cook_bao": "Old Bao", "keeper_ling": "Ling Qiu",
+    "bell_zhong": "Zhong Ming", "warden_qiu": "Old Qiu", "fan_rui": "Fan Rui", "tang_ling": "Tang Ling",
+    "auntie_ruo": "Auntie Ruo", "headman_kuang": "Headman Kuang", "woodcutter_shu": "Big Shu",
+    "huntress_meng": "Meng Sanniang", "alchemist_qu": "Qu Wanqing", "watcher_pei": "Pei Yuan",
+    "scholar_ouyang": "Scholar Ouyang", "weaver_qiao": "Qiao Niang", "apothecary_wang": "Wang Pu",
+    "actress_yu": "Yu Hongxiu", "matron_bi": "Matron Bi", "captain_lei": "Captain Lei", "tavern_huo": "Huo Da",
+    "broker_ku": "Ku the Broker", "acolyte_hei": "Hei Yan", "servant_qingyi": "Qingyi", "warden_he": "Warden He",
+    "recorder_shu": "Scribe Shu",
 }
 
 # short acknowledgements that follow a closing line
@@ -942,7 +1481,7 @@ def build_extra(spec, chapter_number, first, vol):
         if authored:
             attach_choice(qd, authored, q, spec, beat)
         else:
-            fam = choice_family(qd, beat)
+            fam = choice_family(qd, beat, q)
             if fam:
                 name, extra = fam
                 variants = MO.TEMPLATES[name]

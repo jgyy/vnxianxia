@@ -45,6 +45,7 @@ MAX_LINE_WORDS = 32
 MAX_HUD_CHARS = 64
 MAX_SUMMARY_CHARS = 240
 MAX_BOSS_NAME = 40
+MAX_WITH = 4           # extra NPCs present for one objective's conversation
 # blood_abyss markers inside the fortress, which folds into the void after the
 # failed blood moon (chapter 42) and returns only for the final march (chapter 100)
 FORTRESS = {"DemonGate", "FortressCourt", "AltarOfBlood", "PatriarchThrone", "PrisonCages"}
@@ -324,32 +325,87 @@ def compile_objective(where, qnum, raw, cur_map, voices, used, speakers_used, ci
             E.err(where, "waves must come after distinct, increasing volleys")
         o.update(marker=raw["marker"], bolts=bolts,
                  waves=[{"enemy": w["enemy"], "count": w["count"], "after": w["after"]} for w in waves])
+    present = raw.get("with") or []
+    if present:
+        if not isinstance(present, list):
+            E.err(where, "'with' must be a list of NPC ids")
+            present = []
+        if len(present) != len(set(present)):
+            E.err(where, "'with' lists an NPC twice: %r" % (present,))
+        for nid in present:
+            if nid not in story.NPCS:
+                E.err(where, "'with' names unknown npc %r" % (nid,))
+            elif nid == raw.get("npc"):
+                E.err(where, "'with' repeats the objective's own npc %s" % nid)
+            elif not npc_active(nid, qnum):
+                E.err(where, "%s is present ('with') but not in the story during %s" % (nid, qid(qnum)))
+        if len(present) > MAX_WITH:
+            E.err(where, "%d NPCs in 'with' (max %d)" % (len(present), MAX_WITH))
+        o["with"] = list(present)
     o["text"] = text
 
     lines = raw.get("dialogue")
     if lines is not None:
         plain = [ln for ln in lines if ln.get("cond") is None]
         lo = 2 if t == "talk" else 1
+        if t == "collect":
+            E.err(where, "collect objectives play no dialogue")
         if not (lo <= len(plain) <= 7):
             E.err(where, "dialogue needs %d-7 unconditional lines (every conversation must have a path), has %d"
                   % (lo, len(plain)))
         if len(lines) > 10:
             E.err(where, "dialogue has %d lines (max 10 with conditional ones)" % len(lines))
-        # voice keys count only the unconditional lines of the objective's original index
+        # voice keys count only the unconditional lines of the objective's original index; lines
+        # added to a voiced quest later are numbered after the original ones, so no key ever moves
         oi = int(where.rsplit("_o", 1)[1]) if voi is None else voi
         out, li = [], 0
+        la = sum(1 for ln in plain if not ln.get("added"))
         for n, ln in enumerate(lines):
             key = None
+            if ln.get("added") and not vkey:
+                E.err("%s_l%d" % (where, n), "only lines of a voiced objective are marked 'added'")
             if vkey and ln.get("cond") is None:
-                key = "%s_o%d_l%d" % (vkey, oi, li)
-                li += 1
+                if ln.get("added"):
+                    key = "%s_o%d_l%d" % (vkey, oi, la)
+                    la += 1
+                else:
+                    key = "%s_o%d_l%d" % (vkey, oi, li)
+                    li += 1
             out.append(compile_line("%s_l%d" % (where, n), key, ln, voices, speakers_used, flags))
         o["dialogue"] = out
     elif t == "talk":
         E.err(where, "talk needs dialogue")
     if raw.get("choices") is not None:
         compile_choices(where, t, raw, o, voices, speakers_used, flags)
+    # everyone who speaks is there: the objective's npc or one of its 'with'
+    here = set(present) | ({raw.get("npc")} if t == "talk" else set())
+    for sp in npc_speakers(o, conditional=True):
+        if sp not in here:
+            E.err(where, "%s speaks but is neither the objective's npc nor in its 'with'" % sp)
     return o, m
+
+
+def npc_speakers(o, conditional=False, replies=True):
+    """NPC ids speaking in a compiled objective (dialogue, then choice replies), in order."""
+    lines = [ln for ln in o.get("dialogue", []) if conditional or not ln.get("cond")]
+    if replies:
+        lines += [ln for op in o.get("choices", []) for ln in op["reply"]]
+    out = []
+    for ln in lines:
+        sp = ln["speaker"]
+        if sp not in ("player", "narrator") and sp not in out:
+            out.append(sp)
+    return out
+
+
+def is_group_scene(o):
+    """Two or more NPCs and the player take part in this objective's conversation, whatever the
+    player's alignment: counted on unconditional dialogue lines only; the player takes part by
+    speaking or by answering a choice."""
+    plain = [ln for ln in o.get("dialogue", []) if not ln.get("cond")]
+    npcs = {ln["speaker"] for ln in plain if ln["speaker"] not in ("player", "narrator")}
+    player = any(ln["speaker"] == "player" for ln in plain) or bool(o.get("choices"))
+    return len(npcs) >= 2 and player
 
 
 def compile_choices(where, t, raw, o, voices, speakers_used, flags):
@@ -739,6 +795,9 @@ def build():
                     E.err(wq, "quest offers the player no choice (every quest must have one)")
                 if not legacy:
                     check_generated(wq, qnum, out_objs)
+                # every quest has at least one group conversation: two or more NPCs and the player
+                if not any(is_group_scene(o) for o in out_objs):
+                    E.err(wq, "no conversation with two or more NPC speakers and the player")
                 if qi == 0 and intro is not None and not any(
                         o["type"] == "cinematic" and o.get("id") == ch["intro_cinematic"] for o in out_objs):
                     E.err(wq, "chapter's opening quest must play the intro cinematic %s" % ch["intro_cinematic"])
@@ -925,7 +984,7 @@ def quest_table(data):
     """docs/QUESTS.md: every volume, chapter and quest."""
     realms = W.REALMS
     ch_by = {c["number"]: c for c in data["chapters"]}
-    out = ["# All 1000 quests", "",
+    out = ["# All %d quests" % len(data["quests"]), "",
            "Generated by `python3 tools/build_story.py --quests docs/QUESTS.md`. Chapters marked *voiced* are the ten",
            "chapters of the original story; the rest are text-only. The plot is in [STORY.md](STORY.md).", ""]
     for v in data["volumes"]:
@@ -941,7 +1000,7 @@ def quest_table(data):
             out.append("")
             out.append("| # | Quest | Map | Objectives | Reward |")
             out.append("|---|---|---|---|---|")
-            for q in data["quests"][c["first"]:c["first"] + 10]:
+            for q in data["quests"][c["first"]:c["first"] + NB.QUESTS_PER_CHAPTER]:
                 boss = any(o["type"] == "defeat" and o["enemy"] in W.BOSSES for o in q["objectives"])
                 r = q["rewards"]
                 rew = "%d xp" % r["xp"]
