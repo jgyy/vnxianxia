@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -20,6 +20,8 @@ CHAPTER = chapter(
                        (BAI, "The Blood Moon War chronicles? Fourth floor, east shelf, beside the recipes for turtle soup. Do not ask."),
                        (BAI, "Here... hm. Hm! The pages on the Azure Heaven Seal are gone. Cut out. With a very sharp, very tidy blade."),
                        (BAI, "Only elders and the Law Hall may enter the fourth floor. Whoever did this had a pass, and patience."),
+                       added(HAN, "Elders and the Law Hall. That is not a long list, Elder Bai."),
+                       added(P, "And not one we can say out loud. Not yet."),
                        (BAI, "The Verdant Lotus built the seal. Their ruins lie in the Whispering Bamboo. Stones cannot be cut out of a book.")),
                   cinematic("ch04_intro", "Watch the journey to the forgotten ruins"),
                   reach("RuinsGate", "Find the gate of the ancient ruins",
@@ -42,7 +44,9 @@ CHAPTER = chapter(
                        (LAN, "Your pendant is the Lotus Key, half of what binds the Azure Heaven Seal. Your mother was of our blood."),
                        (LAN, "The ruins will test you. Gather the rune stones scattered at the gate, and the arch will know its heir."),
                        (P, "You could have come with me."),
-                       (LAN, "I could have done many things for three hundred years. Go. I will follow when my shame lets me.")),
+                       (LAN, "I could have done many things for three hundred years. Go. I will follow when my shame lets me."),
+                       added(YE, "He speaks true, lotus-bearer. I have watched those ruins for a year. They are waiting for you."),
+                       added(LAN, "You again. You walk too quietly for an honest man.")),
               ], xp=240, items={"jade_slip": 1}),
         # ---------------------------------------------------------------- q033
         quest("Stones That Remember",
@@ -58,7 +62,9 @@ CHAPTER = chapter(
                            (N, "Here the Verdant Lotus gave its heart. With the Azure Cloud we bound the Patriarch Xue Wuji beneath the Abyss."),
                            (N, "The seal has two keys. The Lotus Key, which binds. The Azure Eye, which watches. Never let both fall to one hand."),
                            (ZHAO, "The Azure Eye... that's the formation array at home. And the Lotus Key is... your trinket?"),
-                           (P, "Apparently my trinket is older than your clan.")),
+                           (P, "Apparently my trinket is older than your clan."),
+                           added(YE, "Never both to one hand. Remember that line, lotus-bearer. Someone in your sect has forgotten it."),
+                           added(ZHAO, "Who said that? Show yourself! ...He's gone. I hate this forest.")),
               ], xp=240, items={"rune_fragment": 1}),
         # ---------------------------------------------------------------- q034
         quest("Stone Guardians",
@@ -72,7 +78,10 @@ CHAPTER = chapter(
                            (ZHAO, "It... opened. For you. Fine. FINE. I'm not impressed. I'm slightly impressed.")),
                   reach("RuinsInner", "Step through the opened archway",
                         (N, "Beyond the arch lies a courtyard of green stone. At its centre kneels a giant statue, head bowed, hands resting on a sword."),
-                        (ZHAO, "Please tell me that one doesn't move.")),
+                        (ZHAO, "Please tell me that one doesn't move."),
+                        added(LAN, "It moves, young man. Only when it must. I would not stand quite so close."),
+                        added(ZHAO, "Where did you come from? Does everyone in this forest walk like a ghost?"),
+                        added(P, "He's the hermit. He's... a friend of the lotus.")),
               ], xp=260, items={"spirit_stone": 3}),
         # ---------------------------------------------------------------- q035
         quest("The Guardian of the Lotus",
@@ -81,7 +90,9 @@ CHAPTER = chapter(
                   talk(LAN, "Find the hermit at the shrine",
                        (LAN, "I followed. My shame is slower than my feet, it turns out."),
                        (LAN, "The guardian in the courtyard was carved by my master. It asks one question with its fists: are you worthy?"),
-                       (LAN, "Do not fear it. It is not cruel, only very, very thorough."), at="AncientShrine"),
+                       (LAN, "Do not fear it. It is not cruel, only very, very thorough."),
+                       added(ZHAO, "Thorough. Wonderful. My favourite kind of stone monster."),
+                       added(P, "Then I'll be thorough too."), at="AncientShrine"),
                   defeat("stone_golem", 2, "RuinsGate", "Stop the sentinels reforming at the gate",
                          (LAN, "The sentinels are reforming. Break them again, quickly, before the guardian wakes!")),
                   defeat("ancient_guardian", 1, "RuinsInner", "Pass the trial of the ancient guardian",
@@ -103,7 +114,8 @@ CHAPTER = chapter(
                        (LAN, "You read it. I can see it in your breathing. The lotus grows in mud and is not stained."),
                        (LAN, "Three hundred years I waited for someone to open that box. I thought I would feel relief. I feel... old."),
                        (P, "Come back to the sect with me. Tell them what you know."),
-                       (LAN, "One day. Not yet. First I must forgive a coward, and he is very stubborn.")),
+                       (LAN, "One day. Not yet. First I must forgive a coward, and he is very stubborn."),
+                       added(ZHAO, "Forgive him quickly, old man. There's a tournament coming, and my rival is sitting in a forest.")),
               ], xp=300, items={"jade_slip": 1}),
         # ---------------------------------------------------------------- q037
         quest("Blood in the Shrine",
@@ -114,7 +126,8 @@ CHAPTER = chapter(
                   reach("OldBridge", "Check on Zhao Kang at the old bridge",
                        (ZHAO, "It's a scratch. Don't fuss. A Zhao doesn't bleed. We... tactically leak."),
                        (P, "You stepped in front of that blade for me."),
-                       (ZHAO, "Don't be sentimental. Nobody gets to defeat you except me. I've been planning it for months.")),
+                       (ZHAO, "Don't be sentimental. Nobody gets to defeat you except me. I've been planning it for months."),
+                       added(LAN, "Tactically leak. I shall remember that one. Hold still, boy. This will sting.")),
                   collect("spirit_herb", 3, "HerbGrove", "Gather herbs to treat Zhao Kang's wound"),
               ], xp=280, items={"medicine": 2}),
         # ---------------------------------------------------------------- q038
@@ -129,6 +142,7 @@ CHAPTER = chapter(
                        (BAI, "And the missing pages... the fourth-floor log shows a Law Hall seal. The Law Hall borrows everything. It's how they keep us honest.")),
                   talk(GU, "Answer Elder Gu's summons",
                        (GU, "Zhao Kang tells me you found a Verdant Lotus relic. The Law Hall will take custody of it. For safekeeping."),
+                       added(ZHAO, "I only told the Law Hall what I saw, Elder. As I was ordered."),
                        (P, "With respect, Elder, the Sect Master ordered me to keep it."),
                        (GU, "Did she. Then keep it, disciple. Keep it very close. Things kept close are the easiest to lose.")),
                   talk(MO, "Speak with Elder Mo",
@@ -146,7 +160,8 @@ CHAPTER = chapter(
                   talk(QIAN, "Negotiate with Steward Qian",
                        (QIAN, "Five spirit stones? Five? Do you know what five spirit stones could buy? Five spirit stones!"),
                        (P, "It's for a Foundation Pill. The Sect Master approved it."),
-                       (QIAN, "Approved it. Everyone approves things. Nobody counts things. Fine. Take them. Sign here. And here. And here.")),
+                       (QIAN, "Approved it. Everyone approves things. Nobody counts things. Fine. Take them. Sign here. And here. And here."),
+                       added(HUA, "Sign it quickly, Steward, or I'll brew you something for your nerves. You won't enjoy it.")),
                   collect("spirit_herb", 4, "LotusPond", "Gather lotus root at the pond at dusk"),
                   talk(MAN, "Tell Xiao Man what you learned in Qingshi",
                        (MAN, "You're back! Did you go through Qingshi? Did you see my brother? Did he say why he hasn't written?"),
@@ -168,7 +183,9 @@ CHAPTER = chapter(
                   talk(YUN, "Receive the Sect Master's news",
                        (YUN, "Foundation Establishment, and a Verdant Lotus sutra. You grow faster than my worries, {player}. Barely."),
                        (YUN, "In one month the sect holds the Inner Sect Tournament. The winner earns a place at my side, and the Azure Eye's trust."),
-                       (YUN, "I want you to enter. And I want whoever cut those pages to watch you win.")),
+                       (YUN, "I want you to enter. And I want whoever cut those pages to watch you win."),
+                       added(HAN, "I'll train {them} myself, Sect Master. Morning and evening."),
+                       added(P, "Then whoever cut those pages will have a very good view.")),
               ], xp=400, items={"spirit_stone": 5}, realm="Foundation Establishment"),
     ])
 

@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -18,7 +18,8 @@ CHAPTER = chapter(
                   talk(QIAN, "Register with Steward Qian",
                        (QIAN, "Registration fee: two spirit stones. Non-refundable. Especially if you lose. Particularly if you die."),
                        (P, "The Sect Master told me to enter. Personally."),
-                       (QIAN, "Then the Sect Master can pay. Fine, fine. Waived. Don't tell anyone. I have a reputation.")),
+                       (QIAN, "Then the Sect Master can pay. Fine, fine. Waived. Don't tell anyone. I have a reputation."),
+                       added(ZHAO, "Waived? He charged me four. And a seal fee. And a fee for the ink on the seal.")),
                   talk(LU, "Hear the gossip from Lu Ping",
                        (LU, "The betting pool is open! Yan Tie, three-time champion, two to one. Zhao Kang, five to one."),
                        (LU, "You're at nine to one. I put three stones on you. Don't tell Steward Qian. Actually, win, then tell him."),
@@ -34,7 +35,9 @@ CHAPTER = chapter(
                   defeat("training_puppet", 4, "TrainingGround", "Defeat four enhanced training puppets"),
                   talk(WEI, "Report back to Wei Tong",
                        (WEI, "Not a scratch. I'm buying lunch. I'm always buying lunch. How did this happen to me?"),
-                       (WEI, "Listen. Yan Tie is strong, but he fights like a landslide, all at once. Make him chase you and he'll tire.")),
+                       (WEI, "Listen. Yan Tie is strong, but he fights like a landslide, all at once. Make him chase you and he'll tire."),
+                       added(HAN, "He's right, for once. Make Yan Tie chase you. Then make him regret it."),
+                       added(P, "Lunch it is, then. Your treat, Senior Brother.")),
               ], xp=260, items={"medicine": 2}),
         # ---------------------------------------------------------------- q043
         quest("The Preliminary Round",
@@ -50,7 +53,8 @@ CHAPTER = chapter(
                   talk(MO, "Receive Elder Mo's verdict",
                        (MO, "Adequate. More than adequate. Hmph. Don't let it go to your head. Heads are heavy enough already."),
                        (P, "Was that a compliment, Elder Mo?"),
-                       (MO, "It was an observation. Go and eat something. You look like a boiled noodle.")),
+                       (MO, "It was an observation. Go and eat something. You look like a boiled noodle."),
+                       added(WEI, "Adequate! Did everyone hear that? Adequate! That's practically poetry from him!")),
               ], xp=280, items={"spirit_stone": 3}),
         # ---------------------------------------------------------------- q044
         quest("Whispers at Night",
@@ -63,6 +67,7 @@ CHAPTER = chapter(
                        (ZHAO, "Go ahead. Report me to the Law Hall. It's what they're for."),
                        (ZHAO, "My elder brother Zhao Ming died a year ago tonight. A Law Hall mission. Bandits, they said, in the bamboo forest."),
                        (ZHAO, "I burn incense here because he liked the view. That's all. That's all it is."),
+                       added(MO, "Zhao Ming liked the sunrise more. Stay for it, boy. I'll square your curfew with the Law Hall."),
                        (P, "I'm sorry, Zhao Kang. Who assigned his mission?"),
                        (ZHAO, "Elder Gu. Same as yours. Why does that matter?"), at="CliffEdge"),
                   talk(HAN, "Tell Han Xue what you found",
@@ -82,7 +87,9 @@ CHAPTER = chapter(
                   collect("spirit_stone", 3, "SectGate", "Help Lu Ping gather his scattered winnings"),
                   talk(LU, "Collect Lu Ping's thanks",
                        (LU, "You're into the semifinal! I've won eleven stones! I'm rich! I'm going to buy a hat!"),
-                       (LU, "Also, a Law Hall disciple told me to stop betting on you. Rude, right? I bet more.")),
+                       (LU, "Also, a Law Hall disciple told me to stop betting on you. Rude, right? I bet more."),
+                       added(WEI, "Eleven stones and a hat? My kidney deserves a share, Lu Ping."),
+                       added(P, "Buy the hat. Then stop betting.")),
               ], xp=300, items={"spirit_stone": 3}),
         # ---------------------------------------------------------------- q046
         quest("The Poisoned Cup",
@@ -98,7 +105,9 @@ CHAPTER = chapter(
                        (P, "Maybe he doesn't know what's in them.")),
                   talk(HUA, "Deliver the herbs to Elder Hua",
                        (HUA, "Good. I'll brew the antidote tonight. If Yan Tie has taken a Frenzy Pill, he will not know friend from foe."),
-                       (HUA, "Tell no one about the Law Hall yet. An accusation without proof is just a very loud way to die.")),
+                       (HUA, "Tell no one about the Law Hall yet. An accusation without proof is just a very loud way to die."),
+                       added(MAN, "I'll help you brew, Elder! I won't drop anything. I'll drop almost nothing."),
+                       added(P, "Then we'd better hurry. Yan Tie fights at dawn.")),
               ], xp=300, items={"medicine": 3}),
         # ---------------------------------------------------------------- q047
         quest("Partners in the Semifinal",
@@ -115,7 +124,9 @@ CHAPTER = chapter(
                   talk(ZHAO, "Talk with Zhao Kang on the stone bridge",
                        (ZHAO, "You fight like a farmer. Stubborn, unpolished, impossible to knock over."),
                        (ZHAO, "That was a compliment. Don't get used to it."),
-                       (ZHAO, "Win the final. If anyone is going to beat Yan Tie, it should be the person who's going to lose to me someday."), at="StoneBridge"),
+                       (ZHAO, "Win the final. If anyone is going to beat Yan Tie, it should be the person who's going to lose to me someday."),
+                       added(WEI, "Did Zhao Kang just pay a compliment? Somebody carve it on the stele."),
+                       added(P, "I'll hold him to it."), at="StoneBridge"),
               ], xp=320, items={"spirit_stone": 3}),
         # ---------------------------------------------------------------- q048
         quest("Eve of the Final",
@@ -128,6 +139,8 @@ CHAPTER = chapter(
                        (GU, "Then you have nothing to fear. The Law Hall. Tonight. Do not make me ask again.")),
                   talk(MO, "Ask Elder Mo about the rule",
                        (MO, "Inspection? There's no such rule. There never has been. I wrote half the tournament rules myself."),
+                       added(BAI, "He did. Badly. I had to fix the grammar. There is no inspection rule, disciple."),
+                       added(P, "Then why does Elder Gu want it so badly?"),
                        (MO, "Gu... no. He is grieving, not wicked. Still. Don't go. If he asks, tell him I forbade it."),
                        (MO, "Go and clear your head. You've a champion to face at dawn.")),
                   meditate("StoneBridge", 8, "Steady your dao heart on the stone bridge",
@@ -150,7 +163,9 @@ CHAPTER = chapter(
                   talk(YUN, "Receive the Sect Master's judgement",
                        (YUN, "Yan Tie will live. Elder Hua's antidote reached him in time. You fought to save him, not to win. I saw that."),
                        (YUN, "The victory is yours, and with it, a place at my side. But someone fed him that pill."),
-                       (YUN, "Wait. The pagoda bell... someone is ringing the pagoda bell. Where is Han Xue?")),
+                       (YUN, "Wait. The pagoda bell... someone is ringing the pagoda bell. Where is Han Xue?"),
+                       added(MO, "The pagoda? Han Xue was watching it. Sect Master, I'll go."),
+                       added(P, "No, Elder. I'm faster. Let me go.")),
               ], xp=500, items={"spirit_stone": 8}),
         # ---------------------------------------------------------------- q050
         quest("The Law Hall's Shadow",
@@ -165,7 +180,9 @@ CHAPTER = chapter(
                   talk(BAI, "Check on the wounded Elder Bai on the plaza",
                        (BAI, "I'm fine. I've been hit harder by falling bookshelves. Gu Hanshan... forty years we've shared tea."),
                        (BAI, "He took the Azure Heaven Seal diagram. The master copy. The one we would need to repair the seal."),
-                       (BAI, "Without it, if the seal breaks, we cannot remake it. Go to the Sect Master. Quickly."), at="FormationArray"),
+                       (BAI, "Without it, if the seal breaks, we cannot remake it. Go to the Sect Master. Quickly."),
+                       added(HAN, "Don't move, Elder. Your arm is broken, whatever you say about bookshelves."),
+                       added(P, "We'll get it back, Elder Bai. I swear it."), at="FormationArray"),
                   talk(YUN, "Report to the Sect Master at the teleport array",
                        (YUN, "He fled through the teleport array. Its last destination was the Blood Moon Abyss."),
                        (YUN, "Forty years I trusted him with our law. I trusted him with our children."),
