@@ -283,7 +283,7 @@ def stone_bridge(length=17.0, width=2.6, rise=1.4):
     deck = util.mesh_object("BridgeDeck", bm, m["marble"], smooth=False)
     bm = bmesh.new()
     for sx in (-1, 1):
-        x = sx * (width / 2 - 0.08)
+        x = sx * (width / 2 - 0.09)
         posts = 9
         for k in range(posts):
             t = k / (posts - 1)

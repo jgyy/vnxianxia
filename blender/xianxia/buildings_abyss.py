@@ -440,8 +440,10 @@ def poison_flowers(seed=29, n=26, radius=4.0):
         util.tube(bm_s, [p, p + V((rnd.uniform(-0.1, 0.1), rnd.uniform(-0.1, 0.1), h))], 0.025, n=4)
         for j in range(5):
             b = 2 * math.pi * j / 5
-            util.sphere(bm_p, 0.12, loc=p + V((0.1 * math.cos(b), 0.1 * math.sin(b), h)), segs=6, rings=3,
-                        scale=(1.6, 0.8, 0.3))
+            # petals turned radially (identical axis-aligned ellipsoids side by side shared coplanar faces)
+            c = p + V((0.1 * math.cos(b), 0.1 * math.sin(b), h + 0.01 * j))
+            vs = util.sphere(bm_p, 0.12, loc=c, segs=6, rings=3, scale=(1.6, 0.8, 0.3))
+            bmesh.ops.rotate(bm_p, verts=vs, cent=c, matrix=Matrix.Rotation(b, 3, "Z"))
     return [B.obj("Petals", bm_p, petal, uv=None, smooth=True), B.obj("Stems", bm_s, stem, uv=1.0, smooth=True)]
 
 

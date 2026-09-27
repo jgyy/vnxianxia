@@ -676,7 +676,7 @@ def treasure_chest():
             util.tube(bm, band, (0.035, 0.008), n=4, power=6, up=(1, 0, 0), closed_ends=True)
         # corner caps and side handles
         for sy in (-1, 1):
-            util.box(bm, (0.08, 0.08, 0.1), loc=(sx * (w / 2 - 0.03), sy * (d / 2 - 0.03), 0.1))
+            util.box(bm, (0.08, 0.08, 0.1), loc=(sx * (w / 2 - 0.03), sy * (d / 2 - 0.03), 0.097))
         ring = [V((sx * (w / 2 + 0.03), 0.09 * math.cos(a), 0.3 + 0.07 * math.sin(a)))
                 for a in np.linspace(0, 2 * math.pi, 13)]
         util.tube(bm, ring, 0.012, n=6, closed_ends=False)
@@ -1775,19 +1775,19 @@ def gable_roof(name, hw, hd, h, mats, base_z, curve=1.35, lift=0.18, thick=0.12,
         return base_z + h * (1 - s) ** curve + lift * s ** 3 * (abs(x) / hw) ** 6
 
     slope_len = math.hypot(hd, h)
-    for sy in (-1, 1):
-        grid = []
-        for j in range(ny + 1):
-            s = 1 - j / ny
-            grid.append([bm.verts.new(V((-hw + 2 * hw * i / nx, sy * hd * s, z_at(-hw + 2 * hw * i / nx, s))))
-                         for i in range(nx + 1)])
-        for j in range(ny):
-            for i in range(nx):
-                q = (grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i])
-                f = bm.faces.new(q if sy < 0 else tuple(reversed(q)))
-                for loop in f.loops:
-                    co = loop.vert.co
-                    loop[uv].uv = (co.x * 0.6, (1 - abs(co.y) / hd) * slope_len * 0.5)
+    # both slopes in one sheet sharing the ridge row: two separately solidified slopes overlapped
+    # in a coplanar sliver at each gable end
+    grid = []
+    for j in range(2 * ny + 1):
+        t = j / ny - 1
+        grid.append([bm.verts.new(V((-hw + 2 * hw * i / nx, hd * t, z_at(-hw + 2 * hw * i / nx, abs(t)))))
+                     for i in range(nx + 1)])
+    for j in range(2 * ny):
+        for i in range(nx):
+            f = bm.faces.new((grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]))
+            for loop in f.loops:
+                co = loop.vert.co
+                loop[uv].uv = (co.x * 0.6, (1 - abs(co.y) / hd) * slope_len * 0.5)
     o = util.mesh_object(name, bm, [mats["tiles"], mats["wood"]], smooth=True)
     mod = o.modifiers.new("solid", "SOLIDIFY")
     mod.thickness = thick
@@ -1806,10 +1806,10 @@ def gable_roof(name, hw, hd, h, mats, base_z, curve=1.35, lift=0.18, thick=0.12,
             pts = [end + V((sgn * (0.05 - rc * math.sin(a)), 0, rc * 0.9 * (1 - math.cos(a))))
                    for a in np.linspace(0, R(230), 12)]
             util.tube(bm, pts, lambda t: rc * 0.32 * (1 - 0.55 * t), n=8)
+    # one verge tube per gable running over the apex: two tubes capped at the apex overlapped there
     for sx in (-1, 1):
-        for sy in (-1, 1):
-            edge = [V((sx * hw, sy * hd * (1 - t), z_at(hw, 1 - t) + 0.07)) for t in np.linspace(0, 1, ny + 1)]
-            util.tube(bm, edge, (0.08, 0.07), n=6, power=3.0)
+        edge = [V((sx * hw, hd * t, z_at(hw, 1 - abs(t)) + 0.07)) for t in np.linspace(-1, 1, 2 * ny + 1)]
+        util.tube(bm, edge, (0.08, 0.07), n=6, power=3.0)
     r = util.mesh_object(name + "Ridge", bm, mats["ridge"], smooth=True)
     util.box_uv(r, 1.0)
     return [o, r], z_at
@@ -1883,13 +1883,13 @@ def town_house(w=8.0, d=5.5, seed=1):
     bm = bmesh.new()
     for sx in (-1, 1):
         for sy in (-1, 1):
-            util.box(bm, (0.3, 0.3, wz - base), loc=(sx * hw, sy * hd, (base + wz) / 2))
+            util.box(bm, (0.3, 0.3, wz - base - 0.03), loc=(sx * hw, sy * hd, (base + wz - 0.03) / 2))
         util.box(bm, (0.2, 0.32, 2.35), loc=(sx * 0.88, -hd - 0.01, base + 1.17))
         util.box(bm, (0.14, 0.32, 1.3), loc=(sx * 3.3, -hd - 0.01, base + 1.75))
         util.box(bm, (0.14, 0.32, 1.3), loc=(sx * 1.8, -hd - 0.01, base + 1.75))
         util.box(bm, (1.6, 0.3, 0.12), loc=(sx * 2.55, -hd - 0.02, base + 1.15))
         util.box(bm, (1.6, 0.3, 0.12), loc=(sx * 2.55, -hd - 0.02, base + 2.35))
-    util.box(bm, (2.0, 0.28, 0.2), loc=(0, -hd - 0.02, base + 2.35))
+    util.box(bm, (2.0, 0.28, 0.2), loc=(0, -hd - 0.02, base + 2.34))
     for sy in (-1, 1):
         util.box(bm, (w + 0.3, 0.3, 0.26), loc=(0, sy * hd, wz - 0.05))
     objs.append(obj("HouseTimber", bm, m["wood"], uv=1.0))
@@ -1976,7 +1976,7 @@ def town_house_large(w=11.0, d=7.0):
     # columns, balcony, beams
     bm_p, bm_s = bmesh.new(), bmesh.new()
     for x in xs:
-        arch.column(bm_p, bm_s, x, -hd, base, f2 - base, r=0.18)
+        arch.column(bm_p, bm_s, x, -hd, base, f2 - base - 0.03, r=0.18)
         arch.column(bm_p, bm_s, x, -hd - 1.3, base, f1 + 1.05 - base, r=0.14)
     objs.append(obj("InnColumns", bm_p, m["pillar"], uv=1.0, smooth=True))
     objs.append(obj("InnColumnBases", bm_s, m["stone"], uv=1.0))
@@ -1992,7 +1992,7 @@ def town_house_large(w=11.0, d=7.0):
     bm = bmesh.new()
     for y in (-hd - 1.3, -hd, hd):
         util.box(bm, (w + 0.6, 0.28, 0.34), loc=(0, y, f1 + 1.1 if y < -hd - 1 else f2 - 0.05))
-    util.box(bm, (w + 0.4, 0.3, 0.3), loc=(0, -hd, f1 - 0.1))
+    util.box(bm, (w + 0.46, 0.3, 0.3), loc=(0, -hd, f1 - 0.1))
     objs.append(obj("InnBeams", bm, m["beam"], uv=1.0))
     bm = bmesh.new()
     util.box(bm, (w - 0.4, d - 0.4, 0.05), loc=(0, 0, base + 0.02))
@@ -2173,8 +2173,8 @@ def town_gate():
     objs.append(obj("GateStone", bm_s, m["stone"], uv=0.7))
     bm = bmesh.new()
     util.box(bm, (ow + 2 * pw + 0.4, pd + 0.2, 0.4), loc=(0, 0, ph + 0.2))
-    util.box(bm, (ow + 0.2, 0.4, 0.5), loc=(0, -pd / 2 + 0.2, ph - 0.25))
-    util.box(bm, (ow + 0.2, 0.4, 0.5), loc=(0, pd / 2 - 0.2, ph - 0.25))
+    util.box(bm, (ow + 0.2, 0.36, 0.5), loc=(0, -pd / 2 + 0.2, ph - 0.25))
+    util.box(bm, (ow + 0.2, 0.36, 0.5), loc=(0, pd / 2 - 0.2, ph - 0.25))
     for x in np.linspace(-(ow / 2 + pw) + 0.2, ow / 2 + pw - 0.2, 5):
         for y in (-1.2, 1.2):
             util.box(bm, (0.22, 0.22, 2.6), loc=(x, y, ph + 1.7))
@@ -2228,11 +2228,11 @@ def town_wall(length=8.0):
     t0, t1, h = 1.9, 1.5, 4.5
     bm = bmesh.new()
     util.box(bm, (length, t0 + 0.1, 0.9), loc=(0, 0, 0.45))
-    util.box(bm, (length, 0.42, 0.55), loc=(0, -t1 / 2 + 0.21, h + 0.27))
+    util.box(bm, (length, 0.42, 0.55), loc=(0, -t1 / 2 + 0.21, h + 0.28))
     for k in range(4):
         util.box(bm, (length / 4 - 0.8, 0.42, 0.55), loc=(-length / 2 + length / 8 + k * length / 4, -t1 / 2 + 0.21,
                                                           h + 0.82))
-    util.box(bm, (length, 0.3, 0.45), loc=(0, t1 / 2 - 0.15, h + 0.22))
+    util.box(bm, (length, 0.3, 0.45), loc=(0, t1 / 2 - 0.15, h + 0.23))
     objs.append(obj("WallBrick", bm, m["brick"], uv=0.5))
     bm = bmesh.new()
     outline = [(-t0 / 2, 0.9), (t0 / 2, 0.9), (t1 / 2, h), (-t1 / 2, h)]
@@ -2243,7 +2243,7 @@ def town_wall(length=8.0):
     body = obj("WallEarth", bm, m["earth_wall"], uv=0.35)
     objs.append(body)
     bm = bmesh.new()
-    util.box(bm, (length, 0.55, 0.08), loc=(0, t1 / 2 - 0.15, h + 0.48))
+    util.box(bm, (length, 0.55, 0.08), loc=(0, t1 / 2 - 0.15, h + 0.5))
     for k in range(4):
         util.box(bm, (length / 4 - 0.7, 0.55, 0.08), loc=(-length / 2 + length / 8 + k * length / 4, -t1 / 2 + 0.21,
                                                           h + 1.13))

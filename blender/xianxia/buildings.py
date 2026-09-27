@@ -868,12 +868,12 @@ def wall_segment(style="town", length=8.0, h=5.0, t=1.6, crenel=True):
     objs.append(obj("WallBody", bm, m["brick"] if style != "sect" else m["plaster"], uv=0.4))
     if crenel:
         bm = bmesh.new()
-        util.box(bm, (length, 0.5, 0.5), loc=(0, -t / 2 + 0.45, h + 0.25))
+        util.box(bm, (length - 0.01, 0.5, 0.5), loc=(0, -t / 2 + 0.45, h + 0.25))
         n = int(length / 1.6)
         for k in range(n):
             if k % 2 == 0:
-                util.box(bm, (length / n, 0.5, 0.6), loc=(-length / 2 + length * (k + 0.5) / n, -t / 2 + 0.45, h + 0.8))
-        util.box(bm, (length, 0.35, 0.35), loc=(0, t / 2 - 0.37, h + 0.17))
+                util.box(bm, (length / n - 0.01, 0.5, 0.6), loc=(-length / 2 + length * (k + 0.5) / n, -t / 2 + 0.45, h + 0.8))
+        util.box(bm, (length - 0.01, 0.35, 0.35), loc=(0, t / 2 - 0.37, h + 0.17))
         objs.append(obj("WallMerlons", bm, m["brick"], uv=0.5))
     else:
         bm = bmesh.new()

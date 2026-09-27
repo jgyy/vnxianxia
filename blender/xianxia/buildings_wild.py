@@ -54,7 +54,7 @@ def stilt_house(w=7.0, d=5.5, deck=2.2, seed=1, veranda=True):
     bm = bmesh.new()
     for x in [-w / 2 + w * i / 4 for i in range(5)]:
         for y in (-d / 2 - vd, 0.0, d / 2):
-            util.cylinder(bm, 0.12, 0.13, deck + 0.6, loc=(x, y, (deck - 0.6) / 2), segs=7)
+            util.cylinder(bm, 0.12, 0.13, deck + 0.55, loc=(x, y, (deck - 0.65) / 2), segs=7)   # tops inside the floor
     for x in (-w / 2, w / 2):
         util.tube(bm, [V((x, -d / 2 - vd, 0.2)), V((x, d / 2, deck - 0.2))], 0.06, n=5)
     objs.append(B.obj("Stilts", bm, m["bamboo"], uv=1.0, smooth=True))
@@ -88,7 +88,7 @@ def stilt_house(w=7.0, d=5.5, deck=2.2, seed=1, veranda=True):
     n = max(1, math.ceil(deck / 0.2))
     run = n * 0.3
     for k in range(n):
-        util.box(bm, (sw, 0.3, 0.06), loc=(-w / 2 + 1.0, -d / 2 - vd - run + (k + 0.5) * 0.3, deck * (k + 1) / n - 0.03))
+        util.box(bm, (sw, 0.3, 0.06), loc=(-w / 2 + 1.0, -d / 2 - vd - run + (k + 0.5) * 0.3, deck * (k + 1) / n - 0.045))
     for sx in (-1, 1):
         util.tube(bm, [V((-w / 2 + 1.0 + sx * sw / 2, -d / 2 - vd - run - 0.1, 0.0)),
                        V((-w / 2 + 1.0 + sx * sw / 2, -d / 2 - vd, deck))], 0.05, n=5)
@@ -153,7 +153,7 @@ def lake_pavilion():
     bm = bmesh.new()
     for k in range(6):
         a = R(30 + 60 * k)
-        util.cylinder(bm, 0.18, 0.18, 4.0, loc=((r + 0.3) * math.cos(a), (r + 0.3) * math.sin(a), deck - 2.0), segs=6)
+        util.cylinder(bm, 0.18, 0.18, 4.0, loc=((r + 0.3) * math.cos(a), (r + 0.3) * math.sin(a), deck - 2.05), segs=6)
     # walkway: three legs zig-zagging to the shore
     legs = [((0, r + 0.3), (3.0, r + 5.0)), ((3.0, r + 5.0), (-1.5, r + 9.5)), ((-1.5, r + 9.5), (0.0, r + 14.0))]
     bm_w = bmesh.new()
@@ -167,7 +167,7 @@ def lake_pavilion():
             p = a_.lerp(b_, t)
             for s in (-0.7, 0.7):
                 q = p + V((-math.sin(ang) * s, math.cos(ang) * s, 0))
-                util.cylinder(bm, 0.1, 0.1, 3.4, loc=(q.x, q.y, deck - 1.7), segs=6)
+                util.cylinder(bm, 0.1, 0.1, 3.4, loc=(q.x, q.y, deck - 1.75), segs=6)
         objs.append(util.collider("Walk", (ln + 1.6, 1.6, 0.3), ((a_ + b_) / 2 - V((0, 0, 0.18))), rot_z=ang))
     objs.append(B.obj("Piles", bm, m["log"], uv=1.0, smooth=True))
     objs.append(B.obj("Walkway", bm_w, m["planks"], uv=0.8))
@@ -214,7 +214,7 @@ def fishing_jetty(length=14.0, width=2.0):
     for k in range(5):
         y = -1.0 - k * (length - 1.5) / 4
         for x in (-width / 2, width / 2):
-            util.cylinder(bm, 0.11, 0.12, 3.6 + (0.6 if k == 4 else 0), loc=(x, y, deck - 1.8 + (0.3 if k == 4 else 0)),
+            util.cylinder(bm, 0.11, 0.12, 3.6 + (0.6 if k == 4 else 0), loc=(x, y, deck - 1.85 + (0.35 if k == 4 else 0)),
                           segs=7)
         util.box(bm, (width + 0.2, 0.18, 0.18), loc=(0, y, deck - 0.2))
     objs.append(B.obj("JettyPiles", bm, m["log"], uv=1.0, smooth=True))
@@ -259,9 +259,9 @@ def rustic_hut(w=4.5, d=3.8, seed=7, loft=False):
     bm = bmesh.new()
     for (x, y) in ((-w / 2, -d / 2), (w / 2, -d / 2), (-w / 2, d / 2), (w / 2, d / 2), (-0.55, -d / 2), (0.55, -d / 2)):
         util.box(bm, (0.2, 0.2, wh + 0.1), loc=(x, y, wh / 2))
-    util.box(bm, (w + 0.3, 0.22, 0.22), loc=(0, -d / 2, wh))
-    util.box(bm, (w + 0.3, 0.22, 0.22), loc=(0, d / 2, wh))
-    util.box(bm, (1.2, 0.1, 0.1), loc=(0, -d / 2 - 0.1, 0.15))
+    util.box(bm, (w + 0.36, 0.22, 0.22), loc=(0, -d / 2, wh))
+    util.box(bm, (w + 0.36, 0.22, 0.22), loc=(0, d / 2, wh))
+    util.box(bm, (1.2, 0.1, 0.1), loc=(0, -d / 2 - 0.12, 0.15))
     objs.append(B.obj("HutFrame", bm, m["log"], uv=1.0))
     objs += thatched_roof("HutRoof", m, w / 2, d / 2, 1.8, wh - 0.1, 0.7)
     bm = bmesh.new()

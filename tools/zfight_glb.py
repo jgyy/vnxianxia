@@ -149,8 +149,9 @@ def scan(path, eps=0.001, min_area=1e-5, detail=0):
     d = np.einsum("ij,ij->i", cn, tris[:, 0])
     lo, hi = tris.min(axis=1), tris.max(axis=1)
     buckets = defaultdict(list)
-    for i in np.nonzero(ok)[0]:
-        key = tuple(np.round(cn[i] * 50).astype(int)) + (int(np.floor(d[i] / (eps * 4))),)
+    idx = np.nonzero(ok)[0]
+    keys = np.column_stack([np.round(cn[idx] * 50).astype(int), np.floor(d[idx] / (eps * 4)).astype(int)])
+    for i, key in zip(idx.tolist(), map(tuple, keys.tolist())):
         buckets[key].append(i)
     pairs = 0
     report = {}
@@ -164,8 +165,33 @@ def scan(path, eps=0.001, min_area=1e-5, detail=0):
         if len(group) < 2:
             continue
         g = np.array(group)
+        rank = {int(t): r for r, t in enumerate(group)}
+        cells = None
+        if len(group) > 96:
+            # big flat planes (terrain, floors): candidates from a 2-D grid over the bounding boxes
+            # instead of every later triangle in the bucket
+            ax = int(np.argmax(np.abs(cn[group[0]])))
+            a_, b_ = [k for k in range(3) if k != ax]
+            ext = np.maximum(hi[g] - lo[g], 1e-6)
+            size = max(0.5, 2.0 * float(np.median(np.maximum(ext[:, a_], ext[:, b_]))))
+            cells = defaultdict(list)
+            spans = {}
+            for t in group:
+                ia0, ia1 = int(lo[t, a_] // size), int(hi[t, a_] // size)
+                ib0, ib1 = int(lo[t, b_] // size), int(hi[t, b_] // size)
+                spans[t] = (ia0, ia1, ib0, ib1)
+                for ia in range(ia0, ia1 + 1):
+                    for ib in range(ib0, ib1 + 1):
+                        cells[(ia, ib)].append(t)
         for ii, i in enumerate(cand):
-            js = g[ii + 1:]
+            if cells is None:
+                js = g[ii + 1:]
+            else:
+                ia0, ia1, ib0, ib1 = spans[i]
+                near = {t for ia in range(ia0, ia1 + 1) for ib in range(ib0, ib1 + 1) for t in cells[(ia, ib)]}
+                js = np.array(sorted(t for t in near if rank[t] > ii), dtype=int)
+                if len(js) == 0:
+                    continue
             js = js[(np.abs(d[js] - d[i]) < eps) & (np.einsum("ij,j->i", cn[js], cn[i]) > 0.9995)]
             js = js[np.all(lo[js] <= hi[i] + 1e-6, axis=1) & np.all(hi[js] >= lo[i] - 1e-6, axis=1)]
             for j in js:
