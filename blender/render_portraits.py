@@ -9,8 +9,9 @@ eye (f/2.2), a large soft key light high on the camera side, a dim fill, a
 coloured rim / hair light from behind and a studio backdrop with a soft
 radial falloff tinted per character.  Render-time material upgrades that
 glTF cannot carry: subsurface scattering on skin, a refractive cornea and
-tear line, and a hint of subsurface in the sclera.  Each character wears a
-quiet expression suited to its role through the face shape keys.
+tear line, and a hint of subsurface in the sclera.  Each character looks into the
+lens (eye bones, lids following) with a quiet expression suited to its role
+through the face shape keys.
 """
 import argparse
 import math
@@ -23,19 +24,19 @@ sys.path.insert(0, HERE)
 import bpy  # noqa: E402
 from mathutils import Vector  # noqa: E402
 
-from xianxia import characters, preview  # noqa: E402
+from xianxia import characters, face_rig, preview  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 
 # expression (shape key -> value), backdrop (inner, outer) and rim colour per character
 LOOKS = {
     "cultivator_male": (dict(smile=0.12, brow_up=0.05), ((0.22, 0.26, 0.31), (0.05, 0.06, 0.08)), (0.75, 0.85, 1.0)),
-    "cultivator_female": (dict(smile=0.2, eyes_wide=0.1), ((0.28, 0.24, 0.27), (0.07, 0.055, 0.065)),
+    "cultivator_female": (dict(smile=0.1), ((0.28, 0.24, 0.27), (0.07, 0.055, 0.065)),
                           (1.0, 0.82, 0.78)),
     "elder_male": (dict(smile=0.1, brow_inner_up=0.12), ((0.2, 0.24, 0.21), (0.05, 0.06, 0.05)), (1.0, 0.9, 0.7)),
     "sect_master": (dict(smile=0.1), ((0.27, 0.25, 0.2), (0.07, 0.06, 0.04)), (1.0, 0.9, 0.7)),
     "disciple_male": (dict(smile=0.18), ((0.2, 0.25, 0.3), (0.05, 0.06, 0.08)), (0.8, 0.9, 1.0)),
-    "disciple_female": (dict(smile=0.28), ((0.22, 0.27, 0.22), (0.05, 0.07, 0.05)), (0.9, 1.0, 0.85)),
+    "disciple_female": (dict(smile=0.14), ((0.22, 0.27, 0.22), (0.05, 0.07, 0.05)), (0.9, 1.0, 0.85)),
     "villager_male": (dict(smile=0.1), ((0.27, 0.22, 0.17), (0.07, 0.05, 0.04)), (1.0, 0.85, 0.6)),
     "villager_female": (dict(smile=0.22), ((0.27, 0.22, 0.17), (0.07, 0.05, 0.04)), (1.0, 0.85, 0.6)),
     "bandit": (dict(brow_down=0.35, sneer_L=0.2), ((0.22, 0.18, 0.15), (0.05, 0.04, 0.035)), (1.0, 0.7, 0.45)),
@@ -107,6 +108,25 @@ def pose(arm, meshes, expression):
     bpy.context.view_layer.update()
 
 
+def eye_contact(arm, meshes, cam_loc):
+    """Turn both eyes to the lens (with the lids following) - portraits look at the viewer."""
+    head = next((m for m in meshes if m.name == "Head"), None)
+    pitch_avg = 0.0
+    for bone in face_rig.EYE_BONES:
+        d = cam_loc - bone_world(arm, bone)
+        yaw = max(-30.0, min(30.0, math.degrees(math.atan2(d.x, -d.y))))
+        pitch = max(-20.0, min(20.0, math.degrees(math.atan2(d.z, math.hypot(d.x, d.y)))))
+        pb = arm.pose.bones[bone]
+        pb.rotation_mode = "QUATERNION"
+        pb.rotation_quaternion = face_rig.eye_rotation(arm, bone, yaw, pitch)
+        pitch_avg += pitch * 0.5
+    if head is not None and head.data.shape_keys:
+        kb = head.data.shape_keys.key_blocks
+        kb["lid_look_up"].value = max(0.0, pitch_avg) / 25.0
+        kb["lid_look_down"].value = max(0.0, -pitch_avg) / 25.0
+    bpy.context.view_layer.update()
+
+
 def bone_world(arm, name, tail=False):
     pb = arm.pose.bones[name]
     return arm.matrix_world @ (pb.tail if tail else pb.head)
@@ -135,6 +155,7 @@ def portrait(cfg, args):
     cam_loc = face + Vector((math.sin(az) * dist, -math.cos(az) * dist, 0.02 * s))
     target = mid + Vector((0.012 * s, 0.0, -0.035 * s))
     preview.camera(cam_loc, target, lens=85, focus=eye_l + Vector((0.0, -0.012 * s, 0.0)), fstop=2.2)
+    eye_contact(arm, meshes, cam_loc)
     # short lighting: the big soft key comes from the far side of the face (the side turned away
     # from the camera) and high, so the visible cheek falls into gentle shadow and the face models;
     # a broad dim fill from the camera side lifts the shadows; rim + hair lights from behind

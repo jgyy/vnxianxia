@@ -35,7 +35,9 @@ def _sstep(e0, e1, x):
 
 
 def _g(x, z, cx, cz, sx, sz):
-    return np.exp(-(((x - cx) / sx) ** 2 + ((z - cz) / sz) ** 2))
+    """Gaussian muscle field, cut to zero past ~2.8 sigma so the morph targets stay sparse."""
+    g = np.exp(-(((x - cx) / sx) ** 2 + ((z - cz) / sz) ** 2))
+    return np.where(g < 0.02, 0.0, g)
 
 
 def _rot_x(P, pivot, deg):
@@ -320,7 +322,7 @@ class FaceShapes:
         return K
 
 
-MIN_DELTA_MM = 0.03
+MIN_DELTA_MM = 0.08
 
 ORDER = ("blink_L", "blink_R", "squint_L", "squint_R", "lid_look_up", "lid_look_down", "eyes_wide",
          "brow_up", "brow_down", "brow_inner_up", "smile", "frown", "sneer_L", "sneer_R", "cheek_puff",
