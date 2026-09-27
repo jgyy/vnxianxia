@@ -19,7 +19,7 @@ const PLAYER_PROMPT := "Your choice"
 const BOTTOM_MARGIN := 14.0
 const SIDE_MARGIN := 16.0
 const MAX_WIDTH := 1040.0
-const PORTRAIT_SIZE := 150.0
+const PORTRAIT_SIZE := 128.0
 ## a press that lands this soon after a line appeared counts for that line
 ## only once (bounced or doubled key events never skip two lines)
 const DEBOUNCE_MSEC := 90
@@ -32,6 +32,7 @@ const VOICE_TAIL := 1.2
 var active := false
 var _panel: PanelContainer
 var _row: HBoxContainer
+var _portrait_frame: PanelContainer
 var _portrait: TextureRect
 var _name: Label
 var _title: Label
@@ -62,19 +63,27 @@ func _ready() -> void:
 	_row = HBoxContainer.new()
 	_row.add_theme_constant_override("separation", 18)
 	_panel.add_child(_row)
+	# the speaker's portrait in the kit's ornamental frame (128 px opening)
+	_portrait_frame = PanelContainer.new()
+	_portrait_frame.add_theme_stylebox_override("panel", UiTheme.portrait_frame())
+	_portrait_frame.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	_portrait_frame.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_portrait_frame.mouse_filter = Control.MOUSE_FILTER_PASS
+	_row.add_child(_portrait_frame)
 	_portrait = TextureRect.new()
 	_portrait.custom_minimum_size = Vector2(PORTRAIT_SIZE, PORTRAIT_SIZE)
 	_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	_portrait.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	_row.add_child(_portrait)
+	_portrait.mouse_filter = Control.MOUSE_FILTER_PASS
+	_portrait_frame.add_child(_portrait)
 	var vb := VBoxContainer.new()
 	vb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_row.add_child(vb)
 	var nb := HBoxContainer.new()
 	nb.add_theme_constant_override("separation", 12)
 	vb.add_child(nb)
-	_name = UiTheme.label("", 24, UiTheme.GOLD, 5)
+	_name = UiTheme.label("", 22, UiTheme.GOLD, 5)
 	_title = UiTheme.label("", 15, UiTheme.MUTED, 3)
 	_title.size_flags_vertical = Control.SIZE_SHRINK_END
 	nb.add_child(_name)
@@ -85,10 +94,12 @@ func _ready() -> void:
 	_text.scroll_active = false
 	_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_text.custom_minimum_size = Vector2(0, 96)
+	# no reserved height: the portrait frame already gives the box its minimum,
+	# and a one-line choice prompt must not leave a gap above the buttons
+	_text.custom_minimum_size = Vector2(0, 0)
 	_text.mouse_filter = Control.MOUSE_FILTER_PASS
-	_text.add_theme_font_size_override("normal_font_size", 21)
-	_text.add_theme_font_size_override("italics_font_size", 21)
+	_text.add_theme_font_size_override("normal_font_size", 19)
+	_text.add_theme_font_size_override("italics_font_size", 19)
 	_text.add_theme_constant_override("outline_size", 3)
 	_text.add_theme_color_override("font_outline_color", Color(0, 0, 0))
 	vb.add_child(_text)
@@ -114,9 +125,6 @@ func _fit() -> void:
 		return
 	var vr := get_viewport().get_visible_rect()
 	var w := minf(MAX_WIDTH, vr.size.x - 2.0 * SIDE_MARGIN)
-	# a narrow window gets a smaller portrait so the text keeps a readable width
-	var ps := clampf(w * 0.15, 72.0, PORTRAIT_SIZE)
-	_portrait.custom_minimum_size = Vector2(ps, ps)
 	_panel.custom_minimum_size = Vector2(w, 0.0)
 	_panel.size = Vector2(w, 0.0)          # shrink to the content's minimum height
 	var h := maxf(_panel.get_combined_minimum_size().y, _panel.size.y)
@@ -228,9 +236,9 @@ func _show_speaker(speaker: String) -> void:
 		model = Story.npc(speaker).get("model", "")
 	var path := PORTRAIT_DIR + model + ".png"
 	_portrait.texture = load(path) if model != "" and ResourceLoader.exists(path) else null
-	_portrait.visible = _portrait.texture != null
+	_portrait_frame.visible = _portrait.texture != null
 	# the protagonist's portrait sits on the right, everyone else's on the left
-	_row.move_child(_portrait, _row.get_child_count() - 1 if speaker == "player" else 0)
+	_row.move_child(_portrait_frame, _row.get_child_count() - 1 if speaker == "player" else 0)
 	_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_speaker = speaker
 

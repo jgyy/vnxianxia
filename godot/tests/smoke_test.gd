@@ -266,6 +266,7 @@ func _session() -> void:
 	await _hall_steps(game, player)
 	await _dialogue_input(game, player)
 	await _dialogue_fits(game)
+	await _hud_quiet(game)
 	await _group_talk(game, player)
 	_pickups_and_props(game)
 	# a text-only line of a new chapter, played at normal speed: it must advance by itself
@@ -645,6 +646,47 @@ func _dialogue_fits(game: Node) -> void:
 	for i in 4:
 		await process_frame
 	check(res.i == 3, "key 4 picks the fourth choice (%d)" % res.i)
+	# a one-line prompt: no empty band between the prompt and the buttons
+	res.i = -1
+	pick = func():
+		res.i = await dlg.choose("Well?", ["Yes.", "No."])
+	pick.call()
+	for i in 6:
+		await process_frame
+	var text_r: Rect2 = dlg._text.get_global_rect()
+	var first: Rect2 = (dlg._choices.get_child(0) as Control).get_global_rect()
+	check(first.position.y - text_r.end.y < 16.0, "a one-line choice prompt sits right above its buttons (gap %.0f px)" % (first.position.y - text_r.end.y))
+	await _wait_ms(400)
+	_press(KEY_1)
+	for i in 4:
+		await process_frame
+	check(res.i == 0, "key 1 picks the first choice")
+	gs.fast = true
+
+
+## While the dialogue box is up, toasts wait and the toast column fades out of
+## its way; afterwards the waiting toasts appear and the column fades back.
+func _hud_quiet(game: Node) -> void:
+	gs.fast = false
+	var hud = game.hud
+	var dlg = game.dialogue
+	var state := {"done": false}
+	var talk := func():
+		await game.converse([{"speaker": "narrator", "text": "A quiet moment."}])
+		state.done = true
+	talk.call()
+	var before: int = hud._toasts.get_child_count()
+	hud.toast("Raised while talking")
+	for i in 30:
+		await process_frame
+	check(hud._toasts.get_child_count() == before and hud._pending_toasts.size() == 1 and hud._toasts.modulate.a < 0.05,
+		"a toast raised during dialogue waits; the toast column fades out of the box's way")
+	await _wait_ms(150)
+	_press(KEY_E)
+	for i in 40:
+		await process_frame
+	check(state.done and hud._pending_toasts.is_empty() and hud._toasts.get_child_count() == before + 1 and hud._toasts.modulate.a > 0.95,
+		"after the dialogue the waiting toast appears and the column fades back")
 	gs.fast = true
 
 
