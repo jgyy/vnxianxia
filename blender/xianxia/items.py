@@ -129,7 +129,9 @@ def jade_slip():
     gold = _gold()
     bm_j, bm_c, bm_g = bmesh.new(), bmesh.new(), bmesh.new()
     w, h = 0.1, 0.2
-    lands.extrude_outline(bm_j, lands.arc_outline(w, h, 10, 0.0), -0.011, 0.011, uv_front=(-w / 2, 0.0, w, h + w * 0.28))
+    # the plaque stands 4 mm up inside its gilt foot (their bottoms were coplanar)
+    lands.extrude_outline(bm_j, lands.arc_outline(w, h, 10, 0.004), -0.011, 0.011,
+                          uv_front=(-w / 2, 0.004, w, h + w * 0.28))
     util.cylinder(bm_g, 0.012, 0.012, 0.026, loc=(0, 0, h + 0.012), segs=10, rot=Matrix.Rotation(R(90), 4, "X"))
     ubox(bm_g, (w + 0.01, 0.026, 0.012), loc=(0, 0, 0.006))
     hoop(bm_c, (0, 0, h + 0.045), 0.02, 0.004, normal=(0, 1, 0), segs=14, n=4)
@@ -316,9 +318,9 @@ def medicine():
     for v in vs:
         if v.co.z > 0.07:
             v.co.x *= 0.85
-    for x in (-0.06, 0.02):
-        ubox(bm_t, (0.006, 0.125, 0.085), loc=(x, 0, 0.042))
-    ubox(bm_t, (0.165, 0.006, 0.085), loc=(-0.02, 0, 0.042))
+    for x in (-0.06, 0.02):  # crossing straps differ in height/extent so they don't share faces
+        ubox(bm_t, (0.006, 0.125, 0.085), loc=(x, 0, 0.0445))  # bottoms 2 / 4 mm above the packet's
+    ubox(bm_t, (0.165, 0.006, 0.089), loc=(-0.02, 0, 0.0485))
     hoop(bm_t, (-0.02, 0, 0.09), 0.015, 0.004, normal=(1, 0, 0), segs=10, n=4)
     card(bm_l, 0.05, 0.1, loc=(-0.02, -0.02, 0.083), pitch=R(-90), rect=(0, 0, 1, 1))
     for k in range(3):  # sprigs peeking from the fold
@@ -441,15 +443,17 @@ def incense():
     band = _emat("it_incense_band", tal, tal["emit"], 1.5, double_sided=True)
     ember = _glow("it_incense_ember", "#ff6a1a", 7.0)
     bm_s, bm_f, bm_b, bm_e = (bmesh.new() for _ in range(4))
-    for k in range(16):
-        a, r = rnd.uniform(0, 2 * math.pi), math.sqrt(rnd.random()) * 0.018
+    # packed bundle: 1 + 6 + 9 sticks on rings 7 mm apart (random positions interpenetrated)
+    feet = [(0.0, 0.0)] + [(0.0068, 2 * math.pi * k / 6) for k in range(6)] + \
+        [(0.0136, 2 * math.pi * k / 9 + 0.2) for k in range(9)]
+    for k, (r, a) in enumerate(feet):
         base = V((math.cos(a) * r, math.sin(a) * r, 0.0))
         top = V((math.cos(a) * r * 2.8, math.sin(a) * r * 2.8, 0.3 + rnd.uniform(-0.02, 0.02)))
         util.tube(bm_s, [base.lerp(top, 0.25), top], 0.0028, n=4)
         util.tube(bm_f, [base, base.lerp(top, 0.25)], 0.0032, n=4)
         if k % 3 == 0:
             util.sphere(bm_e, 0.005, loc=top, segs=6, rings=4)
-    vs = new_verts(bm_b, lambda: util.lathe(bm_b, [(0.024, 0.0), (0.024, 0.05)], segs=16))
+    vs = new_verts(bm_b, lambda: util.lathe(bm_b, [(0.03, 0.0), (0.03, 0.05)], segs=16))
     xf(bm_b, vs, (0, 0, 0.1))
     return [_o("IncenseSticks", bm_s, stick, uv=12.0), _o("IncenseFeet", bm_f, dyed), _o("IncenseBand", bm_b, band),
             _o("IncenseEmbers", bm_e, ember)]

@@ -402,28 +402,31 @@ LIB = {
     "planks": lambda: util.material("qp_planks", lands.planks("#7a5a3c", 512, 717), normal_strength=0.7),
     "old_planks": lambda: util.material("qp_old_planks", lands.planks("#6a6150", 512, 718), normal_strength=0.8),
     "bamboo": lambda: util.material("qp_bamboo", lands.culm(256, 719), normal_strength=0.4),
-    "woven": lambda: util.material("qp_woven", lands.woven("#a8834a", 256, 720), normal_strength=0.8,
-                                   double_sided=True),
+    # solid objects use single-sided materials: a double-sided back face resting on a table or a
+    # neighbour is coplanar with it and z-fights. Only thin cards use the *_ds variants.
+    "woven": lambda: util.material("qp_woven", lands.woven("#a8834a", 256, 720), normal_strength=0.8),
+    "woven_ds": lambda: util.material("qp_woven_ds", lands.woven("#a8834a", 256, 720), normal_strength=0.8,
+                                      double_sided=True),
     "canvas": lambda: util.material("qp_canvas", lands.canvas("#a08d68", 256, 721), normal_strength=0.6),
     "rope": lambda: util.material("qp_rope", tex.bark("#9b855c", 128, 722), normal_strength=0.4),
     "bark": lambda: util.material("qp_bark", tex.bark("#4f3f30", 512, 723), normal_strength=1.0),
     "foliage": lambda: util.material("qp_foliage", tex.foliage("#3f6a2c", 256, 724), normal_strength=0.6),
     "earth": lambda: util.material("qp_earth", lands.earth("#5d4a32", 256, 725, 0.4), normal_strength=0.8),
-    "paper": lambda: util.material("qp_paper", paper("#ece2c8", 256, 726), double_sided=True, normal_strength=0.3),
-    "ink_paper": lambda: util.material("qp_ink_paper", ink_paper("#ece2c8", 512, 727, 6, 9), double_sided=True,
-                                       normal_strength=0.3),
+    "paper": lambda: util.material("qp_paper", paper("#ece2c8", 256, 726), normal_strength=0.3),
+    "ink_paper": lambda: util.material("qp_ink_paper", ink_paper("#ece2c8", 512, 727, 6, 9), normal_strength=0.3),
     "notices": lambda: util.material("qp_notices", notice_atlas(512), double_sided=True, normal_strength=0.3),
     "talisman": lambda: _emit_mat("qp_talisman", talisman(256), 1.6, double_sided=True, normal_strength=0.2),
-    "silk_red": lambda: util.material("qp_silk_red", tex.silk("#a61c2a", "#c8404e", 256, 731), normal_strength=0.3,
-                                      double_sided=True),
-    "silk_gold": lambda: util.material("qp_silk_gold", tex.silk("#c4912e", "#e2b95a", 256, 732),
-                                       normal_strength=0.3, double_sided=True),
-    "silk_blue": lambda: util.material("qp_silk_blue", tex.silk("#27456e", "#3f6aa0", 256, 733),
-                                       normal_strength=0.3, double_sided=True),
+    "silk_red": lambda: util.material("qp_silk_red", tex.silk("#a61c2a", "#c8404e", 256, 731), normal_strength=0.3),
+    "silk_red_ds": lambda: util.material("qp_silk_red_ds", tex.silk("#a61c2a", "#c8404e", 256, 731),
+                                         normal_strength=0.3, double_sided=True),
+    "silk_gold": lambda: util.material("qp_silk_gold", tex.silk("#c4912e", "#e2b95a", 256, 732), normal_strength=0.3),
+    "silk_gold_ds": lambda: util.material("qp_silk_gold_ds", tex.silk("#c4912e", "#e2b95a", 256, 732),
+                                          normal_strength=0.3, double_sided=True),
+    "silk_blue": lambda: util.material("qp_silk_blue", tex.silk("#27456e", "#3f6aa0", 256, 733), normal_strength=0.3),
     "silk_green": lambda: util.material("qp_silk_green", tex.silk("#2f6a4a", "#4f9a70", 256, 734),
-                                        normal_strength=0.3, double_sided=True),
+                                        normal_strength=0.3),
     "silk_white": lambda: util.material("qp_silk_white", tex.silk("#e8e4da", "#ffffff", 256, 735),
-                                        normal_strength=0.3, double_sided=True),
+                                        normal_strength=0.3),
     "jade": lambda: util.material("qp_jade", tex.jade("#5fae84", 256, 736), normal_strength=0.3),
     "white_jade": lambda: util.material("qp_white_jade", tex.jade("#d8e4d0", 256, 737), normal_strength=0.3),
     "porcelain": lambda: util.material("qp_porcelain", lands.glaze("#e9ecef", 256, 738)),
@@ -556,13 +559,35 @@ def lathe_n(bm, profile, segs=24, loc=(0, 0, 0), u_rep=1.0, cap_top=False, cap_b
 
 
 def hoop(bm, center, radius, r, normal=(0, 0, 1), segs=32, n=8, rx=None):
-    """Closed ring (torus) of tube radius r (or (r, rx) flattened) around `normal`."""
+    """Closed torus of section radius r around `normal`.
+
+    rx: radial half-width for a flattened section (r is then the half-thickness along `normal`).
+    Built as an exact torus: sweeping util.tube round a closed path left a twisted seam whose
+    first and last segments overlapped coplanar.
+    """
     nrm = V(normal).normalized()
     a = nrm.orthogonal().normalized()
     b = nrm.cross(a).normalized()
-    pts = [V(center) + (a * math.cos(t) + b * math.sin(t)) * radius
-           for t in np.linspace(0, 2 * math.pi, segs + 1)]
-    return new_verts(bm, lambda: util.tube(bm, pts, r if rx is None else (r, rx), n=n, closed_ends=False))
+    c = V(center)
+    uvl = bm.loops.layers.uv.verify()
+    rr = r if rx is None else rx
+    rows = []
+    for i in range(segs):
+        th = 2 * math.pi * i / segs
+        rad = a * math.cos(th) + b * math.sin(th)
+        p = c + rad * radius
+        rows.append([bm.verts.new(p + rad * (rr * math.cos(2 * math.pi * j / n)) + nrm * (r * math.sin(2 * math.pi * j / n)))
+                     for j in range(n)])
+    for i in range(segs):
+        i2 = (i + 1) % segs
+        for j in range(n):
+            j2 = (j + 1) % n
+            f = bm.faces.new((rows[i][j], rows[i2][j], rows[i2][j2], rows[i][j2]))
+            for loop, (uu, vv) in zip(f.loops, ((i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1))):
+                loop[uvl].uv = (uu / segs * radius * 6.0, vv / n)
+    verts = [v for row in rows for v in row]
+    bmesh.ops.recalc_face_normals(bm, faces=list({f for v in verts for f in v.link_faces}))
+    return verts
 
 
 def flame(bm, loc, h=0.12, r=0.03):
@@ -610,6 +635,54 @@ def incense_pot(bm_b, bm_s, bm_g, loc, s=1.0, sticks=3, seed=1):
         util.sphere(bm_g, 0.006 * s, loc=top, segs=6, rings=4)
 
 
+def chain(bm, pts, link=0.13, r=0.018):
+    """Iron chain along a poly-line. Like realms.chain, but alternate links are turned 83 degrees
+    rather than exactly 90: with square-on links the facets of interlocking neighbours coincided
+    (z-fighting where the links pass through each other)."""
+    path = util.catmull([V(p) for p in pts], 10)
+    out, acc = [path[0]], 0.0
+    step = link * 0.8
+    for p, q in zip(path[:-1], path[1:]):
+        seg = (q - p).length
+        while acc + seg >= step:
+            p = p.lerp(q, (step - acc) / seg)
+            seg = (q - p).length
+            out.append(p)
+            acc = 0.0
+        acc += seg
+    for i, (p, q) in enumerate(zip(out[:-1], out[1:])):
+        t = (q - p).normalized()
+        up = V((0, 0, 1)) if abs(t.z) < 0.9 else V((1, 0, 0))
+        s = t.cross(up).normalized()
+        if i % 2:
+            s = (Matrix.Rotation(R(83), 3, t) @ s).normalized()
+        c = (p + q) / 2
+        ring = [c + t * math.cos(a) * link * 0.55 + s * math.sin(a) * link * 0.3
+                for a in [2 * math.pi * k / 12 for k in range(12)]]
+        loop_tube(bm, ring, t.cross(s).normalized(), r, n=6)
+
+
+def loop_tube(bm, pts, plane_normal, r, n=6):
+    """Seamless tube round a closed planar loop (no duplicate end point)."""
+    N = V(plane_normal).normalized()
+    m = len(pts)
+    rows = []
+    for i in range(m):
+        tan = (pts[(i + 1) % m] - pts[i - 1]).normalized()
+        rad = tan.cross(N).normalized()
+        rows.append([bm.verts.new(pts[i] + rad * (r * math.cos(2 * math.pi * j / n)) + N * (r * math.sin(2 * math.pi * j / n)))
+                     for j in range(n)])
+    uvl = bm.loops.layers.uv.verify()
+    faces = []
+    for i in range(m):
+        for j in range(n):
+            f = bm.faces.new((rows[i][j], rows[(i + 1) % m][j], rows[(i + 1) % m][(j + 1) % n], rows[i][(j + 1) % n]))
+            for loop, (uu, vv) in zip(f.loops, ((i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1))):
+                loop[uvl].uv = (uu / m, vv / n)
+            faces.append(f)
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+
+
 def hull(name, bm):
     """Convex '-convcolonly' hull of every vert in bm.
 
@@ -628,7 +701,8 @@ def altar_table(bm, w, d, h, top=0.06, leg=0.07, everted=True):
     bevel_box(bm, (w, d, top), loc=(0, 0, h - top / 2), bevel=0.012)
     if everted:
         for sx in (-1, 1):
-            vs = ubox(bm, (0.12, d, 0.05), loc=(sx * (w / 2 - 0.06), 0, h + 0.02))
+            # upturned end: inset 3 mm from the top's end and edges so no face is coplanar with it
+            vs = ubox(bm, (0.12, d - 0.006, 0.05), loc=(sx * (w / 2 - 0.063), 0, h + 0.02))
             for v in vs:
                 if v.co.z > h + 0.03 and sx * v.co.x > w / 2 - 0.02:
                     v.co.z += 0.05
@@ -637,8 +711,8 @@ def altar_table(bm, w, d, h, top=0.06, leg=0.07, everted=True):
             util.box(bm, (leg, leg, h - top), loc=(sx * (w / 2 - 0.16), sy * (d / 2 - 0.08), (h - top) / 2))
         util.box(bm, (0.04, d - 0.12, 0.05), loc=(sx * (w / 2 - 0.16), 0, 0.12))
         util.box(bm, (0.04, d - 0.16, 0.2), loc=(sx * (w / 2 - 0.16), 0, h - top - 0.12))
-    util.box(bm, (w - 0.3, 0.03, 0.12), loc=(0, -d / 2 + 0.08, h - top - 0.06))
-    util.box(bm, (w - 0.3, 0.03, 0.12), loc=(0, d / 2 - 0.08, h - top - 0.06))
+    for sy in (-1, 1):  # aprons stop 5 mm under the top so their tops don't share the legs' top plane
+        util.box(bm, (w - 0.3, 0.03, 0.12), loc=(0, sy * (d / 2 - 0.08), h - top - 0.065))
 
 
 def chair(bm, loc, yaw=0.0, seat=0.48):
@@ -659,7 +733,7 @@ def _chair(bm, seat):
         util.box(bm, (0.03, d - 0.06, 0.03), loc=(sx * (w / 2 - 0.03), 0, 0.1))
     util.box(bm, (w + 0.1, 0.05, 0.05), loc=(0, d / 2 - 0.03, 1.12))
     util.box(bm, (0.2, 0.02, 0.55), loc=(0, d / 2 - 0.04, seat + 0.32))
-    util.box(bm, (w - 0.06, 0.03, 0.03), loc=(0, -d / 2 + 0.03, 0.1))
+    util.box(bm, (w - 0.06, 0.03, 0.03), loc=(0, -d / 2 + 0.03, 0.14))  # above the side stretchers
 
 
 def stool(bm, loc, r=0.2, h=0.45):
@@ -708,7 +782,7 @@ def notice_board():
         bevel_box(bm_w, (0.14, 0.14, 2.6), loc=(sx * 1.2, 0, 1.4), bevel=0.012)
         util.box(bm_w, (0.08, 0.32, 0.08), loc=(sx * 1.2, 0, 2.52))
     for z in (0.66, 2.06):
-        bevel_box(bm_w, (2.56, 0.12, 0.1), loc=(0, 0, z), bevel=0.01)
+        bevel_box(bm_w, (2.62, 0.12, 0.1), loc=(0, 0, z), bevel=0.01)  # ends clear of the posts' bevels
     bevel_box(bm_w, (2.9, 0.1, 0.1), loc=(0, 0, 2.52), bevel=0.01)
     ubox(bm_b, (2.3, 0.05, 1.32), loc=(0, 0.02, 1.36), rect=(0, 0, 1, 1))
     rnd = random.Random(4)
@@ -725,7 +799,13 @@ def notice_board():
             obj("BoardPlanks", bm_b, m["old_planks"]), obj("Notices", bm_n, m["notices"]),
             obj("NoticePins", bm_p, m["red_paint"])]
     roof, _ = lands.gable_roof("BoardRoof", 1.45, 0.5, 0.36, {"tiles": m["roof"], "wood": m["wood"],
-                                                              "ridge": m["ridge"]}, 2.58, lift=0.12, nx=12, ny=5)
+                                                              "ridge": m["ridge"]}, 2.58, lift=0.12, nx=12, ny=5,
+                              curl=False)
+    # lands.gable_roof's front and back verge tubes meet at the apex with coplanar end faces: push the
+    # back-slope verge tubes 4 mm outward
+    for v in roof[1].data.vertices:
+        if v.co.y > 0.001 and abs(v.co.x) > 1.45 - 0.12:
+            v.co.x += math.copysign(0.004, v.co.x)
     objs += roof
     objs.append(util.collider("BoardCol", (2.6, 0.42, 2.9), (0, 0, 1.45)))
     return objs
@@ -738,7 +818,8 @@ def ancestral_tablet():
     bm_t, bm_k, bm_g, bm_c, bm_f, bm_b, bm_s, bm_e, bm_p, bm_fr = (bmesh.new() for _ in range(10))
     altar_table(bm_t, 2.0, 0.7, 0.92)
     for k, (w, d, h, y) in enumerate(((1.6, 0.26, 0.14, 0.14), (1.2, 0.2, 0.28, 0.2), (0.7, 0.14, 0.42, 0.25))):
-        bevel_box(bm_t, (w, d, h), loc=(0, y, 0.92 + h / 2), bevel=0.01)
+        z0 = 0.92 + 0.003 * k  # stacked tiers: bottoms 3 mm apart so they don't share the table-top plane
+        bevel_box(bm_t, (w, d, h - 0.003 * k), loc=(0, y, z0 + (h - 0.003 * k) / 2), bevel=0.01)
     # spirit tablets: (x, y, base z, width, height)
     specs = [(-0.55, 0.06, 1.06, 0.13, 0.4), (-0.3, 0.06, 1.06, 0.13, 0.42), (0.3, 0.06, 1.06, 0.13, 0.42),
              (0.55, 0.06, 1.06, 0.13, 0.4), (-0.3, 0.14, 1.2, 0.15, 0.48), (0.3, 0.14, 1.2, 0.15, 0.48),
@@ -931,7 +1012,8 @@ def tortoise_stele():
     bevel_box(bm_t, (1.6, 0.66, 0.2), loc=(0, 0.35, 1.26), bevel=0.04)
     w, side_h, z0 = 1.3, 2.3, 1.36
     tab = bmesh.new()
-    lands.extrude_outline(tab, lands.arc_outline(w, side_h, 12, z0), 0.35 - 0.18, 0.35 + 0.18,
+    # the tablet's round top stops 8 cm lower, fully inside the crest (their arcs nearly coincided)
+    lands.extrude_outline(tab, lands.arc_outline(w, side_h - 0.08, 12, z0), 0.35 - 0.18, 0.35 + 0.18,
                           uv_front=(-w / 2, z0, w, side_h + w / 2 * 0.55))
     slab = util.mesh_object("SteleTablet", tab, m["inscribed"], smooth=False)
     crest = lands.arc_outline(w + 0.14, 0.0, 12, z0 + side_h - 0.05)
@@ -1042,7 +1124,7 @@ def bronze_ding():
         # upright handles on the short rims
         for dy in (-0.14, 0.14):
             bevel_box(bm_b, (0.06, 0.06, 0.3), loc=(sx * (w / 2 - 0.08), dy, z0 + h + 0.13), bevel=0.01)
-        bevel_box(bm_b, (0.06, 0.34, 0.06), loc=(sx * (w / 2 - 0.08), 0, z0 + h + 0.27), bevel=0.01)
+        bevel_box(bm_b, (0.068, 0.352, 0.06), loc=(sx * (w / 2 - 0.08), 0, z0 + h + 0.27), bevel=0.01)
     bevel_box(bm_b, (w + 0.08, d + 0.08, 0.05), loc=(0, 0, z0 + h - 0.01), bevel=0.01)
     objs = [obj("DingBody", bm_body, m["bronze_band"]), obj("DingCast", bm_b, m["bronze"], uv=1.5),
             obj("DingInside", bm_in, m["dark"])]
@@ -1157,14 +1239,14 @@ def scroll_rack():
     for sx in (-1, 1):
         bevel_box(bm_w, (t, D, H), loc=(sx * (W / 2 - t / 2), 0, H / 2), bevel=0.01)
     bevel_box(bm_w, (W + 0.08, D + 0.04, 0.06), loc=(0, 0, H + 0.03), bevel=0.015)
-    ubox(bm_w, (W - 2 * t, 0.02, H - 0.1), loc=(0, D / 2 - 0.01, H / 2 + 0.03))
+    ubox(bm_w, (W - 2 * t + 0.006, 0.02, H - 0.1), loc=(0, D / 2 - 0.007, H / 2 + 0.03))  # back proud by 3 mm
     z_shelves = [0.1 + k * (H - 0.14) / rows for k in range(rows + 1)]
     cw = (W - 2 * t) / cols
     for z in z_shelves:
         util.box(bm_w, (W - 2 * t, D, 0.03), loc=(0, 0, z))
     for c in range(1, cols):
-        util.box(bm_w, (0.025, D, H - 0.12), loc=(-W / 2 + t + c * cw, 0, H / 2 + 0.04))
-    util.box(bm_w, (W, 0.04, 0.1), loc=(0, -D / 2 + 0.02, 0.05))
+        util.box(bm_w, (0.025, D - 0.006, H - 0.126), loc=(-W / 2 + t + c * cw, 0, H / 2 + 0.037))
+    util.box(bm_w, (W - 2 * t - 0.006, 0.04, 0.1), loc=(0, -D / 2 + 0.023, 0.05))  # kick board inset between the sides
     for r in range(rows):
         z0, z1 = z_shelves[r] + 0.015, z_shelves[r + 1] - 0.015
         for c in range(cols):
@@ -1191,7 +1273,7 @@ def scroll_rack():
                     th = rnd.uniform(0.025, 0.04)
                     ubox(bm_bk, (0.2, 0.28, th), loc=(x0 + cw / 2 - 0.01 + rnd.uniform(-0.02, 0.02), -0.04,
                                                        z + th / 2), yaw=R(rnd.uniform(-8, 8)))
-                    ubox(bm_pg, (0.19, 0.27, th * 0.7), loc=(x0 + cw / 2 - 0.01, -0.045, z + th / 2))
+                    ubox(bm_pg, (0.19, 0.26, th * 0.7), loc=(x0 + cw / 2 - 0.01, -0.045, z + th / 2))
                     z += th
             else:  # a lacquered scroll case standing upright
                 util.cylinder(bm_bk, 0.06, 0.06, z1 - z0 - 0.04, loc=(x0 + cw / 2, 0.0, (z0 + z1) / 2 - 0.02),
@@ -1236,9 +1318,10 @@ def war_drum():
         for sy in (-1, 1):
             bevel_box(bm_f, (0.1, 0.1, 1.0), loc=(sx * 0.68, sy * 0.45, 0.5), bevel=0.012)
         bevel_box(bm_f, (0.12, 1.25, 0.12), loc=(sx * 0.68, 0, 0.08), bevel=0.015)
-        bevel_box(bm_f, (0.1, 1.05, 0.1), loc=(sx * 0.68, 0, 0.95), bevel=0.012)
+        # rails 12 mm slimmer than the 0.1 m posts they join, so their sides don't share the posts' planes
+        bevel_box(bm_f, (0.088, 1.05, 0.088), loc=(sx * 0.68, 0, 0.95), bevel=0.012)
     for sy in (-1, 1):
-        bevel_box(bm_f, (1.46, 0.1, 0.1), loc=(0, sy * 0.45, 0.4), bevel=0.012)
+        bevel_box(bm_f, (1.44, 0.088, 0.088), loc=(0, sy * 0.45, 0.4), bevel=0.012)
         # crescent saddle under the drum
         arc = [c + V((math.sin(a) * (Rm - 0.02), sy * 0.32, -math.cos(a) * (Rm - 0.02))) for a in np.linspace(-0.9, 0.9, 12)]
         util.tube(bm_f, arc, (0.06, 0.05), n=6, power=4)
@@ -1278,6 +1361,7 @@ def sealed_coffin():
         w, h = section(t)
         rings.append(util.ring((0, y, base + h), (1, 0, 0), (0, 0, 1), w, h, 16, power=5))
     util.loft(bm_c, rings, closed=True, cap_start=True, cap_end=True, uv_scale=(2.0, 0.6))
+    bmesh.ops.recalc_face_normals(bm_c, faces=bm_c.faces)  # the end caps were wound inward (culled)
     rings = []
     for y in np.linspace(-1.16, 1.16, 9):
         t = (y + 1.16) / 2.32
@@ -1285,19 +1369,20 @@ def sealed_coffin():
         pts = util.ring((0, y, base + 2 * h - 0.06), (1, 0, 0), (0, 0, 1), w, 0.12, 16, power=3)
         rings.append(pts)
     util.loft(bm_l, rings, closed=True, cap_start=True, cap_end=True, uv_scale=(2.0, 0.6))
+    bmesh.ops.recalc_face_normals(bm_l, faces=bm_l.faces)
     for y in (-0.7, 0.7):
         bevel_box(bm_s, (0.95, 0.36, base), loc=(0, y, base / 2), bevel=0.03)
     # gold longevity medallion on the head end
     w, h = section(1.0)
-    util.cylinder(bm_g, 0.16, 0.16, 0.02, loc=(0, 1.11, base + h + 0.02), segs=24, rot=Matrix.Rotation(R(90), 4, "X"))
-    hoop(bm_g, (0, 1.12, base + h + 0.02), 0.16, 0.012, normal=(0, 1, 0), segs=24, n=5)
+    util.cylinder(bm_g, 0.16, 0.16, 0.02, loc=(0, 1.114, base + h + 0.02), segs=24, rot=Matrix.Rotation(R(90), 4, "X"))
+    hoop(bm_g, (0, 1.124, base + h + 0.02), 0.16, 0.012, normal=(0, 1, 0), segs=24, n=5)
     # chains wrapped around at three stations
     for y in (-0.65, 0.05, 0.72):
         t = (y + 1.1) / 2.2
         w, h = section(t, 0.05)
-        loop = util.ring((0, y, base + h + 0.02), (1, 0, 0), (0, 0, 1), w + 0.02, h + 0.04, 20, power=4)
+        loop = util.ring((0, y, base + h + 0.02), (1, 0, 0), (0, 0, 1), w + 0.035, h + 0.05, 20, power=4)
         loop = [p for p in loop if p.z > base - 0.02]
-        realms.chain(bm_ch, [p for p in loop] + [loop[0]], link=0.12, r=0.013)
+        chain(bm_ch, loop, link=0.12, r=0.013)  # over the top only; the chord back underneath overlapped
     # talismans pasted on the lid and hanging on the sides
     rnd = random.Random(5)
     for k, y in enumerate(np.linspace(-0.85, 0.85, 6)):
@@ -1409,10 +1494,10 @@ def armillary_sphere():
     sighting tube, held by four dragon columns on a stone cross base (~2.0 x 2.0 x 2.4 m)."""
     m = Mats()
     bm_s, bm_b, bm_g = bmesh.new(), bmesh.new(), bmesh.new()
-    for yaw in (0, R(90)):
-        vs = ubox(bm_s, (2.0, 0.34, 0.24), bevel=0.03)
-        xf(bm_s, vs, (0, 0, 0.12), yaw=yaw)
-    bevel_box(bm_s, (0.5, 0.5, 0.4), loc=(0, 0, 0.2), bevel=0.04)
+    for k, yaw in enumerate((0, R(90))):  # crossing beams differ by 6 mm in height (no shared top/bottom)
+        vs = ubox(bm_s, (2.0, 0.34 - 0.006 * k, 0.24 + 0.006 * k), bevel=0.03)
+        xf(bm_s, vs, (0, 0, 0.12 + 0.006 * k), yaw=yaw)
+    bevel_box(bm_s, (0.5, 0.5, 0.396), loc=(0, 0, 0.202), bevel=0.04)
     c = V((0, 0, 1.4))
     lat = R(35)
     polar = V((0, math.cos(lat), math.sin(lat)))
@@ -1424,17 +1509,17 @@ def armillary_sphere():
     hoop(bm_b, c, 0.66, 0.025, normal=polar.cross(V((1, 0, 0))), segs=48, n=6)  # declination ring
     util.tube(bm_b, [c - polar * 0.98, c + polar * 0.98], 0.02, n=8)            # polar axis
     util.tube(bm_g, [c - polar.cross(V((1, 0, 0))).normalized() * 0.6 + V((0, 0, 0)),
-                     c + polar.cross(V((1, 0, 0))).normalized() * 0.6], 0.035, n=10)  # sighting tube
+                     c + polar.cross(V((1, 0, 0))).normalized() * 0.6], 0.03, n=10)  # sighting tube (thinner than the meridian ring)
     util.sphere(bm_g, 0.07, loc=c, segs=12, rings=8)
     # meridian cradle post
     util.lathe(bm_b, [(0.14, 0.4), (0.1, 0.46), (0.07, 0.52), (0.07, 0.5 + 0.02)], segs=12)
-    util.tube(bm_b, [V((0, 0, 0.4)), V((0, 0, 0.52))], 0.08, n=10)
+    util.tube(bm_b, [V((0, 0, 0.404)), V((0, 0, 0.52))], 0.08, n=10)
     # dragon columns: posts wrapped in a scaled spiral body with a head under the horizon ring
     for k in range(4):
-        a = R(45 + 90 * k)
-        p = V((math.cos(a) * 0.72, math.sin(a) * 0.72, 0.24))
+        a = R(90 * k)  # on the arms of the cross base (at 45 degrees they hovered 0.24 m over the ground)
+        p = V((math.cos(a) * 0.72, math.sin(a) * 0.72, 0.24 + 0.003 * (k % 2)))
         top = p + V((0, 0, c.z - 0.24))
-        util.cylinder(bm_b, 0.06, 0.05, top.z - p.z, loc=(p.x, p.y, (p.z + top.z) / 2), segs=10)
+        util.cylinder(bm_b, 0.06, 0.05, top.z - p.z - 0.01, loc=(p.x, p.y, (p.z + 0.01 + top.z) / 2), segs=10)
         spiral = [p + V((math.cos(t * 7) * 0.08, math.sin(t * 7) * 0.08, t * (top.z - p.z - 0.15)))
                   for t in np.linspace(0, 1, 40)]
         util.tube(bm_g, spiral, lambda t: 0.045 * (1 - 0.3 * t), n=7)
@@ -1458,15 +1543,16 @@ def medicine_cabinet():
     for sx in (-1, 1):
         bevel_box(bm_c, (0.05, D, H), loc=(sx * (W / 2 - 0.025), 0, H / 2), bevel=0.01)
     bevel_box(bm_c, (W + 0.06, D + 0.04, 0.06), loc=(0, 0, H + 0.03), bevel=0.015)
-    bevel_box(bm_c, (W, D, 0.12), loc=(0, 0, 0.06), bevel=0.01)
-    util.box(bm_c, (W - 0.1, 0.02, H - 0.12), loc=(0, D / 2 - 0.01, H / 2 + 0.06))
+    bevel_box(bm_c, (W - 0.006, D - 0.006, 0.12), loc=(0, 0, 0.062), bevel=0.01)  # plinth inset 3 mm
+    util.box(bm_c, (W - 0.106, 0.02, H - 0.12), loc=(0, D / 2 - 0.01, H / 2 + 0.06))
     cols, rows = 8, 8
     z0, z1 = 0.14, H - 0.04
     cw, ch = (W - 0.1) / cols, (z1 - z0) / rows
     for r in range(rows + 1):
         util.box(bm_c, (W - 0.1, D - 0.02, 0.018), loc=(0, 0, z0 + r * ch))
     for c in range(1, cols):
-        util.box(bm_c, (0.018, D - 0.02, z1 - z0), loc=(-W / 2 + 0.05 + c * cw, 0, (z0 + z1) / 2))
+        # dividers 4 mm shallower than the shelves: their fronts were coplanar with the shelf fronts
+        util.box(bm_c, (0.018, D - 0.028, z1 - z0), loc=(-W / 2 + 0.05 + c * cw, 0, (z0 + z1) / 2))
     for r in range(rows):
         for c in range(cols):
             x = -W / 2 + 0.05 + (c + 0.5) * cw
@@ -1538,15 +1624,16 @@ def loom():
     hw = 0.62
     for sx in (-1, 1):
         x = sx * hw
-        bevel_box(bm_w, (0.08, 1.9, 0.08), loc=(x, 0, 0.04), bevel=0.01)
-        bevel_box(bm_w, (0.08, 0.08, 0.95), loc=(x, -0.85, 0.47), bevel=0.01)
-        bevel_box(bm_w, (0.08, 0.08, 1.75), loc=(x, 0.8, 0.875), bevel=0.01)
-        bevel_box(bm_w, (0.07, 0.08, 1.6), loc=(x, 0.05, 0.8), bevel=0.01)
-        bevel_box(bm_w, (0.07, 1.7, 0.07), loc=(x, 0.0, 1.62), bevel=0.01)
+        # joined members differ by >= 6 mm in section so no two faces share a plane
+        bevel_box(bm_w, (0.092, 1.9, 0.08), loc=(x, 0, 0.04), bevel=0.01)
+        bevel_box(bm_w, (0.08, 0.08, 0.95), loc=(x, -0.85, 0.478), bevel=0.01)
+        bevel_box(bm_w, (0.08, 0.08, 1.75), loc=(x, 0.8, 0.878), bevel=0.01)
+        bevel_box(bm_w, (0.07, 0.08, 1.6), loc=(x, 0.05, 0.803), bevel=0.01)
+        bevel_box(bm_w, (0.062, 1.72, 0.062), loc=(x, 0.0, 1.62), bevel=0.01)
         util.tube(bm_w, [V((x, -0.85, 0.5)), V((x, 0.8, 0.35))], 0.03, n=6)
-    bevel_box(bm_w, (2 * hw + 0.1, 0.08, 0.08), loc=(0, -0.85, 0.88), bevel=0.01)  # breast beam
-    bevel_box(bm_w, (2 * hw + 0.1, 0.07, 0.07), loc=(0, 0.05, 1.62), bevel=0.01)
-    bevel_box(bm_w, (2 * hw + 0.1, 0.08, 0.08), loc=(0, 0.8, 1.72), bevel=0.01)
+    bevel_box(bm_w, (2 * hw + 0.1, 0.06, 0.08), loc=(0, -0.85, 0.88), bevel=0.01)  # breast beam
+    bevel_box(bm_w, (2 * hw + 0.1, 0.07, 0.08), loc=(0, 0.05, 1.62), bevel=0.01)
+    bevel_box(bm_w, (2 * hw + 0.1, 0.06, 0.06), loc=(0, 0.8, 1.72), bevel=0.01)
     util.cylinder(bm_w, 0.07, 0.07, 2 * hw, loc=(0, 0.72, 0.55), segs=14, rot=Matrix.Rotation(R(90), 4, "Y"))
     # heddle frames and the beater hanging from the top rail
     for y in (0.05, 0.16):
@@ -1557,8 +1644,8 @@ def loom():
             util.tube(bm_w, [V((sx * 0.4, y, 1.12)), V((sx * 0.4, 0.05, 1.6))], 0.006, n=4)
     for sx in (-1, 1):
         util.box(bm_w, (0.04, 0.04, 0.8), loc=(sx * (hw - 0.08), -0.3, 1.2))
-    util.box(bm_w, (2 * hw - 0.12, 0.06, 0.05), loc=(0, -0.3, 0.8))
-    util.box(bm_w, (2 * hw - 0.12, 0.04, 0.04), loc=(0, -0.3, 1.1))
+    util.box(bm_w, (2 * hw - 0.14, 0.06, 0.05), loc=(0, -0.3, 0.8))  # ends inside the beater uprights
+    util.box(bm_w, (2 * hw - 0.14, 0.03, 0.04), loc=(0, -0.3, 1.1))
     card(bm_str, 2 * hw - 0.2, 0.28, loc=(0, -0.3, 0.95), rect=(0, 0, 10, 1))
     # warp from the warp beam up over the heddles to the fell; woven cloth from the fell to the breast beam
     card(bm_warp, 2 * hw - 0.2, 1.08, loc=(0, 0.24, 0.72), pitch=R(-90) + math.atan2(0.17, 1.0), rect=(0, 0, 12, 1))
@@ -1753,7 +1840,7 @@ def puppet_frame():
         bevel_box(bm_st, (0.09, 0.09, 1.5), loc=(sx * (W / 2 - 0.06), -D / 2 + 0.06, H + 0.75), bevel=0.012)
         util.box(bm_st, (0.07, D - 0.1, 0.07), loc=(sx * (W / 2 - 0.06), 0, H + 1.5))
     bevel_box(bm_st, (W + 0.2, 0.12, 0.22), loc=(0, -D / 2 + 0.06, H + 1.55), bevel=0.02)  # proscenium beam
-    bevel_box(bm_st, (W, 0.08, 0.08), loc=(0, D / 2 - 0.08, H + 1.72), bevel=0.01)
+    bevel_box(bm_st, (W, 0.07, 0.08), loc=(0, D / 2 - 0.08, H + 1.72), bevel=0.01)
     ubox(bm_st, (W - 0.1, 0.03, 1.6), loc=(0, D / 2 - 0.02, H + 0.8), rect=(0, 0, 1, 1))
     # gilded cloud corners on the proscenium
     for sx in (-1, 1):
@@ -1786,7 +1873,7 @@ def puppet_frame():
         util.cylinder(bm_rb, 0.012, 0.008, 0.06, loc=base + V((0, 0.01, 0.45)), segs=6)
         bar = V((x, -0.05, H + 1.3))
         util.box(bm_w, (0.22, 0.02, 0.02), loc=bar)
-        util.box(bm_w, (0.02, 0.18, 0.02), loc=bar)
+        util.box(bm_w, (0.026, 0.18, 0.014), loc=bar)
         util.tube(bm_w, [bar, bar + V((0, 0.02, 0.15))], 0.005, n=4)
         for p in (V((0, 0, 0.42)), V((-0.14, -0.06, 0.1)), V((0.14, -0.06, 0.1))):
             end = base + p
@@ -1796,7 +1883,7 @@ def puppet_frame():
     skirt = util.material("qp_stage_skirt", tex.embroidery_trim("#7a1410", "#d9ab45", 256, 807), double_sided=True,
                           normal_strength=0.4)
     objs = [obj("Stage", bm_st, m["lacquer_red"], uv=1.2), obj("StageGilt", bm_w, m["gold"], uv=3.0, smooth=True),
-            obj("Curtains", bm_cur, m["silk_red"], uv=1.0), obj("StageSkirt", bm_sk, skirt),
+            obj("Curtains", bm_cur, m["silk_red_ds"], uv=1.0), obj("StageSkirt", bm_sk, skirt),
             obj("PuppetStrings", bm_str, m["string"]), obj("PuppetFaces", bm_face, m["skin"], smooth=True),
             obj("PuppetHair", bm_rb, m["lacquer_black"], uv=6.0, smooth=True)]
     for k in range(3):
@@ -1835,7 +1922,8 @@ def herb_drying_rack():
                     vs = util.cylinder(bm_r, 0.03, 0.03, 0.012, loc=(0, 0, 0), segs=10)
                     xf(bm_r, vs, p, pitch=R(rnd.uniform(-15, 15)))
                 else:
-                    util.sphere(bm_mush, 0.035, loc=p + V((0, 0, 0.01)), segs=8, rings=5, scale=(1, 1, 0.4))
+                    xf(bm_mush, util.sphere(bm_mush, 0.035, segs=8, rings=5, scale=(1, 1, 0.4)), p + V((0, 0, 0.01)),
+                       yaw=rnd.uniform(0, 6.3))  # random turn: identical caps side by side shared facets
     for k in range(5):
         x = -0.7 + k * 0.35
         top = V((x, 0.0, 1.88))
@@ -1869,16 +1957,17 @@ def chain_anchor():
     util.tube(bm_i, util.catmull([V((-0.2, 0, 0.88)), V((-0.2, 0, 1.12)), V((0, 0, 1.22)), V((0.2, 0, 1.12)),
                                   V((0.2, 0, 0.88))], 4), 0.06, n=10)
     for sx in (-1, 1):
-        util.cylinder(bm_i, 0.12, 0.12, 0.04, loc=(sx * 0.2, 0, 0.9), segs=12)
+        util.cylinder(bm_i, 0.12, 0.12, 0.04, loc=(sx * 0.2, 0, 0.925), segs=12)  # proud of the block top
     hoop(bm_i, (0, 0.0, 0.92), 0.34, 0.055, normal=(0, 1, 0.25), segs=32, n=10)
     # chains
-    ground = [V((0.1, 0.3, 0.62)), V((0.2, 0.7, 0.2)), V((0.3, 1.2, 0.06)), V((-0.2, 1.8, 0.06)),
-              V((0.25, 2.4, 0.06)), V((0.0, 3.0, 0.06))]
-    realms.chain(bm_ch, ground, link=0.28, r=0.035)
+    ground = [V((0.1, 0.3, 0.62)), V((0.2, 0.7, 0.2)), V((0.3, 1.2, 0.06)), V((0.1, 1.8, 0.06)),
+              V((0.25, 2.4, 0.06)), V((0.15, 3.0, 0.06))]  # gentle bends: links on sharp kinks overlapped
+    chain(bm_ch, ground, link=0.28, r=0.035)
     sky = [V((0.0, -0.3, 1.2)), V((0.05, -0.8, 2.2)), V((0.1, -1.3, 3.2)), V((0.15, -1.8, 4.2))]
-    realms.chain(bm_ch, sky, link=0.28, r=0.035)
-    for k, (x, y, yaw) in enumerate(((0, -0.73, 0), (0.73, 0.1, R(90)), (-0.73, -0.2, R(-90)))):
-        card(bm_t, 0.16, 0.5, loc=(x * 1.005, y * 1.005 if k == 0 else y, 0.55), yaw=yaw, roll=R(4 - k * 4))
+    chain(bm_ch, sky, link=0.28, r=0.035)
+    # on the block faces (at +-0.8 m; they used to sit 7 cm inside the block, invisible)
+    for k, (x, y, yaw) in enumerate(((0, -0.805, 0), (0.805, 0.1, R(90)), (-0.805, -0.2, R(-90)))):
+        card(bm_t, 0.16, 0.5, loc=(x, y, 0.45), yaw=yaw, roll=R(4 - k * 4))
     runes = realms.rune_stone(512, 810, "#4a4744", "#ff5a2a", cols=4, rows=5)
     rmat = util.material("qp_anchor_runes", runes, emission_map=runes["emit"], emission_strength=1.8,
                          normal_strength=1.0)
@@ -1912,7 +2001,7 @@ def soul_lantern():
     for k in range(6):
         a = 2 * math.pi * k / 6 + math.pi / 6
         util.box(bm_i, (0.018, 0.018, 0.4), loc=(top.x + math.cos(a) * 0.185, top.y + math.sin(a) * 0.185, lz - 0.31))
-    util.cylinder(bm_g, 0.17, 0.17, 0.38, loc=(top.x, top.y, lz - 0.31), segs=6)
+    util.cylinder(bm_g, 0.17, 0.17, 0.37, loc=(top.x, top.y, lz - 0.31), segs=6)
     flame(bm_f, (top.x, top.y, lz - 0.5), h=0.28, r=0.07)
     # talismans hanging below the lantern and from the arm, a small bell
     for k, (dx, dz) in enumerate(((-0.08, 0.0), (0.08, -0.03))):
@@ -1948,18 +2037,19 @@ def abacus_desk():
     # abacus: frame, beam, rods and beads (2 heaven + 5 earth per rod)
     ax, ay, az = -0.1, -0.08, H
     aw, ad, rods = 0.55, 0.24, 13
+    # frame: end bars 0.04 tall, long bars and beam a few mm shorter so no faces share a plane
     for sy in (-1, 1):
-        util.box(bm_a, (aw, 0.025, 0.035), loc=(ax, ay + sy * ad / 2, az + 0.0175))
+        util.box(bm_a, (aw, 0.025, 0.033), loc=(ax, ay + sy * ad / 2, az + 0.0185))
     for sx in (-1, 1):
-        util.box(bm_a, (0.025, ad, 0.035), loc=(ax + sx * aw / 2, ay, az + 0.0175))
-    util.box(bm_a, (aw, 0.015, 0.03), loc=(ax, ay + ad / 2 - 0.07, az + 0.02))
+        util.box(bm_a, (0.025, ad + 0.006, 0.04), loc=(ax + sx * aw / 2, ay, az + 0.02))
+    util.box(bm_a, (aw, 0.015, 0.026), loc=(ax, ay + ad / 2 - 0.07, az + 0.02))
     rnd = random.Random(51)
     for i in range(rods):
         x = ax - aw / 2 + 0.03 + i * (aw - 0.06) / (rods - 1)
         util.cylinder(bm_a, 0.003, 0.003, ad, loc=(x, ay, az + 0.02), segs=4, rot=Matrix.Rotation(R(90), 4, "X"))
         up = rnd.randint(0, 2)
         for b in range(2):
-            y = ay + ad / 2 - 0.02 - b * 0.022 - (0.02 if b < up else 0)
+            y = ay + ad / 2 - 0.02 - b * 0.022 - (0.012 if b >= 2 - up else 0)  # counted beads slide to the beam
             util.sphere(bm_bd, 0.013, loc=(x, y - 0.0, az + 0.02), segs=8, rings=5, scale=(1.1, 0.7, 1.1))
         dn = rnd.randint(0, 5)
         for b in range(5):
@@ -1973,7 +2063,7 @@ def abacus_desk():
         ubox(bm_pg, (0.19, 0.27, th * 0.7), loc=(0.48, 0.1, zz + th / 2), yaw=R(4 * k - 6))
         zz += th
     for sx in (-1, 1):
-        card(bm_pg, 0.17, 0.26, loc=(0.35 + sx * 0.088, -0.18, H + 0.012), pitch=R(-90), roll=R(-6 * sx),
+        card(bm_pg, 0.17, 0.26, loc=(0.35 + sx * 0.087, -0.18, H + 0.012), pitch=R(-90),
              rect=(0.5 if sx > 0 else 0.0, 0, 1.0 if sx > 0 else 0.5, 1))
     # ink stone, brush, coins, ingots
     bevel_box(bm_ink, (0.12, 0.18, 0.03), loc=(-0.52, 0.05, H + 0.015), bevel=0.008)
@@ -2029,7 +2119,7 @@ def fishing_boat():
     util.solidify(hull_o, 0.05, offset=1.0)
     # gunwale rails and ribs, floor boards
     for sx in (-1, 1):
-        rail = [V((sx * p[-1 if sx > 0 else 0].x, p[0].y, p[0].z + 0.02)) for p in rings]
+        rail = [V((p[-1 if sx > 0 else 0].x, p[0].y, p[0].z + 0.02)) for p in rings]  # port and starboard
         util.tube(bm_d, rail, 0.035, n=6)
     for t in np.linspace(0.12, 0.88, 7):
         i = int(round(t * 14))
@@ -2059,7 +2149,7 @@ def fishing_boat():
                             emission_strength=1.5, normal_strength=0.3)
     nets = util.material("qp_net_heap", lands.woven("#6f6a55", 128, 812),
                          normal_strength=1.0)
-    objs = [hull_o, obj("BoatTrim", bm_d, m["wood"], uv=1.5), obj("Canopy", bm_c, m["woven"]),
+    objs = [hull_o, obj("BoatTrim", bm_d, m["wood"], uv=1.5), obj("Canopy", bm_c, m["woven_ds"]),
             obj("OarAndPole", bm_w, m["bamboo"], uv=2.0, smooth=True), obj("NetHeap", bm_n, nets, uv=3.0, smooth=True),
             obj("FishBasket", bm_bk, m["woven"], uv=3.0, smooth=True), obj("BowLantern", bm_lp, lantern, smooth=True),
             obj("BowLanternGlow", bm_lf, m["flame"], smooth=True)]
@@ -2082,8 +2172,8 @@ def wishing_tree():
     for k in range(6):
         a = 2 * math.pi * k / 6 + rnd.uniform(-0.2, 0.2)
         d = V((math.cos(a), math.sin(a), 0))
-        util.tube(bm_t, [d * 0.1 + V((0, 0, 0.4)), d * 0.6 + V((0, 0, 0.05)), d * 0.9 + V((0, 0, -0.1))],
-                  lambda t: 0.22 * (1 - 0.8 * t), n=8)
+        util.tube(bm_t, [d * 0.15 + V((0, 0, 0.35)), d * 0.62 + V((0, 0, 0.06)), d * 0.9 + V((0, 0, -0.1))],
+                  lambda t: 0.22 * (1 - 0.8 * t), n=7)
     tips = []
     for k in range(7):
         a = 2 * math.pi * k / 7 + rnd.uniform(-0.3, 0.3)
@@ -2102,6 +2192,7 @@ def wishing_tree():
     for (_, mid, end) in tips:
         lands.rock(bm_f, end + V((0, 0, 0.3)), (0.9, 0.9, 0.55), rnd.random() * 100, 0.35, 2)
     # ribbons, plaques and bells hanging from the branches
+    hung = []
     for (s, mid, end) in tips:
         for i in range(5):
             p = mid.lerp(end, rnd.uniform(0.1, 0.8)) + V((0, 0, -0.05))
@@ -2111,7 +2202,10 @@ def wishing_tree():
                      bend=lambda x, z: 0.05 * math.sin(z * 4))
             else:
                 ln = rnd.uniform(0.2, 0.4)
-                util.tube(bm_str, [p, p + V((0, 0, -ln))], 0.004, n=3)
+                if any((p - q).length < 0.04 for q in hung):
+                    continue  # two strings on the same spot overlapped
+                hung.append(p)
+                util.tube(bm_str, [p, p + V((0, 0, -ln - 0.01))], 0.004, n=3)  # ends inside the plaque
                 if rnd.random() < 0.75:
                     ubox(bm_tag, (0.08, 0.012, 0.12), loc=p + V((0, 0, -ln - 0.06)), yaw=rnd.uniform(0, math.pi),
                          rect=(rnd.randrange(4) / 4, 0, rnd.randrange(4) / 4 + 0.25, 0.5))
@@ -2126,7 +2220,7 @@ def wishing_tree():
                         normal_strength=0.4)
     leaf = util.material("qp_tree_leaves", tex.foliage("#4a7a34", 256, 814), normal_strength=0.7)
     objs = [obj("WishTree", bm_t, m["bark"], smooth=True), obj("WishTreeLeaves", bm_f, leaf, uv=1.0, smooth=True),
-            obj("Ribbons", bm_rib, m["silk_red"]), obj("WishPlaques", bm_tag, tag),
+            obj("Ribbons", bm_rib, m["silk_red_ds"]), obj("WishPlaques", bm_tag, tag),
             obj("RibbonStrings", bm_str, m["silk_red"]), obj("WishBells", bm_bell, m["brass"], uv=6.0, smooth=True),
             obj("TreeRing", bm_ring, m["stone"], uv=1.0), obj("TreeSoil", bm_soil, m["earth"], uv=1.0)]
     bm = bmesh.new()
@@ -2150,8 +2244,8 @@ def jade_screen():
         util.sphere(bm_g, 0.06, loc=(sx * 0.92, 0, 2.16), segs=10, rings=6)
         for sy in (-1, 1):
             util.tube(bm_w, [V((sx * 0.92, sy * 0.26, 0.16)), V((sx * 0.92, sy * 0.05, 0.55))], 0.03, n=6)
-    for z in (0.5, 0.62, 1.98):
-        bevel_box(bm_w, (1.84, 0.1, 0.08), loc=(0, 0, z), bevel=0.012)
+    for z in (0.5, 0.62, 1.98):  # rails 7 mm slimmer than the posts
+        bevel_box(bm_w, (1.84, 0.086, 0.08), loc=(0, 0, z), bevel=0.012)
     # openwork apron between the lower rails
     for k in range(9):
         x = -0.8 + k * 0.2
@@ -2291,7 +2385,7 @@ def goods_baskets():
     rnd = random.Random(71)
     bm_b, bm_o, bm_c, bm_g, bm_e, bm_cr = (bmesh.new() for _ in range(6))
     ubox(bm_cr, (0.55, 0.45, 0.35), loc=(0.45, 0.25, 0.175), bevel=0.015, rect=(0, 0, 1, 1))
-    specs = [(-0.45, -0.15, 0.0, 0.3, "orange"), (0.1, -0.3, 0.0, 0.26, "cabbage"), (0.45, 0.25, 0.35, 0.24, "egg"),
+    specs = [(-0.45, -0.15, 0.0, 0.3, "orange"), (0.1, -0.3, 0.0, 0.26, "cabbage"), (0.45, 0.25, 0.352, 0.24, "egg"),
              (-0.35, 0.35, 0.0, 0.28, "grain"), (0.55, -0.3, 0.0, 0.2, "orange")]
     for (x, y, z, r, kind) in specs:
         h = r * 0.9
@@ -2302,15 +2396,22 @@ def goods_baskets():
                        segs=20, loc=(x, y, 0))
             continue
         cnt = {"orange": 11, "cabbage": 4, "egg": 12}[kind]
-        for i in range(cnt):
+        rad = {"orange": 0.045, "cabbage": 0.1, "egg": 0.03}[kind]
+        placed = []
+        for _ in range(cnt * 20):  # non-overlapping heap (interpenetrating copies z-fight)
+            if len(placed) == cnt:
+                break
             a, rr = rnd.uniform(0, 2 * math.pi), math.sqrt(rnd.random()) * r * 0.65
             p = V((x + math.cos(a) * rr, y + math.sin(a) * rr, top - 0.01 + rnd.uniform(0, 0.04)))
+            if any((p - q).length < 2 * rad + 0.003 for q in placed):
+                continue
+            placed.append(p)
             if kind == "orange":
-                util.sphere(bm_o, 0.045, loc=p, segs=10, rings=7)
+                xf(bm_o, util.sphere(bm_o, 0.045, segs=10, rings=7), p, yaw=rnd.uniform(0, 6.3))
             elif kind == "cabbage":
                 lands.rock(bm_c, p + V((0, 0, 0.04)), (0.1, 0.1, 0.09), rnd.random() * 90, 0.12, 2)
             else:
-                util.sphere(bm_e, 0.028, loc=p, segs=8, rings=6, scale=(1, 1, 1.3))
+                xf(bm_e, util.sphere(bm_e, 0.028, segs=8, rings=6, scale=(1, 1, 1.3)), p, yaw=rnd.uniform(0, 6.3))
     objs = [obj("Baskets", bm_b, m["woven"], smooth=True), obj("Oranges", bm_o, m["orange"], smooth=True),
             obj("Cabbages", bm_c, m["cabbage"], smooth=True), obj("Grain", bm_g, m["grain"], uv=3.0, smooth=True),
             obj("Eggs", bm_e, m["bun"], smooth=True), obj("Crate", bm_cr, m["planks"])]
@@ -2327,29 +2428,32 @@ def cloth_bolts():
     bm_t, bm_b = bmesh.new(), bmesh.new()
     altar_table(bm_t, 1.5, 0.62, 0.74, everted=False)
     rnd = random.Random(73)
-    rot = Matrix.Rotation(R(90), 4, "Y")
+    rot = Matrix.Rotation(R(90), 4, "X")  # bolts lie front-to-back, rolled ends facing the customer
     k = 0
     for layer, n in enumerate((5, 4, 3)):
         for i in range(n):
             r = 0.075
             x = -0.3 + (i - (n - 1) / 2) * (2 * r + 0.01)
-            z = 0.74 + r + layer * r * 1.75
-            for y in (-0.14, 0.14):
-                util.cylinder(bms[silks[k % 5]], r, r, 0.5, loc=(x + rnd.uniform(-0.01, 0.01), y, z), segs=14, rot=rot)
+            z = 0.742 + r + layer * r * 1.75
+            for y in (-0.14, 0.14):  # two 0.26 m bolts per slot, 2 cm apart (0.5 m bolts overlapped by 0.22 m)
+                util.cylinder(bms[silks[k % 5]], r, r, 0.26, loc=(x + rnd.uniform(-0.003, 0.003), y, z), segs=14,
+                              rot=rot)
                 k += 1
     # an unrolled length spilling over the front edge
     bolt = V((0.5, -0.05, 0.74 + 0.07))
     util.cylinder(bms["silk_gold"], 0.07, 0.07, 0.45, loc=bolt, segs=14, rot=Matrix.Rotation(R(90), 4, "X"))
-    card(bms["silk_gold"], 0.42, 0.9, loc=(0.5, -0.33, 0.55), cols=3, rows=6,
+    bm_drape = bmesh.new()  # the unrolled length is a thin card: double-sided material
+    card(bm_drape, 0.42, 0.9, loc=(0.5, -0.33, 0.55), cols=3, rows=6,
          bend=lambda x, z: -0.03 * math.sin(z * 6) - 0.02 * (1 - (z + 0.45) / 0.9) ** 2)
-    card(bms["silk_gold"], 0.42, 0.24, loc=(0.5, -0.2, 0.745), pitch=R(-90))
+    card(bm_drape, 0.42, 0.24, loc=(0.5, -0.2, 0.745), pitch=R(-90))
     basket(bm_b, (0.95, 0.15, 0.0), 0.22, 0.5)
     for i in range(6):
         a = 2 * math.pi * i / 6
         util.cylinder(bms[silks[i % 5]], 0.06, 0.06, 1.0, loc=(0.95 + math.cos(a) * 0.1, 0.15 + math.sin(a) * 0.1,
                                                                0.5 + rnd.uniform(0.0, 0.12)), segs=12,
                       rot=Matrix.Rotation(R(rnd.uniform(-6, 6)), 4, "X"))
-    objs = [obj("SilkTable", bm_t, m["wood"], uv=1.3), obj("SilkBasket", bm_b, m["woven"], smooth=True)]
+    objs = [obj("SilkTable", bm_t, m["wood"], uv=1.3), obj("SilkBasket", bm_b, m["woven"], smooth=True),
+            obj("SilkDrape", bm_drape, m["silk_gold_ds"])]
     for k in silks:
         objs.append(obj("Bolts_" + k, bms[k], m[k], uv=3.0, smooth=True))
     objs.append(util.collider("SilkCol", (1.55, 0.7, 1.1), (0, 0, 0.55)))
@@ -2385,7 +2489,7 @@ def barrel_stack():
     """Wine / oil barrels: three standing, three lying in a timber cradle (~2.2 x 1.4 x 1.3 m)."""
     m = Mats()
     bm_w, bm_h, bm_c, bm_l = (bmesh.new() for _ in range(4))
-    for x, y, h in ((-0.75, 0.3, 0.95), (-0.1, 0.35, 0.9), (-0.45, -0.3, 0.85)):
+    for x, y, h in ((-0.75, 0.3, 0.95), (-0.07, 0.35, 0.9), (-0.45, -0.3, 0.85)):  # hoops no longer touch
         barrel(bm_w, bm_h, (x, y, 0.0), h=h, r=0.32)
     for y in (-0.35, 0.35):
         bevel_box(bm_c, (0.12, 0.12, 0.12), loc=(0.35, y, 0.06), bevel=0.01)
@@ -2395,7 +2499,7 @@ def barrel_stack():
     for k, y in enumerate((-0.33, 0.33)):
         barrel(bm_w, bm_h, (0.7, y, 0.46), h=0.85, r=0.3, pitch=R(90), yaw=R(90))
     barrel(bm_w, bm_h, (0.7, 0.0, 0.98), h=0.85, r=0.3, pitch=R(90), yaw=R(90))
-    for x, y, h in ((-0.75, 0.3, 0.95), (-0.1, 0.35, 0.9)):
+    for x, y, h in ((-0.75, 0.3, 0.95), (-0.07, 0.35, 0.9)):
         card(bm_l, 0.22, 0.22, loc=(x, y - 0.33, h * 0.55), roll=R(45))
     lab = ink_paper("#c42a22", 128, 839, 1, 1, ink="#140c08", box=(0.25, 0.25, 0.75, 0.75), stroke=0.06, seal=False)
     objs = [obj("Barrels", bm_w, m["planks"], uv=1.0, smooth=True), obj("BarrelHoops", bm_h, m["iron"], uv=2.0,
@@ -2442,7 +2546,7 @@ def tea_set():
     util.tube(bm_k, [V((0.85, 0.35, 0.34)), V((0.92, 0.35, 0.4))], 0.012, n=5)
     for y in (-0.55, 0.55):
         util.sphere(bm_cu, 0.28, loc=(0, y, 0.06), segs=18, rings=8, scale=(1, 1, 0.24))
-    objs = [obj("TeaMat", bm_mat, m["woven"]), obj("TeaTable", bm_t, m["rosewood"], uv=1.5),
+    objs = [obj("TeaMat", bm_mat, m["woven_ds"]), obj("TeaTable", bm_t, m["rosewood"], uv=1.5),
             obj("TeaTray", bm_tr, m["bamboo"], uv=3.0), obj("Teapot", bm_p, m["yixing"], uv=6.0, smooth=True),
             obj("TeaCups", bm_c, m["celadon"], uv=8.0, smooth=True), obj("TeaCaddy", bm_cad, m["lacquer_red"], uv=6.0),
             obj("Brazier", bm_br, m["iron"], uv=3.0, smooth=True), obj("Coals", bm_f, m["ember"]),
@@ -2503,7 +2607,7 @@ def hanging_scrolls():
         util.sphere(bm_k, 0.05, loc=(sx * 1.1, 0, 2.4), segs=10, rings=6)
         for sy in (-1, 1):
             util.tube(bm_f, [V((sx * 1.1, sy * 0.25, 0.12)), V((sx * 1.1, sy * 0.04, 0.5))], 0.025, n=6)
-    bevel_box(bm_f, (2.3, 0.08, 0.08), loc=(0, 0, 2.3), bevel=0.01)
+    bevel_box(bm_f, (2.3, 0.07, 0.08), loc=(0, 0, 2.3), bevel=0.01)
     for k, x in enumerate((-0.68, 0.0, 0.68)):
         w, h = 0.52, 1.55
         zc = 2.18 - 0.12 - h / 2
@@ -2545,14 +2649,14 @@ def halberd_rack():
     bm_w, bm_s, bm_sh, bm_t = (bmesh.new() for _ in range(4))
     for sx in (-1, 1):
         bevel_box(bm_w, (0.12, 0.7, 0.12), loc=(sx * 1.15, 0, 0.06), bevel=0.02)
-        bevel_box(bm_w, (0.1, 0.1, 1.6), loc=(sx * 1.15, 0.1, 0.8), bevel=0.01)
-    for z in (0.3, 1.45):
-        bevel_box(bm_w, (2.4, 0.12, 0.08), loc=(0, 0.1, z), bevel=0.01)
-    bevel_box(bm_w, (2.3, 0.3, 0.06), loc=(0, 0.0, 0.1), bevel=0.01)
+        bevel_box(bm_w, (0.1, 0.1, 1.6), loc=(sx * 1.15, 0.1, 0.805), bevel=0.01)
+    for z in (0.3, 1.45):  # rails stop 10 mm short of the posts' outer faces
+        bevel_box(bm_w, (2.38, 0.12, 0.08), loc=(0, 0.1, z), bevel=0.01)
+    bevel_box(bm_w, (2.3, 0.29, 0.06), loc=(0, 0.0, 0.1), bevel=0.01)  # back edge 5 mm off the posts' backs
     xs = [-0.85, -0.42, 0.0, 0.42, 0.85]
     for k, x in enumerate(xs):
         top = 2.35
-        util.cylinder(bm_sh, 0.022, 0.022, top - 0.12, loc=(x, 0.0, 0.12 + (top - 0.12) / 2), segs=8)
+        util.cylinder(bm_sh, 0.022, 0.022, top - 0.125, loc=(x, 0.0, 0.125 + (top - 0.125) / 2), segs=8)
         util.cylinder(bm_s, 0.03, 0.028, 0.08, loc=(x, 0, 0.16), segs=8)
         kind = ["guandao", "spear", "ji", "spear", "trident"][k]
         if kind == "guandao":
@@ -2566,7 +2670,7 @@ def halberd_rack():
         elif kind == "ji":
             _blade(bm_s, [(0.0, 0.0), (0.03, 0.08), (0.0, 0.3), (-0.03, 0.08)], top, loc=(x, 0, 0))
             _blade(bm_s, [(0.0, -0.06), (0.1, -0.1), (0.2, -0.02), (0.22, 0.1), (0.14, 0.02), (0.0, 0.04)], top,
-                   loc=(x, 0, 0))
+                   th=0.008, loc=(x, 0, 0))  # thinner than the spear point it crosses
         else:
             for dx in (-0.08, 0.0, 0.08):
                 _blade(bm_s, [(dx - 0.012, 0.0), (dx + 0.012, 0.0), (dx + 0.012, 0.2), (dx, 0.26),
@@ -2587,7 +2691,7 @@ def sword_stand():
     bevel_box(bm_c, (1.16, 0.5, 0.04), loc=(0, 0, 0.78), bevel=0.01)
     for sx in (-1, 1):
         util.box(bm_c, (0.08, 0.4, 0.06), loc=(sx * 0.48, 0, 0.03))
-        bevel_box(bm_st, (0.04, 0.2, 0.6), loc=(sx * 0.32, 0.02, 1.1), bevel=0.008)
+        bevel_box(bm_st, (0.04, 0.2, 0.6), loc=(sx * 0.32, 0.02, 1.103), bevel=0.008)
         bevel_box(bm_st, (0.16, 0.26, 0.04), loc=(sx * 0.32, 0.02, 0.82), bevel=0.008)
         for k in range(3):
             bevel_box(bm_st, (0.05, 0.1, 0.03), loc=(sx * 0.32, -0.05 - 0.0, 0.96 + k * 0.17), bevel=0.006)
@@ -2687,9 +2791,9 @@ def spirit_bird_cage():
     trailing tail (~0.9 x 0.9 x 2.3 m)."""
     m = Mats()
     bm_w, bm_c, bm_b, bm_t, bm_bk = (bmesh.new() for _ in range(5))
-    for yaw in (0, R(90)):
-        vs = ubox(bm_w, (0.8, 0.1, 0.08), bevel=0.015)
-        xf(bm_w, vs, (0, 0, 0.04), yaw=yaw)
+    for k, yaw in enumerate((0, R(90))):  # crossed feet differ by 6 mm so their faces don't coincide
+        vs = ubox(bm_w, (0.8, 0.1 - 0.006 * k, 0.08 + 0.006 * k), bevel=0.015)
+        xf(bm_w, vs, (0, 0, 0.04 + 0.006 * k), yaw=yaw)
     util.cylinder(bm_w, 0.04, 0.035, 2.2, loc=(0, 0, 1.14), segs=10)
     util.tube(bm_w, util.catmull([V((0, 0, 2.2)), V((0, -0.2, 2.3)), V((0, -0.42, 2.25))], 4), 0.025, n=6)
     top = V((0, -0.42, 2.2))
@@ -2704,9 +2808,12 @@ def spirit_bird_cage():
         a = 2 * math.pi * k / 20
         d = V((math.cos(a), math.sin(a), 0))
         pts = [base + d * R_ * (math.cos(t * math.pi / 2) if t > 0.55 else 1.0) +
-               V((0, 0, 0.02 + (0.5 * t if t <= 0.55 else 0.275 + 0.35 * math.sin((t - 0.55) / 0.45 * math.pi / 2))))
-               for t in np.linspace(0, 1, 10)]
+               V((0, 0, 0.012 + (0.5 * t if t <= 0.55 else 0.275 + 0.35 * math.sin((t - 0.55) / 0.45 * math.pi / 2))))
+               for t in np.linspace(0, 0.9, 10)]  # bars stop at the crown ring instead of meeting in one point
         util.tube(bm_c, pts, 0.004, n=3)
+    hoop(bm_c, base + V((0, 0, 0.02 + 0.275 + 0.35 * math.sin(0.35 / 0.45 * math.pi / 2))), R_ * math.cos(0.45 * math.pi),
+         0.006, segs=16, n=4)
+    util.sphere(bm_c, 0.045, loc=base + V((0, 0, 0.64)), segs=12, rings=6, scale=(1, 1, 0.5))
     util.cylinder(bm_c, 0.006, 0.006, 0.36, loc=base + V((0, 0, 0.18)), segs=4, rot=Matrix.Rotation(R(90), 4, "Y"))
     # spirit bird on its perch
     p = base + V((0, 0, 0.26))
@@ -2733,19 +2840,20 @@ def hand_cart():
     bed_z = 0.62
     bevel_box(bm_w, (1.0, 1.3, 0.06), loc=(0, 0.2, bed_z), bevel=0.01)
     for sx in (-1, 1):
-        util.box(bm_w, (0.04, 1.3, 0.25), loc=(sx * 0.5, 0.2, bed_z + 0.15))
+        util.box(bm_w, (0.04, 1.306, 0.25), loc=(sx * 0.5, 0.2, bed_z + 0.15))
         util.tube(bm_w, [V((sx * 0.42, 0.85, bed_z - 0.03)), V((sx * 0.42, -1.2, bed_z + 0.02))], 0.03, n=6)
         util.tube(bm_w, [V((sx * 0.42, -0.5, bed_z - 0.03)), V((sx * 0.38, -0.55, 0.0))], 0.025, n=6)
         # spoked wheel
         c = V((sx * 0.6, 0.3, 0.45))
-        hoop(bm_wh, c, 0.43, 0.035, normal=(1, 0, 0), segs=28, n=6)
-        hoop(bm_i, c, 0.45, 0.012, normal=(1, 0, 0), segs=28, n=4, rx=0.04)
+        hoop(bm_wh, c, 0.43, 0.035, normal=(1, 0, 0), segs=30, n=7)
+        hoop(bm_i, c, 0.45, 0.04, normal=(1, 0, 0), segs=28, n=4, rx=0.012)  # tyre: 8 cm wide, thin
         util.cylinder(bm_wh, 0.07, 0.07, 0.14, loc=c, segs=12, rot=Matrix.Rotation(R(90), 4, "Y"))
         for k in range(10):
             a = 2 * math.pi * k / 10
-            util.tube(bm_wh, [c, c + V((0, math.cos(a) * 0.42, math.sin(a) * 0.42))], 0.016, n=5)
+            d = V((0, math.cos(a), math.sin(a)))
+            util.tube(bm_wh, [c + d * 0.06, c + d * 0.42], 0.016, n=5)  # from the hub, not its centre
     for sy in (-0.4, 0.85):
-        util.box(bm_w, (1.0, 0.04, 0.25), loc=(0, sy, bed_z + 0.15))
+        util.box(bm_w, (1.0, 0.04, 0.244), loc=(0, sy, bed_z + 0.15))
     util.cylinder(bm_i, 0.025, 0.025, 1.3, loc=(0, 0.3, 0.45), segs=8, rot=Matrix.Rotation(R(90), 4, "Y"))
     sack(bm_s, (-0.22, 0.4, bed_z + 0.03), 0.75, yaw=R(10), pitch=R(-85))
     sack(bm_s, (0.2, 0.45, bed_z + 0.03), 0.75, yaw=R(-5), pitch=R(-85))
@@ -2767,7 +2875,8 @@ def fishing_nets():
     L = 3.0
     for sx in (-1, 1):
         for sy in (-1, 1):
-            util.tube(bm_b, [V((sx * L / 2, sy * 0.55, 0.0)), V((sx * L / 2, -sy * 0.05, 2.0))], 0.03, n=6)
+            x = sx * L / 2 + sy * 0.012  # the two legs of each A-frame lashed side by side, not merged
+            util.tube(bm_b, [V((x, sy * 0.55, 0.0)), V((x, -sy * 0.05, 2.0))], 0.03, n=6)
     util.cylinder(bm_b, 0.03, 0.03, L + 0.3, loc=(0, 0, 1.92), segs=8, rot=Matrix.Rotation(R(90), 4, "Y"))
     for sy in (-1, 1):
         card(bm_n, L - 0.2, 1.6, loc=(0, sy * 0.3, 1.15), pitch=sy * R(18), cols=10, rows=6,
@@ -2781,9 +2890,9 @@ def fishing_nets():
     for i in range(5):
         vs = util.sphere(bm_fish, 0.03, segs=10, rings=6, scale=(3.2, 1.0, 0.8))
         xf(bm_fish, vs, (1.0 + rnd.uniform(-0.12, 0.12), -0.95 + rnd.uniform(-0.12, 0.12), 0.3), yaw=rnd.uniform(0, 3))
-    for dx in (-0.2, 0.0):
-        util.tube(bm_b, [V((-1.2 + dx, -0.9, 0.02)), V((-0.2 + dx, -1.1, 0.02))], 0.025, n=6)
-        ubox(bm_b, (0.4, 0.14, 0.02), loc=(-1.35 + dx, -0.88, 0.02), yaw=R(-11))
+    for dy in (0.0, -0.22):  # two oars side by side (they used to overlap blade on blade)
+        util.tube(bm_b, [V((-1.2, -0.9 + dy, 0.02)), V((-0.2, -1.1 + dy, 0.02))], 0.025, n=6)
+        ubox(bm_b, (0.4, 0.14, 0.02), loc=(-1.35, -0.88 + dy, 0.02), yaw=R(-11))
     objs = [obj("NetFrame", bm_b, m["bamboo"], uv=2.0, smooth=True), obj("Nets", bm_n, m["net"]),
             obj("NetFloats", bm_f, m["wood_light"], uv=6.0, smooth=True),
             obj("FishBasket", bm_bk, m["woven"], smooth=True), obj("Fish", bm_fish, m["fish"], uv=8.0, smooth=True)]
@@ -2824,7 +2933,7 @@ def incense_coils():
         top = V((x, 0, 2.15))
         rr = [0.3, 0.36, 0.3][k]
         z0 = 1.45 - 0.08 * (k % 2)
-        util.tube(bm_h, [top, V((x, 0, z0 + 0.28))], 0.005, n=4)
+        util.tube(bm_h, [top + V((0, 0, 0.02)), V((x, 0, z0 + 0.28))], 0.005, n=4)
         for a in (0, 2 * math.pi / 3, 4 * math.pi / 3):
             util.tube(bm_h, [V((x, 0, z0 + 0.28)), V((x + math.cos(a) * rr, math.sin(a) * rr, z0))], 0.003, n=3)
         pts = []
