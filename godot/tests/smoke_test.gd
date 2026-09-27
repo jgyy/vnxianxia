@@ -768,7 +768,7 @@ func _group_talk(game: Node, player: CharacterBody3D) -> void:
 	var cams_ok := log.size() == 5
 	var talk_ok := true
 	for e in log:
-		cams_ok = cams_ok and e.cam and e.looks > 0.85 and e.dist < 5.5
+		cams_ok = cams_ok and e.cam and e.looks > 0.85 and e.dist > 1.0 and e.dist < 5.5
 		if e.sp != "player":
 			talk_ok = talk_ok and e.talking == [e.sp]
 		else:

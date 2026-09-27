@@ -212,6 +212,7 @@ func _shot(s: Node3D, l: Node3D, sid: String, lid: String) -> void:
 			lh - d * OTS_BACK - right * side * OTS_SIDE + Vector3.UP * OTS_UP,
 			lh - d * (OTS_BACK + 0.7) + right * side * (OTS_SIDE + 0.5) + Vector3.UP * 0.75,
 			sh - d * 1.3 + right * side * 1.2 + Vector3.UP * 0.05,
+			lh - d * 2.0 - right * side * 0.9 + Vector3.UP * 1.1,
 		]
 		from = cands[0]
 		var best := -1.0
@@ -220,6 +221,8 @@ func _shot(s: Node3D, l: Node3D, sid: String, lid: String) -> void:
 			var score := clear.distance_to(look) / c.distance_to(look)
 			if _occluded(clear, sh, [s, l]):
 				score -= 1.0
+			if clear.distance_to(look) < 1.2:
+				score -= 0.5            # pushed up against the speaker's face by a wall
 			if score > best + 0.001:
 				best = score
 				from = clear
@@ -239,10 +242,10 @@ func _occluded(cam_pos: Vector3, target: Vector3, skip: Array) -> bool:
 		var len2 := seg.length_squared()
 		if len2 < 0.01:
 			continue
-		for h in [1.0, 1.5]:
+		for h in [0.9, 1.3, 1.6]:
 			var q: Vector3 = n.global_position + Vector3.UP * h
 			var t := clampf((q - cam_pos).dot(seg) / len2, 0.0, 1.0)
-			if t > 0.05 and t < 0.95 and q.distance_to(cam_pos + seg * t) < 0.3:
+			if t > 0.05 and t < 0.95 and q.distance_to(cam_pos + seg * t) < 0.42:
 				return true
 	return false
 
