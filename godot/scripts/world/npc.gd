@@ -8,6 +8,8 @@ var model: Node3D
 var anim: AnimationPlayer
 var quest_target := false
 var talking := false
+## name plate hidden (a conversation close-up doesn't need a label over every head)
+var hide_plate := false
 var _plate: Label3D
 var _mark: Label3D
 var _look_at := Vector3.INF
@@ -25,6 +27,10 @@ static func create(id: String) -> Npc:
 func _ready() -> void:
 	add_to_group("npcs")
 	var path := "res://assets/characters/%s.glb" % data.get("model", "disciple_male")
+	if not ResourceLoader.exists(path):
+		# a story NPC whose model is not built (yet): stand in a disciple rather than crash
+		push_warning("npc %s: no model %s" % [npc_id, path])
+		path = "res://assets/characters/disciple_male.glb"
 	model = (load(path) as PackedScene).instantiate()
 	model.scale = Vector3.ONE * float(data.get("scale", 1.0))
 	add_child(model)
@@ -99,7 +105,7 @@ func _process(delta: float) -> void:
 	var cam := get_viewport().get_camera_3d()
 	if cam:
 		var d := cam.global_position.distance_to(global_position)
-		_plate.visible = d < 14.0
+		_plate.visible = d < 14.0 and not hide_plate
 	if _look_at != Vector3.INF:
 		var to := _look_at - global_position
 		to.y = 0

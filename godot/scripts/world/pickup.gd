@@ -1,23 +1,26 @@
 class_name Pickup
 extends Node3D
 ## A collectible quest item hovering and turning above the ground: the item's
-## own model (world.json item_model_dir: res://assets/items/<item>.glb) when it
-## exists, else an older environment model, else a glowing primitive. Models
-## are scaled to a common hand-held size so a tiny slip and a large feather
-## read alike, and lit by a soft light in the item's colour.
+## own model (world.json item_model_dir: res://assets/items/<item>.glb, built
+## at real size with its origin at the bottom centre) when it exists, else a
+## glowing primitive. Small items are enlarged a little so they read from a
+## few metres away; each is lit by a soft light in the item's colour.
 
 signal collected(pickup: Pickup)
 
-const LEGACY_MODELS := {"spirit_herb": "spirit_herb", "spirit_stone": "spirit_stone", "jade_slip": "jade_slip"}
 const COLORS := {
 	"wolf_fang": Color(0.95, 0.92, 0.8), "blood_lotus": Color(1.0, 0.2, 0.3), "demon_core": Color(0.8, 0.1, 0.2),
 	"star_iron": Color(0.7, 0.75, 1.0), "thunder_crystal": Color(0.6, 0.7, 1.0), "cloud_silk": Color(0.95, 0.95, 1.0),
 	"phoenix_feather": Color(1.0, 0.55, 0.15), "medicine": Color(0.5, 0.9, 0.4), "letter": Color(1.0, 0.9, 0.6),
 	"lantern_oil": Color(1.0, 0.7, 0.2), "rune_fragment": Color(0.4, 1.0, 0.9),
+	"void_shard": Color("#b060ff"), "spirit_pill": Color("#ffd040"), "incense": Color("#ff6a1a"),
+	"tribulation_jade": Color("#c8b0ff"),
 }
-## the largest dimension of a model is scaled toward this (m)
-const DISPLAY_SIZE := 0.42
-const HOVER := 0.55
+## small models are enlarged toward this size (m), at most MAX_ENLARGE times; never shrunk
+const DISPLAY_SIZE := 0.32
+const MAX_ENLARGE := 2.0
+## height of the model's middle above the ground (m)
+const HOVER := 0.5
 const BOB := 0.07
 
 var item := ""
@@ -38,13 +41,7 @@ static func create(item_id: String) -> Pickup:
 static func model_path(item_id: String) -> String:
 	var dir: String = Story.world.get("item_model_dir", "res://assets/items")
 	var own := "%s/%s.glb" % [dir.trim_suffix("/"), item_id]
-	if ResourceLoader.exists(own):
-		return own
-	if LEGACY_MODELS.has(item_id):
-		var old := "res://assets/environment/%s.glb" % LEGACY_MODELS[item_id]
-		if ResourceLoader.exists(old):
-			return old
-	return ""
+	return own if ResourceLoader.exists(own) else ""
 
 
 func _ready() -> void:
@@ -59,7 +56,7 @@ func _ready() -> void:
 		_body = pivot
 		var box := _bounds(inst)
 		var big := maxf(box.size.x, maxf(box.size.y, box.size.z))
-		var s := clampf(DISPLAY_SIZE / big, 0.35, 4.0) if big > 0.001 else 1.0
+		var s := clampf(DISPLAY_SIZE / big, 1.0, MAX_ENLARGE) if big > 0.001 else 1.0
 		inst.scale = Vector3.ONE * s
 		# centre the model on the pivot so it turns about its own middle
 		inst.position = -box.get_center() * s

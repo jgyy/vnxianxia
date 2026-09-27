@@ -84,6 +84,7 @@ var _invulnerable := 0.0
 var _med_sound: AudioStreamPlayer
 var _jump_buffer := 0.0
 var _air_time := 0.0
+var _supported := false
 var _vis_offset := 0.0
 var _lean := 0.0
 var _gait := "idle"
@@ -183,7 +184,7 @@ func refill() -> void:
 
 
 func play_action(anim_name: String) -> bool:
-	if anim and anim.has_animation(anim_name) and is_on_floor() and _action_lock <= 0.0 and not dead:
+	if anim and anim.has_animation(anim_name) and is_grounded() and _action_lock <= 0.0 and not dead:
 		stop_meditation()
 		anim.play(anim_name, 0.12)
 		anim.speed_scale = 1.0
@@ -331,7 +332,7 @@ func _apply_strike() -> void:
 
 
 func start_meditation() -> void:
-	if meditating or not is_on_floor() or dead:
+	if meditating or not is_grounded() or dead:
 		return
 	meditating = true
 	velocity = Vector3.ZERO
@@ -405,6 +406,11 @@ func respawn(at: Vector3) -> void:
 		anim.play("idle")
 
 
+## Standing: on the floor, or crossing the nose of a step with ground just below.
+func is_grounded() -> bool:
+	return is_on_floor() or _supported
+
+
 ## Teleport (map load, cinematics, tests): no step smoothing carried over.
 func place_at(at: Vector3) -> void:
 	global_position = at
@@ -457,14 +463,14 @@ func _physics_process(delta: float) -> void:
 
 	var speed: float = (RUN_SPEED if running else WALK_SPEED) * (moves.speed_mult(running) if moves else 1.0)
 	var target := dir * speed
-	var on_floor := is_on_floor()
+	var on_floor := is_grounded()
 	var planar := Vector2(velocity.x, velocity.z)
 	var want := Vector2(target.x, target.z)
 	var rate := (ACCEL if want.length() >= planar.length() - 0.01 else BRAKE) if on_floor else AIR_ACCEL
 	planar = planar.move_toward(want, rate * delta)
 	velocity.x = planar.x
 	velocity.z = planar.y
-	if not on_floor:
+	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
 	if _jump_buffer > 0.0 and controls_enabled and not dead and _action_lock <= 0.0 and not meditating \
 			and (on_floor or _air_time < COYOTE) and velocity.y <= 0.5:
@@ -486,7 +492,7 @@ func _physics_process(delta: float) -> void:
 	var turn_rate := wrapf(model_root.rotation.y - yaw_before, -PI, PI) / maxf(delta, 0.001)
 	var lean_target := 0.0
 	var ground_speed := Vector2(velocity.x, velocity.z).length()
-	if is_on_floor() and ground_speed > RUN_UP:
+	if is_grounded() and ground_speed > RUN_UP:
 		lean_target = clampf(-turn_rate * ground_speed * 0.012, -MAX_LEAN, MAX_LEAN)
 	_ease_visuals(delta, lean_target)
 
@@ -498,10 +504,16 @@ func _physics_process(delta: float) -> void:
 func move_body(delta: float) -> void:
 	var was_floor := is_on_floor()
 	var y0 := global_position.y
-	var rise := Stepper.step_up(self, delta, was_floor or _air_time < COYOTE)
+	var rise := Stepper.step_up(self, delta, was_floor or _supported or _air_time < COYOTE)
 	move_and_slide()
 	var drop := Stepper.step_down(self, was_floor) if rise <= 0.0 else 0.0
-	if is_on_floor() or drop < 0.0:
+	_supported = is_on_floor()
+	if not _supported and velocity.y <= 0.0 and (drop < 0.0 or _air_time < 0.1) \
+			and Stepper.ground_within(self, Stepper.MAX_STEP + 0.05):
+		# riding over the nose of a step: not falling, just going down the stairs
+		_supported = true
+		velocity.y = clampf(velocity.y, -4.0, -1.0)
+	if _supported:
 		_air_time = 0.0
 	else:
 		_air_time += delta
@@ -561,7 +573,7 @@ func _update_animation(delta: float) -> void:
 		anim.play(wanted, 0.2 if wanted != "idle" else 0.25)
 	anim.speed_scale = scale
 	_gait = wanted
-	if wanted != "idle" and is_on_floor():
+	if wanted != "idle" and is_grounded():
 		_step_timer -= delta
 		if _step_timer <= 0.0:
 			_step_timer = step_interval(wanted, scale)

@@ -47,7 +47,8 @@ func begin(main: Node3D, party: Array) -> void:
 		members[main.npc_id] = main
 		main_id = main.npc_id
 	for n in party:
-		if n and is_instance_valid(n):
+		# the objective's group, when it is here (not a bark on the other side of the map)
+		if n and is_instance_valid(n) and n.global_position.distance_to(game.player.global_position) < JOIN_RADIUS:
 			members[n.npc_id] = n
 	_last_npc = main_id
 	speaker = ""
@@ -56,12 +57,15 @@ func begin(main: Node3D, party: Array) -> void:
 	var c := centre()
 	for id in members:
 		_turn(id, c)
+		if id != "player":
+			members[id].hide_plate = true
 
 
 func set_main(main: Node3D) -> void:
 	if main and is_instance_valid(main):
 		members[main.npc_id] = main
 		main_id = main.npc_id
+		main.hide_plate = true
 		if _last_npc == "":
 			_last_npc = main_id
 
@@ -74,6 +78,7 @@ func end() -> void:
 		var n = members[id]
 		if id != "player" and is_instance_valid(n):
 			n.set_talking(false)
+			n.hide_plate = false
 	var p = game.player
 	if is_instance_valid(p):
 		p.release_pose()
@@ -129,6 +134,7 @@ func on_line(who: String) -> void:
 		var n: Node3D = game.find_npc(who)
 		if n and n.global_position.distance_to(game.player.global_position) < JOIN_RADIUS:
 			members[who] = n
+			n.hide_plate = true
 	_prev = speaker
 	speaker = who
 	var s := _node(who)

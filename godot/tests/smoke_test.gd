@@ -35,6 +35,7 @@ func _run() -> void:
 	_assets()
 	await _maps()
 	_story()
+	await _stairs()
 	await _session()
 	print("")
 	if failures.is_empty():
@@ -201,10 +202,17 @@ func _session() -> void:
 	for i in 50:
 		await physics_frame
 	check(player.current_animation() == "walk", "walk plays when moving (%s)" % player.current_animation())
+	check(absf(player.anim.speed_scale - 1.0) < 0.08,
+		"walk at %.2f m/s plays at speed_scale %.2f (feet planted)" % [Vector2(player.velocity.x, player.velocity.z).length(), player.anim.speed_scale])
 	player.scripted_run = true
 	for i in 70:
 		await physics_frame
 	check(player.current_animation() == "run", "run plays when sprinting (%s)" % player.current_animation())
+	check(absf(player.anim.speed_scale - 1.0) < 0.08,
+		"run at %.2f m/s plays at speed_scale %.2f (feet planted)" % [Vector2(player.velocity.x, player.velocity.z).length(), player.anim.speed_scale])
+	check(player.gait_for(2.8, "walk") == "walk" and player.gait_for(2.8, "run") == "run"
+		and player.gait_for(3.3, "walk") == "run" and player.gait_for(2.3, "run") == "walk",
+		"walk / run switch with hysteresis (no thrash at the threshold)")
 	check(start.distance_to(player.global_position) > 4.0, "player travelled %.1f m" % start.distance_to(player.global_position))
 	player.scripted_input = Vector2.ZERO
 	player.scripted_run = false
@@ -248,6 +256,11 @@ func _session() -> void:
 	check(ResourceLoader.load(story.voice_path(line)) is AudioStream, "voice line loads as audio")
 	await game.converse([line])
 	check(not game.dialogue.active and player.controls_enabled, "dialogue finishes and returns control")
+	await _hall_steps(game, player)
+	await _dialogue_input(game, player)
+	await _dialogue_fits(game)
+	await _group_talk(game, player)
+	_pickups_and_props(game)
 	# a text-only line of a new chapter, played at normal speed: it must advance by itself
 	var plain := {"speaker": "senior_wei", "text": "Have you eaten? You should eat.", "voice": null}
 	gs.fast = false
@@ -367,3 +380,398 @@ func _title() -> void:
 	check(title._vol_title.text == "Volume V · Soul Transformation", "volume title: %s" % title._vol_title.text)
 	title.queue_free()
 	await process_frame
+
+
+func _box(parent: Node3D, center: Vector3, size: Vector3) -> void:
+	var b := StaticBody3D.new()
+	var shape := CollisionShape3D.new()
+	var bs := BoxShape3D.new()
+	bs.size = size
+	shape.shape = bs
+	b.add_child(shape)
+	parent.add_child(b)
+	b.global_position = center
+
+
+## Stairs, a curb and a wall on flat ground: the player walks up and runs back
+## down the stairs without jumping (or falling), steps onto the curb, is
+## stopped by the wall; an enemy chases up the stairs.
+func _stairs() -> void:
+	print("[stairs]")
+	gs.fast = true
+	var w := Node3D.new()
+	root.add_child(w)
+	_box(w, Vector3(0, -0.5, 0), Vector3(60, 1, 80))
+	# six 0.22 m risers with 0.32 m treads toward -Z, then a landing
+	for i in 6:
+		_box(w, Vector3(0, 0.11 * (i + 1), -8.0 - 0.32 * i), Vector3(4, 0.22 * (i + 1), 10))
+	# a 0.4 m curb and a 0.7 m wall to either side
+	_box(w, Vector3(12, 0.2, -8), Vector3(4, 0.4, 10))
+	_box(w, Vector3(-12, 0.35, -8), Vector3(4, 0.7, 10))
+	var player = (load("res://scenes/player.tscn") as PackedScene).instantiate()
+	w.add_child(player)
+	for lane in [[0.0, 1.32, "six 0.22 m stairs"], [12.0, 0.4, "a 0.4 m curb"], [-12.0, 0.0, "a 0.7 m wall (not climbed)"]]:
+		player.place_at(Vector3(lane[0], 0.05, 0.0))
+		player._yaw = 0.0
+		player.scripted_input = Vector2.ZERO
+		player.scripted_run = false
+		for i in 10:
+			await physics_frame
+		player.scripted_input = Vector2(0, -1)
+		var max_vy := 0.0
+		var air := 0
+		for i in 300:
+			await physics_frame
+			max_vy = maxf(max_vy, player.velocity.y)
+			if not player.is_on_floor():
+				air += 1
+		var top: float = player.global_position.y
+		check(absf(top - lane[1]) < 0.08 and max_vy < 1.0,
+			"walking up %s: reached y=%.2f (want %.2f), no jump (max vy %.2f, %d frames off the floor)" % [lane[2], top, lane[1], max_vy, air])
+	# back down the stairs at a run: no fall, no fall animation
+	player.place_at(Vector3(0, 1.4, -13.0))
+	player.scripted_input = Vector2.ZERO
+	for i in 20:
+		await physics_frame
+	player.scripted_input = Vector2(0, 1)
+	player.scripted_run = true
+	var longest_air := 0
+	var air_run := 0
+	var fell := false
+	for i in 150:
+		await physics_frame
+		air_run = 0 if player.is_grounded() else air_run + 1
+		longest_air = maxi(longest_air, air_run)
+		fell = fell or player.current_animation() in ["fall", "jump_air", "jump_land", "landing_hard"]
+	check(player.global_position.y < 0.05 and longest_air <= 6 and not fell,
+		"running down the stairs keeps the feet on the steps (at most %d frames airborne, fall anim %s)" % [longest_air, fell])
+	# an enemy chases the player up the stairs
+	player.place_at(Vector3(0, 1.4, -14.0))
+	player.scripted_input = Vector2.ZERO
+	player.scripted_run = false
+	var e = EnemyScript.create("bandit")
+	w.add_child(e)
+	e.global_position = Vector3(0.0, 0.1, 1.0)
+	var gait_ok := true
+	for i in 400:
+		await physics_frame
+		if e.anim.current_animation in ["walk", "run"]:
+			var authored: float = 4.6 if e.anim.current_animation == "run" else 1.6
+			var want := clampf(Vector2(e.velocity.x, e.velocity.z).length() / authored, 0.35, 2.0)
+			gait_ok = gait_ok and absf(e.anim.speed_scale - want) < 0.05
+		if e.global_position.y > 1.2:
+			break
+	check(e.global_position.y > 1.2, "an enemy climbs the stairs after the player (y=%.2f)" % e.global_position.y)
+	check(gait_ok, "a humanoid enemy's walk / run is speed-scaled to its ground speed")
+	w.queue_free()
+	await physics_frame
+
+
+## On the real sect map: from the foot of the main hall's steps up to its door, walking.
+func _hall_steps(game: Node, player: CharacterBody3D) -> void:
+	var map: Node = game.map
+	if not (map.has_marker("HallSteps") and map.has_marker("MainHall")):
+		check(false, "sect has HallSteps and MainHall markers")
+		return
+	var from: Vector3 = map.marker_position("HallSteps")
+	var to: Vector3 = map.marker_position("MainHall")
+	# people standing on the steps would block the walk: step them aside for the test
+	var moved := {}
+	for n in game.npcs.values():
+		moved[n] = n.global_position
+		n.global_position += Vector3(0, -200, 0)
+	player.place_at(from + Vector3.UP * 0.1)
+	var d := to - from
+	player._yaw = atan2(-d.x, -d.z)
+	player.scripted_input = Vector2.ZERO
+	for i in 10:
+		await physics_frame
+	player.scripted_input = Vector2(0, -1)
+	var max_vy := 0.0
+	var best := INF
+	for i in int(Vector2(d.x, d.z).length() / 1.6 * 60.0) + 240:
+		await physics_frame
+		max_vy = maxf(max_vy, player.velocity.y)
+		var p: Vector3 = player.global_position
+		best = minf(best, Vector2(p.x - to.x, p.z - to.z).length())
+		# keep heading for the door
+		var r := to - p
+		player._yaw = atan2(-r.x, -r.z)
+		if best < 0.9:
+			break
+	player.scripted_input = Vector2.ZERO
+	var pp: Vector3 = player.global_position
+	check(best < 1.5 and absf(pp.y - to.y) < 0.5 and max_vy < 1.0,
+		"walked up the main hall steps on sect.tscn (%.1f m climbed, %.1f m short of the door, max vy %.2f)" % [pp.y - from.y, best, max_vy])
+	for n in moved:
+		if is_instance_valid(n):
+			n.global_position = moved[n]
+	for i in 20:
+		await physics_frame
+
+
+func _wait_ms(ms: int) -> void:
+	await create_timer(ms / 1000.0).timeout
+
+
+func _key(ev_key: int, pressed: bool) -> InputEventKey:
+	var ev := InputEventKey.new()
+	ev.keycode = ev_key
+	ev.physical_keycode = ev_key
+	ev.pressed = pressed
+	return ev
+
+
+func _press(ev_key: int, twice := false) -> void:
+	root.push_input(_key(ev_key, true))
+	if twice:
+		root.push_input(_key(ev_key, true))     # a doubled / bounced key event
+	root.push_input(_key(ev_key, false))
+
+
+## Text shows at once; each press advances exactly one line; the press that
+## ends a conversation never jumps, interacts or starts it again.
+func _dialogue_input(game: Node, player: CharacterBody3D) -> void:
+	print("[dialogue]")
+	gs.fast = false
+	var dlg = game.dialogue
+	var seen := []
+	var cb := func(sp): seen.append(sp)
+	dlg.line_started.connect(cb)
+	var lines := [{"speaker": "senior_wei", "text": "One. A line long enough to have wrapped over two rows of the box, had it been typed."},
+		{"speaker": "player", "text": "Two."}, {"speaker": "senior_wei", "text": "Three."}]
+	var state := {"done": false}
+	var talk := func():
+		await game.converse(lines)
+		state.done = true
+	talk.call()
+	await process_frame
+	check(dlg.active and seen.size() == 1 and dlg._text.visible_characters == -1 and dlg._text.visible_ratio >= 1.0,
+		"the whole line shows at once (no typewriter)")
+	await _wait_ms(400)
+	check(seen.size() == 1, "a line waits for the player (%d lines shown)" % seen.size())
+	_press(KEY_E, true)
+	await _wait_ms(150)
+	check(seen.size() == 2, "one press (even a doubled key event) advances exactly one line (%d)" % seen.size())
+	_press(KEY_SPACE)
+	await _wait_ms(150)
+	check(seen.size() == 3 and not state.done, "Space advances one line too (%d)" % seen.size())
+	var y0: float = player.global_position.y
+	_press(KEY_SPACE)
+	for i in 20:
+		await physics_frame
+	check(state.done and not dlg.active, "the last press ends the conversation")
+	check(player.global_position.y - y0 < 0.05 and player.velocity.y < 0.5 and player.is_on_floor(),
+		"the press that closed the dialogue did not become a jump")
+	# a hurried E right after the end must not start another conversation
+	var npc: Node3D = null
+	for n in game.npcs.values():
+		npc = n
+		break
+	if npc:
+		player.place_at(game.map.ground_at(npc.global_position + npc.global_basis.z * 1.3) + Vector3.UP * 0.05)
+		await physics_frame
+		talk = func():
+			await game.converse([{"speaker": npc.npc_id, "text": "Again?"}], npc)
+			state.done = true
+		state.done = false
+		talk.call()
+		await _wait_ms(150)
+		_press(KEY_E)
+		for i in 4:
+			await process_frame
+		check(state.done and not dlg.active, "E closes the bark")
+		_press(KEY_E)
+		for i in 6:
+			await process_frame
+		check(not dlg.active, "the same E press (or a hurried second one) does not reopen the conversation")
+	# two conversations started together take turns instead of mixing lines
+	var order := []
+	var a := func():
+		await game.converse([{"speaker": "narrator", "text": "A1"}, {"speaker": "narrator", "text": "A2"}])
+		order.append("A")
+	var b := func():
+		await game.converse([{"speaker": "narrator", "text": "B1"}])
+		order.append("B")
+	a.call()
+	b.call()
+	var texts := []
+	for k in 3:
+		await _wait_ms(150)
+		texts.append(dlg._text.get_parsed_text())
+		_press(KEY_ENTER)
+	for i in 8:
+		await process_frame
+	check(order == ["A", "B"] and texts == ["A1", "A2", "B1"], "overlapping conversations queue (%s %s)" % [order, texts])
+	dlg.line_started.disconnect(cb)
+	gs.fast = true
+	for i in 30:
+		await physics_frame
+
+
+## The dialogue box sits just above the bottom edge and never leaves the
+## screen: a long wrapped prompt with four long choices, at several window sizes.
+func _dialogue_fits(game: Node) -> void:
+	gs.fast = false
+	var dlg = game.dialogue
+	var long_text := "Elder Hua lowers her voice. " + "The herbs remember every hand that pulled them, and so do the people who planted them. ".repeat(3)
+	var opts := []
+	for k in 4:
+		opts.append("Option %d: a long answer that runs on and on, the way people talk when they are not sure of themselves at all." % (k + 1))
+	var res := {"i": -1}
+	var pick := func():
+		res.i = await dlg.choose(long_text, opts)
+	pick.call()
+	var sizes := [Vector2i(1280, 720), Vector2i(1024, 768), Vector2i(1920, 1080), Vector2i(1280, 720)]
+	for sz in sizes:
+		root.size = sz
+		for i in 4:
+			await process_frame
+		var vr: Rect2 = root.get_visible_rect()
+		var r: Rect2 = dlg.panel_rect()
+		var inside := r.position.y >= vr.position.y - 0.5 and r.end.y <= vr.end.y + 0.5 and r.position.x >= vr.position.x - 0.5 \
+			and r.end.x <= vr.end.x + 0.5
+		var gap := vr.end.y - r.end.y
+		check(inside and gap <= dlg.BOTTOM_MARGIN + 1.0, "dialogue box inside the %s view (box %s, %.0f px above the bottom)" % [vr.size, r, gap])
+	await _wait_ms(400)
+	_press(KEY_4)
+	for i in 4:
+		await process_frame
+	check(res.i == 3, "key 4 picks the fourth choice (%d)" % res.i)
+	gs.fast = true
+
+
+## A three-participant conversation (the talk target, two NPCs listed in the
+## objective's `with`, the player): the group gathers around the target, the
+## speaker gestures under an over-the-shoulder camera, and the extras leave again.
+func _group_talk(game: Node, player: CharacterBody3D) -> void:
+	print("[group conversation]")
+	var map: Node = game.map
+	var home_here := []
+	var elsewhere := []
+	for id in story.npcs:
+		var h = story.npcs[id].get("home")
+		if h and h.map == "sect" and map.has_marker(h.marker) and game._present(story.npcs[id]):
+			home_here.append(id)
+		elif h == null or h.map != "sect":
+			elsewhere.append(id)
+	if home_here.size() < 2 or elsewhere.is_empty():
+		check(false, "enough NPCs for a group conversation")
+		return
+	var target: String = home_here[0]
+	var ambient_guest: String = home_here[1]
+	var guest: String = elsewhere[0]
+	var o := {"type": "talk", "map": "sect", "npc": target, "at": null, "text": "Speak with the group",
+		"with": [ambient_guest, guest],
+		"dialogue": [{"speaker": target, "text": "Everyone is here."}, {"speaker": ambient_guest, "text": "Not quite."},
+			{"speaker": guest, "text": "I came a long way for this."}, {"speaker": "player", "text": "Then let us begin."},
+			{"speaker": target, "text": "Good."}]}
+	var runner: Node = game.runner
+	runner.clear()
+	runner.state = "active"
+	runner.stage(o)
+	var t: Node3D = runner.target_npc
+	var party: Array = runner.party
+	check(party.size() == 2, "both NPCs listed in `with` stand in (%d)" % party.size())
+	var ppl: Array = [t]
+	ppl.append_array(party)
+	for i in 60:
+		await process_frame
+	var centre := Vector3.ZERO
+	for n in ppl:
+		centre += n.global_position / ppl.size()
+	var spaced := true
+	var near := true
+	var grounded := true
+	var facing := true
+	for n in party:
+		near = near and n.global_position.distance_to(t.global_position) < 4.0
+		grounded = grounded and absf(map.ground_at(n.global_position).y - n.global_position.y) < 0.1
+		for m in ppl:
+			if m != n and Vector2(m.global_position.x - n.global_position.x, m.global_position.z - n.global_position.z).length() < 0.75:
+				spaced = false
+		var to: Vector3 = centre - n.global_position
+		to.y = 0.0
+		facing = facing and (to.length() < 0.3 or n.global_basis.z.dot(to.normalized()) > 0.5)
+	check(near and spaced and grounded and facing, "the group stands around the target, apart, on the ground, facing in (near %s spaced %s ground %s facing %s)" % [near, spaced, grounded, facing])
+	# talk: record who gestures and where the camera looks on every line
+	var log := []
+	var cb := func(sp):
+		var cam: Camera3D = player.get_viewport().get_camera_3d()
+		var node: Node3D = player if sp == "player" else game.find_npc(sp)
+		var talking := []
+		for n in ppl:
+			if is_instance_valid(n) and n.anim and n.anim.current_animation == "talk":
+				talking.append(n.npc_id)
+		var head: Vector3 = node.global_position + Vector3.UP * 1.5
+		var looks: float = (-cam.global_basis.z).dot((head - cam.global_position).normalized())
+		log.append({"sp": sp, "cam": cam == game.conversation.cam, "talking": talking, "looks": looks,
+			"dist": cam.global_position.distance_to(head)})
+	# recorded after the scene has reacted to the line (connected after it)
+	game.dialogue.line_started.connect(cb)
+	player.place_at(map.ground_at(t.global_position + t.global_basis.z * 1.4) + Vector3.UP * 0.05)
+	for i in 3:
+		await physics_frame
+	game._on_interact()
+	for i in 20:
+		await process_frame
+	game.dialogue.line_started.disconnect(cb)
+	var cams_ok := log.size() == 5
+	var talk_ok := true
+	for e in log:
+		cams_ok = cams_ok and e.cam and e.looks > 0.85 and e.dist < 4.5
+		if e.sp != "player":
+			talk_ok = talk_ok and e.talking == [e.sp]
+		else:
+			talk_ok = talk_ok and e.talking.is_empty()
+	check(cams_ok, "the conversation camera frames each speaker %s" % [log.map(func(e): return "%s %s %.2f %.1fm" % [e.sp, e.cam, e.looks, e.dist])])
+	check(talk_ok, "only the speaker gestures %s" % [log.map(func(e): return e.talking)])
+	check(player.get_viewport().get_camera_3d() == player.camera and player.controls_enabled, "the gameplay camera and controls come back")
+	check(game.find_npc(guest) == null, "the NPC brought in for the conversation leaves afterwards")
+	var amb: Node3D = game.find_npc(ambient_guest)
+	var home_pos: Vector3 = map.marker_position(story.npcs[ambient_guest].home.marker)
+	check(amb != null and amb.global_position.distance_to(home_pos) < 0.6, "an NPC who lives here goes back home")
+	for i in 20:
+		await physics_frame
+
+
+## Pickups use their item model when it exists (a glowing primitive otherwise);
+## props stand on the ground and their reach grows with their size.
+func _pickups_and_props(game: Node) -> void:
+	var PickupScript: GDScript = load("res://scripts/world/pickup.gd")
+	var PropScript: GDScript = load("res://scripts/world/prop.gd")
+	var n_models := 0
+	var n_items := 0
+	for item in story.world.items:
+		n_items += 1
+		var path: String = PickupScript.model_path(item)
+		if path != "":
+			n_models += 1
+		if not (path == "" or path.begins_with(story.world.item_model_dir)):
+			check(false, "pickup model path for %s: %s" % [item, path])
+	print("  (%d of %d items have a model)" % [n_models, n_items])
+	var at: Vector3 = game.map.marker_position("FormationArray") + Vector3(3, 0, 3)
+	for item in ["spirit_herb", "wolf_fang"]:
+		var p = PickupScript.create(item)
+		game.map.add_child(p)
+		p.global_position = game.map.ground_at(at)
+		check(p._body != null and p._body.position.y > 0.3, "pickup %s hovers above the ground (%s)" % [item, PickupScript.model_path(item)])
+		p.queue_free()
+	var n_props := 0
+	var bad := []
+	for id in story.world.props:
+		var glb = story.world.props[id]
+		if glb == null or not ResourceLoader.exists("res://assets/environment/%s.glb" % glb):
+			continue
+		var pr = PropScript.create(id)
+		game.map.add_child(pr)
+		pr.global_position = game.map.ground_at(at + Vector3(0, 0, 10))
+		var box: AABB = pr._local_aabb(pr)
+		n_props += 1
+		if not (pr.footprint() > 0.1 and box.position.y > -0.55 and box.position.y < 0.05):
+			bad.append("%s base %.2f" % [id, box.position.y])
+		var ap: Vector3 = pr.approach_point(game.map)
+		if not (pr.edge_distance(ap) < pr.REACH and pr.edge_distance(ap) > 0.2):
+			bad.append("%s approach %.2f m from its outline" % [id, pr.edge_distance(ap)])
+		pr.queue_free()
+	check(bad.is_empty(), "%d quest props stand on the ground and can be walked up to %s" % [n_props, bad])

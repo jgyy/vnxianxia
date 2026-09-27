@@ -98,6 +98,12 @@ func _run() -> void:
 	await _until(func(): return not game.dialogue.active)
 	gs.fast = false
 
+	# 2b) a group conversation: the talk target and two NPCs from the objective's `with`
+	await _group_conversation(player)
+
+	# 2c) walking up the main hall's steps (no jump)
+	await _stairs_shot(player)
+
 	# 3) meditation on the formation array
 	var fa: Vector3 = game.map.marker_position("FormationArray")
 	player.global_position = fa + Vector3.UP * 0.3
@@ -180,7 +186,8 @@ func _run() -> void:
 		game.runner.clear()
 		game.hud.show_gameplay(false)
 		var cam := Camera3D.new()
-		cam.far = 3000.0
+		cam.near = 0.15
+		cam.far = 1500.0
 		cam.fov = 60.0
 		game.map.add_child(cam)
 		cam.make_current()
@@ -251,3 +258,66 @@ func _run() -> void:
 	cam2.look_at(base + Vector3(0.8, 1.6, -3.0))
 	await _save("creatures", 30)
 	quit(0)
+
+
+func _group_conversation(player: CharacterBody3D) -> void:
+	var map: Node = game.map
+	var here := []
+	var away := []
+	for id in story.npcs:
+		var h = story.npcs[id].get("home")
+		if h and h.map == gs.map_id and map.has_marker(h.marker) and game._present(story.npcs[id]):
+			here.append(id)
+		elif h == null or h.map != gs.map_id:
+			away.append(id)
+	if here.size() < 2 or away.is_empty():
+		return
+	var t: String = here[0]
+	var o := {"type": "talk", "map": gs.map_id, "npc": t, "at": null, "text": "Speak with the elders", "with": [here[1], away[0]],
+		"dialogue": [{"speaker": t, "text": "So. All three of us, and one disciple."},
+			{"speaker": here[1], "text": "The disciple has earned the right to hear this. Let {them} stay."},
+			{"speaker": away[0], "text": "Then listen well, {junior}. What I say next does not leave this courtyard."}]}
+	var runner: Node = game.runner
+	runner.clear()
+	runner.state = "active"
+	runner.stage(o)
+	var npc: Node3D = runner.target_npc
+	player.place_at(map.ground_at(npc.global_position + npc.global_basis.z * 1.5) + Vector3.UP * 0.05)
+	await _frames(20)
+	var shown := [0]
+	var cb := func(_sp): shown[0] += 1
+	game.dialogue.line_started.connect(cb)
+	game._on_interact()
+	await _until(func(): return shown[0] >= 2, 600)
+	await _save("dialogue_group", 20)
+	await _until(func(): return shown[0] >= 3, 600)
+	await _save("dialogue_group_reply", 20)
+	game.dialogue.line_started.disconnect(cb)
+	gs.fast = true
+	game.dialogue._advance = true
+	await _until(func(): return not game.dialogue.active and game.runner.state != "busy")
+	gs.fast = false
+
+
+func _stairs_shot(player: CharacterBody3D) -> void:
+	var map: Node = game.map
+	if not (map.has_marker("HallSteps") and map.has_marker("MainHall")):
+		return
+	var from: Vector3 = map.marker_position("HallSteps")
+	var to: Vector3 = map.marker_position("MainHall")
+	var d := to - from
+	player.place_at(from + Vector3.UP * 0.1)
+	player._yaw = atan2(-d.x, -d.z) + 0.5
+	player._pitch = -0.22
+	player.spring.spring_length = 5.0
+	await _frames(10)
+	var yaw_walk := atan2(-d.x, -d.z)
+	# walk toward the door (input is camera-relative: steer with the stick, not the camera)
+	player.scripted_input = Vector2(sin(0.5), -cos(0.5))
+	var start_y := player.global_position.y
+	await _until(func(): return player.global_position.y > start_y + 0.5 or \
+			Vector2(player.global_position.x - to.x, player.global_position.z - to.z).length() < 1.5, 900)
+	await _save("stairs_main_hall", 2)
+	player.scripted_input = Vector2.ZERO
+	player.spring.spring_length = 4.5
+	player._yaw = yaw_walk

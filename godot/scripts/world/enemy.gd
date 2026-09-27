@@ -126,6 +126,9 @@ func _ready() -> void:
 	var path: String = stats.model
 	if path == "player":
 		path = "cultivator_male" if Game.character == 0 else "cultivator_female"
+	if not ResourceLoader.exists("res://assets/characters/%s.glb" % path):
+		push_warning("enemy %s: no model %s" % [kind, path])
+		path = "bandit"
 	model = (load("res://assets/characters/%s.glb" % path) as PackedScene).instantiate()
 	model.scale = Vector3.ONE * sc
 	add_child(model)

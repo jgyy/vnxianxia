@@ -385,19 +385,21 @@ func _set_fight(kind: String) -> void:
 
 
 func _on_enemy_died(e: Enemy) -> void:
-	if state != "active" or not enemies.has(e):
+	if obj.get("type") != "defeat" or not enemies.has(e) or state not in ["active", "busy"]:
 		return
+	# counted even while a pre-fight conversation holds the objective ("busy"):
+	# a kill landing then (a blast already in flight) must not be lost
 	Game.progress += 1
 	Game.add_xp(12 if not e.boss else 120)
 	_update_text()
-	if Game.progress >= int(obj.count):
+	if Game.progress >= int(obj.count) and state == "active":
 		_set_fight("")
 		complete()
 
 
-## How close the player must be to use the objective's prop.
-func _prop_reach() -> float:
-	return (prop.footprint() + 1.8) if prop else 3.0
+## Is the player close enough to the objective's prop (to its outline, so big props work too)?
+func _near_prop(pp: Vector3) -> bool:
+	return prop != null and is_instance_valid(prop) and prop.edge_distance(pp) < QuestProp.REACH
 
 
 ## Called by the game when the player presses E near something of ours.
@@ -408,14 +410,10 @@ func try_interact() -> bool:
 	if obj.type == "talk" and target_npc and pp.distance_to(target_npc.global_position) < 2.8:
 		_talk()
 		return true
-	if obj.type == "interact" and prop and _flat_dist(pp, prop.global_position) < _prop_reach():
+	if obj.type == "interact" and _near_prop(pp):
 		_interact()
 		return true
 	return false
-
-
-func _flat_dist(a: Vector3, b: Vector3) -> float:
-	return Vector2(a.x - b.x, a.z - b.z).length() if absf(a.y - b.y) < 3.0 else INF
 
 
 func prompt() -> String:
@@ -427,7 +425,7 @@ func prompt() -> String:
 			if target_npc and pp.distance_to(target_npc.global_position) < 2.8:
 				return "E  Talk to " + Story.npc(obj.npc).get("name", "")
 		"interact":
-			if prop and _flat_dist(pp, prop.global_position) < _prop_reach():
+			if _near_prop(pp):
 				return "E  " + Story.fill(obj.text)
 		"meditate":
 			if pp.distance_to(target_point) < 3.5 and not game.player.meditating:
@@ -547,6 +545,7 @@ func _process(delta: float) -> void:
 				state = "active"
 				# the fight may have ended while they talked (a blast already in flight)
 				if Game.progress >= int(obj.count):
+					_set_fight("")
 					complete()
 					return
 			var boss_e: Enemy = null

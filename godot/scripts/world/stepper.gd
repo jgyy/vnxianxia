@@ -62,10 +62,8 @@ static func step_up(body: CharacterBody3D, delta: float, grounded: bool, max_ste
 
 ## After move_and_slide: a body that was standing and has just walked off a
 ## step (or a curb) is set straight down onto whatever is below within
-## `max_step`, instead of falling (and playing a fall) down every stair. When
-## the capsule comes to rest on the nose of the step it just left, it is given
-## a little downward speed so it slides off onto the next tread. Returns the
-## (negative) height dropped, 0 when nothing was done.
+## `max_step`, instead of falling (and playing a fall) down every stair.
+## Returns the (negative) height dropped, 0 when nothing was done.
 static func step_down(body: CharacterBody3D, was_floor: bool, max_step := MAX_STEP) -> float:
 	if not was_floor or body.is_on_floor() or body.velocity.y > 0.0:
 		return 0.0
@@ -82,6 +80,10 @@ static func step_down(body: CharacterBody3D, was_floor: bool, max_step := MAX_ST
 	body.global_position += travel
 	if walkable:
 		body.apply_floor_snap()
-	else:
-		body.velocity.y = minf(body.velocity.y, -2.5)
 	return travel.y
+
+
+## Is there something to stand on within `reach` below the body? (A capsule
+## crossing the nose of a step is not "on the floor", but it is not falling.)
+static func ground_within(body: CharacterBody3D, reach: float) -> bool:
+	return body.test_move(body.global_transform, Vector3.DOWN * reach)

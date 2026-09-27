@@ -22,6 +22,12 @@ Audio="*res://scripts/autoload/audio.gd"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 
+[importer_defaults]
+
+scene={
+"meshes/generate_lods": false
+}
+
 [physics]
 
 common/physics_ticks_per_second=60
