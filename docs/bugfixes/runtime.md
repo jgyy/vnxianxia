@@ -63,7 +63,7 @@ settings) and fixed on this branch. One line each: **symptom** -> cause -> fix (
 58. [Cinematics] **Actors / shots whose marker the map lacks were staged at the world origin** -> marker_position() returns ZERO for missing markers -> skipped (`godot/scripts/ui/cinematic.gd:121`)
 59. [Cinematics] **Cinematic enemies floated or sank beside their marker** -> offset positions not grounded (physics disabled) -> ground_at() (`godot/scripts/ui/cinematic.gd:150`)
 60. [Rendering] **Floors shimmer / flip between surfaces (z-fighting)** -> Camera3D near 0.08 / far 3000 (37 500:1) wastes depth precision -> near 0.15 / far 1500 on the player camera (and 0.1-0.15 / 1500 on cinematic, conversation, title cameras) (`godot/scenes/player.tscn:36`)
-61. [Rendering] **Terrain and building floors pop / swap surfaces at distance** -> meshes/generate_lods=true made simplified LOD meshes of terrain, floors and buildings -> LODs disabled for every environment GLB but vegetation and rubble (128 files), and by default for new scene imports (`godot/project.godot:30`)
+61. [Rendering] **Terrain and building floors pop / swap surfaces at distance** -> meshes/generate_lods=true made simplified LOD meshes of terrain, floors and buildings -> LODs disabled for every environment GLB but vegetation and rubble (249 of 273 files), and by default for new scene imports (`godot/project.godot:30`)
 62. [Rendering] **Camera clipped through wall edges** -> SpringArm3D used a ray, not a shape -> 0.2 m sphere shape (`godot/scenes/player.tscn:9`)
 63. [Rendering] **Objective ring flickered on uneven ground** -> ring lay 6 cm above the ground (z-fighting, dipping under slopes) -> lifted to 14 cm (`godot/scripts/world/beacon.gd:52`)
 64. [Rendering] **Tribulation strike rings half-buried / flickering** -> same 6 cm offset -> 14 cm (`godot/scripts/world/tribulation.gd:226`)
@@ -95,6 +95,11 @@ settings) and fixed on this branch. One line each: **symptom** -> cause -> fix (
 - Pickups load `res://assets/items/<item_id>.glb` when present (falls back to the old environment model, then to
   the glowing primitive), scaled to ~0.42 m and hovering (`godot/scripts/world/pickup.gd`).
 - Slight lean into turns while running (max 4 degrees) (`godot/scripts/player.gd`).
+- Character materials for the strand-card hair and layered skin (`godot/scripts/world/actor_look.gd`): hair, beard,
+  brows and lashes use alpha-to-coverage (scissor 0.3), hair keeps anisotropy 0.6 with a hair-tinted backlight; face
+  and body skin keep SSS and gain transmittance and a 0.1 clearcoat; cornea and tear line render additive with black
+  albedo; sclera / teeth / tongue get light SSS; the old `_eye` clearcoat rule only matches the legacy eyeball; blend
+  shapes are never touched. The shadow (heart demon) look keeps the hair's strand mask.
 
 ## For the world workstream
 
