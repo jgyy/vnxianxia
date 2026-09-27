@@ -24,14 +24,15 @@ Now an orphan climbs nine thousand steps to the Azure Cloud with nothing but a m
 weakening, and someone inside the sect is helping the Blood Moon.*
 
 The saga has 2000 main quests: 10 volumes, one per major stage of cultivation from Qi Condensation to Tribulation
-Transcendence, each of 10 chapters, one per minor stage (1st Layer to Great Perfection), from Mortal to Immortal
-Ascension. Every major breakthrough calls down a heavenly tribulation to survive, and *every single quest* offers a
-moral choice that moves the hero along two axes, Bearing (disciplined/precept-bound &lt;-&gt; free-wandering) and the
-Dao (righteous &lt;-&gt; demonic), giving nine cultivation temperaments from Guardian of the Precepts to Servant of the
-Blood Moon; elders, juniors, townsfolk and demonic cultivators react to the alignment and realm the hero reaches. It
-has 20 cinematics, 40 named NPCs and 12,769 words of voiced dialogue (813 lines,
-plus male and female takes of every line that names the hero) in the ten original chapters, and 65,000 more words of
-text-only dialogue in the 90 chapters built around them. Play as **Lin Feng** or **Su Yue**; Tab switches between
+Transcendence, each of 10 chapters of 20 quests, one chapter per minor stage (1st Layer to Great Perfection), from
+Mortal to Immortal Ascension. Every major breakthrough calls down a heavenly tribulation to survive, and all but one
+quest (the finale's climactic tribulation fight, which has no room for one) offers a moral choice that moves the hero
+along two axes, Bearing (disciplined/precept-bound &lt;-&gt; free-wandering) and the Dao (righteous &lt;-&gt; demonic),
+giving nine cultivation temperaments from Guardian of the Precepts to Servant of the Blood Moon; elders, juniors,
+townsfolk and demonic cultivators react to the alignment and realm the hero reaches. It has 20 cinematics, 40 named
+NPCs and 12,769 words of voiced dialogue (813 lines, plus male and female takes of every line that names the hero) in
+the ten original chapters, and 118,000 more words of text-only dialogue in the 90 chapters built around them. Play as
+**Lin Feng** or **Su Yue**; Tab switches between
 them and the dialogue follows. The full plot, the cast and the volume and chapter lists are in
 **[docs/STORY.md](docs/STORY.md)**; every quest is listed in **[docs/QUESTS.md](docs/QUESTS.md)**. In game, the
 journal's *Story So Far* page recaps every volume and chapter you have reached.
