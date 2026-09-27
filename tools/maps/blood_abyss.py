@@ -96,7 +96,7 @@ CARVES += [
     (8.0, [(-230, -110, ASH_Y), (-248, -60, -22.0)]),
     (30.0, [(-250, -40, -22.0)]),
     (6.0, [(-262, -64, -22.0), (-276, -104, -22.0)]),
-    (8.0, [(-276, -110, -22.0)]),
+    (14.0, [(-276, -110, -22.0)]),
     # the shadow market beside the grotto passage, and the slave mines in the canyon wall
     (6.0, [(-64, -26, F), (-100, -46, F)]),
     (22.0, [(-112, -52, F)]),
@@ -288,7 +288,7 @@ BLOOD_RIVER = Path([(-112, 150), (-112, 118), (-114, 60), (-112, 0), (-116, -60)
 G.pad(BLOOD_RIVER, RIVER_Y - 2.2, blend=2.5, op="min")
 SACRIFICE = Disc(-78, -176, 8.0)
 G.pad(SACRIFICE, F - 7.0, blend=3.0, op="min")
-TRAINING = Rect(128, -150, 10, 10, 0, 2)
+TRAINING = Rect(124, -120, 9, 9, 0, 2)
 G.pad(TRAINING, F - 2.4, blend=3.0)
 LAVA_POOL = Disc(240, 24, 11.0, wobble=0.1, seed=5)
 G.pad(LAVA_POOL, F - 1.0, blend=3.0, op="min")
@@ -310,7 +310,7 @@ S.add("skull_tower", 114, 72, 0, -18.0, name="SkullTowerSpire")
 S.add("iron_pens", 100, -126, 0, F, name="BeastPensIron")
 for _i, (_x, _z) in enumerate(((-236, -50), (-262, -30), (-250, -18), (-226, -28), (-262, -52))):
     S.add("ghost_house", _x, _z, (_i * 71) % 360, -22.0, name=f"GhostHouse{_i + 1}")
-for _i, (_x, _z, _yw) in enumerate(((-122, -40, 90), (-100, -62, 0), (-124, -62, 30), (-98, -40, 200))):
+for _i, (_x, _z, _yw) in enumerate(((-128, -44, 90), (-100, -62, 0), (-124, -62, 30), (-98, -40, 200))):
     S.add("shadow_stall", _x, _z, _yw, F, name=f"ShadowStall{_i + 1}")
 
 # regions
@@ -536,8 +536,8 @@ NEW_MARKERS = {
     "SlaveMines": (-146.0, 30.0),
     "MineShaft": (-152.0, -22.0),
     "ForgeOfSouls": (-54.0, -116.0),
-    "Barracks": (122.0, -128.0),
-    "TrainingPit": (128.0, -150.0),
+    "Barracks": (100.0, -146.0),
+    "TrainingPit": (124.0, -120.0),
     "BeastPens": (100.0, -114.0),
     "PoisonGarden": (80.0, 82.0),
     "SkullTower": (108.0, 62.0),
@@ -558,7 +558,7 @@ NEW_MARKERS = {
     "SealStones": (-172.0, -146.0),
     "GhostVillage": (-246.0, -38.0),
     "RedMoonTerrace": (0.0, -250.0),
-    "CaveOfEchoes": (-274.0, -106.0),
+    "CaveOfEchoes": (-268.0, -106.0),
     "SulphurVents": (148.0, 30.0),
     "BoneThrone": (-66.0, -236.0),
 }
@@ -617,8 +617,8 @@ def build_districts(add, gy, rnd):
         a = math.radians(200 + k * 24)
         x, z = 110 + 22 * math.cos(a), -140 + 22 * math.sin(a)
         add("demon_tent", x, z, yaw=face(x, z, 110, -140))
-    for x, z in ((118, -142), (138, -158), (138, -142), (118, -158)):
-        add("demon_banner", x, z, yaw=face(x, z, 128, -150), scale=0.8)
+    for x, z in ((113, -109), (135, -131), (135, -109), (113, -131)):
+        add("demon_banner", x, z, yaw=face(x, z, 124, -120), scale=0.8)
     # the east: sulphur vents, spires, lava falls
     for k in range(5):
         a = 2 * math.pi * k / 5

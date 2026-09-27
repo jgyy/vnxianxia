@@ -420,7 +420,7 @@ def build() -> common.MapDef:
         "Graveyard": at(gx, gz),
         "Farmland": at(72.0, 12.0),
         "WatchTower": at(37.5, 30.0),
-        "TeaHouse": at(34.0, 17.0),
+        "TeaHouse": at(34.0, 13.5),
         "Blacksmith": at(22.0, 11.5),
         "HerbShop": at(32.0, 11.5),
     }
@@ -455,7 +455,7 @@ NEW_MARKERS = {
     "ManorGarden": (118.0, -176.0),
     "OperaStage": (60.0, -148.0),
     "TempleFair": (45.0, -134.0),
-    "CityGodTemple": (0.0, -133.0),
+    "CityGodTemple": (0.0, -125.0),
     "BellPavilion": (NORTH_X, -98.0),
     "Bathhouse": (16.0, -94.0),
     "Pawnshop": (19.0, -55.0),
@@ -506,7 +506,7 @@ def build_districts(add, rnd):
     for (x, z, yaw) in ((38, -130, 0), (46, -128, 0), (72, -128, 0), (80, -130, 0), (84, -140, -90), (36, -142, 90)):
         add("market_stall", x, z, yaw, 1.0, None, y=0.0)
     add("lantern_line", 60, -128, 90, 1.0, None, y=0.0)
-    add("incense_burner", 0, -132, 0, 1.0, "IncenseBurnerCityGod", y=0.0)
+    add("incense_burner", 0, -137, 0, 1.0, "IncenseBurnerCityGod", y=0.0)
     for x in (-8, 8):
         add("stone_lantern", x, -126, 0, 1.0, None, y=0.0)
     add("bronze_bell", NORTH_X + 10, -118, 0, 0.9, None, y=0.0)

@@ -1061,7 +1061,7 @@ transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 36, 0, -
 transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 60, 0, -128)
 
 [node name="IncenseBurnerCityGod" parent="Level" instance=ExtResource("23_incense_burner")]
-transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, -132)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, -137)
 
 [node name="StoneLantern7" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -8, 0, -126)
@@ -2542,7 +2542,7 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 72, 2.1, 12)
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 37.5, 1, 30)
 
 [node name="TeaHouse" type="Marker3D" parent="Markers"]
-transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 34, 1, 17)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 34, 1, 13.5)
 
 [node name="Blacksmith" type="Marker3D" parent="Markers"]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, 1, 11.5)
@@ -2590,7 +2590,7 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 60, 1, -148)
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 45, 1, -134)
 
 [node name="CityGodTemple" type="Marker3D" parent="Markers"]
-transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 1, -133)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 1, -125)
 
 [node name="BellPavilion" type="Marker3D" parent="Markers"]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 28, 1, -98)
