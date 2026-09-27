@@ -179447,33 +179447,33 @@
    "title": "The Traitor in the Law Hall",
    "beats": [
     {
-     "quest": "q0010",
-     "number": 10,
+     "quest": "q0020",
+     "number": 20,
      "text": "The formation array answers Elder Gu's touch a little too well for comfort."
     },
     {
-     "quest": "q0120",
-     "number": 120,
+     "quest": "q0240",
+     "number": 240,
      "text": "Under tournament banners, on the night of the final, the traitor's mask finally slips."
     },
     {
-     "quest": "q0200",
-     "number": 200,
+     "quest": "q0400",
+     "number": 400,
      "text": "The Sect Master reads the Crimson Road report twice, then chooses two disciples to follow him down."
     },
     {
-     "quest": "q0410",
-     "number": 410,
+     "quest": "q0820",
+     "number": 820,
      "text": "At the Heart Mirror, Gu Hanshan confesses everything, as the sky over the sect burns red."
     },
     {
-     "quest": "q0930",
-     "number": 930,
+     "quest": "q1860",
+     "number": 1860,
      "text": "A prisoner for years, Gu Hanshan asks the Sect Master for three last things."
     },
     {
-     "quest": "q1000",
-     "number": 1000,
+     "quest": "q2000",
+     "number": 2000,
      "text": "The traitor spends the last thing he has opening the black gate."
     }
    ]
@@ -179483,23 +179483,23 @@
    "title": "The Lotus Key",
    "beats": [
     {
-     "quest": "q0010",
-     "number": 10,
+     "quest": "q0020",
+     "number": 20,
      "text": "A dead mother's jade pendant, and nothing else — but the formation array notices it."
     },
     {
-     "quest": "q0110",
-     "number": 110,
+     "quest": "q0220",
+     "number": 220,
      "text": "In the ruins of a forgotten sect, the hermit tells the truth: the pendant is the Lotus Key."
     },
     {
-     "quest": "q0460",
-     "number": 460,
+     "quest": "q0920",
+     "number": 920,
      "text": "A seed planted before the descent into the Abyss finally flowers, green and gold."
     },
     {
-     "quest": "q1000",
-     "number": 1000,
+     "quest": "q2000",
+     "number": 2000,
      "text": "The last of the Verdant Lotus bloodline climbs the Ascension Stair, key and all."
     }
    ]
@@ -179509,19 +179509,19 @@
    "title": "Elder Mo's Sacrifice",
    "beats": [
     {
-     "quest": "q0280",
-     "number": 280,
+     "quest": "q0560",
+     "number": 560,
      "text": "Elder Mo starts teaching sword qi before the isles even open, and admits, gruffly, that he's proud."
     },
     {
-     "quest": "q0390",
-     "number": 390,
+     "quest": "q0780",
+     "number": 780,
      "text": "Nine thousand nine hundred runes checked by hand, and one ring still to go."
     },
-    {"quest": "q0410", "number": 410, "text": "Elder Mo burns his own life to turn the lit formation back."},
+    {"quest": "q0820", "number": 820, "text": "Elder Mo burns his own life to turn the lit formation back."},
     {
-     "quest": "q0500",
-     "number": 500,
+     "quest": "q1000",
+     "number": 1000,
      "text": "A tea set, a peach orchard, forty years of notes, and a locked box addressed to the heir."
     }
    ]
@@ -179531,43 +179531,43 @@
    "title": "The Patriarch's Ladder",
    "beats": [
     {
-     "quest": "q0340",
-     "number": 340,
+     "quest": "q0680",
+     "number": 680,
      "text": "A pale man in a warehouse nobody owns calls himself the First Rung of the Patriarch's Ladder."
-    },
-    {
-     "quest": "q0490",
-     "number": 490,
-     "text": "The First Rung falls at the obelisk ring, inside a circle of his own ash."
-    },
-    {
-     "quest": "q0530",
-     "number": 530,
-     "text": "A monk in rotting robes prays rust into every hinge, chain and spear in Qingshi."
-    },
-    {
-     "quest": "q0570",
-     "number": 570,
-     "text": "Madam Ninefold wears nine faces in one small town, and one of them is close."
-    },
-    {
-     "quest": "q0650",
-     "number": 650,
-     "text": "Brother Hollow has worn ten thousand bodies. He wants one more, and cannot have it."
-    },
-    {
-     "quest": "q0690",
-     "number": 690,
-     "text": "The Butcher of Wen weighs cultivators by the jin. He has never weighed one like this."
-    },
-    {
-     "quest": "q0770",
-     "number": 770,
-     "text": "Lady Silk attends the conclave's last feast as guest of honour, thread in hand."
     },
     {
      "quest": "q0980",
      "number": 980,
+     "text": "The First Rung falls at the obelisk ring, inside a circle of his own ash."
+    },
+    {
+     "quest": "q1060",
+     "number": 1060,
+     "text": "A monk in rotting robes prays rust into every hinge, chain and spear in Qingshi."
+    },
+    {
+     "quest": "q1140",
+     "number": 1140,
+     "text": "Madam Ninefold wears nine faces in one small town, and one of them is close."
+    },
+    {
+     "quest": "q1300",
+     "number": 1300,
+     "text": "Brother Hollow has worn ten thousand bodies. He wants one more, and cannot have it."
+    },
+    {
+     "quest": "q1380",
+     "number": 1380,
+     "text": "The Butcher of Wen weighs cultivators by the jin. He has never weighed one like this."
+    },
+    {
+     "quest": "q1540",
+     "number": 1540,
+     "text": "Lady Silk attends the conclave's last feast as guest of honour, thread in hand."
+    },
+    {
+     "quest": "q1960",
+     "number": 1960,
      "text": "The Seventh Rung is also blood: a cousin from a village by a creek, wearing red eyes."
     }
    ]
@@ -179577,21 +179577,21 @@
    "title": "Han Xue",
    "beats": [
     {
-     "quest": "q0090",
-     "number": 90,
+     "quest": "q0180",
+     "number": 180,
      "text": "Senior Sister Han Xue leads into the Moonlit Grotto, food and grudges in tow."
     },
     {
-     "quest": "q0210",
-     "number": 210,
+     "quest": "q0420",
+     "number": 420,
      "text": "Han Xue is taken at the obelisks — the first thing broken to get her back."
     },
     {
-     "quest": "q0870",
-     "number": 870,
+     "quest": "q1740",
+     "number": 1740,
      "text": "A year from her own nascent soul, Han Xue finally asks the heir to stand guard the way she once did."
     },
-    {"quest": "q1000", "number": 1000, "text": "Han Xue holds the bridge at the end of the world."}
+    {"quest": "q2000", "number": 2000, "text": "Han Xue holds the bridge at the end of the world."}
    ]
   },
   {
@@ -179599,23 +179599,23 @@
    "title": "Zhao Kang",
    "beats": [
     {
-     "quest": "q0120",
-     "number": 120,
+     "quest": "q0240",
+     "number": 240,
      "text": "A forced pairing in the tournament turns rivalry into something like respect."
     },
     {
-     "quest": "q0360",
-     "number": 360,
+     "quest": "q0720",
+     "number": 720,
      "text": "The Zhao clan wants its heir home. Zhao Kang has never been good at choosing anything but arguments."
     },
     {
-     "quest": "q0770",
-     "number": 770,
+     "quest": "q1540",
+     "number": 1540,
      "text": "Zhao Kang stands sworn brother, not just rival, at the conclave's last feast."
     },
     {
-     "quest": "q0880",
-     "number": 880,
+     "quest": "q1760",
+     "number": 1760,
      "text": "One last wager, for old times' sake, before the sky takes the heir somewhere he can't follow."
     }
    ]
@@ -179625,18 +179625,18 @@
    "title": "The Heart Demon",
    "beats": [
     {
-     "quest": "q0410",
-     "number": 410,
+     "quest": "q0820",
+     "number": 820,
      "text": "A shadow of the self, faced at the Heart Mirror and not yet understood."
     },
     {
-     "quest": "q0480",
-     "number": 480,
+     "quest": "q0960",
+     "number": 960,
      "text": "The Heart Mirror hums a name outside the fold, still black, still still."
     },
     {
-     "quest": "q1000",
-     "number": 1000,
+     "quest": "q1999",
+     "number": 1999,
      "text": "On the ninth bolt, the Patriarch rides the heart demon one last time."
     }
    ]
@@ -179646,23 +179646,23 @@
    "title": "The Great Vehicle",
    "beats": [
     {
-     "quest": "q0710",
-     "number": 710,
+     "quest": "q1420",
+     "number": 1420,
      "text": "No one climbs alone: the Sect Master calls every orthodox sect to one conclave."
     },
     {
-     "quest": "q0780",
-     "number": 780,
+     "quest": "q1560",
+     "number": 1560,
      "text": "Forty sects swear one oath on the formation plaza, then go home to wait."
     },
     {
-     "quest": "q0800",
-     "number": 800,
+     "quest": "q1600",
+     "number": 1600,
      "text": "The alliance's first joint action seals the rifts leaking from the fold at the Abyss rim."
     },
     {
-     "quest": "q0990",
-     "number": 990,
+     "quest": "q1980",
+     "number": 1980,
      "text": "Forty sects' armies gather at the teleport array for the march that finishes it."
     }
    ]

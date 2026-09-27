@@ -28,6 +28,12 @@ var _trib_failed := false
 func clear() -> void:
 	for n in spawned:
 		if is_instance_valid(n):
+			# an enemy already mid-death (its own tween fades it out, then
+			# frees it) must not be queue_free()'d again here: racing that
+			# tween's own queue_free() against this one risks the tween's
+			# later steps running on a node freed out from under it
+			if n is Enemy and n.dead:
+				continue
 			n.queue_free()
 	spawned.clear()
 	enemies.clear()

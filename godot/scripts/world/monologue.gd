@@ -101,6 +101,10 @@ const BY_OBJECTIVE := {
 		"Somewhere around here, probably under something inconvenient.",
 		"I've gotten disturbingly good at finding things nobody wants to lose in public.",
 	],
+	"interact": [
+		"Let's see what this actually is before I decide how I feel about it.",
+		"Some things want to be looked at up close. This is apparently one of them.",
+	],
 	"meditate": [
 		"Time to sit down and actually listen to my own qi for once.",
 		"Breathe in for four. I can already hear Elder Hua counting with me.",
@@ -129,18 +133,18 @@ const BY_ALIGN := {
 
 const CALLBACKS := [
 	{"at": 2, "text": "That temple keeper still doesn't sit right with me. Kindly men don't usually make my skin crawl."},
-	{"at": 10, "text": "Lan Jue kept that pendant's secret from everyone but me. I still don't know what to do with that."},
-	{"at": 11, "text": "Elder Gu asked for the sutra like it was owed to him. I've thought about that look on his face more than once."},
-	{"at": 20, "text": "The traitor's still out there somewhere below. I keep rehearsing what I'll say when I find him."},
-	{"at": 21, "text": "Han Xue doesn't talk about the obelisks. I don't push. Some things need to heal on their own time."},
-	{"at": 40, "text": "Elder Mo checked nine thousand runes himself. I hope he knows I noticed."},
-	{"at": 41, "text": "I still see my own shadow sometimes, out of the corner of my eye. It hasn't tried anything. Yet."},
-	{"at": 49, "text": "Seven Rungs to a ladder, Qing Luan said. We've only broken the first, and it already cost too much."},
-	{"at": 60, "text": "Standing in the void gets easier. I'm not sure that's something to be proud of."},
-	{"at": 70, "text": "Nobody's tried to wear my face in months. I'd like to keep it that way."},
-	{"at": 80, "text": "Forty sects swore one oath on our plaza. I hope they meant it when winter comes."},
-	{"at": 90, "text": "The Ascension Stair is still just standing there, waiting. It's patient. I'm trying to be."},
-	{"at": 98, "text": "My cousin's face, on that shadow. I didn't expect the Ladder's last rung to hurt the most."},
+	{"at": 20, "text": "Lan Jue kept that pendant's secret from everyone but me. I still don't know what to do with that."},
+	{"at": 21, "text": "Elder Gu asked for the sutra like it was owed to him. I've thought about that look on his face more than once."},
+	{"at": 40, "text": "The traitor's still out there somewhere below. I keep rehearsing what I'll say when I find him."},
+	{"at": 41, "text": "Han Xue doesn't talk about the obelisks. I don't push. Some things need to heal on their own time."},
+	{"at": 81, "text": "Elder Mo checked nine thousand runes himself. I hope he knows I noticed."},
+	{"at": 83, "text": "I still see my own shadow sometimes, out of the corner of my eye. It hasn't tried anything. Yet."},
+	{"at": 99, "text": "Seven Rungs to a ladder, Qing Luan said. We've only broken the first, and it already cost too much."},
+	{"at": 121, "text": "Standing in the void gets easier. I'm not sure that's something to be proud of."},
+	{"at": 141, "text": "Nobody's tried to wear my face in months. I'd like to keep it that way."},
+	{"at": 161, "text": "Forty sects swore one oath on our plaza. I hope they meant it when winter comes."},
+	{"at": 181, "text": "The Ascension Stair is still just standing there, waiting. It's patient. I'm trying to be."},
+	{"at": 197, "text": "My cousin's face, on that shadow. I didn't expect the Ladder's last rung to hurt the most."},
 ]
 
 
@@ -182,6 +186,12 @@ func _pick_line() -> String:
 		if Game.quest_index >= int(cb.at):
 			pool.append(cb.text)
 			pool.append(cb.text)
+	# CALLBACKS above only hand-covers the saga's first tenth (volume I); every
+	# later volume's major beats come from Story.threads instead, so the
+	# roaming monologue keeps referencing the plot all the way to quest 2000.
+	for beat in Story.threads_so_far(Game.quest_index):
+		pool.append(beat.beats[-1])
+		pool.append(beat.beats[-1])
 	pool.append_array(BY_MAP.get(Game.map_id, []))
 	pool.append_array(BY_MAP.get(Game.map_id, []))
 	var ot: String = Game.objective().get("type", "") if not Game.quest().is_empty() else ""
