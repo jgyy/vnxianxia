@@ -346,11 +346,16 @@ func _spawn_pickups(center: Vector3) -> void:
 		var p := Pickup.create(obj.item)
 		game.map.add_child(p)
 		var at: Vector3 = game.map.open_spot(center, a, r)
-		for u in used:
-			if at.distance_to(u) < 0.6:
-				# open_spot fell back to the centre: fan the rest out instead of stacking them
-				at = game.map.ground_at(center + Vector3(cos(a), 0, sin(a)) * r)
-				break
+		# open_spot fell back to the centre (or onto another pickup): widen the
+		# search instead of dropping it on unchecked ground (it could land inside
+		# a building next to a cramped marker and be unreachable)
+		var k := 0
+		while k < 8 and used.any(func(u): return at.distance_to(u) < 0.6):
+			k += 1
+			at = game.map.open_spot(center, a + 0.9 * k, r + 1.5 * k)
+		if used.any(func(u): return at.distance_to(u) < 0.6):
+			at = center + Vector3(cos(a), 0, sin(a)) * 0.7 * used.size()
+			at = game.map.ground_at(at)
 		used.append(at)
 		p.global_position = at
 		pickups.append(p)
