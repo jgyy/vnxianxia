@@ -48,6 +48,11 @@ const NATIVE_TIER := {
 }
 const GRAVITY := 13.0
 const AGGRO := 16.0
+const Stepper := preload("res://scripts/world/stepper.gd")
+## Humanoid gait clips plant their feet at these ground speeds (m/s) at
+## speed_scale 1 (the animation contract); creatures keep their own gaits.
+const WALK_AUTHORED := 1.6
+const RUN_AUTHORED := 4.6
 
 var kind := ""
 ## realm tier of the fight (-1 = the protagonist's current realm)
@@ -73,6 +78,11 @@ var _hits := 0
 var _bar_bg: MeshInstance3D
 var _bar: MeshInstance3D
 var _bar_mesh: QuadMesh
+var _home_set := false
+var _humanoid := true
+var _model_scale := 1.0
+var _vis := 0.0
+var _gait := "idle"
 
 
 static func create(enemy_kind: String, is_boss := false, fight_tier := -1, display := "") -> Enemy:
@@ -94,7 +104,11 @@ func _ready() -> void:
 	add_to_group("enemies")
 	collision_layer = 4
 	collision_mask = 1
+	floor_snap_length = Stepper.MAX_STEP + 0.05
+	floor_constant_speed = true
+	floor_max_angle = deg_to_rad(50.0)
 	var sc: float = stats.get("scale", 1.0)
+	_model_scale = sc
 	var t := tier if tier >= 0 else Game.realm
 	stats = stats.duplicate()
 	stats.dmg = float(stats.dmg) * tier_scale(kind, t, 0.2)
@@ -126,9 +140,9 @@ func _ready() -> void:
 		ActorLook.loop_anims(anim)
 		anim.play("idle")
 		anim.seek(randf() * 2.0)
+	_humanoid = not (Story.world.get("creature_anims", {}) as Dictionary).has(stats.model)
 	if not boss:
 		_make_bar()
-	home = global_position
 
 
 func display_name() -> String:
@@ -188,6 +202,8 @@ func take_damage(amount: float, _from: Node = null) -> void:
 		return
 	if anim and (not boss or _hits % 4 == 0) and _strike < 0.0:
 		anim.play("hit", 0.05)
+		anim.speed_scale = 1.0
+		_gait = ""
 		_lock = 0.35
 	_update_bar()
 
@@ -219,6 +235,10 @@ func _die() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if not _home_set:
+		# spawners add the enemy to the tree first and place it afterwards
+		home = global_position
+		_home_set = true
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
 	else:
@@ -228,6 +248,11 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0
 		move_and_slide()
 		return
+	var map := get_parent()
+	if map and "kill_y" in map and global_position.y < float(map.kill_y):
+		# fell off the world (chasing over a cliff): come back, or the fight could never be won
+		global_position = home + Vector3.UP * 0.3
+		velocity = Vector3.ZERO
 	if target == null or not is_instance_valid(target):
 		target = get_tree().get_first_node_in_group("player") as Node3D
 	var to := Vector3.ZERO
@@ -243,7 +268,8 @@ func _physics_process(delta: float) -> void:
 	_lock -= delta
 	if _strike >= 0.0:
 		_strike -= delta
-		if _strike < 0.0 and player_ok and dist < float(stats.range) + 0.9 + radius:
+		if _strike < 0.0 and player_ok and dist < float(stats.range) + 0.9 + radius \
+				and absf(target.global_position.y - global_position.y) < 2.5:
 			target.take_damage(float(stats.dmg), self)
 	var want := Vector3.ZERO
 	var reach: float = float(stats.range) + radius * 0.5
@@ -265,16 +291,55 @@ func _physics_process(delta: float) -> void:
 				want += d.normalized() * 1.5
 	velocity.x = move_toward(velocity.x, want.x, 20.0 * delta)
 	velocity.z = move_toward(velocity.z, want.z, 20.0 * delta)
+	var was_floor := is_on_floor()
+	var rise := Stepper.step_up(self, delta, was_floor, Stepper.MAX_STEP * maxf(_model_scale, 1.0))
 	move_and_slide()
+	var drop := Stepper.step_down(self, was_floor) if rise <= 0.0 else 0.0
+	_vis = clampf(_vis - rise - drop, -0.6, 0.6)
+	_vis = move_toward(_vis, 0.0, delta * (1.2 + absf(_vis) * 14.0))
+	if model:
+		model.position.y = _vis
 	if anim and _lock <= 0.0 and _strike < 0.0:
-		var planar := Vector2(velocity.x, velocity.z).length()
-		var a := "idle"
-		if planar > 2.5:
-			a = "run"
-		elif planar > 0.2:
-			a = "walk"
-		if anim.current_animation != a:
-			anim.play(a, 0.2)
+		_animate_gait(Vector2(velocity.x, velocity.z).length())
+	_update_bar()
+
+
+## Walk / run with hysteresis; humanoids play them at speed_scale = ground
+## speed / authored speed (feet planted), creatures at their chase speed.
+func _animate_gait(planar: float) -> void:
+	var a := "idle"
+	var fast := _gait == "run"
+	if planar > 3.1 or (fast and planar > 2.5) or (not _humanoid and planar > 2.5):
+		a = "run"
+	elif planar > 0.2:
+		a = "walk"
+	var sc := 1.0
+	if _humanoid:
+		if a == "run":
+			sc = clampf(planar / (RUN_AUTHORED * _model_scale), 0.4, 1.8)
+		elif a == "walk":
+			sc = clampf(planar / (WALK_AUTHORED * _model_scale), 0.35, 2.0)
+	elif a == "run":
+		sc = clampf(planar / maxf(float(stats.speed), 0.1), 0.5, 1.5)
+	elif a == "walk":
+		sc = clampf(planar / maxf(float(stats.speed) * 0.35, 0.1), 0.4, 1.5)
+	if anim.current_animation != a:
+		anim.play(a, 0.2)
+	anim.speed_scale = sc
+	_gait = a
+
+
+## The player fell and was revived: calm down, heal and go back to the post.
+func reset_after_player_death() -> void:
+	if dead:
+		return
+	hp = max_hp
+	_aggro = false
+	_strike = -1.0
+	_lock = 0.0
+	_hits = 0
+	global_position = home + Vector3.UP * 0.1
+	velocity = Vector3.ZERO
 	_update_bar()
 
 
@@ -287,6 +352,8 @@ func _attack() -> void:
 	_cooldown = float(stats.cd) * randf_range(0.85, 1.2)
 	if anim and anim.has_animation("attack"):
 		anim.play("attack", 0.1)
+		anim.speed_scale = 1.0
+		_gait = ""
 		_lock = anim.get_animation("attack").length * 0.8
 	_strike = float(stats.hit_t)
 	if kind.contains("wolf"):

@@ -1,12 +1,24 @@
 extends Node
 ## Drives the active objective of the main story: spawns what it needs
-## (NPC, enemies, pickups, props, beacons), detects completion, grants rewards.
+## (NPC, the NPCs present for its conversation, enemies, pickups, props,
+## beacons), detects completion, grants rewards.
+##
+## Conversations with several NPCs: an objective's `with` lists NPCs who are
+## present for it (see docs/STORY.md). They are placed standing in a loose
+## circle with the talk target (talk) or around the objective's marker (the
+## other types), facing the middle, and removed again when the objective ends
+## unless the map is their home. Without `with`, the NPCs who speak in the
+## objective's lines are gathered the same way, so nobody talks from nowhere.
 
 signal objective_completed(quest_id: String, index: int)
 signal quest_completed(quest_id: String)
 
 const BEACON_GOLD := Color(1.0, 0.82, 0.35)
 const BEACON_JADE := Color(0.45, 1.0, 0.8)
+## circle of a group conversation around its centre (m)
+const PARTY_RADIUS := 1.45
+## minimum distance between two people standing in a group (m)
+const PARTY_SPACING := 0.85
 
 var game: Node
 var obj: Dictionary = {}
@@ -17,15 +29,21 @@ var spawned: Array[Node] = []
 var enemies: Array[Enemy] = []
 var pickups: Array[Pickup] = []
 var prop: QuestProp
+## NPCs standing in for this objective's conversation (the target excluded)
+var party: Array[Npc] = []
 var _med_time := 0.0
 var _fight_talked := false
 var _completing := false
 var _fighting := ""
 var trib: Tribulation
 var _trib_failed := false
+## bumped by clear(): a coroutine that awaited across it must not act on the new objective
+var _epoch := 0
+var _music_timer: SceneTreeTimer
 
 
 func clear() -> void:
+	_epoch += 1
 	for n in spawned:
 		if is_instance_valid(n):
 			# an enemy already mid-death (its own tween fades it out, then
@@ -39,6 +57,7 @@ func clear() -> void:
 	enemies.clear()
 	pickups.clear()
 	prop = null
+	_dismiss_party()
 	if target_npc and is_instance_valid(target_npc):
 		target_npc.set_quest_target(false)
 	target_npc = null
@@ -62,32 +81,54 @@ func activate() -> void:
 		game.hud.set_objective("Your legend is written. Wander freely.")
 		return
 	obj = Game.objective()
+	if obj.is_empty():
+		return
+	stage(obj)
+
+
+## Set up objective ``o`` on the current map (activate() passes the story's
+## current objective; tests stage made-up ones).
+func stage(o: Dictionary) -> void:
+	obj = o
 	var map: Node = game.map
 	if obj.map != Game.map_id:
 		state = "travel"
-		game.hud.set_objective("Travel to %s by teleport array" % Story.map_name(obj.map))
-		_point(map.marker_position("TeleportArray"))
+		if Doors.INTERIORS.has(Game.map_id) and map.has_marker("ExitDoor"):
+			# teleport arrays do not work indoors: out through the door first
+			game.hud.set_objective("Leave the building, then travel to %s" % Story.map_name(obj.map))
+			_point(map.marker_position("ExitDoor"))
+		else:
+			game.hud.set_objective("Travel to %s by teleport array" % Story.map_name(obj.map))
+			if map.has_marker("TeleportArray"):
+				_point(map.marker_position("TeleportArray"))
 		return
 	state = "active"
 	_update_text()
 	match obj.type:
 		"talk":
-			var at: String = obj.at if obj.get("at") else Story.npc(obj.npc).home.marker
+			var at: String = _talk_marker()
 			target_npc = game.ensure_npc(obj.npc, at)
 			target_npc.set_quest_target(true)
 			_point(target_npc.global_position)
+			_gather_talk_party()
 		"reach":
 			var p: Vector3 = map.marker_position(obj.marker)
 			_beacon(p, BEACON_GOLD, float(obj.get("radius", 4.0)) * 0.5)
 			_point(p)
+			_gather_party(p, 2.1, 0.0)
 		"defeat":
-			_spawn_enemies(map.marker_position(obj.marker))
+			var c: Vector3 = map.marker_position(obj.marker)
+			_spawn_enemies(c)
+			_gather_party(c, PARTY_RADIUS, 9.0)
 		"collect":
-			_spawn_pickups(map.marker_position(obj.marker))
+			var c: Vector3 = map.marker_position(obj.marker)
+			_spawn_pickups(c)
+			_gather_party(c, PARTY_RADIUS, 9.0)
 		"meditate":
 			var p: Vector3 = map.marker_position(obj.marker)
 			_beacon(p, BEACON_JADE, 1.6)
 			_point(p)
+			_gather_party(p, 2.4, 0.0)
 		"interact":
 			var p: Vector3 = map.marker_position(obj.marker)
 			prop = QuestProp.create(obj.object)
@@ -96,11 +137,12 @@ func activate() -> void:
 			var to: Vector3 = map.marker_position("PlayerSpawn") - p
 			prop.rotation.y = atan2(to.x, to.z)
 			spawned.append(prop)
-			_beacon(p, BEACON_GOLD, 1.8)
+			_beacon(p, BEACON_GOLD, maxf(1.8, prop.footprint() + 0.6))
 			_point(p)
+			_gather_party(p, PARTY_RADIUS, prop.footprint() + 2.0)
 		"cinematic":
 			state = "busy"
-			_play_cinematic.call_deferred()
+			_play_cinematic.call_deferred(_epoch)
 		"tribulation":
 			var p: Vector3 = map.marker_position(obj.marker)
 			_beacon(p, Color(0.6, 0.72, 1.0), 2.2)
@@ -113,7 +155,139 @@ func activate() -> void:
 			trib.wave_spawned.connect(_on_wave)
 			trib.survived.connect(_on_tribulation_survived)
 			trib.failed.connect(_on_tribulation_failed)
+			_gather_party(p, PARTY_RADIUS, 11.0)
 
+
+## Where the talk target stands: the objective's `at`, else the NPC's home
+## marker, else (an NPC with no home here) beside the arrival point.
+func _talk_marker() -> String:
+	var map: Node = game.map
+	var at = obj.get("at")
+	if at and map.has_marker(at):
+		return at
+	var home = Story.npc(obj.npc).get("home")
+	if home and home.map == Game.map_id and map.has_marker(home.marker):
+		return home.marker
+	return "PlayerSpawn"
+
+
+# ------------------------------------------------------------ group conversations
+
+## NPC ids present for this objective's conversation: `with` when the story
+## gives it, otherwise everyone (but the player, the narrator and the talk
+## target) who speaks in its lines or its choices' replies.
+func party_ids() -> Array:
+	var ids: Array = []
+	var w = obj.get("with")
+	if w is Array:
+		ids = w.duplicate()
+	else:
+		var lines: Array = (obj.get("dialogue", []) if obj.get("dialogue") else []).duplicate()
+		for c in (obj.get("choices", []) if obj.get("choices") else []):
+			lines.append_array(c.get("reply", []) if c.get("reply") else [])
+		for l in lines:
+			var sp: String = l.get("speaker", "")
+			if not ids.has(sp):
+				ids.append(sp)
+	var out: Array = []
+	for id in ids:
+		if id is String and id not in ["", "player", "narrator", obj.get("npc", "")] and not out.has(id) \
+				and not Story.npc(id).is_empty():
+			out.append(id)
+	return out
+
+
+## Talk: the target stands at its marker facing the approach; the others
+## join it in a circle whose open side is where the player will stand.
+func _gather_talk_party() -> void:
+	var ids := party_ids()
+	if ids.is_empty() or target_npc == null:
+		return
+	var f := target_npc.global_basis.z
+	f.y = 0.0
+	f = f.normalized() if f.length() > 0.01 else Vector3.FORWARD
+	var centre := target_npc.global_position + f * (PARTY_RADIUS * 0.75)
+	_place_party(ids, centre, f, PARTY_RADIUS, [target_npc.global_position])
+
+
+## Other objectives: the group waits around the marker (or, for a fight or a
+## tribulation, a little way back toward where the player comes from).
+func _gather_party(anchor: Vector3, radius: float, stand_back: float) -> void:
+	var ids := party_ids()
+	if ids.is_empty():
+		return
+	var map: Node = game.map
+	var toward: Vector3 = game.player.global_position - anchor
+	toward.y = 0.0
+	if toward.length() < 1.0:
+		toward = map.marker_position("PlayerSpawn") - anchor
+		toward.y = 0.0
+	toward = toward.normalized() if toward.length() > 0.01 else Vector3.FORWARD
+	var centre := anchor
+	if stand_back > 0.0:
+		centre = map.ground_at(anchor + toward * stand_back)
+	_place_party(ids, centre, toward, radius, [])
+
+
+## Stand `ids` on a circle around `centre`, leaving the arc toward `open_dir`
+## free for the player, each on open walkable ground and facing the middle.
+func _place_party(ids: Array, centre: Vector3, open_dir: Vector3, radius: float, taken: Array) -> void:
+	var map: Node = game.map
+	var right := open_dir.cross(Vector3.UP).normalized()
+	var used: Array = taken.duplicate()
+	var n := ids.size()
+	for i in n:
+		var id: String = ids[i]
+		# spread over the far arc: 0 = the open side, PI = straight across
+		var slot := (float(i) + 0.5) / float(n)
+		var ang := lerpf(deg_to_rad(80.0), deg_to_rad(280.0), slot) if n > 1 else deg_to_rad(110.0)
+		var r := radius + (0.35 if n > 4 else 0.0)
+		var at := _free_spot(centre, open_dir, right, ang, r, used)
+		used.append(at)
+		var npc: Npc = game.place_npc(id, at, centre)
+		npc.set_quest_target(false)
+		if not party.has(npc):
+			party.append(npc)
+
+
+func _free_spot(centre: Vector3, fwd: Vector3, right: Vector3, ang: float, r: float, used: Array) -> Vector3:
+	var map: Node = game.map
+	for tries in 14:
+		var da := (0.22 * ceilf(tries * 0.5)) * (1.0 if tries % 2 == 0 else -1.0)
+		var rr := r + 0.3 * floorf(tries / 4.0)
+		var a := ang + da
+		var cand: Vector3 = centre + (fwd * cos(a) + right * sin(a)) * rr
+		var g: Vector3 = map.ground_at(cand)
+		if absf(g.y - centre.y) > 0.8 or not map.is_open(g, 0.3):
+			continue
+		var crowded := false
+		for u in used:
+			if Vector2(g.x - u.x, g.z - u.z).length() < PARTY_SPACING:
+				crowded = true
+				break
+		if not crowded:
+			return g
+	var fb: Vector3 = map.open_spot(centre, atan2((fwd * cos(ang) + right * sin(ang)).z, (fwd * cos(ang) + right * sin(ang)).x), r)
+	return fb
+
+
+## Send the group home: NPCs who live on this map go back to their marker,
+## the ones brought in for the conversation leave.
+func _dismiss_party() -> void:
+	for npc in party:
+		if not is_instance_valid(npc) or npc == target_npc:
+			continue
+		if game.is_ambient(npc.npc_id):
+			var home = Story.npc(npc.npc_id).home
+			if game.map and game.map.has_marker(home.marker):
+				game.ensure_npc(npc.npc_id, home.marker)
+		else:
+			game.npcs.erase(npc.npc_id)
+			npc.queue_free()
+	party.clear()
+
+
+# ------------------------------------------------------------ objectives
 
 func _point(p: Vector3) -> void:
 	target_point = p
@@ -153,6 +327,7 @@ func _spawn_enemies(center: Vector3) -> void:
 		var p: Vector3 = center if r == 0.0 else game.map.open_spot(center, a, r)
 		game.map.add_child(e)
 		e.global_position = p + Vector3.UP * 0.1
+		e.home = e.global_position
 		var to: Vector3 = game.player.global_position - p
 		e.rotation.y = atan2(to.x, to.z)
 		e.died.connect(_on_enemy_died)
@@ -164,19 +339,31 @@ func _spawn_enemies(center: Vector3) -> void:
 
 func _spawn_pickups(center: Vector3) -> void:
 	var count := int(obj.count)
+	var used: Array = []
 	for i in range(Game.progress, count):
 		var a := i * 2.39996
 		var r := 1.5 + 6.0 * sqrt((i + 0.5) / count)
 		var p := Pickup.create(obj.item)
 		game.map.add_child(p)
-		p.global_position = game.map.open_spot(center, a, r)
+		var at: Vector3 = game.map.open_spot(center, a, r)
+		for u in used:
+			if at.distance_to(u) < 0.6:
+				# open_spot fell back to the centre: fan the rest out instead of stacking them
+				at = game.map.ground_at(center + Vector3(cos(a), 0, sin(a)) * r)
+				break
+		used.append(at)
+		p.global_position = at
 		pickups.append(p)
 		spawned.append(p)
 	_point(center)
 
 
-func _play_cinematic() -> void:
+func _play_cinematic(epoch: int) -> void:
+	if epoch != _epoch:
+		return
 	await game.cinematic.play(obj.id)
+	if epoch != _epoch:
+		return
 	complete()
 
 
@@ -198,7 +385,7 @@ func _set_fight(kind: String) -> void:
 
 
 func _on_enemy_died(e: Enemy) -> void:
-	if state != "active":
+	if state != "active" or not enemies.has(e):
 		return
 	Game.progress += 1
 	Game.add_xp(12 if not e.boss else 120)
@@ -206,6 +393,11 @@ func _on_enemy_died(e: Enemy) -> void:
 	if Game.progress >= int(obj.count):
 		_set_fight("")
 		complete()
+
+
+## How close the player must be to use the objective's prop.
+func _prop_reach() -> float:
+	return (prop.footprint() + 1.8) if prop else 3.0
 
 
 ## Called by the game when the player presses E near something of ours.
@@ -216,10 +408,14 @@ func try_interact() -> bool:
 	if obj.type == "talk" and target_npc and pp.distance_to(target_npc.global_position) < 2.8:
 		_talk()
 		return true
-	if obj.type == "interact" and prop and pp.distance_to(prop.global_position) < 3.0:
+	if obj.type == "interact" and prop and _flat_dist(pp, prop.global_position) < _prop_reach():
 		_interact()
 		return true
 	return false
+
+
+func _flat_dist(a: Vector3, b: Vector3) -> float:
+	return Vector2(a.x - b.x, a.z - b.z).length() if absf(a.y - b.y) < 3.0 else INF
 
 
 func prompt() -> String:
@@ -231,7 +427,7 @@ func prompt() -> String:
 			if target_npc and pp.distance_to(target_npc.global_position) < 2.8:
 				return "E  Talk to " + Story.npc(obj.npc).get("name", "")
 		"interact":
-			if prop and pp.distance_to(prop.global_position) < 3.0:
+			if prop and _flat_dist(pp, prop.global_position) < _prop_reach():
 				return "E  " + Story.fill(obj.text)
 		"meditate":
 			if pp.distance_to(target_point) < 3.5 and not game.player.meditating:
@@ -239,23 +435,35 @@ func prompt() -> String:
 	return ""
 
 
+## Play an objective's conversation (its lines, then its choice and reply) as
+## one scene; returns false when the objective changed underneath (map load).
+func _scene(npc: Npc = null) -> bool:
+	var ep := _epoch
+	if not obj.get("dialogue") and not obj.get("choices"):
+		return true
+	game.scene_begin(npc)
+	if obj.get("dialogue"):
+		await game.converse(obj.dialogue, npc)
+	if ep == _epoch:
+		await _choose(npc)
+	game.scene_end()
+	return ep == _epoch
+
+
 func _talk() -> void:
 	state = "busy"
 	var npc := target_npc
 	npc.set_quest_target(false)
-	await game.converse(obj.dialogue, npc)
-	await _choose(npc)
-	complete()
+	if await _scene(npc):
+		complete()
 
 
 func _interact() -> void:
 	state = "busy"
 	Audio.sfx("chest_open" if obj.object == "treasure_chest" else "bell_toll" if obj.object == "bronze_bell" else "objective_update", -4.0)
 	Fx.burst(game.map, prop.global_position + Vector3.UP, BEACON_GOLD, 40, 3.0)
-	if obj.get("dialogue"):
-		await game.converse(obj.dialogue)
-	await _choose()
-	complete()
+	if await _scene():
+		complete()
 
 
 ## A moral choice after the objective's dialogue: the options whose conditions
@@ -268,8 +476,11 @@ func _choose(npc: Npc = null) -> void:
 	var valid: Array = Game.valid_options(opts)
 	if valid.is_empty():
 		return
+	var ep := _epoch
 	var texts: Array = valid.map(func(o): return Story.fill(o.text))
 	var i: int = await game.choose(Story.fill(obj.get("choice_prompt", "")), texts, npc)
+	if ep != _epoch:
+		return
 	var op: Dictionary = valid[clampi(i, 0, valid.size() - 1)]
 	var before := Game.alignment()
 	Game.apply_choice(op, opts.find(op))
@@ -278,28 +489,26 @@ func _choose(npc: Npc = null) -> void:
 		game.hud.toast("+%d %s" % [int(rw.items[item]), Story.item_name(item)], UiTheme.JADE)
 	if Game.alignment() != before:
 		game.hud.toast("Your path turns: " + Game.alignment_name(), UiTheme.GOLD)
-	var reply: Array = op.get("reply", [])
+	var reply: Array = op.get("reply", []) if op.get("reply") else []
 	if not reply.is_empty():
 		await game.converse(reply, npc)
 
 
 func _process(delta: float) -> void:
-	if state != "active" or game.busy:
+	if state != "active" or game.busy or game.dialogue.active or game.cinematic.active:
 		return
 	var player: Node3D = game.player
 	var pp := player.global_position
 	match obj.type:
 		"talk":
-			if target_npc:
+			if target_npc and is_instance_valid(target_npc):
 				_point(target_npc.global_position)
 		"reach":
 			if Vector2(pp.x - target_point.x, pp.z - target_point.z).length() < float(obj.get("radius", 4.0)) \
-					and absf(pp.y - target_point.y) < 6.0:
+					and absf(pp.y - target_point.y) < 6.0 and not player.dead:
 				state = "busy"
-				if obj.get("dialogue"):
-					await game.converse(obj.dialogue)
-				await _choose()
-				complete()
+				if await _scene():
+					complete()
 		"tribulation":
 			if trib == null:
 				return
@@ -312,9 +521,14 @@ func _process(delta: float) -> void:
 				var d := Vector2(pp.x - trib.global_position.x, pp.z - trib.global_position.z).length()
 				if d < 5.0 and absf(pp.y - trib.global_position.y) < 6.0 and not player.dead:
 					state = "busy"
+					var ep := _epoch
 					if obj.get("dialogue") and not _fight_talked:
 						_fight_talked = true
+						game.scene_begin()
 						await game.converse(obj.dialogue)
+						game.scene_end()
+					if ep != _epoch:
+						return
 					state = "active"
 					_trib_failed = false
 					_set_fight("boss")
@@ -324,8 +538,17 @@ func _process(delta: float) -> void:
 			if obj.get("dialogue") and not _fight_talked and pp.distance_to(target_point) < 24.0:
 				_fight_talked = true
 				state = "busy"
+				var ep := _epoch
+				game.scene_begin()
 				await game.converse(obj.dialogue)
+				game.scene_end()
+				if ep != _epoch:
+					return
 				state = "active"
+				# the fight may have ended while they talked (a blast already in flight)
+				if Game.progress >= int(obj.count):
+					complete()
+					return
 			var boss_e: Enemy = null
 			for e in enemies:
 				if is_instance_valid(e) and e.boss:
@@ -346,13 +569,15 @@ func _process(delta: float) -> void:
 			for p in pickups:
 				if not is_instance_valid(p) or p.taken:
 					continue
-				if pp.distance_to(p.global_position + Vector3.UP * 0.4) < 1.5:
+				if pp.distance_to(p.global_position + Vector3.UP * 0.4) < 1.5 and not player.dead:
 					p.take()
 					Game.progress += 1
 					Game.add_item(obj.item)
 					_update_text()
 					if Game.progress >= int(obj.count):
-						complete()
+						state = "busy"
+						if await _scene():
+							complete()
 						return
 				elif nearest == null or pp.distance_to(p.global_position) < pp.distance_to(nearest.global_position):
 					nearest = p
@@ -368,10 +593,9 @@ func _process(delta: float) -> void:
 					game.hud.set_meditation(-1.0)
 					Audio.sfx("breakthrough" if obj.get("dialogue") == null else "objective_update", -6.0)
 					Fx.burst(game.map, pp + Vector3.UP, BEACON_JADE, 60, 2.5)
-					if obj.get("dialogue"):
-						await game.converse(obj.dialogue)
 					player.stop_meditation()
-					complete()
+					if await _scene():
+						complete()
 			else:
 				game.hud.set_meditation(_med_time / secs if _med_time > 0.0 else -1.0)
 
@@ -390,6 +614,7 @@ func complete() -> void:
 	else:
 		Audio.sfx("objective_update", -6.0)
 	Game.save()
+	_dismiss_party()
 	game.refresh_npcs()
 	activate()
 
@@ -423,15 +648,11 @@ func _finish_quest(q: Dictionary) -> void:
 		var nv := Story.volume(vol + 1)
 		if not nv.is_empty():
 			game.hud.title_card(Story.volume_label(vol + 1), nv.get("subtitle", ""), 5.0, 0.0 if Game.fast else 5.5)
-		if not Game.fast:
-			Audio.play_music("victory", 0.5)
-			get_tree().create_timer(12.0).timeout.connect(func(): if game.map: Audio.play_music(game.map.music))
+		_victory_music()
 	elif Story.ends_chapter(q):
 		var ch := Story.chapter(int(q.chapter))
 		game.hud.banner("Chapter %d Complete" % int(q.chapter), ch.get("title", ""), 4.0)
-		if not Game.fast:
-			Audio.play_music("victory", 0.5)
-			get_tree().create_timer(12.0).timeout.connect(func(): if game.map: Audio.play_music(game.map.music))
+		_victory_music()
 	if not Game.finished():
 		if Story.ends_chapter(q):
 			var recap := Story.latest_beat(Game.quest_index)
@@ -443,6 +664,20 @@ func _finish_quest(q: Dictionary) -> void:
 		Audio.sfx("quest_accept", -6.0)
 	else:
 		game.hud.banner("Immortal Ascension", "The saga of the Azure Cloud Sect is complete", 6.0)
+
+
+## The victory fanfare, then back to the map's music, unless a fight (or a
+## newer fanfare, or a new map) has taken the music over in the meantime.
+func _victory_music() -> void:
+	if Game.fast:
+		return
+	Audio.play_music("victory", 0.5)
+	var t := get_tree().create_timer(12.0)
+	_music_timer = t
+	t.timeout.connect(func():
+		if _music_timer == t and is_instance_valid(game) and game.map and _fighting == "" \
+				and Audio.current_music == "victory":
+			Audio.play_music(game.map.music))
 
 
 func _on_volley(_done: int, _total: int) -> void:
@@ -471,6 +706,7 @@ func _on_tribulation_survived() -> void:
 
 func _on_tribulation_failed() -> void:
 	_trib_failed = true
+	Game.progress = 0
 	game.hud.show_boss("", -1.0)
 	_set_fight("")
 	game.hud.toast("The lightning strikes you down. Steady yourself and face heaven again.", UiTheme.CRIMSON)

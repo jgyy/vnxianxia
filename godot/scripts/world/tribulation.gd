@@ -223,7 +223,7 @@ func _telegraph() -> void:
 		ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(ring)
 		var g: Vector3 = map.ground_at(tp) if map and map.has_method("ground_at") else tp
-		ring.global_position = g + Vector3.UP * 0.06
+		ring.global_position = g + Vector3.UP * 0.14
 		_rings.append(ring)
 	_phase = "telegraph"
 	_t = T_TELEGRAPH * _speed()

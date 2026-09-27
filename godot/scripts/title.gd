@@ -14,13 +14,17 @@ var _vol_sub: Label
 
 
 func _ready() -> void:
+	# coming back from a game: never a paused tree or a captured, hidden cursor
+	get_tree().paused = false
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var map: Node3D = (load("res://scenes/maps/sect.tscn") as PackedScene).instantiate()
 	add_child(map)
 	await get_tree().physics_frame
 	_centre = map.marker_position("FormationArray")
 	_cam = Camera3D.new()
 	_cam.fov = 55.0
-	_cam.far = 3000.0
+	_cam.near = 0.15
+	_cam.far = 1500.0
 	add_child(_cam)
 	_cam.make_current()
 	# the two heroes on the cliff edge
@@ -29,7 +33,7 @@ func _ready() -> void:
 		var m: Node3D = (load("res://assets/characters/%s.glb" % ["cultivator_male", "cultivator_female"][i]) as PackedScene).instantiate()
 		add_child(m)
 		ActorLook.apply(m)
-		m.global_position = edge + Vector3(-0.6 + i * 1.2, 0, 6.0)
+		m.global_position = map.ground_at(edge + Vector3(-0.6 + i * 1.2, 0, 6.0))
 		m.rotation.y = PI
 		var ap := m.find_child("AnimationPlayer", true, false) as AnimationPlayer
 		ActorLook.loop_anims(ap)

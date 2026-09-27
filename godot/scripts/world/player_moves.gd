@@ -627,7 +627,7 @@ func _motion_state(delta: float) -> Variant:
 	player.velocity.z = v.z
 	if not player.is_on_floor():
 		player.velocity.y -= player.GRAVITY * delta
-	player.move_and_slide()
+	player.move_body(delta)
 	return null
 
 
@@ -808,7 +808,7 @@ func update_animation(delta: float) -> bool:
 	var fwd: Vector3 = player.model_root.global_basis.z
 	if _crouch:
 		wanted = "crouch_walk" if moving else "crouch_idle"
-		speed = clampf(planar / 0.8, 0.6, 1.6) if moving else 1.0
+		speed = player.stride_scale("crouch_walk", planar) if moving else 1.0
 	elif _blocking:
 		wanted = "block_idle"
 		if moving:
@@ -819,17 +819,13 @@ func update_animation(delta: float) -> bool:
 				wanted = "strafe_l" if l > 0.0 else "strafe_r"
 			else:
 				wanted = "walk" if f > 0.0 else "walk_back"
-			speed = clampf(planar / 1.0, 0.6, 1.5)
+			speed = player.stride_scale(wanted, planar)
 	elif moving:
-		if planar > 2.8:
-			wanted = "sprint" if _sprinting and has("sprint") else "run"
-			speed = planar / (6.2 if wanted == "sprint" else 4.2)
-		elif _sneak:
+		# walk / run / sprint with hysteresis, speed_scale = ground speed / authored speed (no foot sliding)
+		wanted = player.gait_for(planar, _loco, _sprinting and has("sprint"))
+		if wanted == "walk" and _sneak and has("sneak"):
 			wanted = "sneak"
-			speed = clampf(planar / 1.0, 0.6, 1.5)
-		else:
-			wanted = "walk"
-			speed = clampf(planar / 1.45, 0.5, 1.5)
+		speed = player.stride_scale(wanted, planar)
 	else:
 		if _now - _last_attack < 6.0 or not _enemies_near(12.0).is_empty():
 			wanted = "sword_idle" if _now - _last_sword < 8.0 else "combat_idle"
@@ -864,13 +860,14 @@ func update_animation(delta: float) -> bool:
 	if not has(wanted):
 		wanted = "idle"
 	if anim.current_animation != wanted:
-		anim.play(wanted, 0.25 if wanted != "block_idle" else 0.12)
+		var blend := 0.12 if wanted == "block_idle" else (0.25 if wanted.ends_with("idle") else 0.2)
+		anim.play(wanted, blend)
 	anim.speed_scale = speed
 	_loco = wanted
 	if moving:
 		player._step_timer -= delta
 		if player._step_timer <= 0.0:
-			player._step_timer = 0.31 if planar > 2.8 else (0.62 if _crouch or _sneak else 0.5)
+			player._step_timer = player.step_interval(wanted, speed)
 			Audio.sfx("footstep_stone", -14.0 if not (_crouch or _sneak) else -22.0, randf_range(0.9, 1.1))
 	return true
 
