@@ -12,6 +12,7 @@ workstreams. They sit outside `godot/`, so Godot never imports them, and no tool
 | `world_<map>_<view>` | `godot/tests/capture_world_shots.gd` (explicit camera positions) |
 | `characters_turnaround` | `blender/render_previews.py` (Cycles turnaround of both heroes) |
 | `realism_face`, `realism_profile`, `realism_hand`, `hair_skin` | one-off Cycles close-ups made with the `blender/xianxia/preview.py` helpers. No committed script writes them, so re-create them with `preview.setup` / `camera` / `render` |
+| `face_realism` | before/after face sheet: top row the committed `godot/ui/portraits` of cultivator_female, cultivator_male, disciple_female, elder_male before the landmark head; bottom row `python blender/render_portraits.py --only ... --samples 112 --size 512` after it, tiled 2x4 |
 | `animations_sheet`, `gait_walk_run` | `blender/render_animation_sheet.py` (default out is `docs/screenshots/animations_sheet.jpg`; gait strips with `--strips walk,run --travel`) |
 | `quest_props`, `items` | `blender/render_props_sheet.py --kind props` / `--kind items` |
 | `dialogue_voiced_2000q.png` | an in-game capture kept as PNG |
