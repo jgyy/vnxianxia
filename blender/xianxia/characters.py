@@ -1309,49 +1309,10 @@ def build_actions(arm, bones, cfg, s):
     actions.append(act)
 
     # ---------------------------------------------------------------- walk / run
-    def locomotion(name, T, stride, knee, lean, arm_sw, bob, elbow_base, twist):
-        act = start(name)
-        for f in range(0, T + 1):
-            ph = 2 * math.pi * f / T
-            dl = {}
-            dl["hips"] = qa(X, -lean * 0.4) @ qa(Z, twist * math.sin(ph)) @ qa(Y, 2.5 * math.cos(ph))
-            dl["spine"] = qa(X, -lean * 0.4) @ qa(Z, -twist * 0.6 * math.sin(ph))
-            dl["chest"] = qa(X, -lean * 0.2) @ qa(Z, -twist * 0.8 * math.sin(ph))
-            dl["neck"] = qa(X, lean * 0.3)
-            dl["head"] = qa(X, lean * 0.4) @ qa(Z, twist * 0.5 * math.sin(ph))
-            for side, off in (("L", 0.0), ("R", math.pi)):
-                p = ph + off
-                th = stride * math.sin(p)
-                # knee: flexes most mid-swing (leg travelling forward) + contact flex
-                swing_phase = max(0.0, math.cos(p))
-                bend = 6 + knee * swing_phase ** 1.4 + 10 * max(0.0, math.sin(p - 0.6)) ** 4
-                dl[f"thigh.{side}"] = swing(th)
-                dl[f"shin.{side}"] = qa(X, bend)
-                # keep the sole roughly level, toe-off at the back of the stride
-                foot = -(th - bend) * 0.8 - 18 * max(0.0, -math.sin(p)) ** 3 * (1 if name == "walk" else 1.6)
-                dl[f"foot.{side}"] = qa(X, -foot)
-                dl[f"toe.{side}"] = qa(X, 20 * max(0.0, -math.sin(p)) ** 4)
-                sgn = 1 if side == "L" else -1
-                dl[f"shoulder.{side}"] = qa(Y, sgn * 2 * math.sin(p))
-            for side, off in (("L", math.pi), ("R", 0.0)):
-                p = ph + off
-                a = arm_sw * math.sin(p)
-                dl.setdefault("_x", {})
-                dl["_x"][f"swing.{side}"] = swing(a)
-                dl["_x"][f"elbow.{side}"] = elbow_base + max(0.0, a) * 0.6
-            ex = dl.pop("_x")
-            arms_hang(dl, ex)
-            for side in ("L", "R"):
-                pose_hand(dl, side, "relaxed", 1.5, "fist", 0.0 if name == "walk" else 0.55)
-            dl["hair.1"] = qa(X, 5 + 3 * math.sin(2 * ph - 0.8) + lean * 0.8)
-            dl["hair.2"] = qa(X, 4 + 4 * math.sin(2 * ph - 1.6) + lean * 0.5)
-            dl["hair.3"] = qa(X, 3 + 5 * math.sin(2 * ph - 2.4))
-            z = -bob * s * (0.5 + 0.5 * math.cos(2 * ph)) + 0.0
-            poser.key(f + 1, dl, V((0.012 * s * math.sin(ph), 0, z)))
-        return act
-
-    actions.append(locomotion("walk", 32, 26, 55, 3.0, 16, 0.028, 14, 5))
-    actions.append(locomotion("run", 20, 44, 100, 13.0, 38, 0.05, 70, 8))
+    # IK gait with planted feet (blender/xianxia/gait.py): authored so that at
+    # speed_scale 1 the stance foot matches the ground at 1.6 / 4.6 m/s.
+    from . import gait
+    actions += gait.build_locomotion(arm, bones, cfg, s, ("walk", "run"))
 
     # ---------------------------------------------------------------- IK based gestures
     lens = {side: ((bones[f"upper_arm.{side}"][1] - bones[f"upper_arm.{side}"][0]).length,
