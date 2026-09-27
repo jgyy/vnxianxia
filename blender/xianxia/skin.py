@@ -353,7 +353,8 @@ def paint_head(cfg, material, head_parts, centre, radii, size, hairline, makeup=
     pos, nrm = SM.dilate([pos, nrm], cover)
     eyes = []
     for o in head_parts:
-        if o.data.vertices and any(m in eye_mats for m in o.data.materials):
+        mats_o = [m for m in o.data.materials if m is not None]
+        if o.data.vertices and mats_o and all(m in eye_mats for m in mats_o):      # a separate eyeball
             co = np.array([tuple(o.matrix_world @ v.co) for v in o.data.vertices], np.float32)
             eyes.append(co.mean(0))
 
@@ -363,7 +364,10 @@ def paint_head(cfg, material, head_parts, centre, radii, size, hairline, makeup=
     points = {}
     for o in head_parts:
         points.update({k: tuple(v) for k, v in o.get("face_landmarks", {}).items()})
-    lm = landmarks(cfg, eyes if len(eyes) == 2 else None, frame_of, points)
+    # eye parts (sclera / iris / cornea...) grouped per side -> one centre per eye
+    sides = [[e for e in eyes if e[0] * k > 0] for k in (1, -1)]
+    centres = [np.mean(g, 0) for g in sides if g]
+    lm = landmarks(cfg, centres if len(centres) == 2 else None, frame_of, points)
     cfg = dict(cfg, _hairline=hairline, _makeup=makeup)
     painter = FacePainter(pos, nrm, cover, centre, radii, cfg, lm)
     col, rough, ao, h = painter.run()
@@ -380,7 +384,7 @@ def paint(cfg, mats, head_parts, centre, radii, hairline):
     makeup = (1.0 if age < 0.25 else 0.35) if fem else 0.0
     if cfg.get("beard"):
         cfg = dict(cfg, stubble=max(cfg.get("stubble", 0.0), 0.45))
-    eye_mats = {mats[k] for k in ("eye", "Eye_Sclera", "Eye_Iris") if k in mats}
+    eye_mats = {mats[k] for k in ("eye", "Eye_Sclera", "Eye_Iris", "Eye_Cornea") if k in mats}
     maps = paint_head(cfg, mat, head_parts, centre, radii, size, hairline, makeup, eye_mats)
     if maps is not None:
         paint_face_into(mat, maps, size)
