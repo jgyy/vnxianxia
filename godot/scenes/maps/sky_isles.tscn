@@ -3,26 +3,60 @@
 [ext_resource type="PackedScene" path="res://assets/environment/ascension_stair.glb" id="1_ascension_stair"]
 [ext_resource type="PackedScene" path="res://assets/environment/boulders.glb" id="2_boulders"]
 [ext_resource type="PackedScene" path="res://assets/environment/celestial_ruins.glb" id="3_celestial_ruins"]
-[ext_resource type="PackedScene" path="res://assets/environment/cloud_gate.glb" id="4_cloud_gate"]
-[ext_resource type="PackedScene" path="res://assets/environment/cloud_sea.glb" id="5_cloud_sea"]
-[ext_resource type="PackedScene" path="res://assets/environment/crystal_cluster.glb" id="6_crystal_cluster"]
-[ext_resource type="PackedScene" path="res://assets/environment/floating_island.glb" id="7_floating_island"]
-[ext_resource type="PackedScene" path="res://assets/environment/incense_burner.glb" id="8_incense_burner"]
-[ext_resource type="PackedScene" path="res://assets/environment/jade_bridge.glb" id="9_jade_bridge"]
-[ext_resource type="PackedScene" path="res://assets/environment/jade_bridge_long.glb" id="10_jade_bridge_long"]
-[ext_resource type="PackedScene" path="res://assets/environment/karst_peak.glb" id="11_karst_peak"]
-[ext_resource type="PackedScene" path="res://assets/environment/pavilion.glb" id="12_pavilion"]
-[ext_resource type="PackedScene" path="res://assets/environment/pine_tree.glb" id="13_pine_tree"]
-[ext_resource type="PackedScene" path="res://assets/environment/pine_tree_tall.glb" id="14_pine_tree_tall"]
-[ext_resource type="PackedScene" path="res://assets/environment/plum_blossom_tree.glb" id="15_plum_blossom_tree"]
-[ext_resource type="PackedScene" path="res://assets/environment/scholar_rock.glb" id="16_scholar_rock"]
-[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_large.glb" id="17_sky_platform_large"]
-[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_small.glb" id="18_sky_platform_small"]
-[ext_resource type="PackedScene" path="res://assets/environment/sky_steps.glb" id="19_sky_steps"]
-[ext_resource type="PackedScene" path="res://assets/environment/star_pavilion.glb" id="20_star_pavilion"]
-[ext_resource type="PackedScene" path="res://assets/environment/stone_lantern.glb" id="21_stone_lantern"]
-[ext_resource type="PackedScene" path="res://assets/environment/teleport_array.glb" id="22_teleport_array"]
-[ext_resource type="PackedScene" path="res://assets/environment/tribulation_altar.glb" id="23_tribulation_altar"]
+[ext_resource type="PackedScene" path="res://assets/environment/chain_bridge.glb" id="4_chain_bridge"]
+[ext_resource type="PackedScene" path="res://assets/environment/cloud_gate.glb" id="5_cloud_gate"]
+[ext_resource type="PackedScene" path="res://assets/environment/cloud_pier.glb" id="6_cloud_pier"]
+[ext_resource type="PackedScene" path="res://assets/environment/cloud_sea.glb" id="7_cloud_sea"]
+[ext_resource type="PackedScene" path="res://assets/environment/crane_figure.glb" id="8_crane_figure"]
+[ext_resource type="PackedScene" path="res://assets/environment/crystal_cluster.glb" id="9_crystal_cluster"]
+[ext_resource type="PackedScene" path="res://assets/environment/dragon_bones.glb" id="10_dragon_bones"]
+[ext_resource type="PackedScene" path="res://assets/environment/elixir_spring.glb" id="11_elixir_spring"]
+[ext_resource type="PackedScene" path="res://assets/environment/floating_island.glb" id="12_floating_island"]
+[ext_resource type="PackedScene" path="res://assets/environment/gate_of_heaven.glb" id="13_gate_of_heaven"]
+[ext_resource type="PackedScene" path="res://assets/environment/hall_of_records.glb" id="14_hall_of_records"]
+[ext_resource type="PackedScene" path="res://assets/environment/immortal_palace_gate.glb" id="15_immortal_palace_gate"]
+[ext_resource type="PackedScene" path="res://assets/environment/incense_burner.glb" id="16_incense_burner"]
+[ext_resource type="PackedScene" path="res://assets/environment/jade_bridge.glb" id="17_jade_bridge"]
+[ext_resource type="PackedScene" path="res://assets/environment/jade_bridge_long.glb" id="18_jade_bridge_long"]
+[ext_resource type="PackedScene" path="res://assets/environment/jade_palace_hall.glb" id="19_jade_palace_hall"]
+[ext_resource type="PackedScene" path="res://assets/environment/karst_peak.glb" id="20_karst_peak"]
+[ext_resource type="PackedScene" path="res://assets/environment/lotus_cluster.glb" id="21_lotus_cluster"]
+[ext_resource type="PackedScene" path="res://assets/environment/mirror_pool.glb" id="22_mirror_pool"]
+[ext_resource type="PackedScene" path="res://assets/environment/observatory.glb" id="23_observatory"]
+[ext_resource type="PackedScene" path="res://assets/environment/pavilion.glb" id="24_pavilion"]
+[ext_resource type="PackedScene" path="res://assets/environment/peach_tree.glb" id="25_peach_tree"]
+[ext_resource type="PackedScene" path="res://assets/environment/phoenix_nest.glb" id="26_phoenix_nest"]
+[ext_resource type="PackedScene" path="res://assets/environment/pine_tree.glb" id="27_pine_tree"]
+[ext_resource type="PackedScene" path="res://assets/environment/pine_tree_tall.glb" id="28_pine_tree_tall"]
+[ext_resource type="PackedScene" path="res://assets/environment/plum_blossom_tree.glb" id="29_plum_blossom_tree"]
+[ext_resource type="PackedScene" path="res://assets/environment/rainbow_bridge.glb" id="30_rainbow_bridge"]
+[ext_resource type="PackedScene" path="res://assets/environment/rustic_hut.glb" id="31_rustic_hut"]
+[ext_resource type="PackedScene" path="res://assets/environment/scholar_rock.glb" id="32_scholar_rock"]
+[ext_resource type="PackedScene" path="res://assets/environment/seal_of_heaven.glb" id="33_seal_of_heaven"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_lanterns.glb" id="34_sky_lanterns"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_burnt.glb" id="35_sky_platform_burnt"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_crystal.glb" id="36_sky_platform_crystal"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_huge.glb" id="37_sky_platform_huge"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_large.glb" id="38_sky_platform_large"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_mid.glb" id="39_sky_platform_mid"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_moon.glb" id="40_sky_platform_moon"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_palace.glb" id="41_sky_platform_palace"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_small.glb" id="42_sky_platform_small"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_platform_terraces.glb" id="43_sky_platform_terraces"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_ship_wreck.glb" id="44_sky_ship_wreck"]
+[ext_resource type="PackedScene" path="res://assets/environment/sky_steps.glb" id="45_sky_steps"]
+[ext_resource type="PackedScene" path="res://assets/environment/spirit_herb.glb" id="46_spirit_herb"]
+[ext_resource type="PackedScene" path="res://assets/environment/star_pavilion.glb" id="47_star_pavilion"]
+[ext_resource type="PackedScene" path="res://assets/environment/stepping_stone.glb" id="48_stepping_stone"]
+[ext_resource type="PackedScene" path="res://assets/environment/stone_lantern.glb" id="49_stone_lantern"]
+[ext_resource type="PackedScene" path="res://assets/environment/sun_altar.glb" id="50_sun_altar"]
+[ext_resource type="PackedScene" path="res://assets/environment/sword_spire.glb" id="51_sword_spire"]
+[ext_resource type="PackedScene" path="res://assets/environment/teleport_array.glb" id="52_teleport_array"]
+[ext_resource type="PackedScene" path="res://assets/environment/thunder_rods.glb" id="53_thunder_rods"]
+[ext_resource type="PackedScene" path="res://assets/environment/tree_of_ages.glb" id="54_tree_of_ages"]
+[ext_resource type="PackedScene" path="res://assets/environment/tribulation_altar.glb" id="55_tribulation_altar"]
+[ext_resource type="PackedScene" path="res://assets/environment/waterfall.glb" id="56_waterfall"]
+[ext_resource type="PackedScene" path="res://assets/environment/wind_temple.glb" id="57_wind_temple"]
 [ext_resource type="Script" path="res://scripts/map.gd" id="map_script"]
 
 [sub_resource type="ProceduralSkyMaterial" id="sky_material"]
@@ -79,253 +113,904 @@ transform = Transform3D(0.906308, 0, 0.422618, 0.358401, 0.529919, -0.768593, -0
 light_color = Color(1, 0.95, 0.84, 1)
 light_energy = 1.9
 shadow_enabled = true
+shadow_bias = 0.06
+shadow_normal_bias = 1.6
 shadow_blur = 1.5
+directional_shadow_blend_splits = true
 directional_shadow_max_distance = 180
 
 [node name="Level" type="Node3D" parent="."]
 
-[node name="JadeBridgeLong1" parent="Level" instance=ExtResource("10_jade_bridge_long")]
+[node name="JadeBridgeLong1" parent="Level" instance=ExtResource("18_jade_bridge_long")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, 13)
 
-[node name="SkySteps1" parent="Level" instance=ExtResource("19_sky_steps")]
+[node name="SkySteps1" parent="Level" instance=ExtResource("45_sky_steps")]
 transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 17, 0, -34)
 
-[node name="JadeBridge1" parent="Level" instance=ExtResource("9_jade_bridge")]
+[node name="JadeBridge1" parent="Level" instance=ExtResource("17_jade_bridge")]
 transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -32, 0, -34)
 
-[node name="SkySteps2" parent="Level" instance=ExtResource("19_sky_steps")]
+[node name="SkySteps2" parent="Level" instance=ExtResource("45_sky_steps")]
 transform = Transform3D(0.8, 0, -0.6, 0, 1, 0, 0.6, 0, 0.8, -90.4, -10, 1.2)
 
-[node name="SkySteps3" parent="Level" instance=ExtResource("19_sky_steps")]
+[node name="SkySteps3" parent="Level" instance=ExtResource("45_sky_steps")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -64, 0, -51)
 
-[node name="JadeBridge2" parent="Level" instance=ExtResource("9_jade_bridge")]
+[node name="JadeBridge2" parent="Level" instance=ExtResource("17_jade_bridge")]
 transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -32, 10, -95)
 
-[node name="JadeBridge3" parent="Level" instance=ExtResource("9_jade_bridge")]
+[node name="JadeBridge3" parent="Level" instance=ExtResource("17_jade_bridge")]
 transform = Transform3D(0.8, 0, -0.6, 0, 1, 0, 0.6, 0, 0.8, 27.36, 10, -124.68)
 
 [node name="AscensionStair" parent="Level" instance=ExtResource("1_ascension_stair")]
 transform = Transform3D(0.6, 0, -0.8, 0, 1, 0, 0.8, 0, 0.6, 50.8185, 10, -151.139)
 
-[node name="Arrival" parent="Level" instance=ExtResource("17_sky_platform_large")]
+[node name="Arrival" parent="Level" instance=ExtResource("38_sky_platform_large")]
 transform = Transform3D(0.509315, 0, -0.86058, 0, 1, 0, 0.86058, 0, 0.509315, 0, 0, 60)
 
-[node name="IsleOfWinds" parent="Level" instance=ExtResource("17_sky_platform_large")]
+[node name="IsleOfWinds" parent="Level" instance=ExtResource("38_sky_platform_large")]
 transform = Transform3D(-0.369486, 0, 0.929236, 0, 1, 0, -0.929236, 0, -0.369486, 0, 0, -34)
 
-[node name="StarIsle" parent="Level" instance=ExtResource("18_sky_platform_small")]
+[node name="StarIsle" parent="Level" instance=ExtResource("42_sky_platform_small")]
 transform = Transform3D(-0.991968, 0, 1.12517, 0, 1.5, 0, -1.12517, 0, -0.991968, 53.85, 10, -34)
 
-[node name="RuinsIsle" parent="Level" instance=ExtResource("17_sky_platform_large")]
+[node name="RuinsIsle" parent="Level" instance=ExtResource("38_sky_platform_large")]
 transform = Transform3D(-0.99139, 0, -0.130939, 0, 1, 0, 0.130939, 0, -0.99139, -64, 0, -34)
 
-[node name="VeinIsle" parent="Level" instance=ExtResource("18_sky_platform_small")]
+[node name="VeinIsle" parent="Level" instance=ExtResource("42_sky_platform_small")]
 transform = Transform3D(0.286091, 0, -1.31934, 0, 1.35, 0, 1.31934, 0, 0.286091, -96.5965, -10, 9.462)
 
-[node name="GardenIsle" parent="Level" instance=ExtResource("17_sky_platform_large")]
+[node name="GardenIsle" parent="Level" instance=ExtResource("38_sky_platform_large")]
 transform = Transform3D(0.264681, 0, 0.964336, 0, 1, 0, -0.964336, 0, 0.264681, -64, 10, -95)
 
-[node name="LairIsle" parent="Level" instance=ExtResource("17_sky_platform_large")]
+[node name="LairIsle" parent="Level" instance=ExtResource("38_sky_platform_large")]
 transform = Transform3D(0.462223, 0, 1.21505, 0, 1.3, 0, -1.21505, 0, 0.462223, 5.1, 10, -95)
 
-[node name="StairFoot" parent="Level" instance=ExtResource("18_sky_platform_small")]
+[node name="StairFoot" parent="Level" instance=ExtResource("42_sky_platform_small")]
 transform = Transform3D(-1.34587, 0, 0.10555, 0, 1.35, 0, -0.10555, 0, -1.34587, 42.5565, 10, -144.942)
 
-[node name="PeakIsle" parent="Level" instance=ExtResource("17_sky_platform_large")]
+[node name="PeakIsle" parent="Level" instance=ExtResource("38_sky_platform_large")]
 transform = Transform3D(-1.09944, 0, 0.0351332, 0, 1.1, 0, -0.0351332, 0, -1.09944, 114.978, 36, -199.258)
 
-[node name="TeleportArray" parent="Level" instance=ExtResource("22_teleport_array")]
+[node name="TeleportArray" parent="Level" instance=ExtResource("52_teleport_array")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -7, 0, 68)
 
-[node name="CloudGate" parent="Level" instance=ExtResource("4_cloud_gate")]
+[node name="CloudGate" parent="Level" instance=ExtResource("5_cloud_gate")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, -0.05, 46.5)
 
-[node name="StoneLantern1" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern1" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -6.5, -0.05, 53)
 
-[node name="StoneLantern2" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern2" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6.5, -0.05, 53)
 
-[node name="StoneLantern3" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern3" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -6.5, -0.05, 59)
 
-[node name="StoneLantern4" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern4" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6.5, -0.05, 59)
 
-[node name="PlumBlossomTree1" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree1" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(0.0788042, 0, -0.897182, 0, 0.900636, 0, 0.897182, 0, 0.0788042, -14, -0.05, 62)
 
-[node name="PlumBlossomTree2" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree2" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(-0.701095, 0, -0.736819, 0, 1.01707, 0, 0.736819, 0, -0.701095, -12, -0.05, 52)
 
-[node name="PlumBlossomTree3" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree3" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(0.960058, 0, -0.446364, 0, 1.05875, 0, 0.446364, 0, 0.960058, 13, -0.05, 69)
 
-[node name="PineTree1" parent="Level" instance=ExtResource("13_pine_tree")]
+[node name="PineTree1" parent="Level" instance=ExtResource("27_pine_tree")]
 transform = Transform3D(0.111279, 0, -0.993789, 0, 1, 0, 0.993789, 0, 0.111279, 15, -0.05, 52)
 
-[node name="IncenseBurner1" parent="Level" instance=ExtResource("8_incense_burner")]
+[node name="IncenseBurner1" parent="Level" instance=ExtResource("16_incense_burner")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.05, 57)
 
-[node name="PineTreeTall1" parent="Level" instance=ExtResource("14_pine_tree_tall")]
+[node name="PineTreeTall1" parent="Level" instance=ExtResource("28_pine_tree_tall")]
 transform = Transform3D(1.20521, 0, -0.32837, 0, 1.24915, 0, 0.32837, 0, 1.20521, 7.08755, -0.05, -21.6975)
 
-[node name="PineTreeTall2" parent="Level" instance=ExtResource("14_pine_tree_tall")]
+[node name="PineTreeTall2" parent="Level" instance=ExtResource("28_pine_tree_tall")]
 transform = Transform3D(0.789017, 0, 0.788625, 0, 1.11556, 0, -0.788625, 0, 0.789017, -12.0486, -0.05, -23.9092)
 
-[node name="PineTreeTall3" parent="Level" instance=ExtResource("14_pine_tree_tall")]
+[node name="PineTreeTall3" parent="Level" instance=ExtResource("28_pine_tree_tall")]
 transform = Transform3D(-0.511129, 0, -0.944739, 0, 1.07414, 0, 0.944739, 0, -0.511129, -10.4117, -0.05, -42.7531)
 
-[node name="PineTreeTall4" parent="Level" instance=ExtResource("14_pine_tree_tall")]
+[node name="PineTreeTall4" parent="Level" instance=ExtResource("28_pine_tree_tall")]
 transform = Transform3D(0.982445, 0, 0.305864, 0, 1.02896, 0, -0.305864, 0, 0.982445, 6.93491, -0.05, -45.9858)
 
 [node name="Boulders1" parent="Level" instance=ExtResource("2_boulders")]
 transform = Transform3D(0.919253, 0, -0.771345, 0, 1.2, 0, 0.771345, 0, 0.919253, -6, -0.05, -22)
 
-[node name="ScholarRock1" parent="Level" instance=ExtResource("16_scholar_rock")]
+[node name="ScholarRock1" parent="Level" instance=ExtResource("32_scholar_rock")]
 transform = Transform3D(-0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, -0.939693, 9, -0.05, -45)
 
-[node name="StarPavilion" parent="Level" instance=ExtResource("20_star_pavilion")]
+[node name="StarPavilion" parent="Level" instance=ExtResource("47_star_pavilion")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 53.85, 9.95, -38.5)
 
-[node name="StoneLantern5" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern5" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 48.35, 9.95, -32)
 
-[node name="StoneLantern6" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern6" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 59.35, 9.95, -32)
 
-[node name="PlumBlossomTree4" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree4" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(0.779423, 0, -0.45, 0, 0.9, 0, 0.45, 0, 0.779423, 45.35, 9.95, -27)
 
 [node name="CelestialRuins" parent="Level" instance=ExtResource("3_celestial_ruins")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -64, 0, -34)
 
-[node name="PineTree2" parent="Level" instance=ExtResource("13_pine_tree")]
+[node name="PineTree2" parent="Level" instance=ExtResource("27_pine_tree")]
 transform = Transform3D(0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, 0.34202, -79, -0.05, -25)
 
-[node name="CrystalCluster1" parent="Level" instance=ExtResource("6_crystal_cluster")]
+[node name="CrystalCluster1" parent="Level" instance=ExtResource("9_crystal_cluster")]
 transform = Transform3D(0.731971, 0, -1.07435, 0, 1.3, 0, 1.07435, 0, 0.731971, -101.096, -10.05, 15.462)
 
-[node name="CrystalCluster2" parent="Level" instance=ExtResource("6_crystal_cluster")]
+[node name="CrystalCluster2" parent="Level" instance=ExtResource("9_crystal_cluster")]
 transform = Transform3D(0.411568, 0, 0.911379, 0, 1, 0, -0.911379, 0, 0.411568, -103.698, -10.05, 11.8731)
 
-[node name="CrystalCluster3" parent="Level" instance=ExtResource("6_crystal_cluster")]
+[node name="CrystalCluster3" parent="Level" instance=ExtResource("9_crystal_cluster")]
 transform = Transform3D(0.566122, 0, -0.565248, 0, 0.8, 0, 0.565248, 0, 0.566122, -96.9227, -10.05, 16.9549)
 
 [node name="Boulders2" parent="Level" instance=ExtResource("2_boulders")]
 transform = Transform3D(0.787846, 0, -0.138919, 0, 0.8, 0, 0.138919, 0, 0.787846, -91.1331, -10.05, 15.9736)
 
-[node name="PlumBlossomTree5" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree5" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(-1.11542, 0, -0.338338, 0, 1.1656, 0, 0.338338, 0, -1.11542, -56.4437, 9.95, -83.6014)
 
-[node name="PlumBlossomTree6" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree6" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(-1.0512, 0, -0.101343, 0, 1.05607, 0, 0.101343, 0, -1.0512, -73.2044, 9.95, -88.8983)
 
-[node name="PlumBlossomTree7" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree7" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(0.712365, 0, 0.799012, 0, 1.07046, 0, -0.799012, 0, 0.712365, -73.4744, 9.95, -96.9206)
 
-[node name="PlumBlossomTree8" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree8" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(0.332247, 0, -1.24713, 0, 1.29063, 0, 1.24713, 0, 0.332247, -71.1891, 9.95, -105.845)
 
-[node name="PlumBlossomTree9" parent="Level" instance=ExtResource("15_plum_blossom_tree")]
+[node name="PlumBlossomTree9" parent="Level" instance=ExtResource("29_plum_blossom_tree")]
 transform = Transform3D(0.036997, 0, 1.22828, 0, 1.22884, 0, -1.22828, 0, 0.036997, -52.7288, 9.95, -102.472)
 
-[node name="Pavilion1" parent="Level" instance=ExtResource("12_pavilion")]
+[node name="Pavilion1" parent="Level" instance=ExtResource("24_pavilion")]
 transform = Transform3D(-0.642788, 0, -0.766044, 0, 1, 0, 0.766044, 0, -0.642788, -76, 9.95, -104)
 
-[node name="ScholarRock2" parent="Level" instance=ExtResource("16_scholar_rock")]
+[node name="ScholarRock2" parent="Level" instance=ExtResource("32_scholar_rock")]
 transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, -58, 9.95, -83)
 
-[node name="StoneLantern7" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern7" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -69, 9.95, -89)
 
-[node name="StoneLantern8" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern8" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -59, 9.95, -101)
 
 [node name="Boulders3" parent="Level" instance=ExtResource("2_boulders")]
 transform = Transform3D(-1.0417, 0, 0.579222, 0, 1.1919, 0, -0.579222, 0, -1.0417, 23.5292, 9.95, -84.9321)
 
-[node name="CrystalCluster4" parent="Level" instance=ExtResource("6_crystal_cluster")]
+[node name="CrystalCluster4" parent="Level" instance=ExtResource("9_crystal_cluster")]
 transform = Transform3D(0.783244, 0, -0.758805, 0, 1.09053, 0, 0.758805, 0, 0.783244, 5.59553, 9.95, -74.0058)
 
 [node name="Boulders4" parent="Level" instance=ExtResource("2_boulders")]
 transform = Transform3D(0.456148, 0, 0.867857, 0, 0.980432, 0, -0.867857, 0, 0.456148, -12.8337, 9.95, -84.0738)
 
-[node name="CrystalCluster5" parent="Level" instance=ExtResource("6_crystal_cluster")]
+[node name="CrystalCluster5" parent="Level" instance=ExtResource("9_crystal_cluster")]
 transform = Transform3D(1.1116, 0, 0.582607, 0, 1.25502, 0, -0.582607, 0, 1.1116, -13.3292, 9.95, -105.068)
 
 [node name="Boulders5" parent="Level" instance=ExtResource("2_boulders")]
 transform = Transform3D(-0.881836, 0, -0.562731, 0, 1.04609, 0, 0.562731, 0, -0.881836, 4.60447, 9.95, -115.994)
 
-[node name="CrystalCluster6" parent="Level" instance=ExtResource("6_crystal_cluster")]
+[node name="CrystalCluster6" parent="Level" instance=ExtResource("9_crystal_cluster")]
 transform = Transform3D(-1.00538, 0, -0.317462, 0, 1.05431, 0, 0.317462, 0, -1.00538, 23.0337, 9.95, -105.926)
 
-[node name="StoneLantern9" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern9" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 45.4765, 9.95, -151.882)
 
-[node name="StoneLantern10" parent="Level" instance=ExtResource("21_stone_lantern")]
+[node name="StoneLantern10" parent="Level" instance=ExtResource("49_stone_lantern")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 50.0365, 9.95, -145.802)
 
-[node name="IncenseBurner2" parent="Level" instance=ExtResource("8_incense_burner")]
+[node name="IncenseBurner2" parent="Level" instance=ExtResource("16_incense_burner")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 36.1565, 9.95, -140.142)
 
-[node name="TribulationAltar" parent="Level" instance=ExtResource("23_tribulation_altar")]
+[node name="TribulationAltar" parent="Level" instance=ExtResource("55_tribulation_altar")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 36, -199.258)
 
-[node name="CloudSea" parent="Level" instance=ExtResource("5_cloud_sea")]
+[node name="CloudSea" parent="Level" instance=ExtResource("7_cloud_sea")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, -55, -60)
 
-[node name="FloatingIsland1" parent="Level" instance=ExtResource("7_floating_island")]
-transform = Transform3D(1.03923, 0, -0.6, 0, 1.2, 0, 0.6, 0, 1.03923, -170, 5, 60)
+[node name="FloatingIsland1" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(1.03923, 0, -0.6, 0, 1.2, 0, 0.6, 0, 1.03923, -415.177, -15, 146.533)
 
-[node name="FloatingIsland2" parent="Level" instance=ExtResource("7_floating_island")]
-transform = Transform3D(-0.7, 0, -1.21244, 0, 1.4, 0, 1.21244, 0, -0.7, 150, -8, 30)
+[node name="FloatingIsland2" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(-0.7, 0, -1.21244, 0, 1.4, 0, 1.21244, 0, -0.7, 404.951, -28, 80.9902)
 
-[node name="FloatingIsland3" parent="Level" instance=ExtResource("7_floating_island")]
-transform = Transform3D(-1.50351, 0, 0.547232, 0, 1.6, 0, -0.547232, 0, -1.50351, -40, 20, -250)
+[node name="FloatingIsland3" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(-1.50351, 0, 0.547232, 0, 1.6, 0, -0.547232, 0, -1.50351, -81.0775, 0, -506.735)
 
-[node name="FloatingIsland4" parent="Level" instance=ExtResource("7_floating_island")]
-transform = Transform3D(0.55, 0, 0.952628, 0, 1.1, 0, -0.952628, 0, 0.55, 190, 40, -110)
+[node name="FloatingIsland4" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(0.55, 0, 0.952628, 0, 1.1, 0, -0.952628, 0, 0.55, 415.011, 20, -240.269)
 
-[node name="FloatingIsland5" parent="Level" instance=ExtResource("7_floating_island")]
-transform = Transform3D(0.225743, 0, -1.28025, 0, 1.3, 0, 1.28025, 0, 0.225743, -160, 30, -170)
+[node name="FloatingIsland5" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(0.225743, 0, -1.28025, 0, 1.3, 0, 1.28025, 0, 0.225743, -338.195, 10, -359.332)
 
-[node name="FloatingIsland6" parent="Level" instance=ExtResource("7_floating_island")]
-transform = Transform3D(0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, 0.984808, 60, -15, 150)
+[node name="FloatingIsland6" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, 0.984808, 156.562, -35, 391.404)
 
-[node name="FloatingIsland7" parent="Level" instance=ExtResource("7_floating_island")]
-transform = Transform3D(-0.307818, 0, 0.845723, 0, 0.9, 0, -0.845723, 0, -0.307818, -60, 50, 150)
+[node name="FloatingIsland7" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(-0.307818, 0, 0.845723, 0, 0.9, 0, -0.845723, 0, -0.307818, -156.562, 30, 391.404)
 
-[node name="FloatingIsland8" parent="Level" instance=ExtResource("7_floating_island")]
-transform = Transform3D(-1.55885, 0, -0.9, 0, 1.8, 0, 0.9, 0, -1.55885, 230, 60, -260)
+[node name="FloatingIsland8" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(-1.55885, 0, -0.9, 0, 1.8, 0, 0.9, 0, -1.55885, 402.269, 40, -454.739)
 
-[node name="KarstPeak1" parent="Level" instance=ExtResource("11_karst_peak")]
+[node name="KarstPeak1" parent="Level" instance=ExtResource("20_karst_peak")]
 transform = Transform3D(1.49921, 0, 0.0485977, 0, 1.5, 0, -0.0485977, 0, 1.49921, -320, -70, -150)
 
-[node name="KarstPeak2" parent="Level" instance=ExtResource("11_karst_peak")]
+[node name="KarstPeak2" parent="Level" instance=ExtResource("20_karst_peak")]
 transform = Transform3D(-1.36205, 0, -1.17679, 0, 1.8, 0, 1.17679, 0, -1.36205, 330, -60, -280)
 
-[node name="KarstPeak3" parent="Level" instance=ExtResource("11_karst_peak")]
+[node name="KarstPeak3" parent="Level" instance=ExtResource("20_karst_peak")]
 transform = Transform3D(1.38015, 0, -0.234942, 0, 1.4, 0, 0.234942, 0, 1.38015, -300, -80, 180)
 
-[node name="KarstPeak4" parent="Level" instance=ExtResource("11_karst_peak")]
-transform = Transform3D(1.08312, 0, -0.718927, 0, 1.3, 0, 0.718927, 0, 1.08312, 250, -70, 230)
+[node name="KarstPeak4" parent="Level" instance=ExtResource("20_karst_peak")]
+transform = Transform3D(1.08312, 0, -0.718927, 0, 1.3, 0, 0.718927, 0, 1.08312, 441.342, -90, 406.035)
 
-[node name="KarstPeak5" parent="Level" instance=ExtResource("11_karst_peak")]
-transform = Transform3D(-0.39828, 0, 1.95994, 0, 2, 0, -1.95994, 0, -0.39828, 40, -90, -430)
+[node name="KarstPeak5" parent="Level" instance=ExtResource("20_karst_peak")]
+transform = Transform3D(-0.39828, 0, 1.95994, 0, 2, 0, -1.95994, 0, -0.39828, 64.0821, -110, -688.882)
 
-[node name="KarstPeak6" parent="Level" instance=ExtResource("11_karst_peak")]
-transform = Transform3D(1.59837, 0, 0.0721225, 0, 1.6, 0, -0.0721225, 0, 1.59837, 380, -70, 20)
+[node name="KarstPeak6" parent="Level" instance=ExtResource("20_karst_peak")]
+transform = Transform3D(1.59837, 0, 0.0721225, 0, 1.6, 0, -0.0721225, 0, 1.59837, 639.641, -90, 33.6653)
 
-[node name="KarstPeak7" parent="Level" instance=ExtResource("11_karst_peak")]
+[node name="KarstPeak7" parent="Level" instance=ExtResource("20_karst_peak")]
 transform = Transform3D(-1.69947, 0, -0.0426062, 0, 1.7, 0, 0.0426062, 0, -1.69947, -150, -90, 330)
 
-[node name="KarstPeak8" parent="Level" instance=ExtResource("11_karst_peak")]
+[node name="KarstPeak8" parent="Level" instance=ExtResource("20_karst_peak")]
 transform = Transform3D(-1.1983, 0, -0.0637598, 0, 1.2, 0, 0.0637598, 0, -1.1983, -420, -60, -30)
 
-[node name="KarstPeak9" parent="Level" instance=ExtResource("11_karst_peak")]
-transform = Transform3D(-1.42532, 0, 0.467386, 0, 1.5, 0, -0.467386, 0, -1.42532, 150, -80, -470)
+[node name="KarstPeak9" parent="Level" instance=ExtResource("20_karst_peak")]
+transform = Transform3D(-1.42532, 0, 0.467386, 0, 1.5, 0, -0.467386, 0, -1.42532, 229.05, -100, -717.691)
+
+[node name="CloudHarbourIsleBridge" parent="Level" instance=ExtResource("18_jade_bridge_long")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 47, 0, 60)
+
+[node name="RainbowBridgeSpan" parent="Level" instance=ExtResource("30_rainbow_bridge")]
+transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, 0, 0, 99)
+
+[node name="WreckIsleStone1" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.823454, 0, -0.567382, 0, 1, 0, 0.567382, 0, -0.823454, 109.3, 0, 97.24)
+
+[node name="WreckIsleStone2" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.308566, 0, -0.951203, 0, 1, 0, 0.951203, 0, 0.308566, 109.3, 0, 101.64)
+
+[node name="WreckIsleStone3" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.432576, 0, -0.901597, 0, 1, 0, 0.901597, 0, 0.432576, 109.3, 0, 106.04)
+
+[node name="WreckIsleStone4" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.00985616, 0, -0.999951, 0, 1, 0, 0.999951, 0, 0.00985616, 109.3, 0, 110.44)
+
+[node name="CraneIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 156.6, 0, 60)
+
+[node name="ThunderIsleStair" parent="Level" instance=ExtResource("45_sky_steps")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 203.9, 0, 27.7)
+
+[node name="StormIsleStair" parent="Level" instance=ExtResource("1_ascension_stair")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 203.9, 10, -48.9)
+
+[node name="SwordIsleBridge" parent="Level" instance=ExtResource("18_jade_bridge_long")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 266.2, 0, 60)
+
+[node name="PeachIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -38.8, 0, 144.8)
+
+[node name="DragonIsleBridge" parent="Level" instance=ExtResource("18_jade_bridge_long")]
+transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, 0, 0, 198.6)
+
+[node name="TerraceIsleStair" parent="Level" instance=ExtResource("45_sky_steps")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -86.1, -10, 208.6)
+
+[node name="HermitIsleStone1" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.0620219, 0, 0.998075, 0, 1, 0, -0.998075, 0, 0.0620219, -123.34, 0, 144.8)
+
+[node name="HermitIsleStone2" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.00723194, 0, -0.999974, 0, 1, 0, 0.999974, 0, -0.00723194, -127.74, 0, 144.8)
+
+[node name="HermitIsleStone3" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.742026, 0, -0.670371, 0, 1, 0, 0.670371, 0, -0.742026, -132.14, 0, 144.8)
+
+[node name="HermitIsleStone4" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.401131, 0, 0.916021, 0, 1, 0, -0.916021, 0, -0.401131, -136.54, 0, 144.8)
+
+[node name="MoonIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -133.4, -10, 240.9)
+
+[node name="ForestIsleBridge" parent="Level" instance=ExtResource("18_jade_bridge_long")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 62.3, 0, 260.9)
+
+[node name="TreeIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 171.9, 0, 260.9)
+
+[node name="CrystalIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -121.924, -10, 9.462)
+
+[node name="ChainIsle1Stone1" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.970689, 0, 0.240338, 0, 1, 0, -0.240338, 0, -0.970689, -188.664, -10, 9.462)
+
+[node name="ChainIsle1Stone2" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.925974, 0, 0.377588, 0, 1, 0, -0.377588, 0, 0.925974, -193.064, -10, 9.462)
+
+[node name="ChainIsle1Stone3" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.99773, 0, -0.0673364, 0, 1, 0, 0.0673364, 0, -0.99773, -197.464, -10, 9.462)
+
+[node name="ChainIsle1Stone4" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.881222, 0, -0.472702, 0, 1, 0, 0.472702, 0, -0.881222, -201.864, -10, 9.462)
+
+[node name="ChainIsle2Stone1" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.757476, 0, 0.652863, 0, 1, 0, -0.652863, 0, -0.757476, -228.426, -10, 9.462)
+
+[node name="ChainIsle2Stone2" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.207754, 0, -0.978181, 0, 1, 0, 0.978181, 0, 0.207754, -232.826, -10, 9.462)
+
+[node name="ChainIsle2Stone3" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.816337, 0, 0.577576, 0, 1, 0, -0.577576, 0, 0.816337, -237.226, -10, 9.462)
+
+[node name="ChainIsle2Stone4" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.70256, 0, -0.711625, 0, 1, 0, 0.711625, 0, -0.70256, -241.626, -10, 9.462)
+
+[node name="ChainIsle3Stone1" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.762897, 0, -0.64652, 0, 1, 0, 0.64652, 0, -0.762897, -268.188, -10, 9.462)
+
+[node name="ChainIsle3Stone2" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.412265, 0, 0.911064, 0, 1, 0, -0.911064, 0, -0.412265, -272.588, -10, 9.462)
+
+[node name="ChainIsle3Stone3" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.576153, 0, -0.817342, 0, 1, 0, 0.817342, 0, 0.576153, -276.988, -10, 9.462)
+
+[node name="ChainIsle3Stone4" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.532811, 0, 0.846234, 0, 1, 0, -0.846234, 0, -0.532811, -281.388, -10, 9.462)
+
+[node name="WaterfallIsleStone1" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.587618, 0, 0.809138, 0, 1, 0, -0.809138, 0, 0.587618, -255.407, -10, 22.243)
+
+[node name="WaterfallIsleStone2" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.529481, 0, -0.848322, 0, 1, 0, 0.848322, 0, -0.529481, -255.407, -10, 26.643)
+
+[node name="WaterfallIsleStone3" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(0.944773, 0, 0.327725, 0, 1, 0, -0.327725, 0, 0.944773, -255.407, -10, 31.043)
+
+[node name="WaterfallIsleStone4" parent="Level" instance=ExtResource("48_stepping_stone")]
+transform = Transform3D(-0.983767, 0, 0.179452, 0, 1, 0, -0.179452, 0, -0.983767, -255.407, -10, 35.443)
+
+[node name="ElixirIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -96, 10, -95)
+
+[node name="PhoenixIsleStair" parent="Level" instance=ExtResource("45_sky_steps")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -158.6, 10, -95)
+
+[node name="MirrorIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -134.8, 10, -133.8)
+
+[node name="LotusIsleStair" parent="Level" instance=ExtResource("45_sky_steps")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -134.8, 10, -196.4)
+
+[node name="WindTempleIsleStair" parent="Level" instance=ExtResource("45_sky_steps")]
+transform = Transform3D(0.894427, 0, 0.447214, 0, 1, 0, -0.447214, 0, 0.894427, -4.78342, 10, -114.767)
+
+[node name="PalaceIsleBridge" parent="Level" instance=ExtResource("18_jade_bridge_long")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 36, -247.959)
+
+[node name="ObservatoryIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 60.8785, 36, -317.058)
+
+[node name="RecordsIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 169.078, 36, -317.058)
+
+[node name="HeavenGateIsleStair" parent="Level" instance=ExtResource("1_ascension_stair")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 36, -356.159)
+
+[node name="SealIsleBridge" parent="Level" instance=ExtResource("17_jade_bridge")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 67.6785, 62, -453.958)
+
+[node name="SunIsleBridge" parent="Level" instance=ExtResource("4_chain_bridge")]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 169.379, 62, -453.958)
+
+[node name="CloudHarbourIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(0.153167, 0, 0.9882, 0, 1, 0, -0.9882, 0, 0.153167, 109.3, 0, 60)
+
+[node name="LanternIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(-0.981138, 0, -0.193309, 0, 1, 0, 0.193309, 0, -0.981138, 0, 0, 144.8)
+
+[node name="WreckIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(-0.818593, 0, -0.574374, 0, 1, 0, 0.574374, 0, -0.818593, 109.3, 0, 139.38)
+
+[node name="CraneIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(-0.121587, 0, -0.992581, 0, 1, 0, 0.992581, 0, -0.121587, 203.9, 0, 60)
+
+[node name="ThunderIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(0.998854, 0, -0.0478583, 0, 1, 0, 0.0478583, 0, 0.998854, 203.9, 10, -25.1)
+
+[node name="StormIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(0.286438, 0, -0.958099, 0, 1, 0, 0.958099, 0, 0.286438, 203.9, 36, -146.7)
+
+[node name="SwordIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(0.997853, 0, 0.0654869, 0, 1, 0, -0.0654869, 0, 0.997853, 320, 0, 60)
+
+[node name="PeachIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(-0.976853, 0, 0.21391, 0, 1, 0, -0.21391, 0, -0.976853, -86.1, 0, 144.8)
+
+[node name="DragonIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(-0.97176, 0, -0.23597, 0, 1, 0, 0.23597, 0, -0.97176, 0, 0, 260.9)
+
+[node name="TerraceIsle" parent="Level" instance=ExtResource("43_sky_platform_terraces")]
+transform = Transform3D(0.809911, 0, 0.586553, 0, 1, 0, -0.586553, 0, 0.809911, -86.1, -10, 240.9)
+
+[node name="HermitIsle" parent="Level" instance=ExtResource("42_sky_platform_small")]
+transform = Transform3D(-0.78819, 0, 0.615432, 0, 1, 0, -0.615432, 0, -0.78819, -147.81, 0, 144.8)
+
+[node name="MoonIsle" parent="Level" instance=ExtResource("40_sky_platform_moon")]
+transform = Transform3D(0.989314, 0, 0.145802, 0, 1, 0, -0.145802, 0, 0.989314, -180.7, -10, 240.9)
+
+[node name="ForestIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(-0.625365, 0, -0.780332, 0, 1, 0, 0.780332, 0, -0.625365, 124.6, 0, 260.9)
+
+[node name="TreeIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(0.25571, 0, -1.17244, 0, 1.2, 0, 1.17244, 0, 0.25571, 225.66, 0, 260.9)
+
+[node name="CrystalIsle" parent="Level" instance=ExtResource("36_sky_platform_crystal")]
+transform = Transform3D(0.87861, 0, 0.47754, 0, 1, 0, -0.47754, 0, 0.87861, -160.724, -10, 9.462)
+
+[node name="ChainIsle1" parent="Level" instance=ExtResource("42_sky_platform_small")]
+transform = Transform3D(0.690966, 0, -1.10117, 0, 1.3, 0, 1.10117, 0, 0.690966, -215.645, -10, 9.462)
+
+[node name="ChainIsle2" parent="Level" instance=ExtResource("42_sky_platform_small")]
+transform = Transform3D(0.337825, 0, 1.25534, 0, 1.3, 0, -1.25534, 0, 0.337825, -255.407, -10, 9.462)
+
+[node name="ChainIsle3" parent="Level" instance=ExtResource("42_sky_platform_small")]
+transform = Transform3D(-1.07328, 0, 0.733527, 0, 1.3, 0, -0.733527, 0, -1.07328, -295.169, -10, 9.462)
+
+[node name="WaterfallIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(0.994226, 0, 0.10731, 0, 1, 0, -0.10731, 0, 0.994226, -255.407, -10, 64.383)
+
+[node name="ElixirIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(0.93854, 0, 0.34517, 0, 1, 0, -0.34517, 0, 0.93854, -134.8, 10, -95)
+
+[node name="PhoenixIsle" parent="Level" instance=ExtResource("35_sky_platform_burnt")]
+transform = Transform3D(-0.534236, 0, 0.845335, 0, 1, 0, -0.845335, 0, -0.534236, -211.4, 20, -95)
+
+[node name="MirrorIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(0.973008, 0, -0.23077, 0, 1, 0, 0.23077, 0, 0.973008, -134.8, 10, -172.6)
+
+[node name="LotusIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(0.989299, 0, -0.1459, 0, 1, 0, 0.1459, 0, 0.989299, -134.8, 20, -260.2)
+
+[node name="WindTempleIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(-0.986405, 0, -0.16433, 0, 1, 0, 0.16433, 0, -0.986405, -33.3156, 20, -171.831)
+
+[node name="PalaceIsle" parent="Level" instance=ExtResource("41_sky_platform_palace")]
+transform = Transform3D(0.423891, 0, 0.905713, 0, 1, 0, -0.905713, 0, 0.423891, 114.978, 36, -317.058)
+
+[node name="ObservatoryIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(0.872772, 0, -0.488129, 0, 1, 0, 0.488129, 0, 0.872772, 22.0785, 36, -317.058)
+
+[node name="RecordsIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(-0.892202, 0, -0.451636, 0, 1, 0, 0.451636, 0, -0.892202, 207.878, 36, -317.058)
+
+[node name="HeavenGateIsle" parent="Level" instance=ExtResource("37_sky_platform_huge")]
+transform = Transform3D(0.857466, 0, -0.514541, 0, 1, 0, 0.514541, 0, 0.857466, 114.978, 62, -453.958)
+
+[node name="SealIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(-0.366996, 0, -0.930222, 0, 1, 0, 0.930222, 0, -0.366996, 28.8785, 62, -453.958)
+
+[node name="SunIsle" parent="Level" instance=ExtResource("39_sky_platform_mid")]
+transform = Transform3D(0.999366, 0, -0.0356052, 0, 1, 0, 0.0356052, 0, 0.999366, 215.779, 62, -453.958)
+
+[node name="ImmortalPalaceGate" parent="Level" instance=ExtResource("15_immortal_palace_gate")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 36, -300.058)
+
+[node name="JadePalaceHall" parent="Level" instance=ExtResource("19_jade_palace_hall")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 36, -338.058)
+
+[node name="StoneLantern11" parent="Level" instance=ExtResource("49_stone_lantern")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 104.978, 36, -314.058)
+
+[node name="StoneLantern12" parent="Level" instance=ExtResource("49_stone_lantern")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 104.978, 36, -321.058)
+
+[node name="StoneLantern13" parent="Level" instance=ExtResource("49_stone_lantern")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 124.978, 36, -314.058)
+
+[node name="StoneLantern14" parent="Level" instance=ExtResource("49_stone_lantern")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 124.978, 36, -321.058)
+
+[node name="PalaceIncense" parent="Level" instance=ExtResource("16_incense_burner")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 36, -317.058)
+
+[node name="PeachTree1" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.480088, 0, -0.87722, 0, 1, 0, 0.87722, 0, -0.480088, 146.155, 36, -331.058)
+
+[node name="PeachTree2" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.989209, 0, 0.14651, 0, 1, 0, -0.14651, 0, -0.989209, 136.139, 36, -342.183)
+
+[node name="PeachTree3" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.304266, 0, -0.952587, 0, 1, 0, 0.952587, 0, 0.304266, 122.463, 36, -348.272)
+
+[node name="PeachTree4" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.231709, 0, 0.972785, 0, 1, 0, -0.972785, 0, 0.231709, 107.494, 36, -348.272)
+
+[node name="PeachTree5" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.940027, 0, -0.341101, 0, 1, 0, 0.341101, 0, 0.940027, 93.8182, 36, -342.183)
+
+[node name="PeachTree6" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.239946, 0, -0.970786, 0, 1, 0, 0.970786, 0, 0.239946, 83.8016, 36, -331.058)
+
+[node name="HallOfRecordsBuilding" parent="Level" instance=ExtResource("14_hall_of_records")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 207.878, 36, -325.058)
+
+[node name="ObservatorySpire" parent="Level" instance=ExtResource("23_observatory")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22.0785, 36, -322.058)
+
+[node name="GateOfHeavenArch" parent="Level" instance=ExtResource("13_gate_of_heaven")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 62, -461.958)
+
+[node name="ThunderRods1" parent="Level" instance=ExtResource("53_thunder_rods")]
+transform = Transform3D(0.5, 0, -0, 0, 0.5, 0, 0, 0, 0.5, 98.9785, 62, -469.958)
+
+[node name="ThunderRods2" parent="Level" instance=ExtResource("53_thunder_rods")]
+transform = Transform3D(0.5, 0, -0, 0, 0.5, 0, 0, 0, 0.5, 130.978, 62, -469.958)
+
+[node name="SealOfHeavenDisc" parent="Level" instance=ExtResource("33_seal_of_heaven")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 28.8785, 62, -455.958)
+
+[node name="SunAltarDais" parent="Level" instance=ExtResource("50_sun_altar")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 215.779, 62, -457.958)
+
+[node name="CloudPier" parent="Level" instance=ExtResource("6_cloud_pier")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 109.3, 0, 94.2)
+
+[node name="CloudPier" parent="Level" instance=ExtResource("6_cloud_pier")]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 143.5, 0, 72)
+
+[node name="SkyLanterns1" parent="Level" instance=ExtResource("34_sky_lanterns")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 109.3, 4, 60)
+
+[node name="SkyShipWreckHull" parent="Level" instance=ExtResource("44_sky_ship_wreck")]
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 113.3, 0, 139.38)
+
+[node name="PineTree3" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(-0.0533556, 0, -1.11995, 0, 1.12122, 0, 1.11995, 0, -0.0533556, 230.649, 0, 68.2746)
+
+[node name="CraneFigure1" parent="Level" instance=ExtResource("8_crane_figure")]
+transform = Transform3D(0.0865676, 0, 0.996246, 0, 1, 0, -0.996246, 0, 0.0865676, 214.608, 0, 69.019)
+
+[node name="PineTreeTall5" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.733529, 0, -0.96042, 0, 1.2085, 0, 0.96042, 0, -0.733529, 214.109, 0, 86.0726)
+
+[node name="CraneFigure2" parent="Level" instance=ExtResource("8_crane_figure")]
+transform = Transform3D(0.88288, 0, 0.469598, 0, 1, 0, -0.469598, 0, 0.88288, 203.525, 0, 73.995)
+
+[node name="PineTree4" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.856607, 0, -0.922906, 0, 1.25918, 0, 0.922906, 0, 0.856607, 189.881, 0, 84.2375)
+
+[node name="CraneFigure3" parent="Level" instance=ExtResource("8_crane_figure")]
+transform = Transform3D(-0.810241, 0, 0.586097, 0, 1, 0, -0.586097, 0, -0.810241, 192.724, 0, 68.4324)
+
+[node name="PineTreeTall6" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.0206427, 0, 1.18223, 0, 1.18241, 0, -1.18223, 0, -0.0206427, 176.209, 0, 64.151)
+
+[node name="CraneFigure4" parent="Level" instance=ExtResource("8_crane_figure")]
+transform = Transform3D(-0.838555, 0, -0.544818, 0, 1, 0, 0.544818, 0, -0.838555, 190.339, 0, 56.5201)
+
+[node name="PineTree5" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.857225, 0, -0.594323, 0, 1.0431, 0, 0.594323, 0, 0.857225, 183.39, 0, 40.9387)
+
+[node name="CraneFigure5" parent="Level" instance=ExtResource("8_crane_figure")]
+transform = Transform3D(0.458826, 0, -0.888526, 0, 1, 0, 0.888526, 0, 0.458826, 198.166, 0, 47.2282)
+
+[node name="PineTreeTall7" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(0.458287, 0, -0.937649, 0, 1.04365, 0, 0.937649, 0, 0.458287, 206.015, 0, 32.08)
+
+[node name="CraneFigure6" parent="Level" instance=ExtResource("8_crane_figure")]
+transform = Transform3D(0.263392, 0, -0.964689, 0, 1, 0, 0.964689, 0, 0.263392, 210.31, 0, 47.5537)
+
+[node name="PineTree6" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(-1.14194, 0, 0.460162, 0, 1.23117, 0, -0.460162, 0, -1.14194, 227.047, 0, 44.2456)
+
+[node name="CraneFigure7" parent="Level" instance=ExtResource("8_crane_figure")]
+transform = Transform3D(0.296835, 0, 0.954929, 0, 1, 0, -0.954929, 0, 0.296835, 217.628, 0, 57.2516)
+
+[node name="ThunderRods" parent="Level" instance=ExtResource("53_thunder_rods")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 203.9, 10, -34.1)
+
+[node name="PineTree7" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.537753, 0, 0.779367, 0, 0.946885, 0, -0.779367, 0, 0.537753, 233.9, 36, -146.7)
+
+[node name="Boulders6" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.427835, 0, 0.875429, 0, 0.974381, 0, -0.875429, 0, 0.427835, 225.113, 36, -125.487)
+
+[node name="PineTree8" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.911885, 0, -0.445943, 0, 1.01509, 0, 0.445943, 0, 0.911885, 203.9, 36, -116.7)
+
+[node name="Boulders7" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(-0.78904, 0, 0.471283, 0, 0.919071, 0, -0.471283, 0, -0.78904, 182.687, 36, -125.487)
+
+[node name="PineTree9" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.222555, 0, -1.03601, 0, 1.05964, 0, 1.03601, 0, 0.222555, 173.9, 36, -146.7)
+
+[node name="Boulders8" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(0.465437, 0, 0.952086, 0, 1.05976, 0, -0.952086, 0, 0.465437, 182.687, 36, -167.913)
+
+[node name="PineTree10" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(-0.899244, 0, -0.538965, 0, 1.04839, 0, 0.538965, 0, -0.899244, 203.9, 36, -176.7)
+
+[node name="Boulders9" parent="Level" instance=ExtResource("2_boulders")]
+transform = Transform3D(1.04558, 0, -0.688362, 0, 1.25183, 0, 0.688362, 0, 1.04558, 225.113, 36, -167.913)
+
+[node name="SwordSpire" parent="Level" instance=ExtResource("51_sword_spire")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 320, 0, 56)
+
+[node name="SkyLanterns2" parent="Level" instance=ExtResource("34_sky_lanterns")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10.1529, 2, 150.12)
+
+[node name="SkyLanterns3" parent="Level" instance=ExtResource("34_sky_lanterns")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -2.43408, 2, 143.455)
+
+[node name="SkyLanterns4" parent="Level" instance=ExtResource("34_sky_lanterns")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -4.52595, 2, 148.504)
+
+[node name="StoneLantern15" parent="Level" instance=ExtResource("49_stone_lantern")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -8, 0, 138.8)
+
+[node name="StoneLantern16" parent="Level" instance=ExtResource("49_stone_lantern")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 8, 0, 138.8)
+
+[node name="StoneLantern17" parent="Level" instance=ExtResource("49_stone_lantern")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -8, 0, 152.8)
+
+[node name="StoneLantern18" parent="Level" instance=ExtResource("49_stone_lantern")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 8, 0, 152.8)
+
+[node name="PeachTree7" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.566676, 0, 0.815671, 0, 0.993197, 0, -0.815671, 0, -0.566676, -70.1, 0, 144.8)
+
+[node name="PeachTree8" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.785458, 0, 0.793094, 0, 1.11622, 0, -0.793094, 0, 0.785458, -62.6748, 0, 156.081)
+
+[node name="PeachTree9" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.223974, 0, -1.12062, 0, 1.14278, 0, 1.12062, 0, 0.223974, -76.1242, 0, 157.309)
+
+[node name="PeachTree10" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.446437, 0, 0.866693, 0, 0.974916, 0, -0.866693, 0, -0.446437, -80.3145, 0, 170.148)
+
+[node name="PeachTree11" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.323328, 0, -1.07801, 0, 1.12545, 0, 1.07801, 0, -0.323328, -89.6603, 0, 160.399)
+
+[node name="PeachTree12" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.903377, 0, -0.497576, 0, 1.03134, 0, 0.497576, 0, 0.903377, -102.311, 0, 165.128)
+
+[node name="PeachTree13" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.951713, 0, 0.220238, 0, 0.976864, 0, -0.220238, 0, 0.951713, -100.516, 0, 151.742)
+
+[node name="PeachTree14" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-1.17193, 0, 0.0232028, 0, 1.17216, 0, -0.0232028, 0, -1.17193, -112.1, 0, 144.8)
+
+[node name="PeachTree15" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(0.801542, 0, 0.805652, 0, 1.13646, 0, -0.805652, 0, 0.801542, -100.516, 0, 137.858)
+
+[node name="PeachTree16" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-1.15332, 0, 0.244471, 0, 1.17895, 0, -0.244471, 0, -1.15332, -102.311, 0, 124.472)
+
+[node name="PeachTree17" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.0499991, 0, -1.1634, 0, 1.16447, 0, 1.1634, 0, -0.0499991, -89.6603, 0, 129.201)
+
+[node name="PeachTree18" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.924146, 0, -0.591933, 0, 1.09747, 0, 0.591933, 0, -0.924146, -80.3145, 0, 119.452)
+
+[node name="PeachTree19" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.754741, 0, 0.632435, 0, 0.984687, 0, -0.632435, 0, -0.754741, -76.1242, 0, 132.291)
+
+[node name="PeachTree20" parent="Level" instance=ExtResource("25_peach_tree")]
+transform = Transform3D(-0.471164, 0, 0.97323, 0, 1.08128, 0, -0.97323, 0, -0.471164, -62.6748, 0, 133.519)
+
+[node name="DragonSkeleton" parent="Level" instance=ExtResource("10_dragon_bones")]
+transform = Transform3D(0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, 0.984808, -6, 0, 260.9)
+
+[node name="SpiritHerb1" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(-0.9299, 0, -0.367812, 0, 1, 0, 0.367812, 0, -0.9299, -62.71, -10, 248.906)
+
+[node name="SpiritHerb2" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(-0.56407, 0, -0.825727, 0, 1, 0, 0.825727, 0, -0.56407, -91.8684, -10, 259.499)
+
+[node name="SpiritHerb3" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(0.975431, 0, 0.220304, 0, 1, 0, -0.220304, 0, 0.975431, -78.0811, -10, 250.228)
+
+[node name="SpiritHerb4" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(0.472594, 0, -0.88128, 0, 1, 0, 0.88128, 0, 0.472594, -100.823, -10, 248.821)
+
+[node name="SpiritHerb5" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(-0.0438668, 0, 0.999037, 0, 1, 0, -0.999037, 0, -0.0438668, -79.3769, -10, 248.444)
+
+[node name="SpiritHerb6" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(0.639868, 0, 0.768485, 0, 1, 0, -0.768485, 0, 0.639868, -68.5188, -10, 227.999)
+
+[node name="SpiritHerb7" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(0.76109, 0, -0.648646, 0, 1, 0, 0.648646, 0, 0.76109, -93.5143, -10, 236.095)
+
+[node name="SpiritHerb8" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(-0.371247, 0, -0.928534, 0, 1, 0, 0.928534, 0, -0.371247, -84.5761, -10, 216.962)
+
+[node name="SpiritHerb9" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(0.496224, 0, -0.868194, 0, 1, 0, 0.868194, 0, 0.496224, -77.8296, -10, 252.782)
+
+[node name="SpiritHerb10" parent="Level" instance=ExtResource("46_spirit_herb")]
+transform = Transform3D(0.277201, 0, -0.960812, 0, 1, 0, 0.960812, 0, 0.277201, -72.4262, -10, 238.218)
+
+[node name="RusticHut1" parent="Level" instance=ExtResource("31_rustic_hut")]
+transform = Transform3D(-0.00804716, 0, 0.899964, 0, 0.9, 0, -0.899964, 0, -0.00804716, -106.1, -10, 252.9)
+
+[node name="RusticHut2" parent="Level" instance=ExtResource("31_rustic_hut")]
+transform = Transform3D(-0.0625744, 0, 0.897822, 0, 0.9, 0, -0.897822, 0, -0.0625744, -64.1, -10, 226.9)
+
+[node name="HermitHutSky" parent="Level" instance=ExtResource("31_rustic_hut")]
+transform = Transform3D(-0.9, 0, -1.10218e-16, 0, 0.9, 0, 1.10218e-16, 0, -0.9, -147.81, 0, 141.8)
+
+[node name="CrystalCluster7" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(-1.17586, 0, -0.239471, 0, 1.2, 0, 0.239471, 0, -1.17586, -156.7, -10, 240.9)
+
+[node name="CrystalCluster8" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(-1.17726, 0, 0.232489, 0, 1.2, 0, -0.232489, 0, -1.17726, -168.7, -10, 261.685)
+
+[node name="CrystalCluster9" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(-0.875774, 0, 0.820377, 0, 1.2, 0, -0.820377, 0, -0.875774, -192.7, -10, 261.685)
+
+[node name="CrystalCluster10" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(-0.812093, 0, 0.883462, 0, 1.2, 0, -0.883462, 0, -0.812093, -204.7, -10, 240.9)
+
+[node name="CrystalCluster11" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(0.113242, 0, 1.19464, 0, 1.2, 0, -1.19464, 0, 0.113242, -192.7, -10, 220.115)
+
+[node name="CrystalCluster12" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(0.142439, 0, 1.19152, 0, 1.2, 0, -1.19152, 0, 0.142439, -168.7, -10, 220.115)
+
+[node name="PineTree11" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.807732, 0, -0.627773, 0, 1.023, 0, 0.627773, 0, 0.807732, 127.819, 0, 270.867)
+
+[node name="PineTreeTall8" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.907676, 0, -0.523239, 0, 1.04769, 0, 0.523239, 0, -0.907676, 96.515, 0, 245.342)
+
+[node name="PineTreeTall9" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.866333, 0, 0.534726, 0, 1.01807, 0, -0.534726, 0, -0.866333, 94.8233, 0, 249.706)
+
+[node name="PineTree12" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.286721, 0, 1.01984, 0, 1.05938, 0, -1.01984, 0, 0.286721, 125.973, 0, 228.117)
+
+[node name="PineTreeTall10" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(0.658519, 0, -0.687867, 0, 0.952265, 0, 0.687867, 0, 0.658519, 134.267, 0, 279.09)
+
+[node name="PineTreeTall11" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.318042, 0, 1.01878, 0, 1.06727, 0, -1.01878, 0, -0.318042, 96.6961, 0, 270.64)
+
+[node name="PineTree13" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(-0.00106358, 0, -1.00943, 0, 1.00943, 0, 1.00943, 0, -0.00106358, 138.136, 0, 256.906)
+
+[node name="PineTreeTall12" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.911041, 0, -0.827371, 0, 1.23067, 0, 0.827371, 0, -0.911041, 97.2558, 0, 247.469)
+
+[node name="PineTreeTall13" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(0.982106, 0, 0.782474, 0, 1.25571, 0, -0.782474, 0, 0.982106, 143.993, 0, 252.788)
+
+[node name="PineTree14" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.888012, 0, -0.450677, 0, 0.995829, 0, 0.450677, 0, 0.888012, 110.855, 0, 262.957)
+
+[node name="PineTreeTall14" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.527263, 0, -0.962719, 0, 1.09765, 0, 0.962719, 0, -0.527263, 114.573, 0, 263.483)
+
+[node name="PineTreeTall15" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-1.00839, 0, 0.47156, 0, 1.1132, 0, -0.47156, 0, -1.00839, 110.81, 0, 283.968)
+
+[node name="PineTree15" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(-0.828517, 0, -0.497469, 0, 0.966394, 0, 0.497469, 0, -0.828517, 108.956, 0, 243.488)
+
+[node name="PineTreeTall16" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(1.01033, 0, -0.233458, 0, 1.03696, 0, 0.233458, 0, 1.01033, 115.166, 0, 255.066)
+
+[node name="PineTreeTall17" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(0.584791, 0, -0.902776, 0, 1.07563, 0, 0.902776, 0, 0.584791, 128.039, 0, 288.06)
+
+[node name="PineTree16" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(0.322722, 0, 0.890173, 0, 0.946867, 0, -0.890173, 0, 0.322722, 118.021, 0, 242.429)
+
+[node name="PineTreeTall18" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.744129, 0, -0.842247, 0, 1.12388, 0, 0.842247, 0, -0.744129, 132.304, 0, 275.305)
+
+[node name="PineTreeTall19" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(-0.346134, 0, 1.10824, 0, 1.16104, 0, -1.10824, 0, -0.346134, 131.903, 0, 282.559)
+
+[node name="PineTree17" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(-0.520969, 0, 1.06979, 0, 1.1899, 0, -1.06979, 0, -0.520969, 129.329, 0, 250.009)
+
+[node name="PineTreeTall20" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(1.0302, 0, -0.622512, 0, 1.20367, 0, 0.622512, 0, 1.0302, 130.714, 0, 248.915)
+
+[node name="PineTreeTall21" parent="Level" instance=ExtResource("28_pine_tree_tall")]
+transform = Transform3D(0.817133, 0, 0.860658, 0, 1.18678, 0, -0.860658, 0, 0.817133, 116.234, 0, 249.886)
+
+[node name="PineTree18" parent="Level" instance=ExtResource("27_pine_tree")]
+transform = Transform3D(-0.793751, 0, 0.665831, 0, 1.03604, 0, -0.665831, 0, -0.793751, 103.976, 0, 242.721)
+
+[node name="FloatingIsland9" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(0.170181, 0, -0.0586384, 0, 0.18, 0, 0.0586384, 0, 0.170181, 270.638, -6, 488.308)
+
+[node name="FloatingIsland10" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(-0.0987316, 0, -0.150506, 0, 0.18, 0, 0.150506, 0, -0.0987316, 240.835, -3, 515.48)
+
+[node name="FloatingIsland11" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(-0.12723, 0, 0.127329, 0, 0.18, 0, -0.127329, 0, -0.12723, 204.49, 0, 514.255)
+
+[node name="FloatingIsland12" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(0.0683705, 0, -0.16651, 0, 0.18, 0, 0.16651, 0, 0.0683705, 212.166, 3, 487.549)
+
+[node name="FloatingIsland13" parent="Level" instance=ExtResource("12_floating_island")]
+transform = Transform3D(0.0770745, 0, -0.162664, 0, 0.18, 0, 0.162664, 0, 0.0770745, 254.44, 6, 470.589)
+
+[node name="TreeOfAgesTrunk" parent="Level" instance=ExtResource("54_tree_of_ages")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 225.66, 0, 254.9)
+
+[node name="CrystalCluster13" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(1.07021, 0, -0.898299, 0, 1.39725, 0, 0.898299, 0, 1.07021, -143.724, -10, 9.462)
+
+[node name="CrystalCluster14" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(1.54987, 0, 0.329701, 0, 1.58455, 0, -0.329701, 0, 1.54987, -148.703, -10, 21.4828)
+
+[node name="CrystalCluster15" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(1.29743, 0, -0.102418, 0, 1.30147, 0, 0.102418, 0, 1.29743, -160.724, -10, 26.462)
+
+[node name="CrystalCluster16" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(-0.445769, 0, 0.981047, 0, 1.07757, 0, -0.981047, 0, -0.445769, -172.745, -10, 21.4828)
+
+[node name="CrystalCluster17" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(0.330487, 0, 1.1414, 0, 1.18828, 0, -1.1414, 0, 0.330487, -177.724, -10, 9.462)
+
+[node name="CrystalCluster18" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(-1.53368, 0, -0.564722, 0, 1.63435, 0, 0.564722, 0, -1.53368, -172.745, -10, -2.55882)
+
+[node name="CrystalCluster19" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(0.748653, 0, 0.756253, 0, 1.06414, 0, -0.756253, 0, 0.748653, -160.724, -10, -7.538)
+
+[node name="CrystalCluster20" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(0.697436, 0, 1.55073, 0, 1.70035, 0, -1.55073, 0, 0.697436, -148.703, -10, -2.55882)
+
+[node name="CrystalCluster21" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(0.422605, 0, 0.679268, 0, 0.8, 0, -0.679268, 0, 0.422605, -212.645, -10, 6.462)
+
+[node name="CrystalCluster22" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(0.120405, 0, 0.790887, 0, 0.8, 0, -0.790887, 0, 0.120405, -252.407, -10, 6.462)
+
+[node name="CrystalCluster23" parent="Level" instance=ExtResource("9_crystal_cluster")]
+transform = Transform3D(-0.55895, 0, -0.572342, 0, 0.8, 0, 0.572342, 0, -0.55895, -292.169, -10, 6.462)
+
+[node name="SkyFalls" parent="Level" instance=ExtResource("56_waterfall")]
+transform = Transform3D(1.4, 0, -0, 0, 1, 0, 0, 0, 1, -255.407, -34, 91.543)
+
+[node name="ElixirSpringBasin" parent="Level" instance=ExtResource("11_elixir_spring")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -134.8, 10, -100)
+
+[node name="PhoenixNestTwigs" parent="Level" instance=ExtResource("26_phoenix_nest")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -211.4, 20, -99)
+
+[node name="MirrorLakePool" parent="Level" instance=ExtResource("22_mirror_pool")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -134.8, 10, -178.6)
+
+[node name="LotusBasin" parent="Level" instance=ExtResource("11_elixir_spring")]
+transform = Transform3D(2.1, 0, -0, 0, 2.1, 0, 0, 0, 2.1, -134.8, 20, -268.2)
+
+[node name="LotusCluster1" parent="Level" instance=ExtResource("21_lotus_cluster")]
+transform = Transform3D(-0.387881, 0, -0.92171, 0, 1, 0, 0.92171, 0, -0.387881, -138.8, 20.9, -270.2)
+
+[node name="LotusCluster2" parent="Level" instance=ExtResource("21_lotus_cluster")]
+transform = Transform3D(0.959234, 0, -0.282613, 0, 1, 0, 0.282613, 0, 0.959234, -131.8, 20.9, -266.2)
+
+[node name="LotusCluster3" parent="Level" instance=ExtResource("21_lotus_cluster")]
+transform = Transform3D(-0.795997, 0, -0.6053, 0, 1, 0, 0.6053, 0, -0.795997, -129.8, 20.9, -271.2)
+
+[node name="LotusCluster4" parent="Level" instance=ExtResource("21_lotus_cluster")]
+transform = Transform3D(-0.312825, 0, -0.949811, 0, 1, 0, 0.949811, 0, -0.312825, -136.8, 20.9, -265.2)
+
+[node name="WindTempleHall" parent="Level" instance=ExtResource("57_wind_temple")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -33.3156, 20, -177.831)
 
 [node name="Markers" type="Node3D" parent="."]
 
@@ -364,3 +1049,93 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 37.75, -199.258)
 
 [node name="AscensionStair" type="Marker3D" parent="Markers"]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 42.5565, 11, -144.942)
+
+[node name="CrystalIsle" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -160.724, -9, 15.462)
+
+[node name="LotusLake" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -134.8, 21, -244.2)
+
+[node name="WaterfallIsle" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -255.407, -9, 70.383)
+
+[node name="PhoenixNest" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -211.4, 21, -85)
+
+[node name="CraneIsle" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 203.9, 1, 60)
+
+[node name="MoonIsle" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -180.7, -9, 240.9)
+
+[node name="SunAltar" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 215.779, 63, -442.958)
+
+[node name="ThunderIsle" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 203.9, 11, -19.1)
+
+[node name="RainbowBridge" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, 126)
+
+[node name="ChainIsles" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -257.407, -9, 11.462)
+
+[node name="ImmortalPalace" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 37, -285.058)
+
+[node name="PalaceCourt" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 37, -313.058)
+
+[node name="HallOfRecords" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 207.878, 37, -305.058)
+
+[node name="StarObservatory" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22.0785, 37, -306.058)
+
+[node name="WindTemple" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -33.3156, 21, -155.831)
+
+[node name="CloudHarbour" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 101.3, 1, 60)
+
+[node name="SkyShipWreck" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 97.3, 1, 143.38)
+
+[node name="DragonBones" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, 1, 260.9)
+
+[node name="PeachGarden" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -86.1, 1, 144.8)
+
+[node name="JadeTerraces" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -86.1, -9, 240.9)
+
+[node name="HermitIsle" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -144.81, 1, 148.8)
+
+[node name="MirrorLake" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -134.8, 11, -163.6)
+
+[node name="FloatingForest" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 124.6, 1, 264.9)
+
+[node name="SealOfHeaven" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 28.8785, 63, -438.958)
+
+[node name="GateOfHeaven" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 114.978, 63, -449.958)
+
+[node name="SwordIsle" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 320, 1, 70)
+
+[node name="ElixirSpring" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -134.8, 11, -88)
+
+[node name="StormCloudPlateau" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 203.9, 37, -146.7)
+
+[node name="LanternIsle" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 1, 144.8)
+
+[node name="TreeOfAges" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 225.66, 1, 276.9)
