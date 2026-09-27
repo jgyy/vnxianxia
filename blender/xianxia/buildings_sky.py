@@ -471,9 +471,30 @@ ASSETS = {
     "sky_platform_huge": lambda: realms.sky_platform(38.0, 71),
     "sky_platform_mid": lambda: realms.sky_platform(28.0, 73, plaza=9.0),
     "sky_platform_palace": lambda: realms.sky_platform(46.0, 75, plaza=26.0),
+    "sky_platform_moon": lambda: realms.sky_platform(38.0, 77, top="sand"),
+    "sky_platform_burnt": lambda: realms.sky_platform(28.0, 79, top="burnt"),
+    "sky_platform_terraces": lambda: realms.sky_platform(38.0, 81, top="terraces"),
+    "sky_platform_crystal": lambda: realms.sky_platform(28.0, 83, top="crystal"),
+    "mirror_pool": lambda: _mirror_pool(),
     "cypress_tree": lambda: _cypress(),
     "crane_statue": lambda: _crane(),
 }
+
+
+def _mirror_pool(r=7.0):
+    """A lake that mirrors the sky: a still, glassy surface in a low white-jade rim (0.5 m proud of the
+    ground, so the water is never coplanar with the isle's grass)."""
+    sm = realms.sky_mats()
+    mirror = util.material("sky_mirror", realms.mirror_surface(256, 492), normal_strength=0.1)
+    bm = bmesh.new()
+    realms.prism(bm, [(r + 0.9, -0.3), (r + 0.9, 0.45), (r + 0.5, 0.55), (r, 0.55), (r, 0.2)], sides=32, rot=0,
+                 cap_top=False, v_scale=0.5)
+    objs = [B.obj("MirrorRim", bm, sm["jade"], uv=0.6, smooth=True)]
+    bm = bmesh.new()
+    realms.disc(bm, (0, 0), r + 0.02, 48, z=0.4)
+    objs.append(B.obj("MirrorWater", bm, mirror, uv=None))
+    objs.append(_cone_col("MirrorRim", r + 0.5, 0.55, r + 1.0, -0.3))
+    return objs
 
 
 def _cypress(seed=81, h=11.0):

@@ -1430,7 +1430,7 @@ def abyss_terrain():
 # --------------------------------------------------------------------------
 # Celestial Sky Isles
 # --------------------------------------------------------------------------
-def sky_platform(radius=20.0, seed=41, plaza=0.0):
+def sky_platform(radius=20.0, seed=41, plaza=0.0, top="grass"):
     """Walkable floating island: a flat grassy top (trimesh collision, z = 0 out to ~0.95 r)
     over an inverted rocky cone with hanging roots, vines and small spirit crystals.
     plaza > 0 paves a central marble circle of that radius, edged with jade."""
@@ -1486,7 +1486,7 @@ def sky_platform(radius=20.0, seed=41, plaza=0.0):
                     loop[uvl].uv = (co.x * 0.12, co.y * 0.12)
     paving = util.material("sky_paving", tex.paving("#efe2c8", 512, 582, tiles=4, gap=0.006, moss=0.1),
                            normal_strength=0.8)
-    top_o = util.mesh_object("IslandTop-col", bm, [m["grass"], m["cliff"], paving, m["jade"]], smooth=True)
+    top_o = util.mesh_object("IslandTop-col", bm, [_isle_top(top, m), m["cliff"], paving, m["jade"]], smooth=True)
     # rocky underside
     bm = bmesh.new()
     prof = [(1.02, -0.9), (1.0, -1.6), (0.94, -0.1), (0.82, -0.22), (0.66, -0.4), (0.47, -0.58), (0.3, -0.74),
@@ -1541,6 +1541,28 @@ def sky_platform(radius=20.0, seed=41, plaza=0.0):
             bmesh.ops.transform(bm_c, matrix=Matrix.Translation(base) @ rot, verts=vs)
     objs.append(finish("IslandCrystals", bm_c, m["crystal"]))
     return objs
+
+
+def _isle_top(kind, m):
+    """Top surface of a floating isle: meadow, silver moon sand, scorched earth, jade rice terraces or
+    pale crystal grit."""
+    from . import lands
+    if kind == "sand":
+        return util.material("moon_sand", lands.sand("#dde0e6", 512, 652), normal_strength=0.5)
+    if kind == "burnt":
+        maps = lands.earth("#3a2a22", 512, 427, 0.4)
+        cracks = tex.sstep(0.86, 0.95, 1 - np.abs(tex.fbm(512, 6, 4, 0.5, 428) * 2 - 1))
+        maps["albedo"] = tex.lerp(maps["albedo"], tex.srgb("#ff6a1a"), cracks * 0.8)
+        return util.material("burnt_earth", maps, normal_strength=0.6, emission_map=np.clip(
+            cracks[..., None] * tex.srgb("#ff5a0a")[None, None, :], 0, 1), emission_strength=1.5)
+    if kind == "terraces":
+        return util.material("jade_rice", lands.crops(512, 532), normal_strength=0.8)
+    if kind == "crystal":
+        maps = lands.sand("#cfe6ee", 512, 653)
+        glint = tex.sstep(0.9, 0.97, tex.fbm(512, 96, 2, 0.5, 654))
+        maps["albedo"] = tex.lerp(maps["albedo"], tex.srgb("#9ff4ff"), glint)
+        return util.material("crystal_grit", maps, normal_strength=0.6)
+    return m["grass"]
 
 
 def _deck_z(y, length, rise, flat):
