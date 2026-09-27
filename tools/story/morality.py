@@ -405,7 +405,7 @@ FAMILY_OF_KIND = {
     "hunt": "fight", "battle": "fight", "defend": "fight", "rescue": "fight", "chase": "fight", "delve": "find",
     "gather": "gather", "festival": "gather", "probe": "find", "orders": "find", "journey": "social",
     "social": "social", "interlude": "social", "council": "social", "train": "train", "duel": "train",
-    "cultivate": "cultivate", "stage": "cultivate", "boss": "boss",
+    "cultivate": "cultivate", "stage": "cultivate", "boss": "boss", "break": "cultivate",
 }
 
 

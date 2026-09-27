@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     5, "The Inner Sect Tournament",
@@ -170,4 +171,55 @@ CHAPTER = chapter(
                        (YUN, "Forty years I trusted him with our law. I trusted him with our children."),
                        (YUN, "Rest tonight, {player}. Tomorrow we go into the Abyss after him."), at="TeleportArray"),
               ], xp=500, items={"spirit_stone": 5, "medicine": 2}),
+    ])
+
+# The victory lasts only minutes before the pagoda bell rings. Spliced in
+# between "The Final Bout" and "The Law Hall's Shadow".
+EXTRA = C(
+    "The Inner Sect Tournament", "sect",
+    "A champion's few minutes of celebration, Yan Tie's slow recovery from the frenzy pill, and the unease that "
+    "grows before the pagoda bell finally rings.",
+    cast=[WEI, ZHAO, LU, HUA, HAN, YUN],
+    foes=["sparring_disciple"],
+    items=["spirit_stone", "medicine"],
+    props=["stone_stele", "jade_slip"],
+    beats=[
+        B("social", "The Crowd's Roar",
+          "For a few minutes, the whole plaza is chanting your name, and it is stranger than any fight you've won.",
+          (WEI, "Champion! CHAMPION! I bet on you at nine to one, I'm never letting you forget this!"),
+          v=0),
+        B("probe", "Yan Tie, Waking Slowly",
+          "Yan Tie stirs in the Medicine Hall, the black veins fading from his neck, confusion in his cleared eyes.",
+          (HUA, "The antidote worked. He'll ache for days and remember none of the frenzy. Small mercies."),
+          v=0),
+        B("social", "Zhao Kang's Grudging Toast",
+          "Zhao Kang raises a cup to the champion, which is either genuine or the most elaborate insult he's attempted yet.",
+          (ZHAO, "To the farmer who beat a champion. Don't let it go to your head. I'm still better dressed."),
+          v=0),
+        B("social", "Lu Ping Collects, Loudly",
+          "Lu Ping's betting book has made him the outer court's least popular and most cheerful disciple.",
+          (LU, "Nine to one! I'm going to buy that hat. Two hats. A hat for every day you don't lose."),
+          v=0),
+        B("train", "Wei Tong's Kidney, Avenged",
+          "Wei Tong insists on a rematch against the disciple who eliminated him with a banner and a well-placed poke.",
+          foe="sparring_disciple", v=0),
+        B("probe", "A Strange Quiet in the Pagoda",
+          "Han Xue notices the pagoda is unusually dark for this hour, even accounting for everyone watching the final.",
+          (HAN, "No lamps. Elder Bai always keeps a lamp lit. Something's wrong."),
+          v=0),
+        B("social", "The Sect Master's Private Word",
+          "Before the celebrations properly begin, Sect Master Yun pulls you aside for one quiet, careful sentence.",
+          (YUN, "Whoever poisoned that pill is still inside these walls. Enjoy tonight. Watch tomorrow."),
+          v=0),
+        B("gather", "Prizes From the Treasury",
+          "Steward Qian, cornered by tradition, hands out the tournament's prizes with visible pain.",
+          item="spirit_stone", v=0),
+        B("cultivate", "A Champion's Breath",
+          "Even champions need to settle their qi after a fight like that one. Han Xue insists, as always.",
+          (HAN, "Frenzy qi is contagious if you let it rattle you. Breathe it out properly before it becomes yours."),
+          v=0),
+        B("probe", "The Bell Begins to Ring",
+          "Just as the celebration reaches its warmest, the pagoda's alarm bell begins to toll across the mountain.",
+          (N, "The bell's first note cuts through the laughter like a blade. Every head on the plaza turns toward the pagoda at once."),
+          v=0),
     ])

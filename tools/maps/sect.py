@@ -30,6 +30,11 @@ def build_layout():
     add("sect_gate", (0, 0, WALL_SOUTH), name="SectGate")
     add("pagoda", (20, 0, -38), name="Pagoda")
     add("pavilion", (-18, 0, -20), yaw=20, name="Pavilion")
+    # side halls (reusing the main hall model at a smaller scale, as the town yamen does)
+    add("main_hall", (-24, 0, -8), yaw=90, scale=0.4, name="AlchemyPavilion")
+    add("main_hall", (-24, 0, 12), yaw=90, scale=0.4, name="WeaponsHall")
+    add("main_hall", (24, 0, 20), yaw=180, scale=0.4, name="ElderQuarters")
+    add("main_hall", (14, 0, 22), yaw=180, scale=0.45, name="DiscipleDormitory")
     add("formation_array", (0, 0.04, 8), name="FormationArray")
     add("incense_burner", (0, 0.04, -22), name="IncenseBurner")
     add("stone_bridge", (18, -0.15, 2), name="StoneBridge")
@@ -156,5 +161,9 @@ def build() -> common.MapDef:
         "CliffEdge": (-55.0, 1.2, 4.0),
         "ScholarRock": (23.0, 1.0, 11.5),
         "OuterPines": (34.0, 1.0, 46.0),
+        "AlchemyPavilion": (-20.5, 1.0, -8.0),
+        "WeaponsHall": (-20.5, 1.0, 12.0),
+        "ElderQuarters": (24.0, 1.0, 16.5),
+        "DiscipleDormitory": (14.0, 1.0, 18.0),
     }
     return common.MapDef("sect", "Azure Cloud Sect", "sect", items, markers, env=common.Env(), ambient="motes")

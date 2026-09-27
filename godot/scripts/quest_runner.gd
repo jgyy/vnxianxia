@@ -28,6 +28,12 @@ var _trib_failed := false
 func clear() -> void:
 	for n in spawned:
 		if is_instance_valid(n):
+			# an enemy already mid-death (its own tween fades it out, then
+			# frees it) must not be queue_free()'d again here: racing that
+			# tween's own queue_free() against this one risks the tween's
+			# later steps running on a node freed out from under it
+			if n is Enemy and n.dead:
+				continue
 			n.queue_free()
 	spawned.clear()
 	enemies.clear()
@@ -427,6 +433,10 @@ func _finish_quest(q: Dictionary) -> void:
 			Audio.play_music("victory", 0.5)
 			get_tree().create_timer(12.0).timeout.connect(func(): if game.map: Audio.play_music(game.map.music))
 	if not Game.finished():
+		if Story.ends_chapter(q):
+			var recap := Story.latest_beat(Game.quest_index)
+			if recap != "":
+				game.hud.toast("Previously... " + recap, UiTheme.MUTED, 6.0)
 		var nq := Game.quest()
 		game.hud.toast("New quest: " + nq.title, UiTheme.JADE)
 		game.hud.quest_card(nq)

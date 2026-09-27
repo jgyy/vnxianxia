@@ -108,7 +108,7 @@ func _maps() -> void:
 
 func _story() -> void:
 	print("[story]")
-	check(story.quests.size() == 1000, "%d main quests" % story.quests.size())
+	check(story.quests.size() == 2000, "%d main quests" % story.quests.size())
 	check(story.chapters.size() == 100, "%d chapters" % story.chapters.size())
 	check(story.volumes.size() == 10, "%d volumes" % story.volumes.size())
 	check(story.load_msec < 3000, "story.json parsed in %d ms" % story.load_msec)
@@ -138,7 +138,7 @@ func _story() -> void:
 		check(v.title == realms[int(v.number)] and (v.chapters as Array).size() == 10,
 			"volume %d: %s, %d chapters" % [int(v.number), v.title, (v.chapters as Array).size()])
 	check(story.quests[-1].rewards.realm == "Immortal Ascension", "the last quest grants Immortal Ascension")
-	check(story.legacy_index(40) == 109 and story.quest(109).title == "Foundation Establishment",
+	check(story.legacy_index(40) == 219 and story.quest(219).title == "Foundation Establishment",
 		"original quest 40 is quest %d of the saga" % (story.legacy_index(40) + 1))
 	var unvoiced := 0
 	for q in story.quests:
@@ -281,9 +281,9 @@ func _session() -> void:
 	check(gs.realm == 6 and gs.stage == 1, "chapter 52 starts at %s" % gs.realm_label())
 	# alignment, conditions, choices and a save/load round trip
 	gs.start_at(story.chapter_first(12))
-	check(gs.alignment() == "neutral_neutral" and gs.alignment_name() == "True Neutral", "alignment starts true neutral")
+	check(gs.alignment() == "neutral_neutral" and gs.alignment_name() == "Walker of the Middle Way", "alignment starts true neutral")
 	gs.shift_alignment(30, -40)
-	check(gs.alignment() == "lawful_evil" and gs.alignment_name() == "Lawful Evil", "alignment moves: %s" % gs.alignment_name())
+	check(gs.alignment() == "lawful_evil" and gs.alignment_name() == "Iron-Handed Tyrant", "alignment moves: %s" % gs.alignment_name())
 	check(gs.cond_ok({"align": "*_evil"}) and not gs.cond_ok({"align": "*_good"}) and gs.cond_ok({"align_law": ">=30"})
 		and gs.cond_ok({"min_realm": "Qi Condensation"}) and not gs.cond_ok({"min_realm": "Core Formation"}),
 		"conditions follow alignment and realm")

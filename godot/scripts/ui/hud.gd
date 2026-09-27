@@ -33,6 +33,8 @@ var _banner_queue: Array = []
 var _banner_busy := false
 var _title_card: Label
 var _title_card_sub: Label
+var _thought: Label
+var _thought_tween: Tween
 
 
 func _ready() -> void:
@@ -58,7 +60,7 @@ func _ready() -> void:
 	_realm = UiTheme.label("Mortal", 17, UiTheme.GOLD)
 	_realm.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_child(_realm)
-	_align = UiTheme.label("True Neutral", 13, UiTheme.MUTED, 3)
+	_align = UiTheme.label("Walker of the Middle Way", 13, UiTheme.MUTED, 3)
 	_align.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_child(_align)
 	_hp = _labelled_bar(vb, "Vitality", UiTheme.CRIMSON)
@@ -108,6 +110,16 @@ func _ready() -> void:
 	_meditate.position = Vector2(-150, -170)
 	_meditate.visible = false
 	_root.add_child(_meditate)
+	# roaming monologue: a quiet, italic thought near the bottom of the screen
+	_thought = UiTheme.label("", 18, Color(0.85, 0.82, 0.72), 4)
+	_thought.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_thought.position = Vector2(-360, -260)
+	_thought.custom_minimum_size = Vector2(720, 40)
+	_thought.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_thought.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_thought.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_thought.modulate.a = 0.0
+	_root.add_child(_thought)
 	# toasts (left, under vitals)
 	_toasts = VBoxContainer.new()
 	_toasts.position = Vector2(16, 170)
@@ -198,7 +210,7 @@ func _labelled_bar(parent: Control, text: String, color: Color, h := 11.0) -> Pr
 func refresh() -> void:
 	_realm.text = Game.realm_label()
 	_align.text = Game.alignment_name()
-	var tip := "%s\nAlignment: %s\nLaw %+d  ·  Good %+d" % [Game.realm_label(), Game.alignment_name(), Game.law, Game.good]
+	var tip := "%s\nDao Heart: %s\nBearing %+d  ·  Dao %+d" % [Game.realm_label(), Game.alignment_name(), Game.law, Game.good]
 	_realm.tooltip_text = tip
 	_align.tooltip_text = tip
 	_xp.value = float(Game.xp % Game.XP_PER_REALM) / Game.XP_PER_REALM
@@ -311,6 +323,18 @@ func title_card(title: String, sub := "", seconds := 5.0, delay := 0.0) -> void:
 		tw.tween_property(l, "modulate:a", 1.0, 1.2)
 		tw.tween_interval(seconds)
 		tw.tween_property(l, "modulate:a", 0.0, 1.4)
+
+
+## A fleeting first-person thought (the roaming monologue). Never interrupts
+## anything; simply fades in over the world, then out again.
+func say_thought(text: String) -> void:
+	if _thought_tween:
+		_thought_tween.kill()
+	_thought.text = "\"" + text + "\""
+	_thought_tween = create_tween()
+	_thought_tween.tween_property(_thought, "modulate:a", 1.0, 0.5)
+	_thought_tween.tween_interval(4.2)
+	_thought_tween.tween_property(_thought, "modulate:a", 0.0, 1.2)
 
 
 func show_boss(enemy_name: String, frac: float) -> void:

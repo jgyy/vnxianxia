@@ -1,18 +1,18 @@
 # The Main Story: *The Lotus and the Blood Moon*
 
-The main quest line of **Azure Cloud Sect** is a journey from mortal to immortal in **1000 quests**: 10 volumes, one
-per major stage of cultivation, each of 10 chapters of 10 quests. It has 20 cinematics and a cast of 40 named NPCs.
+The main quest line of **Azure Cloud Sect** is a journey from mortal to immortal in **2000 quests**: 10 volumes, one
+per major stage of cultivation, each of 10 chapters of 20 quests. It has 20 cinematics and a cast of 40 named NPCs.
 
 The ten chapters of the original story are voiced (every line, with the protagonist's lines recorded twice for Lin
 Feng and Su Yue) and keep their cinematics. The other 90 chapters are text-only: each one is a hand-written outline
-(title, summary, cast and ten quest beats with their key dialogue) that `tools/story/saga_gen.py` expands into
-objectives, markers, enemies, pickups and connecting dialogue. A complete list of all 1000 quests is in
+(title, summary, cast and twenty quest beats with their key dialogue) that `tools/story/saga_gen.py` expands into
+objectives, markers, enemies, pickups and connecting dialogue. A complete list of all 2000 quests is in
 **[QUESTS.md](QUESTS.md)**.
 
 | | |
 |---|---|
 | Source | `tools/story/`: the ten original chapters (`chapter01..10.py`, DSL in `dsl.py`) and the outlines of the 90 new ones (`vol01..vol10.py`) |
-| Structure | `volumes.py` (which chapter goes where, breakthroughs, minor stages), `numbering.py` (quest ids `q0001..q1000`) |
+| Structure | `volumes.py` (which chapter goes where, breakthroughs, minor stages), `numbering.py` (quest ids `q0001..q2000`) |
 | Generator | `saga_gen.py` (quest patterns, marker choice, NPC placement), `places.py`, `fillers.py` |
 | Compiler / validator | `python3 tools/build_story.py` writes `godot/data/story.json` (`--check` is used in CI, `--quests docs/QUESTS.md` writes the quest list) |
 | Morality | `morality.py` (alignment vocabulary, NPC temperaments and reactions, greetings, choice templates), `choices.py` (hand-written choices) |
@@ -61,7 +61,7 @@ the protagonist's.
 | **Xue Wuji** | Blood Moon Patriarch | The final antagonist, first on his throne and then as a remnant riding the tribulation lightning |
 | Qingshi Town | Magistrate Zhou, Madam Fang, Constable Du, Widow Liu, Old Pan, Merchant Jin | The townsfolk. The cowardly magistrate finds his spine and the merchant who sold blood lotus redeems himself |
 
-Added for the 1000-quest saga (text-only):
+Added for the 2000-quest saga (text-only):
 
 | Character | Role | Arc |
 |---|---|---|
@@ -75,7 +75,7 @@ Added for the 1000-quest saga (text-only):
 
 ## The ten volumes
 
-The player starts as a **Mortal** and climbs ten major stages, one per volume, each divided into ten minor stages, then ascends. Chapter *c* of volume *v* ends with the player reaching minor stage *c* of major stage *v*, so the 100 chapters are the 100 minor stages. The first chapter of every volume ends with a **heavenly tribulation** and the breakthrough into the volume's realm at its 1st Layer; the last chapter reaches Great Perfection of Tribulation Transcendence on quest 999 and **Immortal Ascension** on quest 1000. Chapters in **bold** are the ten voiced chapters of the original story.
+The player starts as a **Mortal** and climbs ten major stages, one per volume, each divided into ten minor stages, then ascends. Chapter *c* of volume *v* ends with the player reaching minor stage *c* of major stage *v*, so the 100 chapters are the 100 minor stages. The first chapter of every volume ends with a **heavenly tribulation** and the breakthrough into the volume's realm at its 1st Layer; the last chapter reaches Great Perfection of Tribulation Transcendence on quest 1999 and **Immortal Ascension** on quest 2000. Chapters in **bold** are the ten voiced chapters of the original story.
 
 | Vol | Major stage | Subtitle | Chapters |
 |---|---|---|---|
@@ -306,14 +306,21 @@ is an added objective right after the breakthrough meditation; the voiced object
 
 ### Alignment and choices
 
-The player has two scores, Law↔Chaos and Good↔Evil (-100..100 each, neutral between -25 and 25), which give the nine
-alignments from Lawful Good to Chaotic Evil (shown on the journal's Cultivation page and in the HUD tooltip). They move
-with **moral choices**: 278 of them, offered after a quest's last conversation, about three per chapter. Each chapter of
-the new story has one hand-written choice (`choices.py`: spare Gou the Scarred or break his sword hand, give Gu Hanshan
-water against orders, warn a demonic cultivator's family before the dam floods, bury Xue Chen or hang him at the gate)
-and two from templates that fit the quest (a beggar-thief after a fight, spare herbs after a gathering, a forbidden
-technique after training), and seven voiced quests offer one after their voiced lines. Every option continues the story;
-options differ in alignment, small rewards, flags and NPC attitudes, and the NPC answers according to their temperament.
+The player has two scores: **Bearing**, whether their heart keeps to precepts and order or wanders free
+(`lawful`↔`chaotic` internally), and **the Dao**, which side of it they walk, righteous or demonic (`good`↔`evil`
+internally) — both -100..100, neutral between -25 and 25. Together they give nine cultivation temperaments, from
+**Guardian of the Precepts** (lawful good) to **Servant of the Blood Moon** (chaotic evil) — see
+`Story.ALIGNMENT_NAMES` — shown on the journal's Cultivation page and in the HUD tooltip as the player's **Dao Heart**.
+The internal ids never change (a condition is still written `{"align": "lawful_good"}`, `{"align_good": ">=30"}`, ...);
+only the name shown to the player is reskinned for the setting. They move with **moral choices**: 1999 of them, one
+after almost every quest's last conversation (the one exception is the finale's climactic tribulation fight, which has
+no talk/reach/interact objective left to hang one on). A handful of quests carry a hand-written choice
+(`choices.py`: spare Gou the Scarred or break his sword hand, give Gu Hanshan water against orders, warn a demonic
+cultivator's family before the dam floods, bury Xue Chen or hang him at the gate); every other quest's choice comes
+from a template matched to what the quest is about (a beggar-thief after a fight, spare herbs after a gathering, a
+forbidden technique after training, and so on for social, cultivation and boss encounters alike), so the game never
+runs out of dilemmas no matter how the 2000-quest saga grows. Every option continues the story; options differ in
+alignment, small rewards, flags and NPC attitudes, and the NPC answers according to their temperament.
 
 Who the player has become changes how the world talks back:
 
@@ -332,13 +339,14 @@ In `godot/data/story.json`:
 
 | Field | Meaning |
 |---|---|
-| `quests[].rewards.realm`, `.stage` | a breakthrough quest has both (the realm, stage 1); a chapter's last quest has `stage` 2-10; quest 999 has stage 10, quest 1000 the realm Immortal Ascension |
+| `quests[].rewards.realm`, `.stage` | a breakthrough quest has both (the realm, stage 1); a chapter's last quest has `stage` 2-10; quest 1999 has stage 10, quest 2000 the realm Immortal Ascension |
 | `quests[].rewards.bonus[]` | `{cond, xp, items, note}`: granted at the end of the quest when `cond` holds |
 | `quests[].tier` | the realm index when the quest starts (enemy scaling) |
 | objective `{"type": "tribulation", "marker", "bolts", "waves": [{enemy, count, after}]}` | a tribulation: `bolts` strikes in up to nine volleys, a wave spawns after volley `after` |
 | dialogue line `cond` | the line shows only when the condition holds |
 | objective `choice_prompt`, `choices[]` | `{text, align: {law, good}, reply: [lines], reward: {xp, items}, flag?, attitude?: {npc: delta}, cond?}` |
 | `npcs[].greetings[]` | `{text, cond}` idle greetings |
+| `threads[]` | `{id, title, beats: [{quest, number, text}]}`, recurring plot threads spanning several volumes (`tools/story/threads.py`); see below |
 
 Condition keys (all must hold): `align` (`"lawful_good"`, `"chaotic_*"`, `"*_evil"`, or a list of them), `align_law` /
 `align_good` (`">=30"`, `"<=-25"`), `min_realm` / `max_realm` (a realm name), `min_stage` / `max_stage` (1-10), `flag` /
@@ -351,12 +359,27 @@ In `Game` (`game_state.gd`): `realm` (0-11), `stage` (0 for Mortal and Immortal,
 `Story.realm_label(realm, stage)` and `Story.visible_lines(lines)` do the naming and filtering. Saves are version 3 and
 keep the alignment, flags and choices; older saves load with cultivation recomputed from the story.
 
+### Threads: reading 2000 quests as one novel
+
+Each chapter is written and played on its own, but eight named threads run underneath all ten volumes: the traitor
+Gu Hanshan, the Lotus Key pendant, Elder Mo's sacrifice, the Patriarch's seven-runged Ladder, and the arcs of Han
+Xue, Zhao Kang, the heart demon and the Great Vehicle alliance (`tools/story/threads.py`). Each thread is a handful
+of *beats* — one-line recaps landed on the quest where that beat of the story happens. `Story.threads_so_far()`
+exposes only the beats the player has already reached, so the journal's **Story So Far** page never spoils ahead of
+where they are; `Story.latest_beat()` finds the single most recent one, which `quest_runner.gd` uses to open every
+new chapter with a quiet "Previously..." recap, the way a serialised novel reminds its reader what came before.
+The same continuity carries into exploration: `godot/scripts/world/monologue.gd` has the protagonist think out loud
+while roaming — about wherever they are, what they're meant to be doing, who they're becoming, and what they've
+already lived through: a hand-written `CALLBACKS` list covers volume I in detail, and `Story.threads_so_far()`
+covers every later volume's major beats automatically, so the monologue never runs dry across the full 2000-quest
+saga. It never interrupts dialogue, cinematics, combat, meditation or menus.
+
 ## Editing the story
 
 ```bash
 python3 tools/build_story.py                            # validate + write godot/data/story.json, prints stats
 python3 tools/build_story.py --check                    # CI: fails if story.json is stale or anything is invalid
-python3 tools/build_story.py --quests docs/QUESTS.md    # also regenerate the list of all 1000 quests
+python3 tools/build_story.py --quests docs/QUESTS.md    # also regenerate the list of all 2000 quests
 python3 tools/gen_voices.py                             # (re)synthesise only voiced lines whose text/voice changed
 python3 tools/gen_voices.py --check                     # CI: lists missing/stale voice files
 ```
@@ -366,8 +389,9 @@ python3 tools/gen_voices.py --check                     # CI: lists missing/stal
 The chapter files use the helpers from `tools/story/dsl.py`. An objective inherits the map of the previous objective
 unless it sets `map=`, and a cinematic objective takes its map from the cinematic. Dialogue lines are
 `(speaker, text)` tuples, where `P` is the active protagonist and `N` is the narrator. Their voice keys keep the
-original numbering (`q017_o2_l1` is original quest 17, objective 2, line 1; it is quest 17 of the saga), so editing a
-line re-synthesises only that line. `appear_from` / `hidden_after` of the original cast use three-digit original ids
+original chapter's own objective numbering (`q017_o2_l1` is original quest 17, objective 2, line 1) no matter where
+that quest ends up in the 2000-quest saga once a chapter's `EXTRA` beats are spliced in around it, so editing a line
+re-synthesises only that line. `appear_from` / `hidden_after` of the original cast use three-digit original ids
 (`q085`), which `build_story` maps to the saga's numbering (`q0405`); new ids use four digits.
 
 ### The new chapters
@@ -381,7 +405,7 @@ C("The Burned Array", "sect", "Summary...", cast=[YUN, HAN, ...], foes=["demon_c
            (HAN, "A line."), (P, "A reply."),            # a segment of dialogue
            "@I:ScholarRock", ">Search the empty desk",   # a tagged step: interact at a marker, with its text
            (N, "Narration for that step."),
-           "@T", (HAN, "Closing lines."), prop="treasure_chest"), ...ten beats])
+           "@T", (HAN, "Closing lines."), prop="treasure_chest"), ...twenty beats])
 ```
 
 Each beat becomes one quest. Its script is split into segments by tags (`@T` talk, `@R` reach, `@F`/`@F2` fight,
@@ -395,18 +419,20 @@ byte-identical. New lines are written to story.json with `"voice": null`; the ru
 advances by itself after a reading time.
 
 A line written as `(speaker, text, cond)` is conditional, e.g. `(GU, "You gave me water once...", {"flag":
-"gave_gu_water"})`. Hand-written choices are keyed by `(chapter, beat)` in `choices.py`
-(`Ch(prompt, O(text, law=, good=, items=, xp=, flag=, att=, cond=), ...)`); the generator adds two template choices per
-chapter, the NPC's reaction to every option, conditional greetings to some opening conversations, the tribulation of a
-breakthrough quest and the chapter-end alignment rewards.
+"gave_gu_water"})`. A handful of quests get a hand-written choice, keyed by `(chapter, beat)` in `choices.py`
+(`Ch(prompt, O(text, law=, good=, items=, xp=, flag=, att=, cond=), ...)`); every quest that doesn't gets one from
+`saga_gen.ensure_choice`, which reads the quest's own objectives (a fight, a gather, a conversation, a meditation...)
+to infer which family of `morality.TEMPLATES` fits, so every quest in the saga ends up with a dilemma even though only
+a few are hand-authored. The generator also adds the NPC's reaction to every option, conditional greetings to some
+opening conversations, the tribulation of a breakthrough quest and the chapter-end alignment rewards.
 
 ### Validation
 
 The validator checks every id against `tools/world_spec.py`. It also enforces these rules:
 
-- 10 volumes, each titled after its realm; 100 chapters; 1000 quests with unique titles;
+- 10 volumes, each titled after its realm; 100 chapters; 2000 quests with unique titles;
 - each volume breaks through into its realm at the end of its first chapter, with a tribulation objective; every other
-  chapter ends at its minor stage (chapter c at stage c); quest 999 reaches Great Perfection and quest 1000 Immortal
+  chapter ends at its minor stage (chapter c at stage c); quest 1999 reaches Great Perfection and quest 2000 Immortal
   Ascension; (realm, stage) strictly increases from one chapter's end to the next; tribulations never weaken;
 - conditions use known keys, alignments, realms and flags set by an earlier choice; every dialogue has at least one
   unconditional line (two for a talk) and every choice 2-4 options, one of them unconditional;

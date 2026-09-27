@@ -34,6 +34,7 @@ import world_spec as W  # noqa: E402
 import story  # noqa: E402
 from story import numbering as NB  # noqa: E402
 from story import morality as MO  # noqa: E402
+from story import threads as TH  # noqa: E402
 
 OUT = os.path.join(ROOT, "godot", "data", "story.json")
 VOICE_DIR = "res://audio/voice/"
@@ -582,12 +583,36 @@ def compile_npcs(used):
     return out
 
 
+def check_threads():
+    """Validate tools/story/threads.py: known quest ids, strictly increasing per
+    thread (a recap must follow the events it recaps), each thread with 3+ beats."""
+    seen_ids = set()
+    for t in TH.THREADS:
+        where = "thread %s" % t["id"]
+        if t["id"] in seen_ids:
+            E.err(where, "duplicate thread id")
+        seen_ids.add(t["id"])
+        check_text(where + " title", t["title"], max_words=8)
+        if len(t["beats"]) < 3:
+            E.err(where, "needs at least 3 beats, has %d" % len(t["beats"]))
+        last = 0
+        for n, text in t["beats"]:
+            wb = "%s beat %s" % (where, qid(n))
+            check_text(wb, text, max_words=40)
+            if not (1 <= n <= NB.TOTAL_QUESTS):
+                E.err(wb, "quest number %r out of range 1-%d" % (n, NB.TOTAL_QUESTS))
+            elif n <= last:
+                E.err(wb, "beats must land on strictly increasing quests (last was %s)" % qid(last))
+            last = n
+
+
 def build():
     used = set()
     voices = set()
     speakers_used = set()
     cin_uses = {}
 
+    check_threads()
     npcs = compile_npcs(used)
     cinematics = {}
     for cid, raw in story.CINEMATICS.items():
@@ -647,8 +672,19 @@ def build():
                 wq = qid(qnum)
                 legacy = q.get("legacy")
                 flags_new = set()
-                if legacy_ch and legacy != (legacy_ch - 1) * 10 + qi + 1:
-                    E.err(wq, "legacy quest number %r out of place" % legacy)
+                if legacy_ch:
+                    n_lead = NB.LEGACY_LEAD_QUESTS[legacy_ch]
+                    n_tail = NB.LEGACY_TAIL_QUESTS[legacy_ch]
+                    tail_start = NB.LEGACY_QUESTS_PER_CHAPTER - n_tail
+                    if qi < n_lead:
+                        expected = (legacy_ch - 1) * 10 + qi + 1
+                    elif qi < NB.QUESTS_PER_CHAPTER - n_tail:
+                        expected = None
+                    else:
+                        pos_in_tail = qi - (NB.QUESTS_PER_CHAPTER - n_tail)
+                        expected = (legacy_ch - 1) * 10 + tail_start + pos_in_tail + 1
+                    if legacy != expected:
+                        E.err(wq, "legacy quest number %r out of place" % legacy)
                 if legacy and NB.legacy_to_new(legacy) != qnum:
                     E.err(wq, "legacy q%03d should be %s" % (legacy, qid(NB.legacy_to_new(legacy))))
                 vkey = ("q%03d" % legacy) if legacy else None
@@ -692,6 +728,15 @@ def build():
                             E.err("%s_o%d" % (wq, oi), "%s talks at %s where this quest spawns enemies" % (o["npc"], mk))
                     if o["type"] == "defeat" and o["enemy"] in W.BOSSES:
                         bosses_in_chapter += 1
+                # every quest needs a choice, with one narrow exception: legacy
+                # quest 99 ("Heavenly Tribulation") is cinematic/defeat/meditate
+                # only, so it has no talk/reach/interact objective to hang one on
+                # without adding new voiced dialogue to an already-recorded
+                # legacy chapter -- which this repo can't (re-)synthesise without
+                # the original voice cast. The finale's earlier and later quests
+                # (98 and 100) both still offer choices.
+                if not any(o.get("choices") for o in out_objs) and qnum != NB.legacy_to_new(99):
+                    E.err(wq, "quest offers the player no choice (every quest must have one)")
                 if not legacy:
                     check_generated(wq, qnum, out_objs)
                 if qi == 0 and intro is not None and not any(
@@ -803,7 +848,7 @@ def build():
             E.warn("map %s" % m, "markers never used: %s" % ", ".join(unused))
 
     return {"version": 2, "title": story.TITLE, "premise": story.PREMISE, "volumes": volumes, "chapters": chapters,
-            "npcs": npcs, "quests": quests, "cinematics": cinematics}
+            "npcs": npcs, "quests": quests, "cinematics": cinematics, "threads": TH.compiled()}
 
 
 # ------------------------------------------------------------------ output

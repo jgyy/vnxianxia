@@ -1,6 +1,6 @@
 # vnxianxia — Azure Cloud Sect: *The Lotus and the Blood Moon*
 
-A third-person **xianxia action-RPG** with a **1000-quest main story**, built entirely from code.
+A third-person **xianxia action-RPG** with a **2000-quest main story**, built entirely from code.
 Headless **Blender 5.2.2** Python scripts model, texture, rig and animate every character, creature and
 building. Five generated maps, a voiced story with cinematics, and a full game runtime (quests, dialogue,
 combat, HUD, loading screens, journal) run in **Godot 4.7.2**. The music and sound effects are synthesised
@@ -23,13 +23,16 @@ The Azure Cloud and Verdant Lotus sects sealed him beneath the Abyss, and the wo
 Now an orphan climbs nine thousand steps to the Azure Cloud with nothing but a mother's jade pendant. The seal is
 weakening, and someone inside the sect is helping the Blood Moon.*
 
-The saga has 1000 main quests: 10 volumes, one per major stage of cultivation from Qi Condensation to Tribulation
-Transcendence, each of 10 chapters, one per minor stage (1st Layer to Great Perfection), from Mortal to Immortal
-Ascension. Every major breakthrough calls down a heavenly tribulation to survive, and 278 moral choices move the hero
-along two axes, Law-Chaos and Good-Evil; elders, juniors, townsfolk and demonic cultivators react to the alignment and
-realm the hero reaches. It has 20 cinematics, 40 named NPCs and 12,769 words of voiced dialogue (813 lines,
-plus male and female takes of every line that names the hero) in the ten original chapters, and 65,000 more words of
-text-only dialogue in the 90 chapters built around them. Play as **Lin Feng** or **Su Yue**; Tab switches between
+The saga has 2000 main quests: 10 volumes, one per major stage of cultivation from Qi Condensation to Tribulation
+Transcendence, each of 10 chapters of 20 quests, one chapter per minor stage (1st Layer to Great Perfection), from
+Mortal to Immortal Ascension. Every major breakthrough calls down a heavenly tribulation to survive, and all but one
+quest (the finale's climactic tribulation fight, which has no room for one) offers a moral choice that moves the hero
+along two axes, Bearing (disciplined/precept-bound &lt;-&gt; free-wandering) and the Dao (righteous &lt;-&gt; demonic),
+giving nine cultivation temperaments from Guardian of the Precepts to Servant of the Blood Moon; elders, juniors,
+townsfolk and demonic cultivators react to the alignment and realm the hero reaches. It has 20 cinematics, 40 named
+NPCs and 12,769 words of voiced dialogue (813 lines, plus male and female takes of every line that names the hero) in
+the ten original chapters, and 118,000 more words of text-only dialogue in the 90 chapters built around them. Play as
+**Lin Feng** or **Su Yue**; Tab switches between
 them and the dialogue follows. The full plot, the cast and the volume and chapter lists are in
 **[docs/STORY.md](docs/STORY.md)**; every quest is listed in **[docs/QUESTS.md](docs/QUESTS.md)**. In game, the
 journal's *Story So Far* page recaps every volume and chapter you have reached.
@@ -114,7 +117,7 @@ flowchart LR
     end
     subgraph Data["Python data (stdlib)"]
         WS[world_spec.py<br/>maps · markers · enemies · items] --> MAPS[tools/maps/*<br/>5 map layouts]
-        WS --> ST[tools/story/*<br/>1000 quests · 20 cinematics · 40 NPCs]
+        WS --> ST[tools/story/*<br/>2000 quests · 20 cinematics · 40 NPCs]
         ST --> BS[build_story.py<br/>validate → story.json]
     end
     subgraph Audio["Audio"]
@@ -126,7 +129,7 @@ flowchart LR
     BS --> SJ[(data/story.json)]
     ST --> GV
     G & SC & SJ & PR & GA & GV --> RT[Godot 4.7.2 runtime]
-    RT --> CI{{CI: validate · smoke test ·<br/>1000-quest walkthrough in 10 shards · screenshots}}
+    RT --> CI{{CI: validate · smoke test ·<br/>2000-quest walkthrough in 20 shards · screenshots}}
 ```
 
 ## Game runtime
@@ -155,7 +158,7 @@ stateDiagram-v2
     Rewards --> Objective: next quest (story card, autosave)
     Rewards --> Breakthrough: realm reward
     Breakthrough --> Objective
-    Rewards --> [*]: q1000 Immortal Ascension
+    Rewards --> [*]: q2000 Immortal Ascension
 ```
 
 | Script | Role |
@@ -216,7 +219,7 @@ godot --path godot --rendering-driver vulkan -s res://tests/capture_loading_art.
 ```bash
 godot --headless --path godot --import
 godot --headless --path godot -s res://tests/smoke_test.gd         # assets, rigs, maps, voices, a play session
-godot --headless --path godot -s res://tests/walkthrough_test.gd   # plays all 1000 quests end to end
+godot --headless --path godot -s res://tests/walkthrough_test.gd   # plays all 2000 quests end to end
 godot --headless --path godot -s res://tests/walkthrough_test.gd -- 101 200   # one volume (CI runs 10 shards)
 godot --headless --path godot -s res://tests/animations_test.gd    # 100+ hero animations play, combos, emotes
 xvfb-run -a godot --path godot --rendering-driver vulkan \
@@ -247,7 +250,7 @@ godot/
   tests/                 smoke_test, walkthrough_test, capture_screenshots, capture_loading_art, capture_map
 tools/
   world_spec.py          single source of truth for maps, markers, enemies, items, realms
-  maps/                  map layout modules        story/   the 1000-quest saga as Python data
+  maps/                  map layout modules        story/   the 2000-quest saga as Python data
   build_maps.py build_story.py gen_voices.py gen_audio.py validate_glb.py
 docs/                    STORY.md, AUDIO.md, screenshots/
 ```

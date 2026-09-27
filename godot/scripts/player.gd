@@ -238,7 +238,6 @@ func _face_nearest_enemy(radius: float) -> void:
 
 
 func _apply_strike() -> void:
-	print("STRIKE ", Engine.get_physics_frames(), " ", current_animation(), " ", moves._state)
 	var fwd := model_root.global_basis.z
 	var hit := false
 	for e in get_tree().get_nodes_in_group("enemies"):

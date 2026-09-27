@@ -171,7 +171,24 @@ func _show_story() -> void:
 				for i in range(first, mini(first + 10, Game.quest_index)):
 					var q := Story.quest(i)
 					t += "[color=#b8ad96]   %d. %s[/color] — %s\n" % [int(q.number), q.title, Story.fill(q.summary)]
+	t += _threads_text()
 	_page(t)
+
+
+## Recurring threads (the traitor, the pendant, the Patriarch's Ladder...):
+## every beat reached so far, oldest first, so the saga reads like one story
+## even when its 1000 quests are played one at a time.
+func _threads_text() -> String:
+	var reached: Array = Story.threads_so_far(Game.quest_index)
+	if reached.is_empty():
+		return ""
+	var t := "\n\n[b][color=#dcb86b]Threads of the story[/color][/b]\n"
+	for th in reached:
+		var mark := "[color=#73e6c7]—[/color]" if th.done else "[color=#dcb86b]…[/color]"
+		t += "\n%s [b]%s[/b]\n" % [mark, th.title]
+		for beat in (th.beats as Array):
+			t += "   %s\n" % beat
+	return t
 
 
 ## Every quest reached in the current volume; earlier volumes are folded into
@@ -230,8 +247,8 @@ func _show_cultivation() -> void:
 
 ## The nine alignments as a grid, the player's highlighted, with both axes.
 func _alignment_text() -> String:
-	var t := "\n[b]Alignment: [color=#dcb86b]%s[/color][/b]\n" % Game.alignment_name()
-	t += "[color=#b8ad96]Law %+d (lawful 25+, chaotic -25-)  ·  Good %+d (good 25+, evil -25-)[/color]\n" % [Game.law, Game.good]
+	var t := "\n[b]Dao Heart: [color=#dcb86b]%s[/color][/b]\n" % Game.alignment_name()
+	t += "[color=#b8ad96]Bearing %+d (disciplined 25+, free-wandering -25-)  ·  Dao %+d (righteous 25+, demonic -25-)[/color]\n" % [Game.law, Game.good]
 	var mine := Game.alignment()
 	for a in Game.ALIGN_LAW:
 		var row := "   "

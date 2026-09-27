@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     7, "Siege of Qingshi",
@@ -151,4 +152,54 @@ CHAPTER = chapter(
                        (YUN, "We cannot patch it any longer. We must build a new one. The Great Azure Formation, a seal for ten thousand years."),
                        (YUN, "It needs star iron, thunder crystal and phoenix feathers. They exist in one place: the Celestial Sky Isles."), map="sect"),
               ], xp=700, items={"spirit_stone": 6, "medicine": 2}),
+    ])
+
+# Gu is gone into the graves and the gate held, but a siege leaves a town
+# with wounds to count before it can properly celebrate. Spliced in between
+# "The Last Wave" and "Dawn over Qingshi".
+EXTRA = C(
+    "Siege of Qingshi", "qingshi_town",
+    "The gate held and the traitor fled, but Qingshi spends the last hours before dawn counting its wounded, its "
+    "dead, and the strange new debts a siege leaves behind.",
+    cast=[DU, ZHOU, FANG, JIN, TIE, LIU],
+    foes=["bandit", "demon_cultivator"],
+    items=["medicine", "spirit_stone", "lantern_oil"],
+    props=["treasure_chest", "seal"],
+    beats=[
+        B("rescue", "The Wounded at the Temple",
+          "The temple has filled with wounded faster than Elder Hua's borrowed supplies can stretch.",
+          (N, "Rows of townsfolk and disciples lie on borrowed mats. A healer from Thunder Peak moves between them, humming to keep her hands steady."),
+          v=0),
+        B("hunt", "Bandits Still in the Fields",
+          "Not all of Iron-Fang's men surrendered when he did. A few still hide among the burned rice paddies.",
+          foe="bandit", v=0),
+        B("social", "Iron-Fang's First Scrubbed Pot",
+          "Iron-Fang, true to his word, has started washing dishes at the Drunken Crane, and is oddly good at it.",
+          (TIE, "Forty years of terrorizing this river valley, and it turns out I'm excellent with a scrub brush. Nobody tell my old men."),
+          v=0),
+        B("gather", "Salvage From the Warehouse",
+          "The collapsed smuggling tunnel left the warehouse in disarray. Merchant Jin wants an honest inventory this time.",
+          item="lantern_oil", v=0),
+        B("probe", "Gu's Scorched Talisman",
+          "The talisman Gu left behind on the graveyard hill still holds a trace of the pattern that carried him away.",
+          (N, "The scorch mark isn't random. It's a partial teleport rune, torn off mid-use. Someone should study it properly."),
+          v=0),
+        B("social", "Widow Liu's New Worry",
+          "With Liu Er home safe, Widow Liu has found a new thing to worry about: that he'll do something reckless to prove himself.",
+          (LIU, "He wants to guard the wall now. Sixteen years old and he wants to guard the wall. I don't know whether to be proud or furious."),
+          v=0),
+        B("gather", "Counting the Dead, Gently",
+          "Magistrate Zhou wants every name recorded properly for the stele, and asks for help going door to door.",
+          item="spirit_stone", v=0),
+        B("hunt", "Demonic Stragglers by the River",
+          "A handful of demonic cultivators, cut off from the retreat, still lurk near the docks.",
+          foe="demon_cultivator", v=0),
+        B("social", "Constable Du's Ledger of Debts",
+          "Constable Du has started keeping a very different ledger: who helped, and how, so the town remembers properly.",
+          (DU, "Not for punishment this time. For thanks. I've never kept a ledger that felt this good to write."),
+          v=0),
+        B("cultivate", "Breath Before the Dawn",
+          "Before the town properly wakes, you take a last quiet moment to settle your core after the night's fighting.",
+          (N, "The market square is finally still. Your golden core turns over once, slow and warm, like something finally allowed to rest."),
+          v=0),
     ])

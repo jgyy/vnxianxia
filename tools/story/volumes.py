@@ -16,10 +16,11 @@ from . import vol01, vol02, vol03, vol04, vol05, vol06, vol07, vol08, vol09, vol
 from . import morality as MO
 from . import tribulations as TR
 from .choices import LEGACY as LEGACY_CHOICES
-from .saga_gen import attach_choice, build_chapter
+from .saga_gen import GEN, attach_choice, build_chapter, build_extra, ensure_choice
 
-LEGACY = [m.CHAPTER for m in (chapter01, chapter02, chapter03, chapter04, chapter05,
-                              chapter06, chapter07, chapter08, chapter09, chapter10)]
+LEGACY_MODULES = (chapter01, chapter02, chapter03, chapter04, chapter05,
+                  chapter06, chapter07, chapter08, chapter09, chapter10)
+LEGACY = [m.CHAPTER for m in LEGACY_MODULES]
 NEW = [vol01.CHAPTERS, vol02.CHAPTERS, vol03.CHAPTERS, vol04.CHAPTERS, vol05.CHAPTERS,
        vol06.CHAPTERS, vol07.CHAPTERS, vol08.CHAPTERS, vol09.CHAPTERS, vol10.CHAPTERS]
 
@@ -84,17 +85,44 @@ def _legacy_chapter(k):
         n = (k - 1) * 10 + i + 1
         q["legacy"] = n
         q["rewards"]["stage"] = None
+        gn = NB.legacy_to_new(n)
         # hand-written choices after voiced objectives (their lines stay as they are)
         for (lq, oi), choice in LEGACY_CHOICES.items():
             if lq == n:
-                attach_choice(q, choice, NB.legacy_to_new(n), at=oi)
+                attach_choice(q, choice, gn, at=oi)
+        # every quest offers a choice, voiced ones included; most of the
+        # original ten chapters get theirs from the templates, same as a
+        # generated chapter's quests would -- except legacy quest 99
+        # ("Heavenly Tribulation"), whose objectives are cinematic/defeat/
+        # meditate only, with no talk/reach/interact to hang a choice on
+        # without adding new voiced dialogue to an already-recorded legacy
+        # chapter (see the matching exception in build_story.py)
+        if n != 99:
+            ensure_choice(q, gn, GEN.rotor)
+    # this chapter's new quests (module EXTRA, if written) slot in between
+    # the original lead-in quests and the tail quest(s), which always stay
+    # last, in order (see NB.LEGACY_LEAD_QUESTS / LEGACY_TAIL_QUESTS)
+    n_lead = NB.LEGACY_LEAD_QUESTS[k]
+    lead = ch["quests"][:n_lead]
+    climax = ch["quests"][n_lead:]
+    extra_spec = getattr(LEGACY_MODULES[k - 1], "EXTRA", None)
+    extra = []
+    if extra_spec:
+        vol = NB.volume_of_chapter(number)
+        first_extra = NB.first_quest(number) + n_lead
+        extra = build_extra(extra_spec, number, first_extra, vol)
+    ch["quests"] = lead + extra + climax
     quests = ch["quests"]
     last = quests[-1]
     if last["rewards"]["realm"] != realm:
         raise ValueError("chapter %d should grant %r, grants %r" % (number, realm, last["rewards"]["realm"]))
     if number == NB.TOTAL_CHAPTERS:
-        # Heavenly Tribulation: nine times nine before the nine bolts, then Great Perfection
-        q = quests[-2]
+        # Heavenly Tribulation: nine times nine before the nine bolts, then Great Perfection.
+        # This chapter keeps its last TWO original quests as its tail (see
+        # LEGACY_TAIL_QUESTS); climax[0] is specifically the ninth voiced quest
+        # (Great Perfection), climax[1] the tenth (Heavenly Tribulation) -- any
+        # spliced-in EXTRA quests must not shift which quest is which.
+        q = climax[0]
         med = next(i for i, o in enumerate(q["objectives"]) if o["type"] == "meditate")
         mo = q["objectives"][med]
         m = next((o["map"] for o in reversed(q["objectives"][:med + 1]) if o.get("map")), None) or q["map"]

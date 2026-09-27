@@ -215,8 +215,8 @@ def build() -> common.MapDef:
     add("plum_blossom_tree", 43.0, -30.0, 200, 0.9)
     add("stone_stele", 42.0, -41.5, -35, 0.9, name="TempleStele")
     # south-east block and around the east gate
-    add("town_house", 22.0, 8.0, 0)
-    add("town_house", 32.0, 8.0, 0)
+    add("town_house", 22.0, 8.0, 0, name="Blacksmith")
+    add("town_house", 32.0, 8.0, 0, name="HerbShop")
     add("town_house", 22.0, 20.5, 180)
     add("town_house_large", 34.0, 21.0, 180, name="TeaHouse")
     add("plum_blossom_tree", 16.5, 33.0, 10, 0.85)
@@ -307,6 +307,9 @@ def build() -> common.MapDef:
         "Graveyard": at(gx, gz),
         "Farmland": at(72.0, 12.0),
         "WatchTower": at(37.5, 30.0),
+        "TeaHouse": at(34.0, 17.0),
+        "Blacksmith": at(22.0, 11.5),
+        "HerbShop": at(32.0, 11.5),
     }
     env = common.Env(
         sky=common.Sky(top=(0.36, 0.5, 0.72), horizon=(0.98, 0.82, 0.62), ground_bottom=(0.5, 0.44, 0.38),

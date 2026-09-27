@@ -47,9 +47,6 @@ try:
 except ImportError:  # imported as tools.story
     from tools.world_spec import REALMS
 
-# moral choices from the templates in morality.py per generated chapter (besides the hand-written one)
-TEMPLATE_CHOICES_PER_CHAPTER = 2
-
 # ---------------------------------------------------------------- outline helpers
 
 
@@ -278,7 +275,6 @@ class Gen:
         if len(spec["beats"]) != NB.QUESTS_PER_CHAPTER:
             raise ValueError("chapter %d %r has %d beats" % (number, spec["title"], len(spec["beats"])))
         quests = []
-        families = {}
         for i, beat in enumerate(spec["beats"]):
             q = first + i
             last = i == len(spec["beats"]) - 1
@@ -289,16 +285,15 @@ class Gen:
             else:
                 fam = choice_family(qd, beat)
                 if fam:
-                    families[i] = fam
+                    name, extra = fam
+                    variants = MO.TEMPLATES[name]
+                    # cycle through a family's variants across the saga, so the same dilemma rarely repeats nearby
+                    tpl = variants[self.rotor("choice/" + name, list(range(len(variants)))).next()]
+                    attach_choice(qd, tpl, q, spec, beat, **extra)
+            # every quest offers a choice: whatever the beat's own kind couldn't
+            # place, a plain reading of its objectives always can
+            ensure_choice(qd, q, self.rotor)
             quests.append(qd)
-        # two more moral choices per chapter from the templates, on quests picked by a stable hash
-        picked = sorted(families, key=lambda i: h(number, i, "choice"))[:TEMPLATE_CHOICES_PER_CHAPTER]
-        for i in sorted(picked):
-            fam, extra = families[i]
-            variants = MO.TEMPLATES[fam]
-            # cycle through a family's variants across the saga, so the same dilemma rarely repeats nearby
-            tpl = variants[self.rotor("choice/" + fam, list(range(len(variants)))).next()]
-            attach_choice(quests[i], tpl, first + i, spec, spec["beats"][i], **extra)
         ch = chapter(number, spec["title"], spec["summary"], None, spec["map"], quests)
         ch["legacy"] = None
         return ch
@@ -746,10 +741,11 @@ def kind_is(ctx, k):
 # ---------------------------------------------------------------- moral choices
 
 def choice_family(qd, beat):
-    """Which template family of morality.TEMPLATES fits a built quest, with its slots, or None."""
+    """Which template family of morality.TEMPLATES fits a built quest, with its
+    slots, or None. Every quest must end up with a choice (see ensure_choice),
+    so each branch only requires what its own templates actually need -- e.g.
+    "find"/"gather"/"train"/"cultivate" don't need a talk objective at all."""
     objs = qd["objectives"]
-    if not any(o["type"] == "talk" for o in objs):
-        return None
     fam = MO.FAMILY_OF_KIND.get(beat["kind"])
     if fam is None:
         return None
@@ -773,11 +769,76 @@ def choice_family(qd, beat):
     if fam == "find":
         return ("find", {}) if any(o["type"] in ("interact", "reach") for o in objs) else None
     if fam == "social":
-        last_talk = [o for o in objs if o["type"] == "talk"][-1]
+        talks = [o for o in objs if o["type"] == "talk"]
+        if not talks:
+            return None
+        last_talk = talks[-1]
         if last_talk["npc"] in MO.OFFICIALS:
             return "social_official", {}
         return MO.SOCIAL_BY_CATEGORY[MO.category(last_talk["npc"])], {}
     return fam, {}
+
+
+## An objective can only host a choice if it has dialogue of its own (talk,
+## reach and interact objectives all get at least one line; defeat, collect,
+## meditate, tribulation and cinematic never do) -- see build_story.compile_choices.
+_CHOICE_HOST_TYPES = ("talk", "reach", "interact")
+
+
+def _last_choice_host(objs, q):
+    """The last talk objective, or (failing that) the last reach/interact
+    objective -- every generated quest pattern has at least one of these."""
+    for want in _CHOICE_HOST_TYPES:
+        hosts = [i for i, o in enumerate(objs) if o["type"] == want]
+        if hosts:
+            return hosts[-1]
+    raise ValueError("q%04d: no talk/reach/interact objective to hang a choice on" % q)
+
+
+def infer_family(qd):
+    """Which TEMPLATES family fits a fully-built quest (any quest, hand-written
+    or generated), read straight from its objectives -- used to guarantee
+    every quest offers a choice even when it wasn't authored with one."""
+    objs = qd["objectives"]
+    fights = [o for o in objs if o["type"] == "defeat"]
+    for o in fights:
+        if o["enemy"] in MO.HUMAN_FOES:
+            return "fight_human", {"foes": FOE_NAMES.get(o["enemy"], o["enemy"])}
+    for o in fights:
+        if o["enemy"] in MO.BEAST_FOES:
+            return "fight_beast", {"foes": FOE_NAMES.get(o["enemy"], o["enemy"])}
+    if fights:
+        return "boss" if any(o.get("name") for o in fights) else "fight_human", {"foes": "enemies"}
+    got = [o for o in objs if o["type"] == "collect"]
+    if got:
+        return "gather", {"noun": ITEM_NOUNS.get(got[0]["item"], got[0]["item"]), "item": got[0]["item"]}
+    if any(o["type"] in ("meditate", "tribulation") for o in objs):
+        return "cultivate", {}
+    talks = [o for o in objs if o["type"] == "talk"]
+    if talks:
+        nid = talks[-1]["npc"]
+        if nid in MO.OFFICIALS:
+            return "social_official", {}
+        return MO.SOCIAL_BY_CATEGORY[MO.category(nid)], {}
+    if any(o["type"] in ("interact", "reach") for o in objs):
+        return "find", {}
+    return None
+
+
+def ensure_choice(qd, q, rotor):
+    """Attach a template choice to ``qd`` if it doesn't already have one
+    (called after every fallback: hand-written and beat-family choices come
+    first). ``rotor`` cycles a family's variants so nearby quests of the same
+    family don't repeat a dilemma."""
+    if any(o.get("choices") for o in qd["objectives"]):
+        return
+    fam = infer_family(qd)
+    if fam is None:
+        raise ValueError("q%04d: %r has no objective to hang a fallback choice on" % (q, qd["title"]))
+    name, extra = fam
+    variants = MO.TEMPLATES[name]
+    tpl = variants[rotor("choice/" + name, list(range(len(variants)))).next()]
+    attach_choice(qd, tpl, q, **extra)
 
 
 def attach_choice(qd, choice, q, spec=None, beat=None, foes="", noun="", item=None, at=None):
@@ -787,10 +848,7 @@ def attach_choice(qd, choice, q, spec=None, beat=None, foes="", noun="", item=No
     if at is None:
         at = choice.get("at", "last")
     if at == "last":
-        talks = [i for i, o in enumerate(objs) if o["type"] == "talk"]
-        if not talks:
-            raise ValueError("q%04d: a choice needs a talk objective" % q)
-        at = talks[-1]
+        at = _last_choice_host(objs, q)
     o = objs[at]
     nid = o.get("npc")
     name = SHORT.get(nid, NPCS[nid]["name"]) if nid else ""
@@ -865,3 +923,31 @@ GEN = Gen()
 
 def build_chapter(spec, number, realm=None, stage=None):
     return GEN.chapter(spec, number, realm=realm, stage=stage)
+
+
+## Extra quests spliced into a *legacy* (voiced) chapter, between its original
+## lead-in quests and its climax (see volumes._legacy_chapter). Reuses the same
+## beat/pattern/choice machinery as a generated chapter, just without a
+## fixed beat count and without ever granting a realm/stage itself -- the
+## legacy chapter's own hand-written climax quest still does that.
+## ``chapter_number`` keys into choices.NEW exactly like a generated chapter's
+## (chapter_number, beat_index) -- legacy and generated chapter numbers never
+## collide, so the same authored-choices dict serves both.
+def build_extra(spec, chapter_number, first, vol):
+    quests = []
+    for i, beat in enumerate(spec["beats"]):
+        q = first + i
+        qd = GEN.quest(spec, beat, q, vol, i)
+        authored = CHOICES.get((chapter_number, i))
+        if authored:
+            attach_choice(qd, authored, q, spec, beat)
+        else:
+            fam = choice_family(qd, beat)
+            if fam:
+                name, extra = fam
+                variants = MO.TEMPLATES[name]
+                tpl = variants[GEN.rotor("choice/" + name, list(range(len(variants)))).next()]
+                attach_choice(qd, tpl, q, spec, beat, **extra)
+        ensure_choice(qd, q, GEN.rotor)
+        quests.append(qd)
+    return quests

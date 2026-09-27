@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     4, "Ruins of the Forgotten Sect",
@@ -169,4 +170,55 @@ CHAPTER = chapter(
                        (YUN, "In one month the sect holds the Inner Sect Tournament. The winner earns a place at my side, and the Azure Eye's trust."),
                        (YUN, "I want you to enter. And I want whoever cut those pages to watch you win.")),
               ], xp=400, items={"spirit_stone": 5}, realm="Foundation Establishment"),
+    ])
+
+# The last errands before the breakthrough: Zhao Kang's wound, Gu's grief,
+# Xiao Shi's fate weighing on everyone. Spliced in between "Preparing the
+# Foundation" and the "Foundation Establishment" breakthrough itself.
+EXTRA = C(
+    "Ruins of the Forgotten Sect", "sect",
+    "The last errands before the breakthrough: Zhao Kang's wound still mending, Elder Gu's old grief, and Xiao "
+    "Man's fear for her brother, taken by the same hands that fed the wolves.",
+    cast=[ZHAO, BAI, GU, MO, HUA, QIAN, MAN, HAN, LAN],
+    foes=["demon_cultivator", "stone_golem"],
+    items=["spirit_herb", "spirit_stone", "jade_slip"],
+    props=["stone_stele", "jade_slip", "seal"],
+    beats=[
+        B("social", "Zhao Kang's Tactical Leak",
+          "Zhao Kang's wound is healing, loudly and with great commentary, in the sect's infirmary.",
+          (ZHAO, "I am recovering with dignity. The dignity is mostly silent screaming, but it is dignified screaming."),
+          v=0),
+        B("probe", "The Fourth-Floor Log",
+          "Elder Bai wants a second opinion on the fourth floor's borrowing log, now that a Law Hall seal is involved.",
+          (BAI, "Someone signed for the missing pages properly, which is almost worse than if they'd stolen them outright."),
+          v=0),
+        B("gather", "Lotus Root, Properly This Time",
+          "Elder Hua wants more lotus root gathered at dusk; the last batch went into a pill, and a second pill is safer than one.",
+          item="spirit_herb", v=0),
+        B("hunt", "Scouts Near the Ruins Again",
+          "A few more Blood Moon scouts have been seen circling the Verdant Lotus ruins since the stele was defaced.",
+          foe="demon_cultivator", v=0),
+        B("social", "Gu Lan's Old Room",
+          "Elder Mo mentions, carefully, that Gu Hanshan still keeps his daughter's old room exactly as she left it.",
+          (MO, "Twenty years, and not a single thing moved. Grief keeps strange houses. Don't mention I told you."),
+          v=0),
+        B("probe", "Steward Qian's Second Thoughts",
+          "Steward Qian, having signed away five spirit stones, now wants an itemised account of exactly how they were spent.",
+          (QIAN, "Receipts! I need receipts! A pill without a receipt is just an expensive rumour!"),
+          v=0),
+        B("cultivate", "Steadying Before the Leap",
+          "Han Xue insists on one more careful meditation before the actual breakthrough attempt, foundation pill or not.",
+          (HAN, "A pill isn't a shortcut around readiness. Sit. Let's be sure, not just hopeful."),
+          v=0),
+        B("social", "Xiao Man's Sleepless Night",
+          "Xiao Man hasn't slept properly since learning her brother was taken. She asks for company more than answers.",
+          (MAN, "I don't need you to fix it tonight. I just don't want to sit with it alone."),
+          v=0),
+        B("probe", "The Hermit's Warning, Again",
+          "A paper crane arrives from Lan Jue with a warning about breakthroughs attracting more than heart demons.",
+          (LAN, "Blood Moon scouts near a fresh foundation is not a coincidence. Guard the garden well."),
+          v=0),
+        B("defend", "Guarding the Plum Garden",
+          "Before the breakthrough, the plum garden itself needs clearing and warding against anything that might sense it.",
+          foe="stone_golem", v=0),
     ])

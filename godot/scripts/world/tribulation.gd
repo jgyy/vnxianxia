@@ -35,7 +35,10 @@ const T_FADE := 1.6
 
 var bolts := 3
 var volleys := 3
-var per_volley := 1
+## bolts landing in each volley (sums to ``bolts`` exactly, not just to a
+## per-volley ceiling times ``volleys``, so a count that doesn't divide evenly
+## never strikes more bolts than the objective actually asked for).
+var per_volley: Array[int] = [1]
 var waves: Array = []
 var tier := -1
 var done := 0
@@ -91,10 +94,22 @@ static func create(obj: Dictionary, fight_tier := -1) -> Tribulation:
 	var t := Tribulation.new()
 	t.bolts = int(obj.get("bolts", 3))
 	t.volleys = mini(t.bolts, MAX_VOLLEYS)
-	t.per_volley = maxi(1, int(ceil(float(t.bolts) / t.volleys)))
+	t.per_volley = _split_bolts(t.bolts, t.volleys)
 	t.waves = obj.get("waves", []) if obj.get("waves") else []
 	t.tier = fight_tier
 	return t
+
+
+## Split ``bolts`` lightning strikes as evenly as possible across ``volleys``
+## volleys (each gets the base count, the first ``bolts % volleys`` get one
+## more), so the total struck is always exactly ``bolts``.
+static func _split_bolts(bolts: int, volleys: int) -> Array[int]:
+	var out: Array[int] = []
+	var base := bolts / volleys
+	var extra := bolts % volleys
+	for i in volleys:
+		out.append(base + (1 if i < extra else 0))
+	return out
 
 
 func _ready() -> void:
@@ -189,8 +204,9 @@ func _telegraph() -> void:
 	_targets.clear()
 	var c := player.global_position if is_instance_valid(player) else global_position
 	_targets.append(c)
-	for k in per_volley - 1:
-		var a := TAU * k / maxf(per_volley - 1, 1) + done * 0.7
+	var count: int = per_volley[clampi(done, 0, per_volley.size() - 1)]
+	for k in count - 1:
+		var a := TAU * k / maxf(count - 1, 1) + done * 0.7
 		_targets.append(c + Vector3(cos(a), 0, sin(a)) * (3.5 + 1.5 * (k % 2)))
 	var map := get_parent()
 	for tp in _targets:

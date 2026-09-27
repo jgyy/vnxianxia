@@ -35,6 +35,10 @@ MAPS = {
             "CliffEdge": "the western cliff edge above the sea of clouds",
             "ScholarRock": "the tall Taihu scholar rock east of the plaza",
             "OuterPines": "pine woods south-east, outside the walls",
+            "ElderQuarters": "the elder's private hall, near the plum garden",
+            "AlchemyPavilion": "the alchemy pavilion by the herb terraces",
+            "WeaponsHall": "the weapons hall beside the training ground",
+            "DiscipleDormitory": "the outer disciples' dormitory east of the plaza",
         },
     },
     "bamboo_forest": {
@@ -77,6 +81,9 @@ MAPS = {
             "Graveyard": "the hillside graveyard outside the walls",
             "Farmland": "the terraced fields beyond the east wall",
             "WatchTower": "the wooden watchtower on the town wall",
+            "TeaHouse": "the teahouse south-east of the market square",
+            "Blacksmith": "the blacksmith's forge south-east of the market square",
+            "HerbShop": "the herb shop south-east of the market square",
         },
     },
     "blood_abyss": {
@@ -116,6 +123,88 @@ MAPS = {
             "TribulationPeak": "the summit altar where heavenly tribulation strikes",
             "AscensionStair": "the stair ascending toward the heavens",
         },
+    },
+    # -- building interiors, entered through a door on the map above (see
+    # godot/scripts/world/doors.gd) -----------------------------------------
+    "sect_main_hall": {
+        "name": "Sect Main Hall",
+        "music": "sect",
+        "markers": {"PlayerSpawn": "just inside the great doors", "ExitDoor": "the doors back to the plaza",
+                    "TeleportArray": "the doors back to the plaza", "ThroneDais": "before the sect master's throne"},
+    },
+    "elder_quarters": {
+        "name": "Elder's Quarters",
+        "music": "sect",
+        "markers": {"PlayerSpawn": "just inside the quarters", "ExitDoor": "the door back to the sect",
+                    "TeleportArray": "the door back to the sect", "MeditationMat": "the raised meditation mat"},
+    },
+    "scripture_pavilion": {
+        "name": "Scripture Pavilion",
+        "music": "sect",
+        "markers": {"PlayerSpawn": "just inside the pagoda", "ExitDoor": "the door back to the sect",
+                    "TeleportArray": "the door back to the sect", "BookShelves": "the tall scroll shelves"},
+    },
+    "alchemy_pavilion": {
+        "name": "Alchemy Pavilion",
+        "music": "sect",
+        "markers": {"PlayerSpawn": "just inside the pavilion", "ExitDoor": "the door back to the sect",
+                    "TeleportArray": "the door back to the sect", "PillFurnace": "the fire-lit pill furnace"},
+    },
+    "weapons_hall": {
+        "name": "Weapons Hall",
+        "music": "sect",
+        "markers": {"PlayerSpawn": "just inside the hall", "ExitDoor": "the door back to the training ground",
+                    "TeleportArray": "the door back to the training ground",
+                    "ArmoryRacks": "the sparring ring among the weapon racks"},
+    },
+    "disciple_dormitory": {
+        "name": "Disciple Dormitory",
+        "music": "sect",
+        "markers": {"PlayerSpawn": "just inside the dormitory", "ExitDoor": "the door back to the sect",
+                    "TeleportArray": "the door back to the sect", "Dormitory": "the row of disciple bunks"},
+    },
+    "qingshi_inn": {
+        "name": "Drunken Crane Inn",
+        "music": "town",
+        "markers": {"PlayerSpawn": "just inside the inn", "ExitDoor": "the door back to the street",
+                    "TeleportArray": "the door back to the street", "BarCounter": "the innkeeper's bar counter"},
+    },
+    "qingshi_teahouse": {
+        "name": "Teahouse",
+        "music": "town",
+        "markers": {"PlayerSpawn": "just inside the teahouse", "ExitDoor": "the door back to the street",
+                    "TeleportArray": "the door back to the street", "TeaCounter": "the tea serving counter"},
+    },
+    "qingshi_blacksmith": {
+        "name": "Blacksmith",
+        "music": "town",
+        "markers": {"PlayerSpawn": "just inside the smithy", "ExitDoor": "the door back to the street",
+                    "TeleportArray": "the door back to the street", "Forge": "the blacksmith's forge and anvil"},
+    },
+    "qingshi_herb_shop": {
+        "name": "Herb Shop",
+        "music": "town",
+        "markers": {"PlayerSpawn": "just inside the shop", "ExitDoor": "the door back to the street",
+                    "TeleportArray": "the door back to the street", "HerbCounter": "the apothecary's counter"},
+    },
+    "hidden_vault": {
+        "name": "Hidden Vault",
+        "music": "forest",
+        "markers": {"PlayerSpawn": "just inside the vault", "ExitDoor": "the hidden door back to the shrine",
+                    "TeleportArray": "the hidden door back to the shrine",
+                    "VaultTreasure": "the piled chests and loose gold"},
+    },
+    "celestial_pavilion": {
+        "name": "Celestial Sanctum",
+        "music": "sky",
+        "markers": {"PlayerSpawn": "just inside the sanctum", "ExitDoor": "the door back to the pavilion",
+                    "TeleportArray": "the door back to the pavilion", "StarChart": "the floating jade star-dais"},
+    },
+    "blood_abyss_shrine": {
+        "name": "Ancient Shrine",
+        "music": "abyss",
+        "markers": {"PlayerSpawn": "just inside the ruin", "ExitDoor": "the door back to the altar",
+                    "TeleportArray": "the door back to the altar", "RelicAltar": "the smaller relic altar"},
     },
 }
 

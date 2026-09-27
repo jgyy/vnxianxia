@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     6, "Descent into the Blood Moon",
@@ -158,4 +159,54 @@ CHAPTER = chapter(
                        (YUN, "But Qingshi is next. If the letters are true, the Blood Moon marches before the next blood moon."),
                        (YUN, "Rest one night. Then we defend the town. We will not let it bleed a second time.")),
               ], xp=900, items={"spirit_stone": 8}, realm="Core Formation"),
+    ])
+
+# The ritual is broken and Gu has fled deeper, but the Abyss is not done with
+# you yet. Spliced in between "The Altar of Blood" and "Core Formation".
+EXTRA = C(
+    "Descent into the Blood Moon", "blood_abyss",
+    "The ritual is broken and the traitor has fled deeper into the Abyss, but freed prisoners still need guiding out, "
+    "Ye Wuming's own ghosts still walk here, and the seal's reprieve is not the same as safety.",
+    cast=[YE],
+    foes=["blood_guard", "demon_cultivator"],
+    items=["demon_core", "rune_fragment", "medicine"],
+    props=["demon_obelisk", "prison_cage"],
+    beats=[
+        B("rescue", "Stragglers From the Cages",
+          "A few prisoners, too weak to walk with Han Xue's group, were left behind in the confusion of the ritual's collapse.",
+          (YE, "Not everyone made it out with your senior sister. Some couldn't stand. We go back for them."),
+          v=0),
+        B("hunt", "Xue Mei's Remaining Guard",
+          "Word of the Crimson Elder's defeat hasn't reached every corner of the Abyss. Some of her guards still hold their posts.",
+          foe="blood_guard", v=0),
+        B("gather", "What the Altar Left Behind",
+          "The broken altar's chamber holds fragments worth recovering before the Abyss reclaims them.",
+          item="demon_core", v=0),
+        B("probe", "Ye Wuming's Old Cell",
+          "Deeper in the war camp, Ye Wuming finds the cell where he was raised, and stops walking for a long moment.",
+          (YE, "I haven't seen this door in thirty years. I thought it would be smaller."),
+          v=0),
+        B("social", "What Xue Mei Called Him",
+          "Ye Wuming says little about being called 'lost puppy,' but it clearly cost him something to hear.",
+          (P, "She knew your name. Your real one."),
+          (YE, "She gave it to me. Before I chose Wuming, I had a name she picked. I don't use it. I don't remember why she did."),
+          v=0),
+        B("hunt", "The Last Sentries",
+          "A final knot of demonic cultivators, cut off from orders, still guards the road back toward the canyon entrance.",
+          foe="demon_cultivator", v=0),
+        B("gather", "Rune Fragments From the Ring",
+          "Elder Bai will want every fragment of the shattered obelisks studied once you're home.",
+          item="rune_fragment", v=0),
+        B("cultivate", "Steadying Before the Depths",
+          "Before attempting the golden core, Ye Wuming insists on a proper rest, however impatient you are.",
+          (YE, "The depths don't forgive an unsteady foundation. Sit. I'll watch. I'm good at watching."),
+          v=0),
+        B("social", "A Question for Ye Wuming",
+          "Before you go deeper, you ask Ye Wuming outright whether he intends to keep helping past this point.",
+          (P, "You could leave. You've paid whatever debt you thought you owed."),
+          (YE, "I stopped counting debts a long time ago. I'm not doing this for a debt anymore."),
+          v=0),
+        B("gather", "Medicine for the Walk Out",
+          "The freed prisoners' path back to the canyon entrance is long. Extra medicine won't go to waste.",
+          item="medicine", v=0),
     ])

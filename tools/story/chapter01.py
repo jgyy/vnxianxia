@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     1, "The Outer Disciple",
@@ -188,4 +189,67 @@ CHAPTER = chapter(
                        (YUN, "Omens come in pairs, they say. I would rather they didn't. Rest well, {player}. Tomorrow the sect needs you."),
                        (P, "I will not disappoint you, Sect Master.")),
               ], xp=200, items={"spirit_stone": 3}, realm="Qi Condensation"),
+    ])
+
+# Ten more days at the sect before the breakthrough: the watch doubled after
+# the wolves, Zhao Kang's rematch, and the questions Elder Gu keeps returning
+# to. Spliced in between "Red Eyes in the Pines" and "Qi Condensation".
+EXTRA = C(
+    "The Outer Disciple", "sect",
+    "More of the outer disciple's first days: the watch doubled after the wolves, herbs for the infirmary, a rematch "
+    "with Zhao Kang, and the questions Elder Gu keeps returning to.",
+    cast=[MO, WEI, ZHAO, HAN, HUA, GU, QIAN, LU, MAN],
+    foes=["spirit_wolf", "corrupted_wolf", "sparring_disciple"],
+    items=["spirit_herb", "spirit_stone", "wolf_fang"],
+    props=["stone_stele", "bronze_bell"],
+    beats=[
+        B("orders", "Watch Doubled at the Wall",
+          "After last night's wolves, Elder Mo doubles the watch, and outer disciples pull their share of it.",
+          (MO, "Two of you on the wall from dusk to the second bell, from now on. Red eyes don't knock twice before they bite."),
+          (P, "I'll take the first watch, Elder."),
+          (MO, "Good answer. Wrong shift. You're on the second. Go and sleep first, for once."),
+          v=0),
+        B("gather", "Wolfsbane for the Infirmary",
+          "Elder Hua wants wolfsbane gathered before the pack returns, just in case it does.",
+          (HUA, "Wolfsbane, not spirit herb this time. Uglier plant, better medicine. The terraces are full of it."),
+          v=0),
+        B("train", "Zhao Kang's Challenge, Again",
+          "Losing face to a village brat once was bad enough. Zhao Kang wants a rematch, properly this time.",
+          (ZHAO, "Sparring disciples don't count as a real match. You and me, training ground, no attendants."),
+          (P, "If you insist."),
+          (ZHAO, "I don't insist. I inform."),
+          foe="sparring_disciple", v=0),
+        B("social", "Lu Ping's Ledger of Fear",
+          "Lu Ping has started a wager on how many more red-eyed wolves will turn up. Nobody finds it as funny as he does.",
+          (LU, "Three to one says another pack shows up by the full moon. Care to bet against your own good luck?"),
+          (P, "I'd rather there wasn't a pack at all."),
+          (LU, "Boring answer. I'm writing it down anyway."),
+          v=0),
+        B("probe", "The Steward's Suspicious Math",
+          "Steward Qian's accounts have not balanced since the array flared, and he blames everyone but himself.",
+          (QIAN, "Three spirit stones unaccounted for! The array flares once and suddenly my ledger has opinions."),
+          v=0),
+        B("hunt", "Tracks Beyond the Wall",
+          "Wolf tracks lead away from the pines toward the bamboo forest. Someone should follow them before dark.",
+          foe="spirit_wolf", v=0),
+        B("cultivate", "Sitting With the Spark",
+          "Han Xue says the spark in your dantian needs patience more than effort. Sit, and prove her right.",
+          (HAN, "Cultivation isn't a race, whatever Zhao Kang thinks. Sit. Breathe. Let it come to you."),
+          v=0),
+        B("social", "Xiao Shi's Overdue Letter",
+          "Xiao Man is still waiting on her brother's letter from Qingshi. She asks you to write to him instead.",
+          (MAN, "He promised every week. It's been two months now. Would you write, if I told you what to say?"),
+          (P, "Of course."),
+          (MAN, "Tell him the carp are fine. He worries about the strangest things."),
+          v=0),
+        B("probe", "What the Ninth Precept Costs",
+          "Elder Gu returns, asking harder questions about the pendant and the array's flare.",
+          (GU, "I have thought more about that array. And that jade. Show it to me again."),
+          (P, "It's only ever been my mother's, Elder."),
+          (GU, "Mm. See that it stays only that."),
+          v=0),
+        B("stage", "One Star Closer",
+          "Your qi thickens by the day. Elder Mo says you're nearly ready for the cliff edge.",
+          (MO, "Adequate progress. Don't let it go to your head. There isn't room in there for both."),
+          v=0),
     ])
