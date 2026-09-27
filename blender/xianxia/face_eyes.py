@@ -106,7 +106,10 @@ class EyeLids:
         """Depth of the lid surface at frontal (u, w) for thickness th above the globe."""
         R = self.R
         # the conjunctival tuck (th < 0) hugs the true globe; the lids ride on the lid ellipsoid
-        a = np.where(th < 0, R, np.where(u < 0, self.a_med, self.a_lat))
+        # medially the ellipsoid only stretches toward the caruncle once past the globe's
+        # silhouette; over the globe itself it stays spherical so the margin seals on it
+        a_med = R + (self.a_med - R) * _sstep(-0.8 * R, self.u_en, u)
+        a = np.where(th < 0, R, np.where(u < 0, a_med, self.a_lat))
         q = (1.0 + th / R) ** 2 - (u / a) ** 2 - (w / R) ** 2
         # past the lid ellipsoid's rim the surface folds back behind the globe (a few mm at most)
         return self.c[1] - R * np.sqrt(np.clip(q, 0.0, None)) + np.minimum(3.0 * R * np.clip(-q, 0.0, None), 5.0)

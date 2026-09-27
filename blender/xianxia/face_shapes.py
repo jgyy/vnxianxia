@@ -25,7 +25,7 @@ import math
 
 import numpy as np
 
-from . import face_cards, face_eyes, face_mouth
+from . import face_cards, face_check, face_eyes, face_mouth
 from . import face_landmarks as fl
 
 
@@ -333,6 +333,8 @@ def build(fh):
     """Add the facial shape keys to fh.obj; returns their names in order."""
     obj = fh.obj
     K = FaceShapes(fh).keys()
+    for problem in face_check.check(fh, K):
+        print(f"WARNING face check ({fh.cfg['name']}): {problem}")
     obj.shape_key_add(name="Basis", from_mix=False)
     rest = np.array([v.co for v in obj.data.vertices])
     k = 0.001 * fh.s

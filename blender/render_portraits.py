@@ -89,15 +89,16 @@ def upgrade_materials(cfg):
 
 
 def pose(arm, meshes, expression):
+    """Freeze the idle pose of frame 1, then hold a designed expression (no animation stays live)."""
     arm.animation_data.action = bpy.data.actions["idle"]
     bpy.context.scene.frame_set(1)
+    arm.animation_data.action = None          # the evaluated pose stays; the eyes can now be aimed
     head = next((m for m in meshes if m.name == "Head"), None)
     if head is not None and head.data.shape_keys:
-        # portraits hold a designed expression: mute the face track of the idle clip
         ad = head.data.shape_keys.animation_data
         if ad:
-            for tr in ad.nla_tracks:
-                tr.mute = True
+            ad.action = None
+            ad.use_nla = False
         for kb in head.data.shape_keys.key_blocks[1:]:
             kb.value = expression.get(kb.name, 0.0)
     for bone in ("eye.L", "eye.R"):

@@ -107,8 +107,8 @@ def _polyline_sdist(px, pz, line):
 class HeadSurface:
     def __init__(self, p: fl.FaceParams):
         self.p = p
-        rx, ry, _ = p.head
-        self.fy = fy = -0.905 * ry                 # facial plane (glabella / cheeks / lips)
+        rx = p.head[0]
+        self.fy = fy = fl.face_plane(p)            # facial plane (glabella / cheeks / lips)
         L = self.L = fl.landmarks(p)
         self.eyeL = fl.eye_geometry(p, 1)
         st = L["stomion"][2]

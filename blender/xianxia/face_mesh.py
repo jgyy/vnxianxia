@@ -167,26 +167,23 @@ def _perimeter(grid_idx, i0, i1, j0, j1, lateral_high):
     return verts, pts
 
 
-def _loop_params(uv):
+def _loop_params(uv, col):
     """Arc-length loop parameter with s = 0 at the anchor mid-side and 0.5 at the opposite mid-side.
 
-    uv: (M, 2) points of the loop in a planar parameterisation, starting on the
-    anchor side, ordered anchor side up -> top -> far side down -> bottom."""
+    uv: (M, 2) points of the loop in a planar parameterisation, col: grid column
+    of each point; the loop starts on the anchor column, runs up it, across the
+    top, down the far column and back along the bottom."""
     M = len(uv)
     seg = np.linalg.norm(np.diff(np.vstack([uv, uv[:1]]), axis=0), axis=1)
     cum = np.concatenate([[0.0], np.cumsum(seg)])
-    # anchor-side midpoint and far-side midpoint by height
-    ymid_a = 0.5 * (uv[:, 1].min() + uv[:, 1].max())
     total = cum[-1]
-    # position along the loop of the anchor-mid (on the first side) and of the far-mid
-    first = [k for k in range(M) if abs(uv[k, 0] - uv[0, 0]) < 1e-9]
-    ka = max(first, key=lambda k: -abs(uv[k, 1] - ymid_a))
-    ca = np.interp(ymid_a, [uv[k, 1] for k in first], [cum[k] for k in first]) if len(first) > 1 else cum[ka]
-    far_x = uv[np.argmax(np.abs(uv[:, 0] - uv[0, 0])), 0]
-    far = [k for k in range(M) if abs(uv[k, 0] - far_x) < 1e-9]
-    ys = [uv[k, 1] for k in far][::-1]
-    cs = [cum[k] for k in far][::-1]
-    cb = np.interp(ymid_a, ys, cs) if len(far) > 1 else cum[far[0]]
+    ymid = 0.5 * (uv[:, 1].min() + uv[:, 1].max())
+    col = np.asarray(col)
+    first = np.nonzero(col == col[0])[0]
+    far = np.nonzero(col == col[np.argmax(np.abs(col - col[0]))])[0]
+    ya, yb = uv[first, 1], uv[far, 1]
+    ca = np.interp(ymid, ya[np.argsort(ya)], cum[first][np.argsort(ya)])
+    cb = np.interp(ymid, yb[np.argsort(yb)], cum[far][np.argsort(yb)])
     s = np.zeros(M)
     for k in range(M):
         c = cum[k]
@@ -227,36 +224,36 @@ class HeadMesh:
         def col_at(j, x):          # front column whose point on row j is nearest to x
             return int(front[np.argmin(np.abs(G[j, front, 0] - x))])
 
-        def row_at(i, z, lo=None):   # row whose point on column i is nearest to height z (head rows only)
+        def row_at(i, z):   # row whose point on column i is nearest to height z (head rows only)
             js = np.nonzero(self.rows >= fc.B_HEAD)[0]
             return int(js[np.argmin(np.abs(G[js, i, 2] - z))])
 
         mid = _nearest(cols, 0.0)
+
+        def mirror(i):              # the columns are symmetric about the midline column
+            return 2 * mid - i
+
         rect = {}
-        for side, sx in ((1, "L"), (-1, "R")):
-            en, ex = L[f"endocanthion.{sx}"], L[f"exocanthion.{sx}"]
-            c = fl.eye_geometry(p, side)["centre"]
-            ic = col_at(row_at(mid, c[2]), c[0])
-            jr = row_at(ic, c[2])
-            i_a = col_at(jr, side * (abs(en[0]) - 8.0))
-            i_b = col_at(jr, side * (abs(ex[0]) + 7.5))
-            j0 = row_at(ic, c[2] - 14.5)
-            j1 = row_at(ic, c[2] + p.brow_gap - 3.0)
-            rect[f"eye_{sx}"] = (min(i_a, i_b), max(i_a, i_b), j0, j1, side)
-        st = L["stomion"][2]
-        jst = row_at(mid, st)
-        xm = p.mouth_w * 0.5 + 10.0
-        rect["mouth"] = (col_at(jst, -xm), col_at(jst, xm), row_at(mid, L["labrale_inferius"][2] - 15.0),
+        # left-side rectangles are chosen on the surface; the right ones are their mirror images
+        en, ex = L["endocanthion.L"], L["exocanthion.L"]
+        c = fl.eye_geometry(p, 1)["centre"]
+        ic = col_at(row_at(mid, c[2]), c[0])
+        jr = row_at(ic, c[2])
+        i0, i1 = col_at(jr, en[0] - 8.0), col_at(jr, ex[0] + 7.5)
+        j0, j1 = row_at(ic, c[2] - 14.5), row_at(ic, c[2] + p.brow_gap - 3.0)
+        rect["eye_L"] = (i0, i1, j0, j1, 1)
+        rect["eye_R"] = (mirror(i1), mirror(i0), j0, j1, -1)
+        jst = row_at(mid, L["stomion"][2])
+        i1 = col_at(jst, p.mouth_w * 0.5 + 10.0)
+        rect["mouth"] = (mirror(i1), i1, row_at(mid, L["labrale_inferius"][2] - 15.0),
                          row_at(mid, p.subnasale - 5.0), 1)
-        for side, sx in ((1, "L"), (-1, "R")):
-            nc = np.array(self.nostril_centre(side))
-            d = np.linalg.norm(G - nc, axis=-1)
-            d[:, np.abs(cols) > math.radians(40)] = 1e9
-            jc, ic = np.unravel_index(np.argmin(d), d.shape)
-            i0, i1 = (ic - 1, ic + 2) if side > 0 else (ic - 2, ic + 1)
-            i0, i1 = (max(i0, mid + 1), i1) if side > 0 else (i0, min(i1, mid - 1))
-            j0 = max(jc - 1, rect["mouth"][3] + 1)
-            rect[f"nostril_{sx}"] = (i0, i1, j0, j0 + 2, side)
+        d = np.linalg.norm(G - np.array(self.nostril_centre(1)), axis=-1)
+        d[:, (cols < 0) | (cols > math.radians(40))] = 1e9
+        jc, ic = np.unravel_index(np.argmin(d), d.shape)
+        i0, i1 = max(ic - 1, mid + 1), ic + 2
+        j0 = max(jc - 1, rect["mouth"][3] + 1)
+        rect["nostril_L"] = (i0, i1, j0, j0 + 2, 1)
+        rect["nostril_R"] = (mirror(i1), mirror(i0), j0, j0 + 2, -1)
         return rect
 
     def nostril_centre(self, side):
@@ -347,7 +344,7 @@ class HeadMesh:
         verts, ij = _perimeter(self.grid, i0, i1, j0, j1, lateral_high=side > 0)
         ch = np.array([(self.cols[i], self.rows[j]) for i, j in ij])
         plane = _chart_plane(ch[:, 0] * (1 if side > 0 else -1), ch[:, 1])
-        return verts, _loop_params(plane), ch
+        return verts, _loop_params(plane, [i for i, _ in ij]), ch
 
     def _connect(self, ring_list, slots, ref_out, rep_band, fan_centre=None):
         """Quads between consecutive loops (inner -> outer) in one winding group.
@@ -418,7 +415,7 @@ class HeadMesh:
         S = self.surf
         xc = p.mouth_w * 0.5
         x = xc * np.cos(2 * math.pi * s)
-        upper = (np.sin(2 * math.pi * s) > 0).astype(np.float64)
+        upper = (np.sin(2 * math.pi * s) > 1e-9).astype(np.float64)       # both corners count as lower
         corner = np.exp(-((np.minimum(np.abs(s), np.abs(1 - s)) / 0.05) ** 2)) + \
             np.exp(-(((s - 0.5) / 0.05) ** 2))
         sgn = np.where(upper > 0, 1.0, -1.0)
@@ -476,11 +473,11 @@ class HeadMesh:
         # the opening: an oblique ellipse in the (x, y) plane of the nose underside
         ang = 2 * math.pi * s
         rl, rw = 3.9, 1.9
-        rot = math.radians(22.0) * side
+        rot = math.radians(22.0)          # the front of each nostril converges toward the columella
         ex = rw * np.cos(ang)
         ey = -rl * np.sin(ang)
         px = c[0] + side * (ex * math.cos(rot) - ey * math.sin(rot))
-        py = c[1] + (ex * math.sin(rot) * side + ey * math.cos(rot))
+        py = c[1] + ex * math.sin(rot) + ey * math.cos(rot)
         pts = np.stack([px, py, np.full_like(px, c[2])], axis=-1)
         lon_c, b_c = fc.chart_of_points(pts)
         ring_ids = []
