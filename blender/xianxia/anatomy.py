@@ -44,7 +44,7 @@ def ear(bm, loc, side, size=1.0, flare=21.0, uv_fn=None, mat_index=0):
     Returns the created vertices."""
     k = size
     centre = V((-2.0, 1.0))
-    outline = util.catmull([V((a, b_, 0)) for a, b_ in EAR_OUTLINE + EAR_OUTLINE[:1]], 3)[:-1]
+    outline = util.catmull([V((a, b_, 0)) for a, b_ in EAR_OUTLINE + EAR_OUTLINE[:1]], 2)[:-1]
     rot = Matrix.Rotation(R(-flare * side), 3, "Z")
     made = []
     uvl = bm.loops.layers.uv.verify()

@@ -158,6 +158,8 @@ def portrait(cfg, args):
     preview.area(face + Vector((0.5 * s, 0.7 * s, 0.35 * s)), face + Vector((0, 0, 0.03 * s)), energy=70, size=0.4,
                  color=rim)
     preview.area(face + Vector((0.2 * s, 0.45 * s, 0.9 * s)), face, energy=40, size=0.5, color=(1.0, 0.95, 0.9))
+    # a small soft light beside the lens puts the catchlight in the eyes
+    preview.area(cam_loc + Vector((0.12 * s, 0.0, 0.1 * s)), eye_l, energy=4, size=0.25, color=(1.0, 1.0, 1.0))
     back = face + Vector((-math.sin(az), math.cos(az), 0.0)) * 1.4 * s
     preview.backdrop(back, cam_loc - back, size=(2.6 * s, 2.0 * s), inner=bg_in, outer=bg_out)
     path = os.path.join(args.out, cfg["name"] + ".png")

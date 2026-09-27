@@ -29,7 +29,7 @@ def jaw_pivot(p: fl.FaceParams):
 def arch(p: fl.FaceParams, lower=False):
     """Dental arch: (x, y) of the arch centre-line as a function of arc length from the midline."""
     L = fl.landmarks(p)
-    y0 = L["labrale_superius"][1] + LIP_TO_TEETH + (3.5 if lower else 0.0)
+    y0 = L["labrale_superius"][1] + LIP_TO_TEETH + (5.0 if lower else 0.0)
     half_w = p.mouth_w * 0.5 + (4.0 if not lower else 2.5)          # at the second molar
     depth = 38.0 if p.fem else 41.0
 
@@ -115,12 +115,12 @@ def build(bm, p: fl.FaceParams, slots, uv=None):
             t = -1 + 2 * i / n
             x, y = pt(abs(t))
             x *= 1 if t >= 0 else -1
-            zc = (z_edge + 11.0) if not lower else (z_edge - 11.0)
+            zc = (z_edge + 10.0) if not lower else (z_edge - 8.5)
             ring = []
             for a in range(8):
                 ang = 2 * math.pi * a / 8
-                ring.append(bm.verts.new(Vector((x * (1 + 0.06 * math.cos(ang)), y + 3.6 * math.cos(ang),
-                                                 zc + 3.2 * math.sin(ang)))))
+                ring.append(bm.verts.new(Vector((x * (1 + 0.06 * math.cos(ang)), y + 1.5 + 2.6 * math.cos(ang),
+                                                 zc + 2.6 * math.sin(ang)))))
             rows.append(ring)
         for i in range(n):
             for a in range(8):

@@ -137,7 +137,7 @@ def brow_cards(p: fl.FaceParams, surf, side):
     centre, half_h = brow_band(p)
     rng = random.Random(p.seed * 13 + (5 if side > 0 else 9))
 
-    n = int(80 * (1.0 + 0.35 * (not p.fem)) * (1 - 0.25 * p.age))
+    n = int(96 * (1.0 + 0.2 * (not p.fem)) * (1 - 0.25 * p.age))
     cards = []                       # per card: list of (x, z, lift), width
     for k in range(n):
         t = min(0.999, (k + rng.random()) / n) ** 1.05

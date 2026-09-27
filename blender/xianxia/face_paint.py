@@ -126,7 +126,9 @@ def preview_maps(cfg, size=1024):
     age = cfg.get("age", 0.0)
     base = tex.skin(c["skin"], size, 11, None)
     M = feature_masks(cfg, size)
-    col, rough, height = base["albedo"].copy(), base["rough"].copy(), base["height"].copy()
+    col, rough = base["albedo"].copy(), base["rough"].copy()
+    height = 0.55 + (base["height"] - 0.55) * 0.45          # the generic skin relief is coarse at face scale
+    col = col * np.array([1.0, 0.95, 0.92], np.float32)     # living skin: a warm, rosy cast
     skin = tex.srgb(c["skin"])
     lerp = tex.lerp
     # blood flow: redder nose, cheeks, ears and lips' surroundings; slightly sallow forehead

@@ -73,7 +73,7 @@ def _spans(parts):
 
 def columns():
     d = math.radians
-    half = _spans([(0.0, d(36), 16), (d(36), d(80), 14), (d(80), d(115), 6), (d(115), d(180), 8)])
+    half = _spans([(0.0, d(12), 6), (d(12), d(36), 10), (d(36), d(80), 12), (d(80), d(115), 5), (d(115), d(180), 7)])
     # -180 .. 180 (exclusive): mirror the positive side
     neg = -half[1:-1][::-1]
     return np.concatenate([[-math.pi], neg, half[:-1]])
@@ -82,8 +82,8 @@ def columns():
 def rows():
     d = math.radians
     b_min = face_uv.B_MIN
-    return _spans([(b_min, fc.B_NECK, 7), (fc.B_NECK, fc.B_HEAD, 4), (fc.B_HEAD, d(22), 50),
-                   (d(22), face_uv.TOP, 9), (face_uv.TOP, d(68), 4)])
+    return _spans([(b_min, fc.B_NECK, 6), (fc.B_NECK, fc.B_HEAD, 4), (fc.B_HEAD, d(22), 48),
+                   (d(22), face_uv.TOP, 7), (face_uv.TOP, d(68), 3)])
 
 
 # --------------------------------------------------------------------------
@@ -404,7 +404,7 @@ class HeadMesh:
         # blend loops: chart interpolation from the last lid loop to the rectangle
         last = rings[-1]
         lon_e, b_e = fc.chart_of_points(last)
-        n_blend = 4
+        n_blend = 3
         for k in range(1, n_blend + 1):
             f = (k / (n_blend + 1)) ** 1.15
             lon = lon_e + (per_chart[:, 0] - lon_e) * f
@@ -465,7 +465,7 @@ class HeadMesh:
             ring_ids.append([B.vert(pos=pts[m], region=REGION["mouth"], s=s[m], ring=k - contact)
                              for m in range(len(s))])
         lon_e, b_e = fc.chart_of_points(loops[-1])
-        n_blend = 4
+        n_blend = 3
         for k in range(1, n_blend + 1):
             f = (k / (n_blend + 1)) ** 1.1
             lon = lon_e + (per_chart[:, 0] - lon_e) * f
@@ -532,7 +532,7 @@ class HeadMesh:
             if kind == "nostril":
                 continue
             rings = d["rings"]
-            first = d["n_exp"] if kind == "eye" else len(rings) - 5
+            first = d["n_exp"] if kind == "eye" else len(rings) - 4
             movable = rings[first:-1]
             for _ in range(iters):
                 new = {}

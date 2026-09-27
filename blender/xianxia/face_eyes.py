@@ -29,7 +29,7 @@ from mathutils import Vector
 
 from . import face_landmarks as fl
 
-LIMBUS = 5.9          # corneal radius at the limbus, mm
+LIMBUS = 6.1          # corneal radius at the limbus, mm (12.2 mm iris: large, youthful)
 PUPIL = 1.9           # resting pupil radius, mm
 CORNEA_R = 7.8        # corneal radius of curvature, mm
 
