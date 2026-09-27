@@ -1,0 +1,373 @@
+{
+ "scale": 2,
+ "items": {
+  "banner": {
+   "kind": "icon",
+   "size": [
+    720,
+    110
+   ]
+  },
+  "boss": {
+   "kind": "gauge",
+   "size": [
+    560,
+    44
+   ],
+   "window": [
+    48,
+    18,
+    464,
+    12
+   ],
+   "frame": "boss_frame.png",
+   "trough": "trough_boss.png",
+   "fill": "fill_boss.png"
+  },
+  "button": {
+   "kind": "box",
+   "size": [
+    120,
+    34
+   ],
+   "margins": [
+    14,
+    11,
+    14,
+    11
+   ],
+   "pad": [
+    3,
+    3,
+    3,
+    3
+   ],
+   "content": [
+    18,
+    6,
+    18,
+    6
+   ],
+   "layers": [
+    "button_normal.png"
+   ],
+   "states": {
+    "normal": "button_normal.png",
+    "hover": "button_hover.png",
+    "pressed": "button_pressed.png",
+    "disabled": "button_disabled.png"
+   }
+  },
+  "chip": {
+   "kind": "box",
+   "size": [
+    30,
+    28
+   ],
+   "margins": [
+    9,
+    9,
+    9,
+    9
+   ],
+   "pad": [
+    2,
+    2,
+    2,
+    2
+   ],
+   "content": [
+    7,
+    2,
+    7,
+    3
+   ],
+   "layers": [
+    "chip.png"
+   ]
+  },
+  "compass": {
+   "kind": "compass",
+   "size": [
+    320,
+    44
+   ],
+   "window": [
+    32,
+    9,
+    256,
+    26
+   ],
+   "frame": "compass_frame.png",
+   "trough": "trough_compass.png",
+   "strip": "compass_strip.png",
+   "strip_size": [
+    768,
+    26
+   ],
+   "span_deg": 120
+  },
+  "divider": {
+   "kind": "icon",
+   "size": [
+    300,
+    14
+   ]
+  },
+  "gauge_hp": {
+   "kind": "gauge",
+   "size": [
+    244,
+    32
+   ],
+   "window": [
+    30,
+    11,
+    200,
+    10
+   ],
+   "frame": "gauge_hp_frame.png",
+   "trough": "trough_gauge.png",
+   "fill": "fill_hp.png",
+   "glow": "glow_gauge.png",
+   "glow_rect": [
+    -10,
+    -10,
+    264,
+    52
+   ]
+  },
+  "gauge_qi": {
+   "kind": "gauge",
+   "size": [
+    244,
+    32
+   ],
+   "window": [
+    30,
+    11,
+    200,
+    10
+   ],
+   "frame": "gauge_qi_frame.png",
+   "trough": "trough_gauge.png",
+   "fill": "fill_qi.png",
+   "glow": "glow_gauge.png",
+   "glow_rect": [
+    -10,
+    -10,
+    264,
+    52
+   ]
+  },
+  "gauge_xp": {
+   "kind": "gauge",
+   "size": [
+    244,
+    14
+   ],
+   "window": [
+    30,
+    4.5,
+    200,
+    5
+   ],
+   "frame": "gauge_xp_frame.png",
+   "trough": "trough_xp.png",
+   "fill": "fill_xp.png"
+  },
+  "lotus": {
+   "kind": "icon",
+   "size": [
+    20,
+    20
+   ]
+  },
+  "lotus_done": {
+   "kind": "icon",
+   "size": [
+    20,
+    20
+   ]
+  },
+  "marker": {
+   "kind": "icon",
+   "size": [
+    20,
+    26
+   ]
+  },
+  "marker_edge": {
+   "kind": "icon",
+   "size": [
+    12,
+    16
+   ]
+  },
+  "panel": {
+   "kind": "box",
+   "size": [
+    96,
+    96
+   ],
+   "margins": [
+    26,
+    26,
+    26,
+    26
+   ],
+   "pad": [
+    6,
+    6,
+    6,
+    6
+   ],
+   "content": [
+    14,
+    11,
+    14,
+    11
+   ],
+   "layers": [
+    "panel_fill.png",
+    "panel_frame.png"
+   ]
+  },
+  "portrait_frame": {
+   "kind": "box",
+   "size": [
+    144,
+    144
+   ],
+   "margins": [
+    26,
+    26,
+    26,
+    26
+   ],
+   "pad": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "content": [
+    8,
+    8,
+    8,
+    8
+   ],
+   "layers": [
+    "portrait_frame.png"
+   ],
+   "opening": [
+    8,
+    8,
+    128,
+    128
+   ]
+  },
+  "prompt": {
+   "kind": "box",
+   "size": [
+    220,
+    40
+   ],
+   "margins": [
+    24,
+    14,
+    24,
+    14
+   ],
+   "pad": [
+    4,
+    4,
+    4,
+    4
+   ],
+   "content": [
+    22,
+    5,
+    22,
+    5
+   ],
+   "layers": [
+    "prompt.png"
+   ]
+  },
+  "ring": {
+   "kind": "ring",
+   "size": [
+    112,
+    112
+   ],
+   "frame": "ring_frame.png",
+   "fill": "ring_fill.png",
+   "under": "ring_under.png",
+   "glow": "glow_ring.png"
+  },
+  "scroll": {
+   "kind": "box",
+   "size": [
+    300,
+    150
+   ],
+   "margins": [
+    26,
+    28,
+    26,
+    28
+   ],
+   "pad": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "content": [
+    28,
+    29,
+    26,
+    27
+   ],
+   "layers": [
+    "scroll.png"
+   ]
+  },
+  "spark": {
+   "kind": "icon",
+   "size": [
+    8,
+    16
+   ]
+  },
+  "toast": {
+   "kind": "box",
+   "size": [
+    240,
+    36
+   ],
+   "margins": [
+    24,
+    11,
+    18,
+    11
+   ],
+   "pad": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "content": [
+    25,
+    5,
+    22,
+    5
+   ],
+   "layers": [
+    "toast.png"
+   ]
+  }
+ }
+}
