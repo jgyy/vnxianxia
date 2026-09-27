@@ -39,7 +39,7 @@ def kit():
 # --------------------------------------------------------------------------
 def roof(name, corners, target, h, mats, base_z=0.0, t_max=0.97, curve=1.9, lift=0.55,
          lift_len=2.2, flare=0.35, per_edge=24, rows=14, thick=0.16, ridges=True,
-         ornaments=True, detail=1.0):
+         ornaments=True, detail=1.0, top_ridge=True):
     """Curved Chinese roof with upturned 'flying' corners.
 
     corners: eave footprint polygon (counter-clockwise, 2D).
@@ -110,7 +110,7 @@ def roof(name, corners, target, h, mats, base_z=0.0, t_max=0.97, curve=1.9, lift
         xs = [p for p in top]
         a = min(xs, key=lambda p: (p.x, p.y))
         b = max(xs, key=lambda p: (p.x, p.y))
-        if (b - a).length > 0.3:
+        if (b - a).length > 0.3 and top_ridge:
             ra = a + V((0, 0, 0.12 * detail))
             rb = b + V((0, 0, 0.12 * detail))
             util.tube(bm, [ra, rb], (0.16 * detail, 0.13 * detail), n=8, power=4.0)
@@ -135,7 +135,7 @@ def roof(name, corners, target, h, mats, base_z=0.0, t_max=0.97, curve=1.9, lift
                 util.tube(bm, [p0, p0 + V((out.x * 0.12, out.y * 0.12, 0.05)) * detail, tip],
                           lambda t: 0.07 * detail * (1 - 0.7 * t), n=8)
                 util.sphere(bm, 0.07 * detail, loc=tip, segs=10, rings=6)
-            if (b - a).length <= 0.3:
+            if (b - a).length <= 0.3 and top_ridge:
                 apex = top[0] + V((0, 0, 0.05 * detail))
                 util.lathe(bm, [(r * detail, z * detail) for r, z in ((0.2, 0), (0.24, 0.15), (0.1, 0.3), (0.16, 0.5), (0.05, 0.75), (0.001, 0.9))],
                            segs=12, loc=apex, cap_bottom=True)
