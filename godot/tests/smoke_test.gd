@@ -108,7 +108,7 @@ func _maps() -> void:
 
 func _story() -> void:
 	print("[story]")
-	check(story.quests.size() == 1000, "%d main quests" % story.quests.size())
+	check(story.quests.size() == 2000, "%d main quests" % story.quests.size())
 	check(story.chapters.size() == 100, "%d chapters" % story.chapters.size())
 	check(story.volumes.size() == 10, "%d volumes" % story.volumes.size())
 	check(story.load_msec < 3000, "story.json parsed in %d ms" % story.load_msec)

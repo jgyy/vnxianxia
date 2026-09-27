@@ -717,6 +717,8 @@ def build():
                             E.err("%s_o%d" % (wq, oi), "%s talks at %s where this quest spawns enemies" % (o["npc"], mk))
                     if o["type"] == "defeat" and o["enemy"] in W.BOSSES:
                         bosses_in_chapter += 1
+                if not any(o.get("choices") for o in out_objs):
+                    E.err(wq, "quest offers the player no choice (every quest must have one)")
                 if not legacy:
                     check_generated(wq, qnum, out_objs)
                 if qi == 0 and intro is not None and not any(

@@ -5,9 +5,9 @@ extends SceneTree
 ##
 ##   godot --headless --path godot -s res://tests/walkthrough_test.gd [-- first_quest last_quest]
 ##
-## Quest numbers are 1-based (1..1000). CI plays the saga in ten shards, one per
-## volume (1 100, 101 200, ...); a shard starts with the realm, minor stage and
-## rewards of every earlier quest already applied (Game.start_at).
+## Quest numbers are 1-based (1..2000). CI plays the saga in twenty shards, two
+## per volume (1 100, 101 200, ...); a shard starts with the realm, minor stage
+## and rewards of every earlier quest already applied (Game.start_at).
 ##
 ## Moral choices are made by Game.auto_choice (fast mode), which varies with
 ## the quest and objective, so a run makes lawful, chaotic, good and evil
