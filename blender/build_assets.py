@@ -65,6 +65,16 @@ def main():
             path = util.export_glb(os.path.join(args.out, "environment", name + ".glb"))
             built.append(path)
             print(f"  environment {name:<20} {time.time() - t:5.1f}s")
+    if not args.skip_environment:
+        for name, fn in catalog.ITEMS.items():
+            if only and name not in only and "item_" + name not in only:
+                continue
+            t = time.time()
+            util.reset_scene()
+            fn()
+            path = util.export_glb(os.path.join(args.out, "items", name + ".glb"))
+            built.append(path)
+            print(f"  item      {name:<22} {time.time() - t:5.1f}s")
     print(f"built {len(built)} GLB files in {time.time() - t0:.1f}s -> {args.out}")
 
 

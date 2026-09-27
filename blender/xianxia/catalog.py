@@ -1,5 +1,5 @@
 """Every environment asset: GLB file name -> builder callable."""
-from . import arch, interiors, lands, nature, props, realms
+from . import arch, interiors, items, lands, nature, props, quest_props, realms
 
 ENVIRONMENT = {
     "main_hall": arch.main_hall,
@@ -31,3 +31,7 @@ ENVIRONMENT = {
 ENVIRONMENT.update(lands.ASSETS)
 ENVIRONMENT.update(realms.ASSETS)
 ENVIRONMENT.update(interiors.ASSETS)
+ENVIRONMENT.update(quest_props.ASSETS)
+
+# collectible pickups, exported to godot/assets/items/
+ITEMS = dict(items.ITEMS)
