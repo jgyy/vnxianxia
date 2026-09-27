@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     8, "Isles Above the Clouds",
@@ -153,4 +154,53 @@ CHAPTER = chapter(
                        (YUN, "Elder Mo told me about the design. He is checking it himself. If anyone can find a hidden flaw, it is him."),
                        (YUN, "Rest, {player}. For the first time in months, I think the sect can breathe.")),
               ], xp=1500, items={"spirit_stone": 10}, realm="Nascent Soul"),
+    ])
+
+# Qing Luan's warning about the formation's design lingers as you finish
+# gathering what the isles have to give. Spliced in between "The Stars
+# Disagree" and "Nascent Soul".
+EXTRA = C(
+    "Isles Above the Clouds", "sky_isles",
+    "Qing Luan's warning about the formation's backward design lingers as the last materials are gathered and the "
+    "isles begin, slowly, to close for another sixty years.",
+    cast=[SAGE, HAN, ZHAO],
+    foes=["stone_golem", "blood_guard"],
+    items=["star_iron", "thunder_crystal", "cloud_silk"],
+    props=["stone_stele", "spirit_stone"],
+    beats=[
+        B("gather", "One More Load of Star Iron",
+          "The formation's frame will need more star iron than first estimated. Elder Bai's second letter says so, apologetically.",
+          item="star_iron", v=0),
+        B("probe", "Who Kept the Archive",
+          "Qing Luan's parting question won't leave Han Xue alone: who kept the Law Hall archive copy all these years?",
+          (HAN, "Gu kept it. Thirty years. Plenty of time to change one line and reseal the box."),
+          v=0),
+        B("hunt", "Guardians Still Angry",
+          "A few of the fallen palace's stone guardians remain active, confused by visitors after ten thousand years of solitude.",
+          foe="stone_golem", v=0),
+        B("social", "Zhao Kang's Sky Habit",
+          "Zhao Kang has taken to actually looking at the sky, as the Sect Master suggested, and finds he rather likes it.",
+          (ZHAO, "Don't tell anyone. But she was right. It is good for something. I don't know what yet."),
+          v=0),
+        B("gather", "Thunder Crystals, the Honest Way",
+          "With the Blood Moon miners driven off, the spirit vein can be mined properly, without anyone dying for it.",
+          item="thunder_crystal", v=0),
+        B("hunt", "The Miners' Reinforcements",
+          "A second wave of Blood Moon miners arrives, unaware their first attempt already failed.",
+          foe="blood_guard", v=0),
+        B("probe", "The Ladder in the Chart",
+          "Qing Luan's star chart marked a seven-star pattern as 'the Patriarch's Ladder.' Han Xue wants to know what climbs it.",
+          (HAN, "A ladder needs someone to climb it. Or something. I don't like either answer."),
+          v=0),
+        B("social", "Qing Luan's Loneliness",
+          "Before you go, Qing Luan admits, in her roundabout way, that visitors are the only thing that makes sixty years bearable.",
+          (SAGE, "A memory doesn't get lonely, they say. They're wrong. Come back next time. I'll have new complaints ready."),
+          v=0),
+        B("gather", "Cloud Silk, One Last Bundle",
+          "Elder Hua's request for cloud silk turns out to have been an underestimate. One more bundle won't hurt.",
+          item="cloud_silk", v=0),
+        B("cultivate", "Breathing at the Cloud Gate",
+          "Before attempting the breakthrough, Han Xue insists on one last careful meditation at the cloud gate.",
+          (HAN, "Nascent Soul isn't a fight you win. It's a door you open carefully. Sit. Get it right."),
+          v=0),
     ])
