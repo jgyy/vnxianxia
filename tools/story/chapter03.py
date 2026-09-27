@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     3, "Shadows over Qingshi",
@@ -176,4 +177,56 @@ CHAPTER = chapter(
                        (P, "You think someone in our sect..."),
                        (HAN, "I think we should say it only to the Sect Master. And we should find out where Xiao Shi is before his sister does.")),
               ], xp=240, items={"spirit_stone": 3, "medicine": 2}),
+    ])
+
+# The graveyard fire is out, but a town does not heal in one night. Spliced
+# in between Hong's defeat and the quiet farewell of "A Debt of Qingshi".
+EXTRA = C(
+    "Shadows over Qingshi", "qingshi_town",
+    "The graveyard fire is out, but Qingshi does not heal in one night: the wounded, the frightened, and the "
+    "questions Deacon Hong left unanswered about where the taken were sent.",
+    cast=[HAN, ZHOU, DU, FANG, LIU, PAN, JIN],
+    foes=["demon_cultivator", "bandit"],
+    items=["medicine", "rune_fragment", "spirit_herb"],
+    props=["stone_stele", "treasure_chest", "jade_slip"],
+    beats=[
+        B("rescue", "The Wounded of the Watch",
+          "Constable Du's guards took wounds fighting Hong's acolytes. The Medicine Hall's supplies are thin this far from the mountain.",
+          (DU, "Three men down, none dying, all complaining. I'll take that trade. Can you spare anything for them?"),
+          v=0),
+        B("probe", "Hong's Temple, By Daylight",
+          "By daylight, the temple looks smaller, sadder, and full of things Keeper Hong never wanted found.",
+          (N, "Behind a false wall: robes, a second set of temple seals, and a stack of letters written in a crescent-marked hand."),
+          v=0),
+        B("gather", "What the Graves Gave Up",
+          "The rune circle is broken, but its stones still hum faintly. Han Xue wants every fragment collected and studied.",
+          (HAN, "Every piece. Elder Bai will want to compare them to the archive, if the archive still remembers anything useful."),
+          v=0),
+        B("hunt", "The Last of Hong's Acolytes",
+          "A handful of Hong's masked acolytes scattered into the fields rather than fight. They haven't gone far.",
+          foe="demon_cultivator", v=0),
+        B("social", "Magistrate Zhou's Accounting",
+          "Zhou insists on personally accounting for every silver coin Hong ever accepted from the yamen's coffers.",
+          (ZHOU, "Every donation, every blessing fee, all of it laundered piety. I should have smelled it. I only smelled the incense."),
+          v=0),
+        B("social", "The Ferryman's Second Story",
+          "Old Pan remembers something else about the lantern-bearers, now that he isn't afraid of being called a drunk.",
+          (PAN, "There was a barge, once. Heavier than it looked, riding low in the water. I thought it was grain. It wasn't grain."),
+          v=0),
+        B("probe", "Merchant Jin's Ledger, Fully Open",
+          "With Hong exposed, Merchant Jin suddenly remembers every detail of the blood lotus trade, eager to be the first to confess.",
+          (JIN, "I kept records! Excellent records! Dates, amounts, a little map. Innocent people keep excellent records, yes?"),
+          v=0),
+        B("cultivate", "Steadying the Town's Qi",
+          "The graveyard's blood formation left the land itself uneasy. Han Xue asks you to help settle it.",
+          (HAN, "Land remembers fear the way people do. Sit with it a while. Let it feel something else for a change."),
+          v=0),
+        B("social", "Widow Liu's Question",
+          "Widow Liu asks, carefully, whether the Blood Moon Abyss is a place a person could still be found alive.",
+          (LIU, "You said he might be alive. I need to know if that was kindness or truth. I can live with either. I need to know which."),
+          v=0),
+        B("stage", "What Qingshi Taught You",
+          "Before the road home, Han Xue says your qi has changed here, hardened by something more than training.",
+          (HAN, "You didn't just get stronger in this town. You got sure of something. That matters more, usually."),
+          v=0),
     ])

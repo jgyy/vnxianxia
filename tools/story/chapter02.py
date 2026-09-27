@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     2, "Whispers in the Bamboo",
@@ -168,4 +169,57 @@ CHAPTER = chapter(
                        (MO, "Still. Kidnapped mortals, fed wolves, command tokens. I don't like the shape of this."),
                        (MO, "I'll speak to the Sect Master. Wei Tong says you carried him on your back. Hmph. Good.")),
               ], xp=160, items={"spirit_stone": 3}),
+    ])
+
+# The road home is longer than the road out: freed prisoners to see safe,
+# Iron-Fang's leftovers still lurking, and the hermit's warnings to weigh.
+# Spliced in between "Ambush at the Old Bridge" and "Report to the Law Hall".
+EXTRA = C(
+    "Whispers in the Bamboo", "bamboo_forest",
+    "The road home from the wolf den: freed prisoners to see safe out of the forest, Iron-Fang's scattered "
+    "leftovers, and the hermit's warnings weighed against the mask's.",
+    cast=[WEI, LAN, YE, TIE],
+    foes=["bandit", "corrupted_wolf"],
+    items=["spirit_herb", "medicine", "rune_fragment"],
+    props=["stone_stele", "seal"],
+    beats=[
+        B("rescue", "Seeing the Prisoners Home",
+          "The freed mortals from Qingshi are too frightened to travel alone. Someone has to walk them to the forest edge.",
+          (WEI, "One foot in front of the other, that's all. Nobody's chasing you now. Well. Probably nobody."),
+          v=0),
+        B("social", "The Farmer's Thanks",
+          "One of the freed farmers presses a keepsake into your hand before the others hurry him along.",
+          (N, "It isn't much, he says, pressing a carved wooden bird into your palm. My daughter made it. Find her a name to hate."),
+          v=0),
+        B("hunt", "Stragglers of the Camp",
+          "Not every bandit fled with Iron-Fang. A few stayed behind for the crates nobody carried off.",
+          foe="bandit", v=0),
+        B("gather", "What the Camp Left Behind",
+          "Amid the trampled tents, useful things remain: medicine, rope, a bandit's half-eaten dinner.",
+          (WEI, "Waste not. Iron-Fang isn't using it anymore, and my dinner is a distant memory."),
+          v=0),
+        B("probe", "The Den, One More Time",
+          "Wei Tong wants to check the wolf king's den once more, to be sure nothing else was left to fester there.",
+          (WEI, "Just a look. In and out. I have said that before and been wrong, but I mean it more this time."),
+          v=0),
+        B("hunt", "Wolves Still Restless",
+          "A few corrupted wolves remain, confused and dangerous without their king to answer to.",
+          foe="corrupted_wolf", v=0),
+        B("cultivate", "Breath Among the Bamboo",
+          "Before the long walk back, Wei Tong insists on a proper rest and a proper breathing exercise.",
+          (WEI, "Elder Mo would skin me if I marched you home exhausted. Sit. Breathe. I'll guard, and eat, in that order."),
+          v=0),
+        B("probe", "The Hermit's Parting Word",
+          "Before you leave the forest, the hermit has one more thing to say about the token and the mask.",
+          (LAN, "That wanderer isn't lying to you. He also isn't telling you everything. Neither, child, am I."),
+          (P, "Will you, one day?"),
+          (LAN, "One day. Not today. Today, just walk carefully."),
+          v=0),
+        B("social", "Wei Tong's Twelfth Bun",
+          "Somehow, impossibly, Wei Tong still has one bun left. He shares it, which is how you know it's serious.",
+          (WEI, "Last one. I was saving it for an emergency. This feels like the end of an emergency, so: here."),
+          v=0),
+        B("stage", "The Long Walk Back", "The forest thins toward the road, and your cultivation has thinned with it too, into something steadier.",
+          (WEI, "You're breathing different. Deeper. Elder Mo's going to notice and pretend he doesn't care."),
+          v=0),
     ])
