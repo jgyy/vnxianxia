@@ -507,7 +507,9 @@ class Rig:
             place(sh, frame_rot(s1, m1, s0, m0))
             place(ft, rf)
             tc = P[f"tc_{sd}"]
-            place(to, rf @ qa(AX, -fp * tc - P[f"toe_{sd}"]))
+            # toes stay flat on the floor only while the heel is up (fp > 0);
+            # when the foot rocks back on the heel the toes lift with it
+            place(to, rf @ qa(AX, -max(fp, 0.0) * tc - P[f"toe_{sd}"]))
         return W, pos
 
     def local(self, W):
@@ -538,7 +540,12 @@ def _core_names():
 # --------------------------------------------------------------------------
 # baking
 # --------------------------------------------------------------------------
-def bake(rig, clip, step=2):
+def bake(rig, clip, step=None):
+    # Loops are sampled on every frame: with keys every other frame the
+    # AUTO_CLAMPED end keys get flat handles, the exporter samples the odd
+    # frames off those eased curves and every loop hitched at its seam.
+    if step is None:
+        step = 1 if clip.loop else 2
     clip.resolve()
     arm = rig.arm
     act = bpy.data.actions.new(clip.name)
@@ -609,6 +616,8 @@ def build_player_actions(arm, J, cfg, s):
     acts = []
     from . import gait
     for clip in clips(cfg["female"]):
+        if getattr(clip, "match_run", None) is not None:
+            clip.kd(clip.match_run, gait.pose_at(rig, cfg, "run", 0.0))
         spec = getattr(clip, "gait", None)
         if spec:
             kind, arms = spec[0], spec[1]
@@ -637,47 +646,6 @@ def add(P, name, delta):
         P[name] = v + delta
     else:
         P[name] = tuple(a + b for a, b in zip(v, delta))
-
-
-def gait(T, travel=(0.0, 1.0), stride=0.5, lift=0.07, duty=0.6, strike=-14.0, push=22.0, bob=0.02,
-         sway=0.012, toe_first=False, arms=0.0, arm_up=0.0, twist=0.0, width=0.0, knee_lift=0.0):
-    """Procedural in-place stepping: feet slide at constant speed during stance
-    (so they stay planted relative to the travelling ground), arc through the
-    swing, heel-strike / toe-off rolls, pelvis bob, sway and counter-rotation."""
-    tx, tf = travel
-
-    def fn(t, P):
-        for sd, off in (("L", 0.0), ("R", 0.5)):
-            sg = 1 if sd == "L" else -1
-            ph = (t / T + off) % 1.0
-            if ph < duty:
-                u = ph / duty
-                k = 0.5 - u
-                z = 0.0
-                if toe_first:
-                    fp = -strike * (1 - sm(u / 0.22)) + push * sm((u - 0.75) / 0.25)
-                else:
-                    fp = strike * (1 - sm(u / 0.18)) + push * sm((u - 0.72) / 0.28)
-            else:
-                v = (ph - duty) / (1 - duty)
-                k = -0.5 + sm(v)
-                z = lift * math.sin(math.pi * min(1.0, v * 1.08)) ** 1.3
-                end = -strike if toe_first else strike
-                fp = push * (1 - sm(v / 0.45)) + end * sm((v - 0.55) / 0.45)
-            xw, f = tx * stride * k, tf * stride * k
-            add(P, f"foot_{sd}", (sg * xw + width, f + knee_lift * z, z))
-            add(P, f"fp_{sd}", fp)
-        c = math.cos(2 * math.pi * t / T)
-        add(P, "root", (sway * math.cos(2 * math.pi * (t / T - duty / 2 + 0.1)), 0.0,
-                        -bob * (0.5 + 0.5 * math.cos(4 * math.pi * (t / T - 0.08)))))
-        if twist:
-            add(P, "hips", (0.0, -twist * c, 0.0))
-            add(P, "chest", (0.0, twist * 1.3 * c, 0.0))
-        if arms:
-            for sd, sg in (("L", -1), ("R", 1)):
-                a = sg * c
-                add(P, f"hand_{sd}", (0.0, arms * a, arm_up * max(0.0, a)))
-    return fn
 
 
 def breath(T, amp=1.0, sway=0.004):
@@ -791,6 +759,10 @@ def loco(fem):
         fp_R=-10, foot_L=(0, -0.2, 0), fp_L=35, hand_L=(0.24, -0.18, 1.0), hand_R=(0.18, 0.26, 1.12))
     c.k(14, root=(0, 0.04, -0.05), hips=(12, 0, 0), foot_R=(0, 0.26, 0), fp_R=-8, foot_L=(0, -0.28, 0.06),
         fp_L=40, hand_L=(0.24, -0.1, 1.04), hand_R=(0.22, 0.2, 1.1))
+    # the run cycle starts on a left heel strike: drive off the left foot
+    # instead and end exactly on the run's first pose (seamless hand-off)
+    c = c.mirrored("run_start")
+    c.match_run = 14
     out.append(c)
 
     # ---- run stop: plant the lead foot, skid, arms fling forward, settle
@@ -798,6 +770,7 @@ def loco(fem):
     c.k(0, root=(0, 0.04, -0.06), hips=(12, 0, 0), spine=(8, 0, 0), chest=(4, 0, 0), foot_L=(0, 0.25, 0.05),
         fp_L=-10, foot_R=(0, -0.3, 0.08), fp_R=40, hand_L=(0.24, -0.12, 1.05), hand_R=(0.22, 0.22, 1.12),
         fg="loose_fist", elb=(0.6, -0.8, -0.3))
+    c.match_run = 0                 # starts from the run's left heel strike
     c.k(4, root=(0, -0.06, -0.14), hips=(-6, -8, 0), spine=(-6, 0, 0), chest=(-4, 6, 0), head=(6, 0, 0),
         foot_L=(0, 0.34, 0), fp_L=-18, foot_R=(0, -0.12, 0), fp_R=20, hand_L=(0.26, 0.24, 1.2),
         hand_R=(0.28, 0.16, 1.24), fg="open")
@@ -988,12 +961,19 @@ def loco(fem):
 
 
 
-def tremble(amp=0.6, speed=5.0, start=0.0, end=1e9):
-    """High-frequency tremor (straining qi, crying)."""
+def tremble(amp=0.6, speed=5.0, start=0.0, end=1e9, period=None):
+    """High-frequency tremor (straining qi, crying).  In a looping clip pass
+    its length as `period`: both frequencies are rounded to whole cycles per
+    loop so the tremor closes at the seam."""
+    w1, w2 = speed * 1.7, speed * 0.53
+    if period:
+        k = 2 * math.pi / period
+        w1, w2 = k * max(1, round(w1 / k)), k * max(1, round(w2 / k))
+
     def fn(t, P):
         if not (start <= t <= end):
             return
-        a = amp * math.sin(t * speed * 1.7) * math.sin(t * speed * 0.53 + 1.0)
+        a = amp * math.sin(t * w1) * math.sin(t * w2 + 1.0)
         add(P, "chest", (a, 0.4 * a, 0.0))
         add(P, "head", (-0.6 * a, 0.0, 0.3 * a))
         add(P, "hand_L", (0.0, 0.0, 0.002 * a))
@@ -1244,7 +1224,7 @@ def combat(fem):
     charge_p = dict(root=(0, -0.06, -0.21), hips=(4, -40, 0), spine=(2, -4, 0), chest=(0, -6, 0), head=(-4, 30, 0),
                     foot_L=(0.08, 0.2, 0), foot_R=(0.12, -0.2, 0), hand_R=(0.3, -0.16, 1.18), hdir_R=(0, 0.2, 1),
                     palm_R=(0, 1, 0), fg_R="claw", hand_L=(0.04, 0.46, 1.3), fg_L="seal")
-    c = Clip("charge_hold", 30, loop=True, base={**G, **charge_p}, extra=tremble(0.9, 6.0))
+    c = Clip("charge_hold", 30, loop=True, base={**G, **charge_p}, extra=tremble(0.9, 6.0, period=30))
     c.k(0)
     c.k(15, root=(0, -0.06, -0.225), hand_R=(0.31, -0.17, 1.19))
     out.append(c)
@@ -1971,7 +1951,8 @@ def social(fem):
         for sd, ph in (("L", 0.0), ("R", 1.7)):
             v = list(P[f"fg_{sd}"])
             for fi in range(3):
-                tap = max(0.0, math.sin(t * 0.45 + ph + fi * 1.3)) ** 3 * 22
+                # 5 taps per 64-frame loop (was t * 0.45: 4.58 taps, a jump at the seam)
+                tap = max(0.0, math.sin(t * 2 * math.pi * 5 / 64 + ph + fi * 1.3)) ** 3 * 22
                 v[fi * 3] -= tap
                 v[fi * 3 + 1] -= tap * 0.6
             P[f"fg_{sd}"] = tuple(v)

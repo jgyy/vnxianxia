@@ -1,10 +1,45 @@
 """Procedural, biomechanically driven locomotion (walk / run / sprint ...).
 
-(verification helpers first; the generator follows)
+Every humanoid's `walk` / `run` (characters.build_actions) and the heroes'
+`sprint`, `sneak`, `crouch_walk`, `walk_back`, `strafe_l/r` (moves.loco) come
+from here.  Authored ground speeds (m/s) at speed_scale 1 - the runtime sets
+speed_scale = planar_speed / authored_speed:
+
+    walk 1.6   run 4.6   sprint 6.2   sneak 1.0   crouch_walk 0.8
+    walk_back 1.0   strafe_l / strafe_r 1.0
+
+Biomechanics (adult gait-lab data; Perry & Burnfield, Novacheck 1998, Winter):
+* cadence from leg length (Froude-scaled step length): a 1.8 m adult walks
+  1.6 m/s at ~130 steps/min (step 0.74 m) and runs 4.6 m/s at ~180
+  steps/min; shorter legs step faster, the golem lumbers.
+* duty factor: walk 0.59 (10% double support), run 0.27, sprint 0.22 (flight
+  phases); the short, anime-proportioned feet of the rig cap stance length,
+  so runs use trained-runner duty factors rather than 0.35.
+* foot: heel rocker (heel strike 20 deg toes-up in walk, 8 deg in run,
+  forefoot strike in sprint) -> foot flat by 12% of the cycle -> heel rise from
+  ~30% about the ball -> toe rocker (tip planted, toes extending ~26 deg) ->
+  toe-off at 45-50 deg heel rise; toes lift into heel strike.
+* knee: walk ~20-25 deg loading response, ~10 deg mid-stance, 62 deg peak at
+  75% of the cycle; run 40-45 deg mid-stance, 106 deg swing (sprint 121).
+* pelvis: height solved from the stance legs (walk: highest mid-stance,
+  lowest at double support, ~5 cm; run: low through stance, ballistic
+  flight); rotation +-4.5 deg (female 6.5), obliquity +-3.2 (female 4.5),
+  anterior tilt twice a stride, lateral weight shift over the stance foot.
+* thorax counter-rotates against the pelvis, head stabilised in yaw / roll and
+  held level; arms swing counter to the same-side leg with the elbow flexing
+  late on the forward swing and wrist / fingers trailing (walk 15 deg swing,
+  run 40 deg with ~90 deg elbows); relaxed hands walking, loose fists running.
+* female: narrower base (feet near the line of progression), more pelvic
+  rotation, less arm swing, upright chest; elders stoop; the golem walks wide.
+* hair chains (any bone hanging off the solved body) get damped-pendulum
+  follow-through driven by the head's acceleration and the travel speed.
+
+verify_clip() measures the baked result (stance slip, loop seam, knees, floor
+penetration) and the build fails when a planted foot slips more than 2 cm.
 """
 import math
 
-from mathutils import Matrix, Quaternion, Vector
+from mathutils import Quaternion, Vector
 
 V = Vector
 FPS = 30
@@ -44,6 +79,19 @@ class _Sampler:
         self.f0, self.f1 = float(f0), float(f1)
 
     def basis(self, name, f):
+        """Local pose matrix at frame f as the game plays it: the exporter
+        samples whole frames and Godot interpolates linearly between them."""
+        fl = math.floor(f)
+        u = f - fl
+        if u < 1e-6:
+            return self._basis(name, fl)
+        a, b = self._basis(name, fl), self._basis(name, fl + 1)
+        qa_, qb = a.to_quaternion(), b.to_quaternion()
+        m = qa_.slerp(qb, u).to_matrix().to_4x4()
+        m.translation = a.translation.lerp(b.translation, u)
+        return m
+
+    def _basis(self, name, f):
         q = [1.0, 0.0, 0.0, 0.0]
         loc = [0.0, 0.0, 0.0]
         pq = f'pose.bones["{name}"].rotation_quaternion'
@@ -78,7 +126,7 @@ class _Sampler:
         return M
 
 
-def verify_clip(arm, act, speed, direction=(0.0, 1.0), scale=1.0, loop=True, samples_per_frame=2,
+def verify_clip(arm, act, speed, direction=(0.0, 1.0), scale=1.0, loop=True, samples_per_frame=4,
                 label=None, verbose=True):
     """Measure foot planting / loop / knee quality of a baked locomotion clip.
 
@@ -144,9 +192,12 @@ def verify_clip(arm, act, speed, direction=(0.0, 1.0), scale=1.0, loop=True, sam
             knees.append(ang)
     dt = length / n / FPS
 
-    def planted_runs(tr, v):
-        """[(slip)] for contiguous contact runs; contact = within 1 cm of the
-        lowest height the point reaches."""
+    def planted_runs(tr, v, trim):
+        """Worst drift of a point across its contact runs (contact = within
+        1.5 mm of the lowest height it reaches), measured against the ground
+        sliding back at speed v.  `trim` samples are dropped at both ends of
+        each run: touchdown / lift-off transients (a heel skims the floor for
+        a moment before it plants), so what is left is the stance itself."""
         zmin = min(p.z for _, p, _ in tr)
         thr = zmin + 0.0015 * scale
         runs, cur = [], []
@@ -162,10 +213,12 @@ def verify_clip(arm, act, speed, direction=(0.0, 1.0), scale=1.0, loop=True, sam
             runs.append(cur)
         worst = 0.0
         for r in runs:
-            if len(r) < 2:
-                continue
             if loop and (r is runs[0] or r is runs[-1]) and len(runs) > 1:
                 continue     # clipped by the sampling window, measured in the other cycle
+            if trim and len(r) > 2 * trim + 1:
+                r = r[trim:-trim]
+            if len(r) < 2:
+                continue
             c0 = r[0]
             worst = max(worst, max((w - c0).length for w in r))
         return worst
@@ -181,12 +234,13 @@ def verify_clip(arm, act, speed, direction=(0.0, 1.0), scale=1.0, loop=True, sam
                 vel.append(-d.dot(dirv) / dt)
     vel.sort()
     implied = vel[len(vel) // 2] if vel else 0.0
-    per = {k: planted_runs(tr, speed) for k, tr in track.items()}
-    worst_pt = max(per, key=per.get)
-    slip = per[worst_pt]
+    half = max(1, samples_per_frame // 2)          # half a frame
+    per = {k: planted_runs(tr, speed, half) for k, tr in track.items()}
+    slip = max(per.values())
     if verbose and slip > 0.005:
-        print("      slip per point:", {f"{a}.{b}": round(v * 100, 2) for (a, b), v in per.items()})
-    slip_imp = max(planted_runs(tr, implied) for tr in track.values())
+        print("      slip per point (cm):", {f"{a}.{b}": round(x * 100, 2) for (a, b), x in per.items()})
+    scuff = max(planted_runs(tr, speed, 0) for tr in track.values())
+    slip_imp = max(planted_runs(tr, implied, half) for tr in track.values())
     pen = 0.0
     for (sd, k), tr in track.items():
         pen = max(pen, max(rz - p.z for _, p, rz in tr))
@@ -222,14 +276,14 @@ def verify_clip(arm, act, speed, direction=(0.0, 1.0), scale=1.0, loop=True, sam
             kink = d2[0] - max(d2[1], d2[-1])
             if kink > lvel:
                 lvel, kink_at = kink, path
-    res = dict(slip=slip, implied_speed=implied, slip_implied=slip_imp, loop_rot=lrot, loop_loc=lloc,
+    res = dict(slip=slip, scuff=scuff, implied_speed=implied, slip_implied=slip_imp, loop_rot=lrot, loop_loc=lloc,
                loop_vel=lvel, knee_min=min(knees), knee_max=max(knees), penetration=pen)
     res["kink_at"] = kink_at
     if verbose:
         where = ""
         if lvel > 0.5 and '"' in kink_at:
             where = " (" + kink_at.split('"')[1] + ")"
-        print(f"    verify {label or act.name:<14} v={speed:4.2f} slip={slip * 100:5.2f}cm "
+        print(f"    verify {label or act.name:<14} v={speed:4.2f} slip={slip * 100:5.2f}cm scuff={scuff * 100:4.2f}cm "
               f"(feet imply {implied:4.2f} m/s, slip there {slip_imp * 100:5.2f}cm) "
               f"loop={lrot:4.2f}deg/{lloc * 1000:3.1f}mm kink={lvel:4.2f}{where} "
               f"knee={res['knee_min']:5.1f}..{res['knee_max']:5.1f}deg pen={pen * 100:4.2f}cm")
@@ -361,7 +415,7 @@ def style(cfg):
         fingers="soft" if fem else "relaxed",
     )
     if age > 0.6:                            # elder: slight stoop, smaller steps, restrained arms
-        st.update(stoop=1.0, step=0.9, arm=0.6, yaw=3.5, sway=0.024, chest_yaw=3.0, gaze=-4.0)
+        st.update(stoop=1.0, step=0.96, arm=0.6, yaw=3.5, sway=0.024, chest_yaw=3.0, gaze=-4.0)
     if name == "stone_golem":                # heavy lumbering stone body
         st.update(heavy=1.0, width=0.02, toe_out=12.0, yaw=2.0, list=2.0, sway=0.045, chest_yaw=4.0,
                   arm=0.7, abduct=24.0, elbow=10.0, chest_up=4.0, step=0.95)
@@ -397,9 +451,9 @@ def preset(kind, st, speed=None):
     if kind == "walk":
         p = dict(
             speed=1.6, duty=0.59, mode="fk", fore=0.43, pelvis="auto", harmonics=4,
-            strike=20.0, push=48.0, u_ff=0.2, u_ho=0.5, toe_ext=10.0,
+            strike=20.0, push=48.0, u_ff=0.2, u_ho=0.5, toe_ext=10.0, toe_rocker=(0.86, 26.0),
             kappa=[(0.0, 4.0), (0.2, 16.0), (0.55, 6.0), (1.0, 5.0)],
-            swing=[(0.33, 10.0, 60.0, 10.0), (0.67, 25.0, 27.0, 0.0), (0.88, 26.0, 8.0, -3.0)],
+            swing=[(0.33, 10.0, 60.0, 10.0), (0.67, 25.0, 27.0, 0.0), (0.88, 26.0, 8.0, 0.0)],
             bulge=0.012,
             hips_pitch=2.0, tilt=1.2, spine_pitch=1.0, chest_pitch=st["chest_up"], bounce=0.6,
             arms=dict(c=-4.0, amp=15.0, e0=16.0, ea=22.0, abduct=st["abduct"], psi=0.12, lag=0.05,
@@ -408,19 +462,19 @@ def preset(kind, st, speed=None):
     elif kind == "run":
         p = dict(
             speed=4.6, duty=0.27, mode="fk", fore=0.37, pelvis="auto", harmonics=4,
-            strike=8.0, push=52.0, u_ff=0.22, u_ho=0.42, toe_ext=6.0,
+            strike=8.0, push=52.0, u_ff=0.22, u_ho=0.42, toe_ext=6.0, toe_rocker=(0.82, 26.0),
             kappa=[(0.0, 20.0), (0.38, 48.0), (0.8, 22.0), (1.0, 8.0)],
             swing=[(0.1, -15.0, 50.0, 24.0), (0.27, -3.0, 84.0, 12.0), (0.5, 18.0, 106.0, 2.0),
                    (0.78, 44.0, 62.0, -4.0)],
             bulge=0.01,
-            hips_pitch=7.0, tilt=2.0, spine_pitch=3.0, chest_pitch=2.0 + st["chest_up"] * 0.5, bounce=2.0,
-            arms=dict(c=4.0, amp=34.0, e0=78.0, ea=24.0, abduct=st["abduct"] + 4.0, psi=0.45, lag=0.03,
+            hips_pitch=9.0, tilt=2.0, spine_pitch=4.0, chest_pitch=2.0 + st["chest_up"] * 0.5, bounce=2.0,
+            arms=dict(c=-4.0, amp=40.0, e0=80.0, ea=18.0, abduct=st["abduct"] + 4.0, psi=0.28, lag=0.03,
                       lag_e=0.04, wr=6.0, sh=4.0, fg="loose_fist", fg_k=0.45 if fem else 0.7),
         )
     elif kind == "sprint":
         p = dict(
             speed=6.2, duty=0.22, mode="fk", fore=0.36, pelvis="auto", harmonics=4,
-            strike=-8.0, push=58.0, u_ff=0.25, u_ho=0.3, toe_ext=0.0,
+            strike=-8.0, push=58.0, u_ff=0.25, u_ho=0.3, toe_ext=0.0, toe_rocker=(0.8, 30.0),
             kappa=[(0.0, 22.0), (0.4, 46.0), (0.8, 20.0), (1.0, 8.0)],
             swing=[(0.1, -12.0, 55.0, 24.0), (0.27, 2.0, 94.0, 12.0), (0.48, 28.0, 120.0, 2.0),
                    (0.76, 58.0, 70.0, -4.0)],
@@ -626,8 +680,34 @@ class Gait:
         P0 = g["B0"] if fp >= 0 else g["heel"]
         return ank - g["A0"] - qy @ (P0 - g["A0"]) - rf @ (g["A0"] - P0)
 
+    def toe_beta(self, u):
+        """Toe rocker: pitch of the toe itself (tip planted) late in stance."""
+        tr = self.p.get("toe_rocker")
+        if not tr or u <= tr[0]:
+            return 0.0
+        x = (u - tr[0]) / (1.0 - tr[0])
+        return tr[1] * x * x
+
+    def stance_state(self, sd, u):
+        """(ankle, foot pitch, toe bend) during stance.  Heel rocker, then
+        ankle rocker (foot flat), forefoot rocker (heel rises about the
+        ball), and finally the toe rocker: the ball lifts too while the toe
+        tip stays on the floor and the toes keep extending."""
+        fp = self.fp_stance(u)
+        off = self.pivot_off(sd, u)
+        beta = self.toe_beta(u)
+        if beta <= 0.0:
+            return self.ankle(sd, off, fp), fp, self.toe_stance(u, fp)
+        g = self.geo[sd]
+        qy = self._qy(sd)
+        ball_flat = g["A0"] + off + qy @ (g["B0"] - g["A0"])
+        tip = ball_flat + qy @ (g["tip"] - g["B0"])
+        ball = tip - qy @ qa(AXV, beta) @ (g["tip"] - g["B0"])
+        ank = ball + qy @ qa(AXV, fp) @ (g["A0"] - g["B0"])
+        return ank, fp, fp - beta
+
     def stance_ankle(self, sd, u):
-        return self.ankle(sd, self.pivot_off(sd, u), self.fp_stance(u))
+        return self.stance_state(sd, u)[0]
 
     # --------------------------------------------------------------- pelvis
     def _reach_z(self, ank, hip, kappa):
@@ -694,7 +774,6 @@ class Gait:
             viol = _blur([x * 1.5 for x in viol], 1.6 * n / self.T)
             h = [a - b for a, b in zip(h, viol)]
         h = [min(a, b) for a, b in zip(h, hard)]
-        self._dbg = (want, hard)
         self.rz = Loop(h)
         self.rz_range = (min(h), max(h))
 
@@ -736,8 +815,8 @@ class Gait:
             fp0, fp1 = self.fp_stance(1.0), self.fp_stance(0.0)
             dfp0 = (fp0 - self.fp_stance(1.0 - eps)) * (r / eps)
             dfp1 = (self.fp_stance(eps) - fp1) * (r / eps)
-            tau0, tau1 = self.toe_stance(1.0, fp0), self.toe_stance(0.0, fp1)
-            dtau0 = (tau0 - self.toe_stance(1.0 - eps, self.fp_stance(1.0 - eps))) * (r / eps)
+            tau0, tau1 = self.stance_state(sd, 1.0)[2], self.stance_state(sd, 0.0)[2]
+            dtau0 = (tau0 - self.stance_state(sd, 1.0 - eps)[2]) * (r / eps)
             keys, fkeys = [(0.0, p0)], [(0.0, fp0)]
             if p["mode"] == "fk":
                 for w, th, kn, pf in p["swing"]:
@@ -783,7 +862,7 @@ class Gait:
             pts = self.foot_points(sd, ank, sw["fp"](w), sw["toe"](w))
             rest = (g["heel"].z, g["B0"].z, g["tip"].z)
             low = min(p.z - r for p, r in zip(pts, rest))
-            want = 0.015 * math.sin(math.pi * w) ** 2
+            want = 0.015 * math.sin(math.pi * w) ** 1.2
             need.append(max(0.0, want - low))
         for _ in range(2):
             need = [need[0]] + [max(need[i], 0.25 * need[i - 1] + 0.5 * need[i] + 0.25 * need[i + 1])
@@ -801,9 +880,8 @@ class Gait:
             lp = (ph - self.phase_off[sd]) % 1.0
             if lp < duty:
                 u = lp / duty
-                fp = self.fp_stance(u)
-                off = self.pivot_off(sd, u)
-                toe = self.toe_stance(u, fp)
+                ank, fp, toe = self.stance_state(sd, u)
+                off = self.off_from_ankle(sd, ank, fp) if self.toe_beta(u) > 0 else self.pivot_off(sd, u)
             else:
                 w = (lp - duty) / (1 - duty)
                 sw = self.sw[sd]
@@ -1061,6 +1139,17 @@ def check(arm, act, g, label=None):
     if res["loop_rot"] > 0.05 or res["loop_loc"] > 1e-4:
         raise RuntimeError(f"{act.name}: loop does not close ({res['loop_rot']:.3f} deg)")
     return res
+
+
+def pose_at(rig, cfg, kind, phase):
+    """The full control pose of a gait at a stride phase (to key transition
+    clips such as run_start / run_stop onto the cycle)."""
+    from . import moves
+    clip = moves.Clip(kind, 30, loop=True, base=moves.stand(cfg["female"]))
+    g = attach(rig, clip, cfg, kind)
+    clip.resolve()
+    P = clip.pose(phase * g.T)
+    return {k: v for k, v in P.items() if not k.startswith(("hdir", "palm", "hw", "hs"))}
 
 
 def build_locomotion(arm, J, cfg, s, kinds=("walk", "run")):
