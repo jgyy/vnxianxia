@@ -9,6 +9,7 @@ var open := false
 var _content: RichTextLabel
 var _root: Control
 var _settings: VBoxContainer
+var _mouse_before := Input.MOUSE_MODE_VISIBLE
 
 
 func _ready() -> void:
@@ -83,6 +84,8 @@ func toggle(page := "quest") -> void:
 
 
 func show_page(page := "quest") -> void:
+	if not open:
+		_mouse_before = Input.mouse_mode
 	open = true
 	visible = true
 	get_tree().paused = true
@@ -103,6 +106,7 @@ func close() -> void:
 	open = false
 	visible = false
 	get_tree().paused = false
+	Input.mouse_mode = _mouse_before
 	Audio.sfx("ui_close", -6.0)
 	closed.emit()
 

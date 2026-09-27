@@ -319,9 +319,10 @@ def main_hall():
     # walls: back and sides plaster, front lattice doors, brick dado
     bm_w, bm_d, bm_l = bmesh.new(), bmesh.new(), bmesh.new()
     wz = th + ch / 2
-    util.box(bm_w, (12.0, 0.3, ch), loc=(0, 3.6, wz))
-    util.box(bm_w, (0.3, 7.2, ch), loc=(-6.0, 0, wz))
-    util.box(bm_w, (0.3, 7.2, ch), loc=(6.0, 0, wz))
+    # wall tops 4 cm under the column tops (they were coplanar)
+    util.box(bm_w, (12.0, 0.3, ch - 0.04), loc=(0, 3.6, wz - 0.02))
+    util.box(bm_w, (0.3, 7.2, ch - 0.04), loc=(-6.0, 0, wz - 0.02))
+    util.box(bm_w, (0.3, 7.2, ch - 0.04), loc=(6.0, 0, wz - 0.02))
     util.box(bm_d, (12.1, 0.34, 0.9), loc=(0, 3.6, th + 0.45))
     util.box(bm_d, (0.34, 7.3, 0.9), loc=(-6.0, 0, th + 0.45))
     util.box(bm_d, (0.34, 7.3, 0.9), loc=(6.0, 0, th + 0.45))
@@ -529,7 +530,7 @@ def pagoda(tiers=7):
         util.box(bm_w, (w * 2 - 0.3, w * 2 - 0.3, h), loc=(0, 0, z + h / 2))
         for sx in (-1, 1):
             for sy in (-1, 1):
-                column(bm_p, bm_s, sx * (w - 0.1), sy * (w - 0.1), z, h, r=0.16)
+                column(bm_p, bm_s, sx * (w - 0.1), sy * (w - 0.1), z - 0.03, h + 0.05, r=0.16)
         util.box(bm_b, (w * 2 + 0.2, w * 2 + 0.2, 0.3), loc=(0, 0, z + h + 0.1))
         # door/window panel on each face
         for k in range(4):
@@ -649,10 +650,11 @@ def wall_segment(length=8.0, height=3.2, moon_gate=False):
     bm = bmesh.new()
     uv = bm.loops.layers.uv.verify()
     hw = length / 2 + 0.2
-    for sy in (-1, 1):
-        vs = [bm.verts.new(V(p)) for p in ((-hw, 0, height + 0.45), (hw, 0, height + 0.45),
-                                           (hw, sy * 0.65, height + 0.05), (-hw, sy * 0.65, height + 0.05))]
-        f = bm.faces.new(vs if sy > 0 else list(reversed(vs)))
+    # one sheet over the ridge (two separately solidified slopes overlapped at the ends)
+    rows = [[bm.verts.new(V((x, y, height + 0.45 - 0.4 * abs(y) / 0.65))) for x in (-hw, hw)]
+            for y in (-0.65, 0.0, 0.65)]
+    for j in range(2):
+        f = bm.faces.new((rows[j][0], rows[j][1], rows[j + 1][1], rows[j + 1][0]))
         for loop in f.loops:
             loop[uv].uv = (loop.vert.co.x * 0.6, abs(loop.vert.co.y) * 0.8)
     o = util.mesh_object("WallCoping", bm, [mats["tiles"], mats["wood"]], smooth=False)

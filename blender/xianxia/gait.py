@@ -968,7 +968,7 @@ def _secondary(arm, core):
     """Bones hanging off the solved body, as parent -> child chains."""
     out = []
     for b in arm.data.bones:
-        if b.name in core or b.parent is None or b.parent.name not in core:
+        if b.name in core or b.parent is None or b.parent.name not in core or b.name.startswith("sleeve"):
             continue
         chain = [b.name]
         c = b
@@ -1168,3 +1168,116 @@ def build_locomotion(arm, J, cfg, s, kinds=("walk", "run")):
         acts.append(act)
     arm.animation_data.action = keep
     return acts
+
+
+# --------------------------------------------------------------------------
+# wide sleeves: a hanging drape bone per arm, baked onto every action
+# --------------------------------------------------------------------------
+def _key_rotation(act, arm, bone, frames, quats):
+    """(Re)write a bone's rotation channels with one key per frame."""
+    path = f'pose.bones["{bone}"].rotation_quaternion'
+    arm.pose.bones[bone].rotation_mode = "QUATERNION"
+    for i in range(4):
+        fc = act.fcurve_ensure_for_datablock(arm, path, index=i, group_name=bone)
+        kp = fc.keyframe_points
+        kp.clear()
+        kp.add(len(frames))
+        co = []
+        for f, q in zip(frames, quats):
+            co += [float(f), q[i]]
+        kp.foreach_set("co", co)
+        for k in kp:
+            k.interpolation = "LINEAR"
+        fc.update()
+
+
+def sleeve_follow(arm, actions, scale=1.0, length=0.2, bones=("sleeve.L", "sleeve.R")):
+    """Bake the sleeve drape bones on every action.
+
+    Each drape is a damped spherical pendulum hung from the forearm: gravity
+    pulls it down, a little cloth stiffness pulls it toward the pose it has
+    when carried rigidly by the forearm, the pivot's own acceleration swings
+    it (follow-through when the arm pumps), and it never rises above ~15 deg
+    below the horizontal.  The bone keeps the forearm's twist (swing-only
+    correction).  Looping actions (first and last frame agree) are simulated
+    for three cycles and the steady-state cycle is kept, so they still loop.
+    """
+    names = [b for b in bones if b in arm.data.bones]
+    if not names:
+        return
+    rest = {b.name: b.matrix_local.copy() for b in arm.data.bones}
+    if arm.animation_data is None:
+        arm.animation_data_create()
+    keep = arm.animation_data.action
+    L = length * scale
+    down = V((0.0, 0.0, -1.0))
+    gvec = V((0.0, 0.0, -G))
+    for act in actions:
+        smp = _Sampler(arm, act)
+        f0, f1 = int(round(smp.f0)), int(round(smp.f1))
+        frames = list(range(f0, f1 + 1))
+        for bn in names:
+            par = arm.data.bones[bn].parent.name
+            rel = rest[par].inverted() @ rest[bn]
+            carried = []
+            for f in frames:
+                M = smp.pose([par], float(f))[par] @ rel
+                carried.append(M)
+            P = [M.translation.copy() for M in carried]
+            C = [(M.to_3x3() @ V((0, 1, 0))).normalized() for M in carried]
+            loop = (P[0] - P[-1]).length < 1e-4 * scale and C[0].dot(C[-1]) > 0.99999
+            n = len(frames)
+            dt = 1.0 / FPS
+            sub = 8
+            h = dt / sub
+
+            D0 = (rest[bn].to_3x3() @ V((0, 1, 0))).normalized()
+
+            def target(i):
+                # arm hanging as in the rest pose: the drape hangs as modelled;
+                # as the forearm rises toward level, the drape is pulled down
+                hang = (down * 0.85 + C[i] * 0.15).normalized()
+                f = sm((C[i].z - D0.z) / max(1e-3, -D0.z))
+                return C[i].slerp(hang, f) if C[i].dot(hang) > -0.99 else hang
+            q = P[0] + target(0) * L
+            v = V((0, 0, 0))
+            out = [None] * n
+            reps = 3 if loop and n > 2 else 1
+            for rep in range(reps):
+                for i in range(n):
+                    if rep == reps - 1:
+                        out[i] = (q - P[i]).normalized()
+                    if i == n - 1:
+                        break
+                    for m in range(sub):
+                        a_ = (m + 1) / sub
+                        piv = P[i].lerp(P[i + 1], a_)
+                        tgt = piv + (target(i).lerp(target(i + 1), a_)).normalized() * L
+                        acc = gvec * 0.35 + (tgt - q) * 60.0 - v * 7.0
+                        v = v + acc * h
+                        q = q + v * h
+                        d = q - piv
+                        if d.length < 1e-6:
+                            d = down.copy()
+                        d.normalize()
+                        if d.z > -0.26:                 # never flare above ~15 deg below level
+                            d.z = -0.26
+                            d.normalize()
+                        qn = piv + d * L
+                        v = v - d * v.dot(d)            # no stretching
+                        q = qn
+            if loop:
+                out[-1] = out[0]
+            quats = []
+            prev = None
+            for i in range(n):
+                rot_c = carried[i].to_quaternion()
+                sw = C[i].rotation_difference(out[i])
+                basis = rot_c.inverted() @ sw @ rot_c
+                if prev is not None and prev.dot(basis) < 0:
+                    basis.negate()
+                prev = basis
+                quats.append(basis)
+            arm.animation_data.action = act
+            _key_rotation(act, arm, bn, frames, quats)
+    arm.animation_data.action = keep

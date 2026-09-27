@@ -1034,7 +1034,7 @@ def demon_gate():
         x = sx * (hw - 0.12)
         util.box(bm_d, (0.22, 3.6, 6.6), loc=(x, -dep + 2.0, 3.3))
         for zz in np.linspace(0.6, 5.8, 5):
-            util.box(bm_n, (0.06, 3.6, 0.14), loc=(x - sx * 0.13, -dep + 2.0, zz))
+            util.box(bm_n, (0.06, 3.56, 0.14), loc=(x - sx * 0.13, -dep + 2.0, zz))
             for yy in np.linspace(-dep + 0.5, -dep + 3.5, 5):
                 util.sphere(bm_n, 0.07, loc=(x - sx * 0.15, yy, zz + 0.35), segs=6, rings=4)
     objs.append(finish("GateDoors", bm_d, m["lacquer"], uv=0.8))

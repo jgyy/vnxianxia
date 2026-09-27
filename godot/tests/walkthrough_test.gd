@@ -192,7 +192,8 @@ func _step() -> bool:
 			await _wait(func(): return player.is_on_floor(), 120)
 			player.start_meditation()
 		"interact":
-			_place(player, _free_spot(runner.target_point, 1.8))
+			# outside the prop's collider, within reach of its outline (big props: boats, trees, stele arrays)
+			_place(player, runner.prop.approach_point(game.map) if runner.prop else _free_spot(runner.target_point, 1.8))
 			await _frames(3)
 			game._on_interact()
 		"cinematic":

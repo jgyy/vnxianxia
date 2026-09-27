@@ -164,7 +164,8 @@ func _process(delta: float) -> void:
 
 
 func _may_speak() -> bool:
-	if game.busy or game.dialogue.active or game.cinematic.active or game.journal.open:
+	if game.busy or game.dialogue.active or game.cinematic.active or game.journal.open or game.travel.open \
+			or game.conversation.active:
 		return false
 	var p: CharacterBody3D = game.player
 	if p == null or p.dead or p.meditating or not p.controls_enabled:

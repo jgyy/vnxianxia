@@ -6,6 +6,10 @@ extends CharacterBody3D
 ## F / left click strikes, Q fires a qi blast, C meditates, G salutes.
 ## Hold the right mouse button (or click to capture the mouse) to orbit,
 ## scroll to zoom.
+##
+## Stairs, terraces and curbs up to Stepper.MAX_STEP are walked up (and down)
+## without jumping; the model and camera ease over each step so the body's
+## instant lift never shows as a pop.
 
 signal character_changed(display_name: String)
 signal hp_changed(hp: float, max_hp: float)
@@ -20,14 +24,32 @@ const CHARACTERS := [
 ]
 const WALK_SPEED := 1.6
 const RUN_SPEED := 4.6
+## Ground speed (m/s) at which each locomotion clip plants its feet at
+## speed_scale 1.0 (the animation contract, see blender/xianxia/gait.py).
+const AUTHORED_SPEED := {"walk": 1.6, "run": 4.6, "sprint": 6.2, "sneak": 1.0, "crouch_walk": 0.8,
+		"walk_back": 1.0, "strafe_l": 1.0, "strafe_r": 1.0}
+## walk -> run above RUN_UP m/s, run -> walk below RUN_DOWN (no thrash at the threshold)
+const RUN_UP := 3.1
+const RUN_DOWN := 2.5
 const JUMP_VELOCITY := 6.5
 const GRAVITY := 13.0
 const TURN_SPEED := 10.0
+## ground acceleration / braking (m/s^2) and in the air
+const ACCEL := 16.0
+const BRAKE := 22.0
+const AIR_ACCEL := 5.0
+## a jump pressed this long before landing still happens; a jump pressed this
+## long after walking off an edge still counts as from the ground
+const JUMP_BUFFER := 0.15
+const COYOTE := 0.12
 const MOUSE_SENSITIVITY := 0.004
 const STRIKE_RANGE := 2.6
 const BLAST_COST := 20.0
+const PIVOT_HEIGHT := 1.55
+const MAX_LEAN := 0.07
 const QiBlast := preload("res://scripts/world/qi_blast.gd")
 const PlayerMoves := preload("res://scripts/world/player_moves.gd")
+const Stepper := preload("res://scripts/world/stepper.gd")
 
 ## Initial camera yaw in radians (0 = looking toward -Z).
 @export var start_yaw := 0.0
@@ -36,7 +58,11 @@ const PlayerMoves := preload("res://scripts/world/player_moves.gd")
 var scripted_input := Vector2.ZERO
 var scripted_run := false
 ## False while dialogue, cinematics or menus own the player.
-var controls_enabled := true
+var controls_enabled := true:
+	set(v):
+		if v != controls_enabled:
+			_jump_buffer = 0.0
+		controls_enabled = v
 
 var spawn_point := Vector3.ZERO
 var character_index := 0
@@ -46,14 +72,29 @@ var hp := 100.0
 var qi := 60.0
 var meditating := false
 var dead := false
+## Height climbed by the last step-up / dropped by the last step-down snap (tests).
+var last_step := 0.0
 var _action_lock := 0.0
 var _strike_at := -1.0
 var _yaw := 0.0
 var _pitch := -0.18
 var _orbiting := false
-var _step_timer := 0.0
+## footfalls played so far (tests)
+var footsteps := 0
+var _step_phase := -1.0
+var _step_clip := ""
 var _invulnerable := 0.0
 var _med_sound: AudioStreamPlayer
+var _jump_buffer := 0.0
+var _air_time := 0.0
+var _supported := false
+var _vis_offset := 0.0
+var _lean := 0.0
+var _gait := "idle"
+## a pose (talk, listen, a cinematic stance) that locomotion must not override
+var _held_pose := ""
+## while a conversation holds the player: the point to turn toward
+var _face_point := Vector3.INF
 ## Extended move set (combos, dodges, emotes...), see world/player_moves.gd.
 var moves: Node
 
@@ -77,6 +118,14 @@ func _ready() -> void:
 	refill()
 
 
+func _exit_tree() -> void:
+	# the meditation hum is a looping pool player of the Audio autoload: it would
+	# keep playing on the title screen after quitting mid-meditation
+	if _med_sound:
+		_med_sound.stop()
+		_med_sound = null
+
+
 static func setup_input_map() -> void:
 	var keys := {
 		"move_forward": [KEY_W, KEY_UP],
@@ -93,7 +142,7 @@ static func setup_input_map() -> void:
 		"salute": [KEY_G],
 		"journal": [KEY_J],
 		"pause": [KEY_ESCAPE],
-		"advance": [KEY_SPACE, KEY_ENTER, KEY_E],
+		"advance": [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER, KEY_E],
 	}
 	for action in keys:
 		if InputMap.has_action(action):
@@ -123,9 +172,17 @@ func set_character(index: int) -> void:
 		ActorLook.loop_anims(anim)
 	if moves:
 		moves.on_model(anim)
+	_gait = "idle"
 	if anim:
-		anim.play("meditate" if meditating else "idle")
-	_action_lock = 0.0
+		if dead:
+			anim.play(moves.death_anim(null) if moves else "death")
+			anim.seek(anim.current_animation_length, true)
+		elif _held_pose != "" and anim.has_animation(_held_pose):
+			anim.play(_held_pose)
+		else:
+			anim.play("meditate" if meditating else "idle")
+	if not dead:
+		_action_lock = 0.0
 	character_changed.emit(CHARACTERS[character_index].name)
 
 
@@ -138,7 +195,7 @@ func refill() -> void:
 
 
 func play_action(anim_name: String) -> bool:
-	if anim and anim.has_animation(anim_name) and is_on_floor() and _action_lock <= 0.0 and not dead:
+	if anim and anim.has_animation(anim_name) and is_grounded() and _action_lock <= 0.0 and not dead:
 		stop_meditation()
 		anim.play(anim_name, 0.12)
 		anim.speed_scale = 1.0
@@ -147,31 +204,61 @@ func play_action(anim_name: String) -> bool:
 	return false
 
 
+## Hold a pose (talk / listen gestures, a cinematic stance) that locomotion
+## leaves alone until release_pose(); "" releases.
+func hold_pose(anim_name: String, blend := 0.3) -> void:
+	_held_pose = anim_name
+	if anim_name == "" or anim == null or dead or not anim.has_animation(anim_name):
+		return
+	if anim.current_animation != anim_name:
+		anim.play(anim_name, blend)
+	anim.speed_scale = 1.0
+
+
+func release_pose() -> void:
+	_held_pose = ""
+	_face_point = Vector3.INF
+	_gait = ""
+
+
+## Turn (smoothly) toward a point while the controls are held by a conversation.
+func face_toward(point: Vector3) -> void:
+	_face_point = point
+
+
+## Forget any buffered jump (a dialogue key press must never turn into a leap).
+func clear_input_buffer() -> void:
+	_jump_buffer = 0.0
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_RIGHT:
-			_orbiting = mb.pressed
+			_orbiting = mb.pressed and controls_enabled
 		elif mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
 			if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-				if controls_enabled:
+				if controls_enabled and not dead:
 					strike()
-			else:
+			elif controls_enabled:
+				# a click on the world (not on a menu, a choice or the dialogue box) captures the mouse
 				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		elif mb.button_index == MOUSE_BUTTON_WHEEL_UP:
+		elif mb.button_index == MOUSE_BUTTON_WHEEL_UP and mb.pressed:
 			spring.spring_length = maxf(1.5, spring.spring_length - 0.4)
-		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN and mb.pressed:
 			spring.spring_length = minf(12.0, spring.spring_length + 0.4)
 	elif event is InputEventMouseMotion:
 		if _orbiting or Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			var mm := event as InputEventMouseMotion
 			_yaw -= mm.relative.x * MOUSE_SENSITIVITY
 			_pitch = clampf(_pitch - mm.relative.y * MOUSE_SENSITIVITY, -1.2, 0.5)
-	if not controls_enabled:
+	if not controls_enabled or dead:
 		return
 	if moves and moves.handle_input(event):
 		return
-	if event.is_action_pressed("switch_character"):
+	if event.is_action_pressed("jump"):
+		_jump_buffer = JUMP_BUFFER
+	elif event.is_action_pressed("switch_character"):
 		set_character(character_index + 1)
 	elif event.is_action_pressed("interact"):
 		interact_pressed.emit()
@@ -207,11 +294,12 @@ func blast() -> void:
 		qi -= BLAST_COST
 		qi_changed.emit(qi, Game.max_qi())
 		Audio.sfx("qi_charge", -6.0)
-		get_tree().create_timer(0.62 if not Game.fast else 0.0).timeout.connect(_fire_blast)
+		# a game-time timer: pausing (journal) right after casting must not release it behind the menu
+		get_tree().create_timer(0.62 if not Game.fast else 0.0, false).timeout.connect(_fire_blast)
 
 
 func _fire_blast() -> void:
-	if dead:
+	if dead or not is_inside_tree():
 		return
 	var b: Node3D = QiBlast.new()
 	b.damage = Game.blast_damage()
@@ -244,6 +332,8 @@ func _apply_strike() -> void:
 		if e.dead:
 			continue
 		var to: Vector3 = e.global_position - global_position
+		if absf(to.y) > 2.5:
+			continue        # an enemy on the terrace above / below is out of reach
 		to.y = 0
 		var reach: float = STRIKE_RANGE + e.radius + (moves.extra_reach if moves else 0.0)
 		if to.length() < reach and (to.length() < 0.8 or fwd.dot(to.normalized()) > 0.25):
@@ -254,7 +344,7 @@ func _apply_strike() -> void:
 
 
 func start_meditation() -> void:
-	if meditating or not is_on_floor() or dead:
+	if meditating or not is_grounded() or dead:
 		return
 	meditating = true
 	velocity = Vector3.ZERO
@@ -263,6 +353,8 @@ func start_meditation() -> void:
 	elif anim:
 		anim.play("meditate", 0.4)
 		anim.speed_scale = 1.0
+	if _med_sound:
+		_med_sound.stop()
 	_med_sound = Audio.sfx("meditate_loop", -10.0)
 	meditation_changed.emit(true)
 
@@ -295,8 +387,11 @@ func take_damage(amount: float, _from: Node = null) -> void:
 	Audio.sfx("player_hurt", -4.0, randf_range(0.9, 1.1))
 	if hp <= 0.0:
 		dead = true
+		_strike_at = -1.0
+		_jump_buffer = 0.0
 		if anim:
 			anim.play(moves.death_anim(_from) if moves else "death", 0.1)
+			anim.speed_scale = 1.0
 		_action_lock = 99.0
 		died.emit()
 	elif moves:
@@ -307,14 +402,36 @@ func take_damage(amount: float, _from: Node = null) -> void:
 
 
 func respawn(at: Vector3) -> void:
+	stop_meditation()
 	global_position = at
 	velocity = Vector3.ZERO
 	_action_lock = 0.0
+	_strike_at = -1.0
+	_jump_buffer = 0.0
+	_vis_offset = 0.0
+	_air_time = 0.0
+	_gait = ""
 	refill()
 	if moves:
 		moves.on_respawn()
 	elif anim:
 		anim.play("idle")
+
+
+## Standing: on the floor, or crossing the nose of a step with ground just below.
+func is_grounded() -> bool:
+	return is_on_floor() or _supported
+
+
+## Teleport (map load, cinematics, tests): no step smoothing carried over.
+func place_at(at: Vector3) -> void:
+	global_position = at
+	velocity = Vector3.ZERO
+	_vis_offset = 0.0
+	_air_time = 0.0
+	_apply_visual_offset()
+	if moves:
+		moves.reset_state()
 
 
 func _physics_process(delta: float) -> void:
@@ -330,9 +447,12 @@ func _physics_process(delta: float) -> void:
 	var dir := (basis_yaw * Vector3(input.x, 0, input.y))
 	dir.y = 0
 	dir = dir.normalized() if dir.length() > 0.01 else Vector3.ZERO
+	_jump_buffer = maxf(0.0, _jump_buffer - delta)
 	if moves:
 		var d = moves.pre_physics(delta, dir, running)
 		if d == null:
+			_air_time = 0.0 if is_on_floor() else _air_time + delta
+			_ease_visuals(delta, 0.0)
 			return
 		dir = d
 	if meditating and dir != Vector3.ZERO:
@@ -358,45 +478,141 @@ func _physics_process(delta: float) -> void:
 
 	var speed: float = (RUN_SPEED if running else WALK_SPEED) * (moves.speed_mult(running) if moves else 1.0)
 	var target := dir * speed
-	var accel := 12.0 if is_on_floor() else 3.0
-	velocity.x = move_toward(velocity.x, target.x, accel * speed * delta)
-	velocity.z = move_toward(velocity.z, target.z, accel * speed * delta)
+	var on_floor := is_grounded()
+	var planar := Vector2(velocity.x, velocity.z)
+	var want := Vector2(target.x, target.z)
+	var rate := (ACCEL if want.length() >= planar.length() - 0.01 else BRAKE) if on_floor else AIR_ACCEL
+	planar = planar.move_toward(want, rate * delta)
+	velocity.x = planar.x
+	velocity.z = planar.y
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
-	elif controls_enabled and Input.is_action_just_pressed("jump") and _action_lock <= 0.0 and not meditating:
+	if _jump_buffer > 0.0 and controls_enabled and not dead and _action_lock <= 0.0 and not meditating \
+			and (on_floor or _air_time < COYOTE) and velocity.y <= 0.5:
 		velocity.y = JUMP_VELOCITY
+		_jump_buffer = 0.0
+		_air_time = COYOTE
 		Audio.sfx("jump", -8.0)
-	move_and_slide()
+	move_body(delta)
 
+	var yaw_before := model_root.rotation.y
 	if dir != Vector3.ZERO and not (moves and moves.facing_locked()):
 		var target_yaw := atan2(dir.x, dir.z)
 		model_root.rotation.y = lerp_angle(model_root.rotation.y, target_yaw, clampf(TURN_SPEED * delta, 0, 1))
+	elif not controls_enabled and _face_point != Vector3.INF and not dead:
+		var to := _face_point - global_position
+		if Vector2(to.x, to.z).length() > 0.2:
+			model_root.rotation.y = lerp_angle(model_root.rotation.y, atan2(to.x, to.z), clampf(6.0 * delta, 0, 1))
+	# a slight lean into turns while running (never while walking or standing)
+	var turn_rate := wrapf(model_root.rotation.y - yaw_before, -PI, PI) / maxf(delta, 0.001)
+	var lean_target := 0.0
+	var ground_speed := Vector2(velocity.x, velocity.z).length()
+	if is_grounded() and ground_speed > RUN_UP:
+		lean_target = clampf(-turn_rate * ground_speed * 0.012, -MAX_LEAN, MAX_LEAN)
+	_ease_visuals(delta, lean_target)
 
 	_update_animation(delta)
+
+
+## move_and_slide() with stair handling: steps up onto risers up to
+## Stepper.MAX_STEP and smooths the visible body over steps up and down.
+func move_body(delta: float) -> void:
+	var was_floor := is_on_floor()
+	var y0 := global_position.y
+	var rise := Stepper.step_up(self, delta, was_floor or _supported or _air_time < COYOTE)
+	move_and_slide()
+	var drop := Stepper.step_down(self, was_floor) if rise <= 0.0 else 0.0
+	_supported = is_on_floor()
+	if not _supported and velocity.y <= 0.0 and (drop < 0.0 or _air_time < 0.1) \
+			and Stepper.ground_within(self, Stepper.MAX_STEP + 0.05):
+		# riding over the nose of a step: not falling, just going down the stairs
+		_supported = true
+		velocity.y = clampf(velocity.y, -4.0, -1.0)
+	if _supported:
+		_air_time = 0.0
+	else:
+		_air_time += delta
+	if rise > 0.0:
+		last_step = rise
+		_vis_offset = clampf(_vis_offset - rise, -0.6, 0.6)
+	elif was_floor:
+		var dy := global_position.y - y0
+		if dy < -0.12:
+			last_step = dy
+			_vis_offset = clampf(_vis_offset - dy, -0.6, 0.6)
+
+
+func _ease_visuals(delta: float, lean_target: float) -> void:
+	_vis_offset = move_toward(_vis_offset, 0.0, delta * (1.2 + absf(_vis_offset) * 14.0))
+	_lean = lerpf(_lean, lean_target, clampf(6.0 * delta, 0.0, 1.0))
+	_apply_visual_offset()
+
+
+func _apply_visual_offset() -> void:
+	model_root.position.y = _vis_offset
+	model_root.rotation.z = _lean
+	pivot.position.y = PIVOT_HEIGHT + _vis_offset * 0.85
+
+
+## Locomotion clip for a planar ground speed, with hysteresis between walk and run.
+func gait_for(planar: float, current: String, can_sprint := false) -> String:
+	if planar <= 0.15:
+		return "idle"
+	var fast := current in ["run", "sprint"]
+	if planar > RUN_UP or (fast and planar > RUN_DOWN):
+		if can_sprint and (planar > 5.3 or (current == "sprint" and planar > 4.9)):
+			return "sprint"
+		return "run"
+	return "walk"
+
+
+## speed_scale that plants the feet of `clip` at `planar` m/s.
+static func stride_scale(clip: String, planar: float, model_scale := 1.0) -> float:
+	var authored: float = AUTHORED_SPEED.get(clip, 0.0) * model_scale
+	if authored <= 0.0:
+		return 1.0
+	# no clamp: any other rate slides the feet (a tiny floor only keeps a pose from freezing)
+	return maxf(planar / authored, 0.05)
 
 
 func _update_animation(delta: float) -> void:
 	if anim == null or _action_lock > 0.0 or meditating or dead:
 		return
+	var planar := Vector2(velocity.x, velocity.z).length()
+	if _held_pose != "" and planar < 0.15:
+		return
 	if moves and moves.update_animation(delta):
 		return
-	var planar := Vector2(velocity.x, velocity.z).length()
-	var wanted := "idle"
-	var scale := 1.0
-	if planar > 2.8:
-		wanted = "run"
-		scale = planar / 4.2
-	elif planar > 0.15:
-		wanted = "walk"
-		scale = clampf(planar / 1.45, 0.5, 1.5)
+	var wanted := gait_for(planar, _gait)
+	var scale := stride_scale(wanted, planar)
 	if anim.current_animation != wanted:
-		anim.play(wanted, 0.25)
+		anim.play(wanted, 0.2 if wanted != "idle" else 0.25)
 	anim.speed_scale = scale
-	if wanted != "idle" and is_on_floor():
-		_step_timer -= delta
-		if _step_timer <= 0.0:
-			_step_timer = 0.31 if wanted == "run" else 0.5
-			Audio.sfx("footstep_stone", -14.0, randf_range(0.9, 1.1))
+	_gait = wanted
+	if wanted != "idle" and is_grounded():
+		footstep_tick(wanted)
+	else:
+		_step_phase = -1.0
+
+
+## Footfall sounds in time with the feet: two per cycle of the gait clip that is
+## playing (at the start and the middle of the cycle, where the feet plant),
+## whatever its length (it differs per character) and speed_scale.
+func footstep_tick(clip: String, volume_db := -14.0) -> void:
+	if anim == null or anim.current_animation != clip or anim.current_animation_length <= 0.0:
+		_step_phase = -1.0
+		return
+	var ph := fposmod(anim.current_animation_position / anim.current_animation_length, 1.0)
+	if _step_phase >= 0.0 and _step_clip == clip:
+		for mark in [0.0, 0.5]:
+			var crossed: bool = (_step_phase < mark and ph >= mark) if ph >= _step_phase \
+					else (mark > _step_phase or mark <= ph)
+			if crossed:
+				footsteps += 1
+				Audio.sfx("footstep_stone", volume_db, randf_range(0.9, 1.1))
+				break
+	_step_phase = ph
+	_step_clip = clip
 
 
 func current_animation() -> String:

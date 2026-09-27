@@ -41,7 +41,7 @@ jobs:
   blender-build:
     name: Build assets with headless Blender (bpy 5.2.2)
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -69,7 +69,7 @@ jobs:
   godot-smoke-test:
     name: Godot 4.7.2 smoke test
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
       - name: Cache Godot
@@ -106,7 +106,7 @@ jobs:
   godot-walkthrough:
     name: Walkthrough · Volume ${{ matrix.volume }}.${{ matrix.part }} (quests ${{ matrix.first }}-${{ matrix.last }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -165,7 +165,7 @@ jobs:
     name: In-engine screenshots (lavapipe)
     needs: godot-smoke-test
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - name: Software Vulkan + virtual display

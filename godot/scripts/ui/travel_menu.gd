@@ -5,6 +5,7 @@ signal chosen(map_id: String)
 
 var open := false
 var _list: VBoxContainer
+var _mouse_before := Input.MOUSE_MODE_VISIBLE
 
 
 func _ready() -> void:
@@ -35,10 +36,17 @@ func _ready() -> void:
 
 
 func show_for(current: String, quest_map: String) -> void:
+	if open:
+		return
 	for c in _list.get_children():
+		_list.remove_child(c)
 		c.queue_free()
-	var maps: Array = Game.visited.duplicate()
-	if quest_map != "" and not maps.has(quest_map):
+	var maps: Array = []
+	for m in Game.visited:
+		# interiors are reached through their doors, never by teleport
+		if not Doors.INTERIORS.has(m) and not maps.has(m):
+			maps.append(m)
+	if quest_map != "" and not maps.has(quest_map) and not Doors.INTERIORS.has(quest_map):
 		maps.append(quest_map)
 	for m in maps:
 		var b := Button.new()
@@ -49,14 +57,18 @@ func show_for(current: String, quest_map: String) -> void:
 	open = true
 	visible = true
 	get_tree().paused = true
+	_mouse_before = Input.mouse_mode
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	Audio.sfx("ui_open", -6.0)
 
 
 func close() -> void:
+	if not open:
+		return
 	open = false
 	visible = false
 	get_tree().paused = false
+	Input.mouse_mode = _mouse_before
 
 
 func _unhandled_input(event: InputEvent) -> void:

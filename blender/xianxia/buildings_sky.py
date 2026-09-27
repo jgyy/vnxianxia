@@ -399,7 +399,7 @@ def cloud_pier(length=24.0, width=5.0):
                 util.cylinder(bm, 0.07, 0.07, 2.4, loc=(sx * (width / 2 - 0.3), y - 1.5, 1.2), segs=6)
                 util.sphere(bm_l, 0.25, loc=(sx * (width / 2 - 0.3), y - 1.5, 2.6), segs=10, rings=6)
     objs += [B.obj("Posts", bm, sm["gold"], uv=1.0, smooth=True), B.obj("Lamps", bm_l, sm["lamp"], uv=None, smooth=True)]
-    objs.append(util.collider("Pier", (width, length, 0.8), (0, -length / 2, -0.36)))
+    objs.append(util.collider("PierDeck", (width, length, 0.8), (0, -length / 2, -0.36)))
     for sx in (-1, 1):
         objs.append(util.collider("Edge", (0.4, length, 1.1), (sx * (width / 2 - 0.3), -length / 2, 0.55)))
     return objs

@@ -463,7 +463,7 @@ def hidden_vault():
     for k in range(40):
         x = rnd.uniform(-2.6, 2.6)
         y = rnd.uniform(-1.5, 2.4)
-        util.cylinder(bm, rnd.uniform(0.05, 0.09), rnd.uniform(0.05, 0.09), 0.02, loc=(x, y, 0.011), segs=8)
+        util.cylinder(bm, rnd.uniform(0.05, 0.09), rnd.uniform(0.05, 0.09), 0.02, loc=(x, y, 0.011 + 0.004 * (k % 6)), segs=8)
     objs.append(util.mesh_object("LooseGold", bm, gold))
     objs += _place(lands.spirit_stone(seed=17), (-2.4, -1.8, 0.0), scale=1.2)
     objs += _place(lands.spirit_stone(seed=23), (2.5, -1.6, 0.0), yaw=140, scale=0.9)

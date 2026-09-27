@@ -5,10 +5,20 @@ const MUSIC_DIR := "res://audio/music/"
 const SFX_DIR := "res://audio/sfx/"
 const LOOPING := ["meditate_loop", "wind_loop", "fire_loop"]
 
-var music_volume := 0.8
+var music_volume := 0.8:
+	set(v):
+		music_volume = clampf(v, 0.0, 1.0)
+		# the settings slider must be heard on the track already playing
+		if _music.size() == 2 and current_music != "" and not (_music_tween and _music_tween.is_running()):
+			_music[_active].volume_db = linear_to_db(maxf(music_volume, 0.001))
 var sfx_volume := 1.0
-var voice_volume := 1.0
+var voice_volume := 1.0:
+	set(v):
+		voice_volume = clampf(v, 0.0, 1.0)
+		if _voice:
+			_voice.volume_db = linear_to_db(maxf(voice_volume, 0.001))
 var current_music := ""
+var _music_tween: Tween
 
 var _music: Array[AudioStreamPlayer] = []
 var _active := 0
@@ -49,18 +59,27 @@ func play_music(id: String, fade := 1.5) -> void:
 	if id == current_music:
 		return
 	current_music = id
+	# a cross-fade still running would stop (in its final callback) the very
+	# player this one is about to start: finish it off first
+	if _music_tween and _music_tween.is_valid():
+		_music_tween.kill()
+		for p in _music:
+			if p != _music[_active]:
+				p.stop()
+				p.volume_db = -80.0
 	var old := _music[_active]
 	_active = 1 - _active
 	var new := _music[_active]
 	var tw := create_tween().set_parallel(true)
-	tw.tween_property(old, "volume_db", -80.0, fade)
+	_music_tween = tw
+	tw.tween_property(old, "volume_db", -80.0, maxf(fade, 0.01))
 	if id != "":
 		var s := _stream(MUSIC_DIR + id + ".ogg", id != "victory")
 		if s:
 			new.stream = s
 			new.volume_db = -40.0
 			new.play()
-			tw.tween_property(new, "volume_db", linear_to_db(maxf(music_volume, 0.001)), fade)
+			tw.tween_property(new, "volume_db", linear_to_db(maxf(music_volume, 0.001)), maxf(fade, 0.01))
 	tw.chain().tween_callback(old.stop)
 
 

@@ -178,10 +178,16 @@ def render(m: MapDef) -> str:
         '',
     ]
     counts = {}
+    used = set()
     for asset, name, pos, yaw, scale in m.items:
         if name is None:
             counts[asset] = counts.get(asset, 0) + 1
             name = f"{pascal(asset)}{counts[asset]}"
+        # Godot keeps only one of two same-named siblings: the other is orphaned
+        # (leaked, and missing from the world)
+        if name in used:
+            raise SystemExit(f"{m.map_id}: two Level nodes are named {name!r}")
+        used.add(name)
         lines.append(f'[node name="{name}" parent="Level" instance=ExtResource("{ids[asset]}")]')
         lines.append(f"transform = {xform(pos, yaw, scale)}")
         lines.append("")

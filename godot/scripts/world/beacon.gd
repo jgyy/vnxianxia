@@ -46,8 +46,10 @@ func _ready() -> void:
 	rm.emission_energy_multiplier = 3.0
 	torus.material = rm
 	_ring.mesh = torus
-	_ring.scale = Vector3(1, 0.15, 1)
-	_ring.position.y = 0.06
+	# lifted clear of the ground: a ring lying at a few centimetres z-fights
+	# with (and dips under) uneven or sloping ground and flickers as the camera moves
+	_ring.scale = Vector3(1, 0.3, 1)
+	_ring.position.y = 0.14
 	_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_ring)
 	var motes := Fx.motes(color, 30, Vector3(radius * 0.6, 0.3, radius * 0.6), 3.0, 0.03)
