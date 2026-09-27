@@ -135,6 +135,40 @@ REACT = {
 }
 
 
+# more voices per temperament, so the same reaction rarely comes round twice in a chapter
+for _cat, _more in {
+    "elder": {"good": ["Hm. That is the kind of disciple the founders hoped for.",
+                       "Kindness with a spine. Rarer than any spirit herb."],
+              "evil": ["(sets down the cup, very carefully) No.", "We will speak of this again, and you will not enjoy it."],
+              "lawful": ["Properly done. The precepts are older than all of us, for good reason.",
+                         "Just so. Fairness first, feelings after."],
+              "chaotic": ["A crooked road can still arrive. Mind that it does.", "I'll allow it. Once."],
+              "neutral": ["Sensible. Neither the soft road nor the hard one.", "Hm. I would have done much the same."]},
+    "peer": {"good": ["Of course you did. You always do. It's infuriating.", "Heart of a steamed bun, that one."],
+             "evil": ["I'll pretend I didn't see that.", "(looks away) Right. Let's go."],
+             "lawful": ["Proper as a stele, as always.", "You and the precepts. A love story."],
+             "chaotic": ["I didn't see anything. Nobody saw anything.", "That's going to cause trouble. Good trouble. Probably."],
+             "neutral": ["Hm. Fine.", "Reasonable. Annoyingly reasonable."]},
+    "junior": {"good": ["(eyes shining) That was so kind.", "I'm going to try that too. The kind thing."],
+               "evil": ["(very quietly) Is that allowed?", "(steps back) Right. Yes. Of course."],
+               "lawful": ["Properly done! I'm writing that down.", "(nodding hard) Yes. The rules. Good."],
+               "chaotic": ["(whispering) That was amazing. And terrifying.", "I'll pretend I was looking the other way."],
+               "neutral": ["Hm. Yes. Probably right.", "(thinks very hard) Yes. I agree."]},
+    "town": {"good": ["The whole street will hear of this.", "(wiping away tears) Most of your kind wouldn't have bothered."],
+             "evil": ["(pales) Of course. Of course.", "(says nothing, very carefully)"],
+             "lawful": ["That's the law, that is.", "The magistrate himself couldn't fault it."],
+             "chaotic": ["Bold. Very bold.", "Ha! Don't let the constable hear."],
+             "neutral": ["Sensible, that.", "Can't say fairer than that."]},
+    "rogue": {"good": ["Kinder than the road ever was to me.", "Hm. Somebody raised you right."],
+              "evil": ["Heh. Cold. I remember cold.", "That's the look I used to see in the water."],
+              "lawful": ["By the book. Fine.", "Proper as a magistrate. Hm."],
+              "chaotic": ["Now you're thinking like the road.", "The sect never tamed you, did it."],
+              "neutral": ["No argument.", "Hm. Works."]},
+}.items():
+    for _d, _lines in _more.items():
+        REACT[_cat][_d] = REACT[_cat][_d] + _lines
+
+
 REACT["prisoner"] = {
     "good": ["(quietly) Kinder than I was, at your age.", "Hm. She would have liked you."],
     "evil": ["I know that look. I wore it for twenty years.", "Careful. That is how it started, for me."],
@@ -144,8 +178,97 @@ REACT["prisoner"] = {
 }
 
 
+# Reactions in a character's own voice, for the people the player answers most often. They are
+# mixed with the category's pool, so nobody says the same thing a hundred times over the saga.
+REACT_NPC = {
+    NP.HAN: {"good": ["Hm. Kind. Don't let it make you slow.", "You'd give away your own sword if someone looked cold.",
+                      "That was the right thing. I'll deny saying so."],
+             "evil": ["I'll pretend I didn't see that. Once.", "(her jaw tightens) We'll talk about that later. Alone.",
+                      "That's not you. Or it didn't used to be."],
+             "lawful": ["Correct. Clean. Like a good stance.", "By the precepts. Good. They're there for a reason."],
+             "chaotic": ["Reckless. It worked. Don't tell me how.", "Breathe first, break rules second. You skipped a step."],
+             "neutral": ["Sensible.", "Fine. Moving on."]},
+    NP.WEI: {"good": ["That's the {player} I'd share my last bun with. Half of it.", "Good! Good. Elder Mo would grunt. That's a yes."],
+             "evil": ["Oh. Oh, I didn't like that. My stomach didn't like that.", "Hey. That's not... we don't do that, do we?"],
+             "lawful": ["The proper way! Very proper. I'd have done it improperly.", "Rules are like recipes. You followed it exactly."],
+             "chaotic": ["Ha! Dumpling approves. Dumpling is a sword and has no morals.", "The Law Hall's going to write you a very long letter."],
+             "neutral": ["Fair. Fair's good. Can we eat now?", "Right. That works."]},
+    NP.ZHAO: {"good": ["Soft-hearted. It's a village thing. I'm... getting used to it.", "My brother would have done the same. Don't tell anyone I said that."],
+              "evil": ["Even the Zhao clan has lines. You just stepped over one.", "(coldly) I expected better. That's new for me."],
+              "lawful": ["Proper. The Zhao clan approves, grudgingly.", "By the book. How very outer-disciple of you."],
+              "chaotic": ["Unorthodox. My grandfather would faint. I'm delighted.", "That's cheating. Brilliant cheating. Teach me later."],
+              "neutral": ["Acceptable.", "Hmph. Reasonable. Annoyingly."]},
+    NP.LAN: {"good": ["The lotus grows in mud and is not stained. You remembered.", "Kindness is slow tea. Worth the wait."],
+             "evil": ["I ran from things like that once. Don't make me run again.", "(sets down his cup) That was not the lotus way."],
+             "lawful": ["The old rules, kept well. My masters would have smiled.", "Orderly. The bamboo approves. It likes straight lines."],
+             "chaotic": ["The bamboo bends. So did you. It is not always wrong.", "Unruly. The forest is unruly too, and it thrives."],
+             "neutral": ["Hm. Balanced, like a good kettle.", "Neither here nor there. Like me, mostly."]},
+    NP.YUN: {"good": ["That is the sect I want. Thank you for being it.", "Mercy from strength. The founders would be proud."],
+             "evil": ["(very still) I will remember this, {player}. As your sect master.", "Power without a heart. We have buried that before."],
+             "lawful": ["As the precepts ask. Good.", "Order, fairly kept. That is all I ever ask of anyone."],
+             "chaotic": ["Unorthodox. I'll pretend I didn't hear the details.", "You bend rules like the wind bends pines. Mind you don't snap one."],
+             "neutral": ["Measured. Sensible.", "Hm. A careful choice."]},
+    NP.YE: {"good": ["Hm. Kinder than the Abyss would have been.", "...Good."],
+            "evil": ["I was raised on that. I don't recommend it.", "The Patriarch would have liked that. Think about it."],
+            "lawful": ["Rules. Hm. They kept you clean.", "Proper. You sect people."],
+            "chaotic": ["Good. Rules are for people who've never been hunted.", "Hm. The road taught you that."],
+            "neutral": ["Hm.", "..."]},
+    NP.TIE: {"good": ["Soft. Soft saved my people. I'm not laughing.", "Ha. You'd have made a terrible bandit. Best compliment I've got."],
+             "evil": ["I did things like that once. Ask me how that ended.", "Careful. That's how the hungry years start."],
+             "lawful": ["The constable would weep. Proper tears.", "Rules. Fine. They're not always wrong."],
+             "chaotic": ["Ha! Now you're talking like the old road.", "That's my kind of justice. The quick kind."],
+             "neutral": ["Practical. I like practical.", "Hm. No arguing with it."]},
+    NP.SAGE: {"good": ["A star just brightened. Coincidence, probably. Probably.", "Kindness. The stars notice more than they let on."],
+              "evil": ["The stars dim a little when someone does that. I've counted.", "Heaven is watching, lotus child. It keeps very long records."],
+              "lawful": ["Tidy. The heavens adore tidy.", "Proper. The celestial clerks would weep with joy."],
+              "chaotic": ["Unruly! Like a comet. Comets are my favourite.", "The stars disagree. The stars often disagree. I side with you."],
+              "neutral": ["Balanced, like a scale nobody is watching.", "Hm. The stars shrug."]},
+    NP.YAN: {"good": ["THAT'S the spirit! Thunder Peak salutes kindness! Loudly!", "Heart first, fist second. Just like the peak teaches!"],
+             "evil": ["(quietly, for once) That was ugly. I remember being ugly.", "Frenzy made me do worse. You had no excuse."],
+             "lawful": ["By the rules! Clean as a duel!", "Proper! I'd shout about it but it seems improper."],
+             "chaotic": ["HA! Thunder Peak would do exactly that!", "Wild! I like it. Don't tell the elders I said so."],
+             "neutral": ["Fair! Fair and loud!", "Hm! Sensible! Loudly sensible!"]},
+    NP.BAI: {"good": ["A kindness worth a footnote. Several footnotes.", "The chronicles are full of cruelty. Thank you for a better page."],
+             "evil": ["I shall not write that down. Some things should not be copied.", "(takes off his spectacles) I didn't see that. I refuse to have seen that."],
+             "lawful": ["Correctly done, per article three, subsection nine.", "Precedent followed. The shelves approve."],
+             "chaotic": ["Irregular! Marvellously irregular. Unrecordable, even.", "No precedent for that at all. How exciting."],
+             "neutral": ["A reasonable reading of the situation.", "Hm. Measured. Like a good index."]},
+    NP.HUA: {"good": ["A gentle hand. That's the best medicine there is.", "Good. The heart heals slower than bones. Look after yours."],
+             "evil": ["That's a wound that won't show. The worst kind.", "(stops mixing) I don't have a pill for that, {player}."],
+             "lawful": ["Proper, like a correct dose.", "By the book. Books keep healers from killing people."],
+             "chaotic": ["Unorthodox treatment. It may even work.", "Hm. Risky. Like my better remedies."],
+             "neutral": ["Sensible. Drink some water.", "Balanced. Like a good tonic."]},
+    NP.SHI: {"good": ["You didn't have to. That's why it matters.", "That's what you did for me. Thank you. Again."],
+             "evil": ["(quietly) The guards in the cages said things like that.", "Oh. I... thought you were different."],
+             "lawful": ["The proper way. I like proper. Proper has doors that open.", "Good. Rules mean someone comes looking for you."],
+             "chaotic": ["Sometimes the rules are the cage. I know.", "Ha. I'd have done that too, if I were brave."],
+             "neutral": ["That makes sense.", "Fair. I think."]},
+    NP.LU: {"good": ["I'm telling the whole gate! Twice! With improvements!", "That's going in my stories. The good ones."],
+            "evil": ["I'm... not going to tell anyone about that one.", "Oh. Oh, that's not a story I'm telling."],
+            "lawful": ["By the precepts! I know those! Well, most of them!", "Very proper. I'd bet on you for proper."],
+            "chaotic": ["Ha! I'd have lost money on that. Nobody saw it coming!", "Is that allowed? It is now, I suppose!"],
+            "neutral": ["Right. Yes. Sensible. Boring, but sensible.", "Hm. I'll bet even on that one."]},
+    NP.DU: {"good": ["Heaven bless you. I'll write that down too.", "Kindly done. The town remembers kindness."],
+            "evil": ["I'll write it down. I write everything down, cultivator.", "(pen stops) That goes in the book. The bad page."],
+            "lawful": ["By the law. That's all I ever ask.", "Proper. The magistrate will sleep better."],
+            "chaotic": ["That's... not in the book. I'll invent a page.", "Unlawful, strictly. Effective, though."],
+            "neutral": ["Fair enough. Noted.", "Reasonable. Written down."]},
+    NP.GU: {"good": ["Mercy. I forgot how it looks.", "Kinder than the Law Hall ever was."],
+            "evil": ["I know that road. I walked it for twenty years.", "Careful. That is how it starts."],
+            "lawful": ["Correct. I taught that once. I should have listened.", "The law, kept. It matters more than I let it."],
+            "chaotic": ["The precepts would object. I have lost the right to.", "Hm. Unorthodox."],
+            "neutral": ["Hm.", "As you like."]},
+}
+
+
 def reaction(nid, law, good, salt=(), q=None):
-    pool = REACT[category(nid, q)][direction(law, good)]
+    d = direction(law, good)
+    pool = REACT[category(nid, q)][d]
+    own = REACT_NPC.get(nid, {}).get(d, [])
+    # Gu's own lines are a prisoner's: only after he is unmasked
+    if nid == NP.GU and category(nid, q) != "prisoner":
+        own = []
+    pool = list(own) + list(pool)
     return pool[h(nid, law, good, *salt) % len(pool)]
 
 
@@ -174,7 +297,7 @@ GREET = {
                                  "You're so proper lately. It's unnerving. Do something wrong. Once."]),
     ],
     "junior": [
-        ({"min_realm": "Nascent Soul"}, ["(bows so deeply they nearly topple) {senior}! This junior greets... I mean, hello. Your qi makes my hair stand up.",
+        ({"min_realm": "Nascent Soul"}, ["(bows so deeply it nearly ends in a tumble) {senior}! This junior greets... I mean, hello. Your qi makes my hair stand up.",
                                          "(bows three times, then a fourth to be safe) {senior}! Sorry. You're very high up now. It's hard not to bow."]),
         ({"align": "*_evil"}, ["(steps back half a pace) {senior}... people say things about you. I don't believe them. Mostly.",
                                "(quietly) Hello, {senior}. I'll be good. I promise."]),
@@ -183,7 +306,7 @@ GREET = {
     ],
     "town": [
         ({"min_realm": "Soul Transformation"}, ["(kneels in the road) Immortal one! Ah, sorry, it's you. Sorry. Habit. You shine a bit now.",
-                                                "(starts to kneel, then catches themself) Heavens. You feel like weather now, did you know?"]),
+                                                "(starts to kneel, then thinks better of it) Heavens. You feel like weather now, did you know?"]),
         ({"align": "*_evil"}, ["(nervously) W-what can I do for you, immortal? Anything. Anything at all.",
                                "(forcing a smile) Immortal. We've paid, haven't we? We've paid."]),
         ({"align": "*_good"}, ["Everyone knows your kindness. Here, have a peach.",

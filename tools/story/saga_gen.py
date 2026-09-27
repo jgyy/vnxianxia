@@ -43,6 +43,7 @@ from .choices import NEW as CHOICES
 from .dsl import N, P, _lines, chapter, collect, defeat, interact, meditate, quest, reach, talk
 from .dsl import speakers as dsl_speakers
 from .npcs import DEMON as NP_DEMON
+from .npcs import HEI as NP_HEI
 from .npcs import MINOR
 from .npcs import NPCS
 
@@ -201,24 +202,24 @@ TXT = {
 
 PATTERNS = {
     "orders": [["T:giver", "R:p1", "T:ally@p1"], ["T:giver", "R:p1", "I:p1", "T:ally@p1"]],
-    "gather": [["T:giver", "G:p1", "T:back"], ["T:giver", "G:p1", "F:p1", "T:back"], ["T:giver", "R:p1", "G:p1", "T:back"]],
+    "gather": [["T:giver", "G:p1", "T:back"], ["T:giver", "G:p1", "F:p1", "T:back"], ["T:giver", "R:p1", "I:p1", "G:p1", "T:back"]],
     "hunt": [["R:p1", "F:p1", "G:p1", "T:ally@p1"], ["T:giver", "F:p1", "G:p1", "T:back"]],
     "battle": [["T:ally@p1", "F:p1", "F2:p2", "R:p3"], ["F:p1", "F2:p1", "T:ally@p2"]],
     "probe": [["R:p1", "I:p1", "T:ally@p1"], ["T:giver", "R:p1", "I:p1", "G:p2", "T:back"], ["R:p1", "I:p1", "G:p1", "T:ally@p2"]],
     "social": [["T:giver", "T:ally", "T:third"]],
     "train": [["T:giver", "F:p1", "T:back"], ["T:giver", "M:p1", "F:p2", "T:back"]],
-    "cultivate": [["T:giver", "M:p1", "T:back"], ["R:p1", "M:p1", "T:ally@p1"]],
+    "cultivate": [["T:giver", "M:p1", "T:back"], ["R:p1", "I:p1", "M:p1", "T:ally@p1"]],
     "defend": [["T:giver", "I:p1", "F:p1", "F2:p2", "T:ally@p2"], ["T:giver", "F:p1", "F2:p1", "T:back"]],
     "delve": [["R:p1", "G:p1", "I:p1", "F:p2", "R:p3"], ["R:p1", "F:p1", "I:p2", "T:ally@p2"]],
     "rescue": [["R:p1", "F:p1", "I:p1", "T:ally@p1"]],
     "duel": [["T:giver", "F:p1", "T:back"]],
     "boss": [["R:p1", "X:p1", "I:p1", "T:ally@p2"], ["R:p1", "X:p1", "T:ally@p2"]],
     "break": [["T:giver", "G:p1", "M:p2", "T:third"]],
-    "stage": [["T:giver", "M:p1", "T:back"], ["R:p1", "M:p1", "T:ally@p1"]],
-    "journey": [["T:giver", "R:p1", "T:ally@p1"]],
+    "stage": [["T:giver", "M:p1", "T:back"], ["R:p1", "I:p1", "M:p1", "T:ally@p1"]],
+    "journey": [["T:giver", "R:p1", "I:p1", "T:ally@p1"]],
     "festival": [["T:giver", "G:p1", "I:p2", "T:ally"]],
-    "chase": [["R:p1", "F:p2", "R:p3", "T:ally@p3"]],
-    "interlude": [["T:giver", "T:ally"], ["T:giver", "R:p1", "T:ally@p1"]],
+    "chase": [["R:p1", "F:p2", "R:p3", "I:p3", "T:ally@p3"]],
+    "interlude": [["T:giver", "T:ally"], ["T:giver", "R:p1", "I:p1", "T:ally@p1"]],
     "council": [["R:p1", "T:ally@p1", "T:third@p1"]],
 }
 
@@ -239,12 +240,16 @@ PREFER_BONUS = 10
 # an NPC is met at home at most this often; after that, only at their haunts
 HOME_CAP = 30
 # percentages of the deterministic hash
-REACH_TO_INTERACT = 55   # an arrival at a place with a fitting prop becomes an investigation of it
+REACH_TO_INTERACT = 85   # an arrival at a place with a fitting prop becomes an investigation of it
 LOCAL_PROP = 60          # an interact step examines the place's own prop rather than the chapter's
-LOCAL_ITEM = 45          # a gather step collects what lies around the place rather than the chapter's item
+LOCAL_ITEM = 60          # a gather step collects what lies around the place rather than the chapter's item
 TWO_COMPANIONS = 35      # a conversation has two companions, not one
 COND_LINE = 30           # a companion reacts to who the player has become
 ASIDE_RATE = 45          # a companion adds an aside to the reaction after a moral choice
+SOLEMN_WORDS = {"funeral", "grave", "graves", "mourn", "mourning", "mourns", "grief", "grieving", "buried", "burial",
+                "died", "dying", "dead", "death", "tomb", "tablet", "tablets", "farewell", "farewells", "wake", "ashes",
+                "weep", "weeping", "wept", "tears", "lost", "memorial", "remember", "remembering"}
+SEARCH_RE = re.compile(r"^(Search|Examine|Inspect|Investigate|Check|Study|Look (at|over|through)|Go through) ")
 
 XP_BASE = [0, 110, 280, 480, 760, 1060, 1450, 1900, 2450, 3100, 3800]
 
@@ -298,6 +303,8 @@ class Gen:
         self.used_titles = set()
         # how often each (map, marker) has hosted an objective so far, for spreading the saga out
         self.use = {}
+        # how often each collectible has been gathered so far
+        self.items = {}
 
     def rotor(self, name, pool):
         if name not in self.rot:
@@ -709,6 +716,14 @@ class Gen:
             item = ctx["kw"].get("item")
             if item:
                 prefer |= {c for c in cands if item in PL.ITEMS_AT.get(m, {}).get(c, ())}
+            else:
+                # somewhere with something of its own to find, the saga's rarest finds first
+                local = {c: [it for it in PL.ITEMS_AT.get(m, {}).get(c, ()) if ctx["vol"] >= PL.ITEM_FROM_VOLUME.get(it, 1)]
+                         for c in cands}
+                rare = sorted((self.items.get(it, 0) for c in cands for it in local[c]))
+                if rare:
+                    cut = rare[len(rare) // 3]
+                    prefer |= {c for c in cands if any(self.items.get(it, 0) <= cut for it in local[c])}
         mk = self.best(m, cands, q, ("place", st["t"], role), prefer=prefer)
         ctx["roles"].setdefault(key, mk)
         return mk
@@ -727,9 +742,11 @@ class Gen:
         for idx, st in enumerate(steps):
             seg = st.get("seg")
             here = PL.PROPS_AT.get(st["map"], {}).get(st.get("marker"), [])
-            if st["t"] == "R" and here and not (seg and seg["text"]) and (st["map"], st["marker"]) not in has_i \
-                    and h(q, idx, "r2i") % 100 < REACH_TO_INTERACT:
-                st = dict(st, t="I", prop=here[h(q, idx, "which") % len(here)], converted=True)
+            # an outline's own "Search the ..." / "Examine the ..." arrival is an investigation already
+            searching = bool(seg and seg["text"] and SEARCH_RE.match(seg["text"]))
+            if st["t"] == "R" and here and (st["map"], st["marker"]) not in has_i and (
+                    searching or (not (seg and seg["text"]) and h(q, idx, "r2i") % 100 < REACH_TO_INTERACT)):
+                st = dict(st, t="I", prop=here[h(q, idx, "which") % len(here)], converted=True, keep_text=searching)
                 has_i.add((st["map"], st["marker"]))
             if st["t"] == "I" and "prop" not in st:
                 prop = infer_prop(seg["text"] if seg else None, st["map"]) or kw.get("prop")
@@ -771,10 +788,11 @@ class Gen:
             local = [it for it in PL.ITEMS_AT.get(st["map"], {}).get(st.get("marker"), [])
                      if ctx["vol"] >= PL.ITEM_FROM_VOLUME.get(it, 1)]
             if local and h(q, idx, "localitem") % 100 < LOCAL_ITEM:
-                item = local[h(q, idx, "li") % len(local)]
+                item = min(local, key=lambda it: (self.items.get(it, 0), h(q, idx, it)))
             else:
                 item = spec["items"][h(q, idx, "item") % len(spec["items"])]
         st["item"] = item
+        self.items[item] = self.items.get(item, 0) + 1
         return item
 
     def _noun(self, st, ctx, idx):
@@ -859,7 +877,7 @@ class Gen:
             prop = st["prop"]
             generic = st.get("converted") or prop not in (spec["props"] + [kw.get("prop")])
             thing = (None if generic else (kw.get("thing") or spec["things"].get(prop))) or THINGS[prop]
-            if seg and seg["text"] and not st.get("converted"):
+            if seg and seg["text"] and (st.get("keep_text") or not st.get("converted")):
                 text = seg["text"]
             else:
                 verbs = PROP_VERBS[prop]
@@ -1036,6 +1054,8 @@ class Gen:
                 tiers.append(local)
             if quest_npcs and r % 2 == 0:
                 tiers.append(quest_npcs)
+            if rovers and 45 <= r < 60:
+                tiers.append(rovers)
             tiers += [cast, quest_npcs, local, rovers, map_minor, near_cast]
             pick = None
             for tier in tiers:
@@ -1047,6 +1067,9 @@ class Gen:
             if pick is None:
                 break
             out.append(pick)
+        # a demonic cultivator seldom comes alone: an acolyte of the Blood Moon stands at their shoulder
+        if villain and len(out) < want + 1 and self.active(NP_HEI, q) and NP_HEI not in taken and h(salt, "hei") % 2:
+            out.append(NP_HEI)
         return out
 
     def _ensemble(self, objs, steps, ctx):
@@ -1093,11 +1116,11 @@ class Gen:
         if gcat == "demonic":
             pool = EN.CONFRONT.get(MO.category(c1, q), EN.CONFRONT["peer"])
             new.append((c1, fmt(self.rotor("confront/%s" % MO.category(c1, q), pool).next(), giver=gname)))
-        elif pair and h(q, oi, "pair") % 100 < 55:
+        elif pair and h(q, oi, "pair") % 100 < 55 and not ctx["words"] & SOLEMN_WORDS:
             a, b = self.rotor("pair/%s/%s" % (c1, giver), pair).next()
-            new += [(c1, fmt(a, giver=gname, comp=cname)), (giver, fmt(b, giver=gname, comp=cname))]
+            new += [(c1, fmt_to(a, giver, giver=gname, comp=cname)), (giver, fmt_to(b, c1, giver=gname, comp=cname))]
         else:
-            intent, line = self._chime(c1, scene, q, giver)
+            intent, line = self._chime(c1, self._mood(scene, ctx), q, giver)
             new.append((c1, fmt(line, giver=gname, comp=cname, place=PL.name(o["map"], o["at"] or
                                                                             NPCS[giver]["home"]["marker"]))))
             r = h(q, oi, "resp") % 100
@@ -1107,14 +1130,14 @@ class Gen:
             if r < 55:
                 pool = EN.RESP_GIVER[group].get(intent)
                 if pool:
-                    new.append((giver, fmt(self.rotor("rg/%s/%s" % (group, intent), pool).next(), comp=cname,
+                    new.append((giver, fmt_to(self.rotor("rg/%s/%s" % (group, intent), pool).next(), c1, comp=cname,
                                            giver=gname)))
             elif r < 85:
                 new.append((P, self.rotor("rp/" + intent, EN.RESP_PLAYER[intent]).next()))
         for c2 in comps[1:]:
             if len(new) + 1 > room:
                 break
-            intent, line = self._chime(c2, scene, q, giver)
+            intent, line = self._chime(c2, self._mood(scene, ctx), q, giver)
             new.append((c2, fmt(line, giver=gname, comp=short(c2), place=PL.name(o["map"], o["at"] or
                                                                                  NPCS[giver]["home"]["marker"]))))
         new = new[:room]
@@ -1129,7 +1152,15 @@ class Gen:
         o["dialogue"] = dl[:at] + ins + dl[at:]
         if not any(ln["speaker"] == P and not ln.get("cond") for ln in o["dialogue"]) and len(plain) + len(new) < 7 \
                 and len(o["dialogue"]) < 10:
-            o["dialogue"].append({"speaker": P, "text": self.rotor("reply", FL.REPLY).next()})
+            pool = FL.AFTER_REPLY if scene is EN.END else FL.REPLY if key == "giver" else FL.MEET_REPLY
+            o["dialogue"].append({"speaker": P, "text": self.rotor("close/" + key, pool).next()})
+
+    @staticmethod
+    def _mood(scene, ctx):
+        """The intents that suit this beat: nobody jokes or teases at a graveside."""
+        if ctx["words"] & SOLEMN_WORDS:
+            return tuple(i for i in scene if i not in ("joke", "tease"))
+        return scene
 
     def _chime(self, nid, scene, q, giver):
         """One of ``nid``'s own lines whose intent suits the scene (before or after the action)."""
@@ -1212,6 +1243,23 @@ def _era_ok(entry, q):
 
 def short(nid):
     return SHORT.get(nid, NPCS[nid]["name"])
+
+
+def vocative(nid):
+    """How someone is addressed: "Hermit", "Sect Master", not "the hermit"."""
+    s = short(nid)
+    if s.startswith("the "):
+        s = s[4:]
+    return _cap(s)
+
+
+def fmt_to(text, addressee, **slots):
+    """fmt, with the name of the person spoken to in the vocative where the line addresses them
+    ("Please stop talking, Hermit." rather than "..., the hermit.")."""
+    v = vocative(addressee)
+    text = re.sub(r", \{(comp|giver)\}", ", " + v.replace("\\", ""), text)
+    text = re.sub(r"^\{(Comp|Giver)\}([,!])", v + r"\2", text)
+    return fmt(text, **slots)
 
 
 def is_group(o):

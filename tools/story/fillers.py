@@ -35,6 +35,10 @@ REPLY = [
     "Then I'd better start walking.", "Say no more.", "Already going.",
     "I'll be careful. Mostly.", "You can count on me.", "I'll report back when it's done.",
     "Easy enough. Famous last words, I know.",
+    "I'll see to it before the next bell.", "Then I'll go now, while the light holds.", "Consider it mine.",
+    "I'll bring back whatever I find.", "If it can be done, I'll do it.", "Give me until dusk.",
+    "I know the way. More or less.", "Leave the worrying to me for once.", "Right. Deep breath. Going.",
+    "I won't come back empty-handed.",
 ]
 
 # the protagonist's answers when coming back

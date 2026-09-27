@@ -302,7 +302,7 @@ MARKERS = {
         "MagistrateHall": ("the yamen", "mpr", "official", []),
         "Temple": ("the town temple", "mdpr", "sacred",
                    ["The town temple smells of clean incense. A sparrow nests in the eaves, bold as a magistrate."]),
-        "Riverside": ("the docks", "mfgr", "river",
+        "Riverside": ("the docks", "mfgrp", "river",
                       ["The Qing River slides past the docks, brown and patient. Old Pan's ferry creaks at its rope."]),
         "BackAlley": ("the back alley", "mfgr", "alley",
                       ["The back alley is narrow and damp, and every window in it is watching you."]),
@@ -310,9 +310,9 @@ MARKERS = {
                       ["Crates stand in towers across the guild warehouse yard, every one stamped twice and counted thrice."]),
         "Graveyard": ("the hill graves", "mfgdpr", "tomb",
                       ["The hill graves are quiet now. Fresh flowers lie on the tablets, and the blood-ink is long gone."]),
-        "Farmland": ("the terraced fields", "mfgr", "fields",
+        "Farmland": ("the terraced fields", "mfgrp", "fields",
                      ["The terraced fields step down to the river. Farmers straighten, shade their eyes, and wave."]),
-        "WatchTower": ("the watchtower", "mdr", "gate high",
+        "WatchTower": ("the watchtower", "mdrp", "gate high",
                        ["From the watchtower the fields stretch gold to the hills, and the road runs white toward the mountain."]),
         # -- the expanded town
         "NorthGate": ("the north gate", "mfpr", "gate",
@@ -387,7 +387,7 @@ MARKERS = {
         "Canal": ("the canal walk", "mdr", "river quiet",
                   ["Willows trail their hair in the canal. A washerwoman beats cloth on the steps and hums.",
                    "The canal walk is quiet and green. Lantern boats drift past, even by day."]),
-        "Orphanage": ("the temple orphanage", "mgr", "sacred",
+        "Orphanage": ("the temple orphanage", "mgrp", "sacred",
                       ["Children chase each other round the temple orphanage courtyard, shrieking like happy sparrows.",
                        "Washing hangs across the orphanage courtyard, dozens of tiny tunics in a row."]),
         "PostStation": ("the post station", "mpr", "official gate",
@@ -408,7 +408,7 @@ MARKERS = {
     },
     # ------------------------------------------------------------------ the Blood Moon Abyss
     "blood_abyss": {
-        "CanyonEntrance": ("the canyon mouth", "mfr", "canyon",
+        "CanyonEntrance": ("the canyon mouth", "mfrp", "canyon",
                            ["The crimson canyon opens its mouth. Warm, wet air rises from below, tasting of copper."]),
         "BoneField": ("the field of bones", "mfgdr", "bones open",
                       ["Bones crunch underfoot on the old plain. Dead trees claw at a sky the colour of a bruise.",
@@ -668,7 +668,8 @@ PROPS_AT = {
         "ForestGate": ["stone_stele"],
     },
     "qingshi_town": {
-        "TownGate": ["notice_board"], "Well": ["wishing_tree"], "MagistrateHall": ["notice_board"],
+        "TownGate": ["notice_board"], "Well": ["wishing_tree"], "Riverside": ["fishing_boat"],
+        "WatchTower": ["bronze_bell"], "Farmland": ["herb_drying_rack"], "Orphanage": ["offering_table"], "MagistrateHall": ["notice_board"],
         "Temple": ["offering_table"], "Warehouse": ["treasure_chest", "abacus_desk"],
         "Graveyard": ["ancestral_tablet"], "NorthGate": ["war_drum"], "SouthMarket": ["spirit_lamp"],
         "Granary": ["abacus_desk"], "SilkWorkshop": ["loom"], "DyeYard": ["loom"], "Pharmacy": ["medicine_cabinet"],
@@ -681,7 +682,7 @@ PROPS_AT = {
         "ExecutionGround": ["notice_board"],
     },
     "blood_abyss": {
-        "ObeliskRing": ["demon_obelisk"], "PrisonCages": ["prison_cage"], "DemonCamp": ["war_drum", "map_table"],
+        "CanyonEntrance": ["stone_stele"], "ObeliskRing": ["demon_obelisk"], "PrisonCages": ["prison_cage"], "DemonCamp": ["war_drum", "map_table"],
         "AltarOfBlood": ["blood_altar"], "HeartMirror": ["bronze_mirror"], "BoneBridge": ["chain_anchor"],
         "SlaveMines": ["prison_cage", "chain_anchor"], "MineShaft": ["chain_anchor"],
         "ForgeOfSouls": ["soul_lantern", "bronze_ding"], "Barracks": ["war_drum", "map_table"],
