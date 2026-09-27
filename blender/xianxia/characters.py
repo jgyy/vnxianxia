@@ -402,11 +402,6 @@ def flat_ribbon(name, path, width, mat, outward_fn, samples=6, u_scale=1.0):
 # --------------------------------------------------------------------------
 # head
 # --------------------------------------------------------------------------
-def head_shape(d, fem, jaw, features=None):
-    """Unit-sphere direction -> point on the built head (unit head space: world = centre + q * radii)."""
-    return face_rig.head_shape(d, fem, jaw, features)
-
-
 def build_head(cfg, J, mats, s):
     """The head, face, eyes, mouth interior, lashes, brows, ears and neck as one "Head" mesh.
 
@@ -548,7 +543,8 @@ def build_outfit(cfg, J, mats, s):
                                      fem)
         parts.append(("hand", nails, side))
         parts.append(("hand", o, side))
-    # --- collar trims (the neck itself is part of the head mesh, see build_head) (left lapel over right: wearer's left crosses to the right hip)
+    # (the neck itself is part of the head mesh, see build_head)
+    # --- collar trims (left lapel over right: wearer's left crosses to the right hip)
     back_neck = V((0, 0.07, 1.53))
     outer = [back_neck, V((0.055, 0.045, 1.53)), V((0.075, -0.01, 1.51)), V((0.045, -0.075, 1.47)),
              V((-0.01, -0.12, 1.38)), V((-0.07, -0.13, 1.27)), V((-0.12, -0.11, 1.16)),

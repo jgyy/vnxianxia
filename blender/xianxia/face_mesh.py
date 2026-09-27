@@ -32,10 +32,9 @@ face, the neck continuing below), a cylindrical SIDE island (lon 80..280 deg,
 seam-free at the back), a CROWN island above b = 50 deg and two EAR boxes.
 Mouth bag, nasal and conjunctival cavity faces use slot ``Mouth_Inner``.
 
-Every vertex keeps (region, loop parameter s, loop index) in ``Builder.attr``
-(region: see REGION; s: 0..1 around an O-grid loop; loop index 0 = the
-opening, negative = inside the cavity) and the O-grid vertex ids stay in
-``HeadMesh.ogrids``; face_shapes drives the lid and lip keys from them.
+The O-grid loops (vertex ids per loop, the loop parameter s of each radial
+line: 0..1 around the opening) stay in ``HeadMesh.ogrids``; face_shapes
+drives the lid and lip keys from them.
 """
 import math
 
@@ -47,10 +46,6 @@ from . import face_chart as fc
 from . import face_eyes, face_uv
 from . import face_landmarks as fl
 from . import face_surface as fs
-
-REGION = dict(skin=0, lid_L=1, lid_R=2, mouth=3, nostril_L=4, nostril_R=5, eye_L=6, eye_R=7,
-              teeth_up=8, teeth_lo=9, tongue=10, lash_L=11, lash_R=12, brow_L=13, brow_R=14,
-              tear_L=15, tear_R=16, caruncle_L=17, caruncle_R=18, ear=19)
 
 # lid ring index -> (weight of the sculpted surface, extra weight at the canthi)
 EYE_SURFACE_BLEND = {4: (0.0, 0.3), 5: (0.0, 0.6), 6: (0.15, 0.9), 7: (0.55, 1.0)}
@@ -93,7 +88,6 @@ class Builder:
     def __init__(self):
         self.pos = []           # np.array(3) or None (to be cast)
         self.chart = []         # (lon, b) for cast vertices
-        self.attr = []          # (region, s, ring)
         self.faces = []         # (verts, slot, group)
         self.groups = []        # (outward reference fn(centroid) -> vector, representative face index)
         self.group = self.new_group(lambda c: c)
@@ -108,10 +102,9 @@ class Builder:
         """The next face added is used to decide the current group's winding."""
         self.groups[self.group][1] = len(self.faces)
 
-    def vert(self, pos=None, chart=None, region=0, s=0.0, ring=0.0):
+    def vert(self, pos=None, chart=None):
         self.pos.append(None if pos is None else np.asarray(pos, np.float64))
         self.chart.append(chart)
-        self.attr.append((region, s, ring))
         return len(self.pos) - 1
 
     def face(self, vs, slot=SLOT_FACE):
@@ -253,7 +246,7 @@ class HeadMesh:
         st = L["stomion"][2]
         jst = row_at(mid, st)
         xm = p.mouth_w * 0.5 + 10.0
-        rect["mouth"] = (col_at(jst, -xm), col_at(jst, xm), row_at(mid, L["labrale_inferius"][2] - 9.5),
+        rect["mouth"] = (col_at(jst, -xm), col_at(jst, xm), row_at(mid, L["labrale_inferius"][2] - 15.0),
                          row_at(mid, p.subnasale - 5.0), 1)
         for side, sx in ((1, "L"), (-1, "R")):
             nc = np.array(self.nostril_centre(side))
@@ -395,12 +388,10 @@ class HeadMesh:
         B = self.B
         per, s, per_chart = self._perimeter(rect)
         rings = self.eye_rings(side, s)
-        region = REGION["lid_L" if side > 0 else "lid_R"]
         n_exp = len(rings)
         ring_ids = []
-        for k, pts in enumerate(rings):
-            ring_ids.append([B.vert(pos=pts[m], region=region, s=s[m], ring=k - face_eyes.EyeLids.MARGIN_RING)
-                             for m in range(len(s))])
+        for pts in rings:
+            ring_ids.append([B.vert(pos=q) for q in pts])
         # blend loops: chart interpolation from the last lid loop to the rectangle
         last = rings[-1]
         lon_e, b_e = fc.chart_of_points(last)
@@ -409,9 +400,7 @@ class HeadMesh:
             f = (k / (n_blend + 1)) ** 1.15
             lon = lon_e + (per_chart[:, 0] - lon_e) * f
             b = b_e + (per_chart[:, 1] - b_e) * f
-            ring_ids.append([B.vert(chart=(lon[m], b[m]), region=region, s=s[m],
-                                    ring=n_exp - face_eyes.EyeLids.MARGIN_RING + k - 1)
-                             for m in range(len(s))])
+            ring_ids.append([B.vert(chart=(lon[m], b[m])) for m in range(len(s))])
         ring_ids.append(per)
         slots = [SLOT_INNER] + [SLOT_FACE] * (len(ring_ids) - 2)
         c = np.array(fl.eye_geometry(self.p, side)["centre"])
@@ -461,22 +450,20 @@ class HeadMesh:
         per, s, per_chart = self._perimeter(rect)
         loops, contact, upper = self.mouth_loops(s)
         ring_ids = []
-        for k, pts in enumerate(loops):
-            ring_ids.append([B.vert(pos=pts[m], region=REGION["mouth"], s=s[m], ring=k - contact)
-                             for m in range(len(s))])
+        for pts in loops:
+            ring_ids.append([B.vert(pos=q) for q in pts])
         lon_e, b_e = fc.chart_of_points(loops[-1])
         n_blend = 3
         for k in range(1, n_blend + 1):
             f = (k / (n_blend + 1)) ** 1.1
             lon = lon_e + (per_chart[:, 0] - lon_e) * f
             b = b_e + (per_chart[:, 1] - b_e) * f
-            ring_ids.append([B.vert(chart=(lon[m], b[m]), region=REGION["mouth"], s=s[m],
-                                    ring=len(loops) - contact + k - 1) for m in range(len(s))])
+            ring_ids.append([B.vert(chart=(lon[m], b[m])) for m in range(len(s))])
         ring_ids.append(per)
         # close the mouth bag with a fan
         inner = ring_ids[0]
         cen = np.mean([B.pos[v] for v in inner], axis=0) + np.array([0.0, 4.0, 0.0])
-        cv = B.vert(pos=cen, region=REGION["mouth"], s=0.0, ring=-contact - 1)
+        cv = B.vert(pos=cen)
         slots = [SLOT_INNER] * contact + [SLOT_FACE] * (len(ring_ids) - 1 - contact)
         self._connect(ring_ids, slots, lambda c: np.array([0.0, -1.0, 0.0]), contact + 2, fan_centre=cv)
         self.ogrids.append(("mouth", dict(rings=ring_ids, s=s, contact=contact, upper=upper, centre=cv)))
@@ -496,29 +483,26 @@ class HeadMesh:
         py = c[1] + (ex * math.sin(rot) * side + ey * math.cos(rot))
         pts = np.stack([px, py, np.full_like(px, c[2])], axis=-1)
         lon_c, b_c = fc.chart_of_points(pts)
-        region = REGION["nostril_L" if side > 0 else "nostril_R"]
         ring_ids = []
         rings_chart = []
         for f in (0.0, 0.4, 0.72):
             lon = lon_c + (per_chart[:, 0] - lon_c) * f
             b = b_c + (per_chart[:, 1] - b_c) * f
             rings_chart.append((lon, b))
-        opening = [B.vert(chart=(rings_chart[0][0][m], rings_chart[0][1][m]), region=region, s=s[m], ring=0)
+        opening = [B.vert(chart=(rings_chart[0][0][m], rings_chart[0][1][m]))
                    for m in range(len(s))]
         B.cast_pending(self.surf, self.band_top)
         op = np.array([B.pos[v] for v in opening])
         cen = op.mean(axis=0)
         tunnel = []
-        for k, (sh, up, back) in enumerate(((0.55, 7.0, 3.5), (0.8, 3.0, 1.0))):
-            tunnel.append([B.vert(pos=cen + (op[m] - cen) * sh + np.array([0, back, up]), region=region,
-                                  s=s[m], ring=-(2 - k)) for m in range(len(s))])
+        for sh, up, back in ((0.55, 7.0, 3.5), (0.8, 3.0, 1.0)):
+            tunnel.append([B.vert(pos=cen + (op[m] - cen) * sh + np.array([0, back, up])) for m in range(len(s))])
         ring_ids = tunnel + [opening]
         for f_idx in (1, 2):
             lon, b = rings_chart[f_idx]
-            ring_ids.append([B.vert(chart=(lon[m], b[m]), region=region, s=s[m], ring=f_idx)
-                             for m in range(len(s))])
+            ring_ids.append([B.vert(chart=(lon[m], b[m])) for m in range(len(s))])
         ring_ids.append(per)
-        cv = B.vert(pos=cen + np.array([0, 5.0, 10.0]), region=region, s=0.0, ring=-3)
+        cv = B.vert(pos=cen + np.array([0, 5.0, 10.0]))
         slots = [SLOT_INNER, SLOT_FACE] + [SLOT_FACE] * (len(ring_ids) - 3)
         B.cast_pending(self.surf, self.band_top)
         self._connect(ring_ids, slots, lambda cc: np.array([0.0, -0.3, -1.0]), 2, fan_centre=cv)
@@ -547,11 +531,6 @@ class HeadMesh:
                     B.pos[v] = q
 
     # ------------------------------------------------------------------ output
-    def arrays(self):
-        pos = np.array(self.B.pos)
-        attr = np.array(self.B.attr, np.float64)
-        return pos, attr
-
     def to_bmesh(self, scale, centre):
         """bmesh in world units: world = centre + pos_mm * 0.001 * scale; with UVs and fx attributes."""
         B = self.B

@@ -1,4 +1,4 @@
-"""Facial rig: eye bones, head/neck skin weights and a head-surface lookup for the hair.
+"""Facial rig: eye bones and the head/neck skin weights.
 
 Bones added to the character armature (children of ``head``; the game's
 existing bones are untouched):
@@ -21,7 +21,6 @@ import bpy
 import numpy as np
 from mathutils import Vector
 
-from . import face_chart as fc
 from . import face_landmarks as fl
 
 EYE_BONES = ("eye.L", "eye.R")
@@ -79,55 +78,3 @@ def assign_weights(obj, groups):
         for i, val in zip(np.asarray(idx).tolist(), np.asarray(w).tolist()):
             if val > 1e-3:
                 vg.add([i], float(val), "REPLACE")
-
-
-# --------------------------------------------------------------------------
-# head surface lookup (for the hair workstream's scalp / beard placement)
-# --------------------------------------------------------------------------
-class SurfaceTable:
-    """Radial distance of the head surface from the centre on a (lon, lat) grid (mm)."""
-
-    def __init__(self, surf, n_lon=145, n_lat=91):
-        self.lons = np.linspace(-math.pi, math.pi, n_lon)
-        self.lats = np.linspace(-math.pi / 2 + 0.02, math.pi / 2 - 0.01, n_lat)
-        LON, LAT = np.meshgrid(self.lons, self.lats)
-        _, t = fc.cast(surf.F, LON.ravel(), LAT.ravel(), centre_only=True)
-        self.t = t.reshape(LAT.shape)
-
-    def radius(self, lon, lat):
-        i = np.interp(lon, self.lons, np.arange(len(self.lons)))
-        j = np.interp(lat, self.lats, np.arange(len(self.lats)))
-        i0, j0 = int(min(i, len(self.lons) - 2)), int(min(j, len(self.lats) - 2))
-        fi, fj = i - i0, j - j0
-        t = self.t
-        return ((t[j0, i0] * (1 - fi) + t[j0, i0 + 1] * fi) * (1 - fj) +
-                (t[j0 + 1, i0] * (1 - fi) + t[j0 + 1, i0 + 1] * fi) * fj)
-
-
-ACTIVE = {}
-
-
-def set_active(p: fl.FaceParams, surf):
-    ACTIVE["key"] = p
-    ACTIVE["table"] = SurfaceTable(surf)
-    ACTIVE["head_mm"] = [r for r in p.head]
-
-
-def head_shape(d, fem, jaw, features=None):
-    """Unit-sphere direction -> head surface point in unit head space (world = centre + q * radii).
-
-    Uses the head built last by characters.build_head; before that, a head
-    from the sex defaults."""
-    if "table" not in ACTIVE:
-        from . import face_surface
-        cfg = dict(name="", female=fem, jaw=jaw, face=features or {},
-                   head_r=(0.072, 0.093, 0.108) if fem else (0.075, 0.097, 0.114))
-        p = fl.params_for(cfg)
-        set_active(p, face_surface.HeadSurface(p))
-    rx, ry, rz = ACTIVE["head_mm"]
-    w = Vector((d[0] * rx, d[1] * ry, d[2] * rz))
-    lon = math.atan2(w.x, -w.y)
-    lat = math.atan2(w.z, math.hypot(w.x, w.y))
-    r = ACTIVE["table"].radius(lon, lat)
-    q = w.normalized() * r
-    return Vector((q.x / rx, q.y / ry, q.z / rz))

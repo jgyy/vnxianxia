@@ -72,7 +72,6 @@ class FaceHead:
         self.obj = util.mesh_object("Head", bm, self.materials)
         self.obj["face_landmarks"] = self.landmarks_world()
         self.rest_mm = self.world_to_mm(np.array([v.co for v in self.obj.data.vertices]))
-        face_rig.set_active(p, self.surf)
         self._weights()
 
     # ------------------------------------------------------------------ helpers

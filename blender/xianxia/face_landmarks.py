@@ -137,25 +137,25 @@ class FaceParams:
 # young adult means (idol-leaning), mm - see the research notes above
 _FEMALE = dict(
     fem=True, age=0.0, head=(72.0, 93.0, 108.0),
-    menton=-108.0, subnasale=-49.0, glabella=8.0, trichion=63.0, canthus=-2.5,
-    icw=32.5, pfl=27.5, pfh=10.8, tilt=2.6, crease="inout", crease_h=1.6, aegyo=0.9, epicanthus=0.55,
-    eye_r=11.6, hood=0.0,
+    menton=-104.0, subnasale=-45.5, glabella=8.0, trichion=63.0, canthus=-2.5,
+    icw=32.0, pfl=28.5, pfh=11.6, tilt=2.6, crease="inout", crease_h=1.6, aegyo=0.9, epicanthus=0.55,
+    eye_r=12.0, hood=0.0,
     brow_gap=13.5, brow_arch=0.2, brow_ridge=1.2, brow_len=37.0, brow_thick=6.4,
-    radix=8.0, tip_proj=18.5, alar_w=34.0, bridge_w=10.0, tip_w=12.5, hump=-0.3, tip_up=1.4,
-    mouth_w=44.0, philtrum=11.2, up_verm=7.4, lo_verm=9.6, lip_proj=2.4, cupid=1.3, corner_up=1.0,
+    radix=8.0, tip_proj=17.0, alar_w=32.5, bridge_w=9.5, tip_w=12.0, hump=-0.3, tip_up=1.4,
+    mouth_w=42.5, philtrum=12.0, up_verm=8.0, lo_verm=10.0, lip_proj=2.4, cupid=1.3, corner_up=1.0,
     zygion=67.5, gonion_w=51.0, gonion_z=-79.0, chin_w=12.5, chin_proj=2.4, chin_h=26.0, jaw_soft=9.0,
-    cheek_fat=4.6, malar=2.2, buccal=0.8, nasolabial=0.6, marionette=0.0, jowl=0.0, temple=1.2,
+    cheek_fat=6.0, malar=2.2, buccal=0.8, nasolabial=0.6, marionette=0.0, jowl=0.0, temple=1.2,
     forehead_round=3.0, tear_trough=0.3,
     ear_len=55.0, ear_out=16.0, neck_r=45.0, adam=0.0,
 )
 _MALE = dict(
     fem=False, age=0.0, head=(75.0, 97.0, 114.0),
-    menton=-112.0, subnasale=-51.0, glabella=11.0, trichion=70.0, canthus=-1.5,
-    icw=34.0, pfl=28.5, pfh=9.2, tilt=1.6, crease="inout", crease_h=1.1, aegyo=0.55, epicanthus=0.45,
+    menton=-110.0, subnasale=-47.5, glabella=11.0, trichion=70.0, canthus=-1.5,
+    icw=33.5, pfl=29.0, pfh=10.0, tilt=1.6, crease="inout", crease_h=1.1, aegyo=0.55, epicanthus=0.45,
     eye_r=11.9, hood=0.0,
     brow_gap=12.5, brow_arch=0.08, brow_ridge=2.8, brow_len=41.0, brow_thick=7.0,
     radix=9.0, tip_proj=20.5, alar_w=37.5, bridge_w=11.0, tip_w=14.0, hump=0.2, tip_up=0.4,
-    mouth_w=50.0, philtrum=14.0, up_verm=7.0, lo_verm=9.2, lip_proj=2.0, cupid=1.0, corner_up=0.4,
+    mouth_w=47.5, philtrum=13.5, up_verm=7.0, lo_verm=9.2, lip_proj=2.0, cupid=1.0, corner_up=0.4,
     zygion=71.0, gonion_w=57.0, gonion_z=-82.0, chin_w=18.0, chin_proj=3.2, chin_h=30.0, jaw_soft=8.0,
     cheek_fat=2.0, malar=2.6, buccal=1.8, nasolabial=0.8, marionette=0.0, jowl=0.0, temple=1.6,
     forehead_round=1.2, tear_trough=0.4,
@@ -164,7 +164,7 @@ _MALE = dict(
 
 # Per-character build: (dict of overrides applied after sex defaults)
 _CHARACTER = {
-    "cultivator_female": dict(),
+    "cultivator_female": dict(pfh=11.4, epicanthus=0.35, crease="parallel", crease_h=1.9),
     "cultivator_male": dict(),
     "sect_master": dict(pfl=27.5, crease="parallel", crease_h=2.0, aegyo=0.6, malar=2.8, cheek_fat=2.6,
                         brow_arch=0.35, tilt=3.2, chin_proj=-0.5, gonion_w=49.0),

@@ -122,8 +122,8 @@ class HeadSurface:
             (L["nasion"][2], L["nasion"][1] + 5.0),
             (p.canthus - 10.0, fy + 3.0),
             (p.subnasale, L["subnasale"][1] + 1.5),
-            (st, fy + 1.0),
-            (L["labrale_inferius"][2], fy + 0.5),
+            (st, fy + 2.5),
+            (L["labrale_inferius"][2], fy + 2.0),
             (L["sublabiale"][2], L["sublabiale"][1]),
             (L["pogonion"][2], L["pogonion"][1] + 1.5),
             (p.menton + 6.0, L["gnathion"][1] + 1.0),
@@ -252,17 +252,17 @@ class HeadSurface:
         # the white roll: a thin ridge just outside the vermilion border
         roll_u = np.exp(-(((z - up - 0.45) / 0.55) ** 2)) * across ** 0.8
         roll_l = np.exp(-(((z - lo + 0.5) / 0.6) ** 2)) * across ** 0.8 * 0.6
-        d += 0.45 * (roll_u + roll_l)
+        d += 0.7 * (roll_u + roll_l)
         # the skin above the upper lip leans forward toward the border (the lip "sits" on the teeth)
         ab = np.clip((z - up) / (p.subnasale - up), 0.0, 1.0)
-        d += p.lip_proj * 0.55 * (1 - ab) ** 1.5 * sstep(xc + 6.0, xc - 4.0, ax) * sstep(up - 0.3, up + 0.3, z)
+        d += p.lip_proj * 0.3 * (1 - ab) ** 1.5 * sstep(xc + 6.0, xc - 4.0, ax) * sstep(up - 0.3, up + 0.3, z)
         # philtral columns and the groove between them
         colx = 5.0 - 1.2 * ab
         above = sstep(up - 0.6, up + 0.4, z) * sstep(p.subnasale, p.subnasale - 3, z)
         col = np.exp(-(((ax - colx) / 1.3) ** 2)) * above
         d += 0.55 * col - 0.35 * np.exp(-((x / 2.2) ** 2)) * above
         # the lower lip sits on a soft rounded shelf above the mentolabial sulcus
-        d += (p.lip_proj * 0.35) * np.exp(-(((z - lo + 2.5) / 3.0) ** 2)) * sstep(xc + 2, xc - 6, ax)
+        d += (p.lip_proj * 0.2) * np.exp(-(((z - lo + 2.5) / 3.0) ** 2)) * sstep(xc + 2, xc - 6, ax)
         # modiolus: the small knot of muscle just lateral to each mouth corner
         d += 0.9 * gauss(ax, z, xc + 3.5, st + p.corner_up * 0.5, 3.0, 4.0)
         d -= 0.9 * gauss(ax, z, xc + 0.8, st + p.corner_up, 1.2, 1.5)   # the corner itself tucks in
@@ -298,10 +298,10 @@ class HeadSurface:
         cz = zs + 4.0
         # teardrop lobe: widest low, tapering up into the nasal side wall
         rz_ = np.where(z > cz, 6.5, 4.4)
-        r2 = ((ax - cx) / 5.0) ** 2 + ((z - cz) / rz_) ** 2
+        r2 = ((ax - cx) / 4.5) ** 2 + ((z - cz) / rz_) ** 2
         tip_y = self.L["pronasale"][1]
         cy = tip_y + 11.0
-        return cy - 8.5 * np.sqrt(np.clip(1.0 - r2, 0.0, None)) + 4.0 * np.clip(r2 - 1.0, 0.0, None)
+        return cy - 7.5 * np.sqrt(np.clip(1.0 - r2, 0.0, None)) + 4.0 * np.clip(r2 - 1.0, 0.0, None)
 
     def eye_dome(self, x, z, extra=0.0):
         """y of the lidded eyeball bulge for both eyes (nan outside)."""

@@ -223,13 +223,13 @@ class FaceShapes:
         # ---- mouth (zygomaticus, depressors, levators, buccinator)
         F = np.zeros((self.N, 3))
         for side in (1, -1):
-            c = self.corner(side, 13.0, 11.0)
-            F[:, 0] += side * 3.6 * c
-            F[:, 1] += 2.6 * c
-            F[:, 2] += 4.6 * c
-            cheek = _g(x * side, z, ecx - 4.0, ecz - 26.0, 17.0, 14.0) * (x * side > 0)
-            F[:, 2] += 3.2 * cheek
-            F[:, 1] -= 2.0 * cheek
+            c = self.corner(side, 14.0, 12.0)
+            F[:, 0] += side * 4.2 * c
+            F[:, 1] += 3.2 * c
+            F[:, 2] += 6.0 * c
+            cheek = _g(x * side, z, ecx - 4.0, ecz - 24.0, 18.0, 14.0) * (x * side > 0)
+            F[:, 2] += 4.0 * cheek
+            F[:, 1] -= 2.6 * cheek
             # the nasolabial fold deepens: the fat lateral of it bulges forward
             nl = _g(x * side, z, p.alar_w * 0.5 + 10.0, st + 10.0, 7.0, 12.0) * (x * side > 0)
             F[:, 1] -= 1.6 * nl
@@ -240,9 +240,9 @@ class FaceShapes:
         F = np.zeros((self.N, 3))
         for side in (1, -1):
             c = self.corner(side, 12.0, 11.0)
-            F[:, 2] -= 3.4 * c
-            F[:, 0] += side * 1.0 * c
-            F[:, 1] += 0.8 * c
+            F[:, 2] -= 4.6 * c
+            F[:, 0] += side * 1.2 * c
+            F[:, 1] += 1.0 * c
         chin = _g(ax, z, 0.0, self.L["pogonion"][2], 14.0, 9.0)
         F[:, 2] += 1.6 * chin
         F[:, 1] -= 1.4 * chin
@@ -253,10 +253,10 @@ class FaceShapes:
         for side, sx in ((1, "L"), (-1, "R")):
             F = np.zeros((self.N, 3))
             lev = _g(x * side, z, 11.0, st + 6.0, 9.0, 6.0) * (x * side > -2.0) * (self.upper > 0.4)
-            F[:, 2] += 3.6 * lev
-            F[:, 1] -= 0.8 * lev
+            F[:, 2] += 4.8 * lev
+            F[:, 1] -= 1.0 * lev
             ala = _g(x * side, z, p.alar_w * 0.5 - 2.0, p.subnasale + 4.0, 7.0, 7.0) * (x * side > 0)
-            F[:, 2] += 2.4 * ala
+            F[:, 2] += 3.0 * ala
             F[:, 0] += side * 0.9 * ala
             nl = _g(x * side, z, p.alar_w * 0.5 + 8.0, st + 14.0, 7.0, 9.0) * (x * side > 0)
             F[:, 2] += 2.0 * nl
@@ -267,8 +267,8 @@ class FaceShapes:
             K[f"sneer_{sx}"] = self.skin_only(F) + 0.25 * self.lid_delta({side: {"squint": 1.0}})
         F = np.zeros((self.N, 3))
         puff = _g(ax, z, self.xc + 12.0, st + 2.0, 13.0, 15.0) * _sstep(-40.0, -65.0, y)
-        F[:, 0] += np.sign(x) * 5.0 * puff
-        F[:, 1] -= 2.5 * puff
+        F[:, 0] += np.sign(x) * 8.0 * puff
+        F[:, 1] -= 3.5 * puff
         F[:, 1] -= 1.2 * self.lip_verm()
         F[:, 1] -= 1.4 * _g(ax, z, 0.0, st + 9.0, 12.0, 5.0)                   # air over the upper lip
         K["cheek_puff"] = self.skin_only(F)
@@ -301,10 +301,10 @@ class FaceShapes:
         K["viseme_EE"] = self.jaw(0.18) + self.skin_only(F)
         F = np.zeros((self.N, 3))
         zone = self.mouth_zone(self.xc + 6.0, 12.0)
-        F[:, 0] -= x * 0.42 * zone                                             # purse toward the centre
-        F[:, 1] -= 5.0 * zone * (0.4 + 0.6 * verm)
-        F[:, 2] -= (z - st) * 0.12 * verm
-        K["viseme_OO"] = self.jaw(0.22) + self.skin_only(F)
+        F[:, 0] -= x * 0.5 * zone                                              # purse toward the centre
+        F[:, 1] -= 7.0 * zone * (0.35 + 0.65 * verm)
+        F[:, 2] -= (z - st) * 0.18 * verm
+        K["viseme_OO"] = self.jaw(0.12) + self.skin_only(F)
         F = np.zeros((self.N, 3))
         F[:, 1] += 0.9 * verm                                                  # lips press and roll in
         F[:, 2] -= 0.5 * up_l

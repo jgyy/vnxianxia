@@ -138,7 +138,7 @@ def portrait(cfg, args):
     # short lighting: the big soft key comes from the far side of the face (the side turned away
     # from the camera) and high, so the visible cheek falls into gentle shadow and the face models;
     # a broad dim fill from the camera side lifts the shadows; rim + hair lights from behind
-    preview.area(face + Vector((-0.55 * s, -0.85 * s, 0.5 * s)), face, energy=60, size=1.0, color=(1.0, 0.95, 0.9))
+    preview.area(face + Vector((-0.55 * s, -0.85 * s, 0.5 * s)), face, energy=42, size=1.0, color=(1.0, 0.95, 0.9))
     preview.area(face + Vector((0.95 * s, -0.5 * s, 0.1 * s)), face, energy=12, size=1.6, color=(0.92, 0.95, 1.0))
     preview.area(face + Vector((0.5 * s, 0.7 * s, 0.35 * s)), face + Vector((0, 0, 0.03 * s)), energy=70, size=0.4,
                  color=rim)
