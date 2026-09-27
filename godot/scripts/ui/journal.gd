@@ -247,8 +247,8 @@ func _show_cultivation() -> void:
 
 ## The nine alignments as a grid, the player's highlighted, with both axes.
 func _alignment_text() -> String:
-	var t := "\n[b]Alignment: [color=#dcb86b]%s[/color][/b]\n" % Game.alignment_name()
-	t += "[color=#b8ad96]Law %+d (lawful 25+, chaotic -25-)  ·  Good %+d (good 25+, evil -25-)[/color]\n" % [Game.law, Game.good]
+	var t := "\n[b]Dao Heart: [color=#dcb86b]%s[/color][/b]\n" % Game.alignment_name()
+	t += "[color=#b8ad96]Bearing %+d (disciplined 25+, free-wandering -25-)  ·  Dao %+d (righteous 25+, demonic -25-)[/color]\n" % [Game.law, Game.good]
 	var mine := Game.alignment()
 	for a in Game.ALIGN_LAW:
 		var row := "   "

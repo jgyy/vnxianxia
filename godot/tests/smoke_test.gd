@@ -281,9 +281,9 @@ func _session() -> void:
 	check(gs.realm == 6 and gs.stage == 1, "chapter 52 starts at %s" % gs.realm_label())
 	# alignment, conditions, choices and a save/load round trip
 	gs.start_at(story.chapter_first(12))
-	check(gs.alignment() == "neutral_neutral" and gs.alignment_name() == "True Neutral", "alignment starts true neutral")
+	check(gs.alignment() == "neutral_neutral" and gs.alignment_name() == "Walker of the Middle Way", "alignment starts true neutral")
 	gs.shift_alignment(30, -40)
-	check(gs.alignment() == "lawful_evil" and gs.alignment_name() == "Lawful Evil", "alignment moves: %s" % gs.alignment_name())
+	check(gs.alignment() == "lawful_evil" and gs.alignment_name() == "Iron-Handed Tyrant", "alignment moves: %s" % gs.alignment_name())
 	check(gs.cond_ok({"align": "*_evil"}) and not gs.cond_ok({"align": "*_good"}) and gs.cond_ok({"align_law": ">=30"})
 		and gs.cond_ok({"min_realm": "Qi Condensation"}) and not gs.cond_ok({"min_realm": "Core Formation"}),
 		"conditions follow alignment and realm")

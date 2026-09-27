@@ -306,9 +306,14 @@ is an added objective right after the breakthrough meditation; the voiced object
 
 ### Alignment and choices
 
-The player has two scores, Law↔Chaos and Good↔Evil (-100..100 each, neutral between -25 and 25), which give the nine
-alignments from Lawful Good to Chaotic Evil (shown on the journal's Cultivation page and in the HUD tooltip). They move
-with **moral choices**: 278 of them, offered after a quest's last conversation, about three per chapter. Each chapter of
+The player has two scores: **Bearing**, whether their heart keeps to precepts and order or wanders free
+(`lawful`↔`chaotic` internally), and **the Dao**, which side of it they walk, righteous or demonic (`good`↔`evil`
+internally) — both -100..100, neutral between -25 and 25. Together they give nine cultivation temperaments, from
+**Guardian of the Precepts** (lawful good) to **Servant of the Blood Moon** (chaotic evil) — see
+`Story.ALIGNMENT_NAMES` — shown on the journal's Cultivation page and in the HUD tooltip as the player's **Dao Heart**.
+The internal ids never change (a condition is still written `{"align": "lawful_good"}`, `{"align_good": ">=30"}`, ...);
+only the name shown to the player is reskinned for the setting. They move with **moral choices**: 278 of them, offered
+after a quest's last conversation, about three per chapter. Each chapter of
 the new story has one hand-written choice (`choices.py`: spare Gou the Scarred or break his sword hand, give Gu Hanshan
 water against orders, warn a demonic cultivator's family before the dam floods, bury Xue Chen or hang him at the gate)
 and two from templates that fit the quest (a beggar-thief after a fight, spare herbs after a gathering, a forbidden

@@ -60,7 +60,7 @@ func _ready() -> void:
 	_realm = UiTheme.label("Mortal", 17, UiTheme.GOLD)
 	_realm.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_child(_realm)
-	_align = UiTheme.label("True Neutral", 13, UiTheme.MUTED, 3)
+	_align = UiTheme.label("Walker of the Middle Way", 13, UiTheme.MUTED, 3)
 	_align.mouse_filter = Control.MOUSE_FILTER_PASS
 	vb.add_child(_align)
 	_hp = _labelled_bar(vb, "Vitality", UiTheme.CRIMSON)
@@ -209,7 +209,7 @@ func _labelled_bar(parent: Control, text: String, color: Color, h := 11.0) -> Pr
 func refresh() -> void:
 	_realm.text = Game.realm_label()
 	_align.text = Game.alignment_name()
-	var tip := "%s\nAlignment: %s\nLaw %+d  ·  Good %+d" % [Game.realm_label(), Game.alignment_name(), Game.law, Game.good]
+	var tip := "%s\nDao Heart: %s\nBearing %+d  ·  Dao %+d" % [Game.realm_label(), Game.alignment_name(), Game.law, Game.good]
 	_realm.tooltip_text = tip
 	_align.tooltip_text = tip
 	_xp.value = float(Game.xp % Game.XP_PER_REALM) / Game.XP_PER_REALM

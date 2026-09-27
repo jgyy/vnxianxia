@@ -134,12 +134,28 @@ func realm_label(realm: int, stage: int) -> String:
 	return "%s · %s (%s)" % [r, s, stage_group(stage)]
 
 
-## "Lawful Good", "True Neutral", "Chaotic Evil" ...
+## The nine cultivation temperaments: Game.law ("lawful"/"neutral"/"chaotic")
+## is the heir's *bearing* — bound to precepts and order, or free of them —
+## and Game.good ("good"/"neutral"/"evil") is which side of the Dao they
+## walk, righteous or demonic. The internal ids (used throughout the story's
+## authored `cond` dictionaries, e.g. `{"align": "lawful_good"}`) never
+## change; only the name shown to the player does.
+const ALIGNMENT_NAMES := {
+	"lawful_good": "Guardian of the Precepts",
+	"neutral_good": "Wandering Benefactor",
+	"chaotic_good": "Sky-Freed Hero",
+	"lawful_neutral": "Keeper of Order",
+	"neutral_neutral": "Walker of the Middle Way",
+	"chaotic_neutral": "Free-Roaming Cultivator",
+	"lawful_evil": "Iron-Handed Tyrant",
+	"neutral_evil": "Cold-Hearted Schemer",
+	"chaotic_evil": "Servant of the Blood Moon",
+}
+
+
+## "Guardian of the Precepts", "Walker of the Middle Way", "Servant of the Blood Moon" ...
 func alignment_name(id: String) -> String:
-	if id == "neutral_neutral":
-		return "True Neutral"
-	var parts := id.split("_")
-	return " ".join(Array(parts).map(func(p): return (p as String).capitalize()))
+	return ALIGNMENT_NAMES.get(id, id.capitalize())
 
 
 ## The lines of a conversation the player should see now: conditional lines
