@@ -137,9 +137,9 @@ class HeadSurface:
             (p.glabella + 30.0, rx * 0.86),
             (p.glabella, rx * 0.88),
             (zt, rx * 0.90),
-            (zt - 16.0, p.zygion),
-            (p.subnasale, p.zygion - 2.0),
-            (st, (p.zygion + p.gonion_w) * 0.5 - 4.5),
+            (zt - 15.0, p.zygion),
+            (p.subnasale, p.zygion - 5.5),
+            (st, (p.zygion + p.gonion_w) * 0.5 - 8.5),
             (zg, p.gonion_w),
             (p.menton + 8.0, p.gonion_w * (0.6 if p.fem else 0.68)),         # V-line taper to the chin
         ])
@@ -167,8 +167,8 @@ class HeadSurface:
             (p.glabella, 2.3),
             (zt, 2.5),
             (zt - 16.0, 2.5),
-            (p.subnasale, 2.6),
-            (st, 2.3),
+            (p.subnasale, 2.4),
+            (st, 1.85),
             (zg, 1.75 if p.fem else 2.0),
             (p.menton + 8.0, 1.6 if p.fem else 1.9),
         ])
@@ -333,7 +333,7 @@ class HeadSurface:
         y += 2.0 * gauss(ax, z, ecx - 8.0, ecz + 6.5, 6.0, 4.0) * (1.0 - 0.6 * p.fem)   # upper-lid sulcus
         mal = self.L["malar.L"]
         y -= p.malar * gauss(ax, z, mal[0], mal[2], 13.0, 9.0)
-        y -= p.cheek_fat * gauss(ax, z, ecx - 1.0, ecz - 25.0, 17.0, 13.0)
+        y -= p.cheek_fat * gauss(ax, z, ecx - 1.0, ecz - 21.0, 16.0, 11.0)
         y += p.buccal * gauss(ax, z, w * 0.72, self.st_z + 6.0, 11.0, 14.0)
         y += p.tear_trough * gauss(ax, z, ecx - 5.0, ecz - 12.5, 7.0, 2.4) * sstep(ecx + 8, ecx - 2, ax)
         # the chin pad (mentalis), mentolabial sulcus
@@ -376,7 +376,7 @@ class HeadSurface:
         p = self.p
         w = self.width(Z)
         y_w = self.mid(Z) + self.depth(Z)             # depth of the widest point of the section
-        front = smax(self.front_y(X, Z) - Y, np.abs(X) - w, 2.0)
+        front = smax(self.front_y(X, Z) - Y, np.abs(X) - w, 6.0)
         # behind the widest point the cheek / ramus rounds off toward the ear and the neck
         yb = self.back(Z)
         v = np.clip((Y - y_w) / np.maximum(yb - y_w, 1.0), 0.0, None)

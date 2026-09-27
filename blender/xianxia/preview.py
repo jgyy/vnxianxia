@@ -12,6 +12,7 @@ def setup(res=(960, 960), samples=48, sky=(0.62, 0.72, 0.82), strength=0.9, look
     scene.cycles.samples = samples
     scene.cycles.use_denoising = True
     scene.cycles.max_bounces = 6
+    scene.cycles.transparent_max_bounces = 64   # alpha-tested hair cards stack far deeper than 8
     scene.render.resolution_x, scene.render.resolution_y = res
     scene.render.resolution_percentage = 100
     scene.render.film_transparent = False

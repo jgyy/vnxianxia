@@ -10,6 +10,7 @@ and remembers which vertex range each part occupies, which the shape keys
 (face_shapes) and the weights (face_rig) need.  The head is its own object so
 its morph targets do not bloat the body mesh in the glTF.
 """
+import bpy
 import numpy as np
 from mathutils import Vector
 
@@ -47,7 +48,7 @@ class FaceHead:
             tv, tf, tuv = face_eyes.tearline_points(self.lids[side])
             self._cards(bm, f"tear_{sx}", tv, tf, tuv, SLOT["Eye_Tearline"], uvl)
             lv, meta = face_cards.lash_points(self.lids[side])
-            luv = [(m[2], m[1]) for m in meta]
+            luv = [(m[2], m[1]) for m in meta]         # u along the lid, v root -> tip
             self._cards(bm, f"lash_{sx}", lv, face_cards.lash_faces(face_cards.lash_count(p, side)), luv,
                         SLOT["Lashes"], uvl)
             bv, bf, buv = face_cards.brow_cards(p, self.surf, side)
@@ -69,6 +70,7 @@ class FaceHead:
         for v in bm.verts:
             v.co = self.centre + v.co * k
         self.obj = util.mesh_object("Head", bm, self.materials)
+        self.obj["face_landmarks"] = self.landmarks_world()
         self.rest_mm = self.world_to_mm(np.array([v.co for v in self.obj.data.vertices]))
         face_rig.set_active(p, self.surf)
         self._weights()
@@ -98,6 +100,34 @@ class FaceHead:
 
     def mm_to_world(self, P):
         return np.array(self.centre) + np.asarray(P) * (0.001 * self.s)
+
+    def landmarks_world(self):
+        """World landmark points the skin painter (skin.landmarks) consumes."""
+        L = fl.landmarks(self.p)
+        cheek = fl.eye_geometry(self.p, 1)["centre"]
+        st = np.array(L["stomion"])
+        # the painter's lip bands are centred on these: the middle of each vermilion
+        up = (st + np.array(L["labrale_superius"])) * 0.5
+        lo = (st + np.array(L["labrale_inferius"])) * 0.5
+        pts = dict(eye=L["pupil.L"], nose_tip=L["pronasale"], lip_line=L["stomion"],
+                   upper_lip=up, lower_lip=lo, chin=L["pogonion"],
+                   mouth_corner=L["cheilion.L"], brow=L["brow_peak.L"], ear=fl.ear_frame(self.p, 1)["loc"],
+                   cheek=(cheek[0] - 1.0, L["malar.L"][1] - 4.0, cheek[2] - 25.0),
+                   nostril=self.mesh.nostril_centre(1))
+        return {k: [float(c) for c in self.mm_to_world(np.array(v))] for k, v in pts.items()}
+
+    def scalp_proxy(self):
+        """A temporary copy of the skin, eyeballs and ears (no cards) for surface ray casts."""
+        keep = [self.range("skin")] + [self.range(f"{k}_{sx}") for k in ("eye", "ear") for sx in ("L", "R")]
+        keep = set(np.concatenate(keep).tolist())
+        me = self.obj.data
+        verts = [tuple(v.co) for v in me.vertices]
+        polys = [list(p.vertices) for p in me.polygons if all(i in keep for i in p.vertices)]
+        pm = bpy.data.meshes.new("HeadScalpProxy")
+        pm.from_pydata(verts, [], polys)
+        o = bpy.data.objects.new("HeadScalpProxy", pm)
+        util.link(o)
+        return o
 
     def eye_centres_world(self):
         return [self.mm_to_world(np.array(fl.eye_geometry(self.p, sd)["centre"])) for sd in (1, -1)]

@@ -166,7 +166,12 @@ def render(m: MapDef) -> str:
         f'light_color = {_c(e.sun_color)}',
         f'light_energy = {e.sun_energy:.4g}',
         'shadow_enabled = true',
+        # explicit biases (the defaults left acne crawling over large flat floors at grazing sun angles)
+        'shadow_bias = 0.06',
+        'shadow_normal_bias = 1.6',
         'shadow_blur = 1.5',
+        # blend the four PSSM splits: without it the split seams popped across the ground as the camera moved
+        'directional_shadow_blend_splits = true',
         f'directional_shadow_max_distance = {e.shadow_distance:.4g}',
         '',
         '[node name="Level" type="Node3D" parent="."]',

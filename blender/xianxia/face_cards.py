@@ -13,8 +13,8 @@ laterally, the body lies at 20-30 deg, the tail points down and out, and the
 upper-edge hairs angle downward to make the natural herringbone.  Each card
 hugs the skin (projected on the sculpted surface) with a slight lift.
 
-Card UVs: u across the card, v from the root (0) to the tip (1) - the
-``Lashes`` / ``Brows`` textures hold 2-3 tapered strands along v.
+Card UVs: u runs along the lid / brow (each card takes the slice of the
+strip texture at its position), v from the root (0) to the tip (1).
 """
 import math
 import random
@@ -53,7 +53,7 @@ def _lash_layout(p: fl.FaceParams, side):
 
 
 def lash_points(lids: EyeLids, state=None):
-    """Card vertices (N, 3) head mm, plus per-vertex (s, t along the card, card side 0/1)."""
+    """Card vertices (N, 3) head mm, plus per-vertex (s, t root -> tip, u along the lid)."""
     p = lids.p
     layout = _lash_layout(p, lids.side)
     s_all = np.array([c["s"] for c in layout])
@@ -85,7 +85,8 @@ def lash_points(lids: EyeLids, state=None):
             half = 0.5 * cl["width"] * (1.0 - 0.35 * t)
             for sd in (-1, 1):
                 verts.append(q + tang * half * sd)
-                meta.append((cl["s"], t, 0.5 + 0.5 * sd))
+                along = (cl["s"] - 0.035) / 0.43 if cl["upper"] else (cl["s"] - 0.58) / 0.36
+                meta.append((cl["s"], t, along + 0.022 * sd))
     return np.array(verts), np.array(meta)
 
 
@@ -156,17 +157,17 @@ def brow_cards(p: fl.FaceParams, surf, side):
             q = j / BROW_SEGS
             lift = 0.25 + 0.55 * math.sin(math.pi * min(1.0, q * 0.9)) - 0.25 * q * q
             pts.append((side * (x + d2[0] * length * q), z + d2[1] * length * q, lift))
-        cards.append((pts, rng.uniform(0.7, 1.0)))
+        cards.append((pts, rng.uniform(0.7, 1.0), t))
     # put every hair point on the real sculpted surface (cast from the head centre), lifted along the ray
-    flat = np.array([q for pts, _ in cards for q in pts])
+    flat = np.array([q for pts, _, _ in cards for q in pts])
     guess = np.stack([flat[:, 0], surf.front_y(flat[:, 0], flat[:, 1]), flat[:, 1]], axis=-1)
     lon, b = fc.chart_of_points(guess)
-    hit, t_hit = fc.cast(surf.F, lon, b, centre_only=True)
-    ray = hit / np.maximum(t_hit, 1e-6)[:, None]
+    hit, t_hit = fc.cast(surf.F, lon, b)
+    ray = (hit - fc.ORIGIN) / np.maximum(t_hit, 1e-6)[:, None]
     surf_pts = hit + ray * flat[:, 2:3]
     verts, faces, uvs = [], [], []
     per = BROW_SEGS + 1
-    for c, (_, width) in enumerate(cards):
+    for c, (_, width, tb) in enumerate(cards):
         pts = surf_pts[c * per:(c + 1) * per]
         b0 = len(verts)
         for j, q3 in enumerate(pts):
@@ -177,8 +178,8 @@ def brow_cards(p: fl.FaceParams, surf, side):
             half = 0.5 * width * (1 - 0.5 * j / BROW_SEGS)
             verts.append(q3 - wdir * half)
             verts.append(q3 + wdir * half)
-            uvs.append((0.0, j / BROW_SEGS))
-            uvs.append((1.0, j / BROW_SEGS))
+            uvs.append((tb - 0.02, j / BROW_SEGS))
+            uvs.append((tb + 0.02, j / BROW_SEGS))
         for j in range(BROW_SEGS):
             a0, a1 = b0 + 2 * j, b0 + 2 * j + 1
             faces.append((a0, a1, a1 + 2, a0 + 2))

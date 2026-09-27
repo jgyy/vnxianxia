@@ -375,6 +375,7 @@ def _fcurves(act, owner):
 def _write_curve(act, owner, path, index, frames, values, group):
     fc = act.fcurve_ensure_for_datablock(owner, path, index=index, group_name=group)
     kp = fc.keyframe_points
+    kp.clear()              # a clip baker may already have keyed the eye bones at rest
     # keep only the keys needed to reproduce the curve linearly (within 0.004)
     keep = [0]
     for i in range(1, len(values) - 1):

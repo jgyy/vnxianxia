@@ -56,7 +56,7 @@ def _shell(mats, w, d, h, door_w=2.6, door_h=2.35, floor_mat=None, wall_mat=None
     util.box(bm, (w + t, d + t, 0.25), loc=(0, 0, h + 0.125))
     if beams:
         for x in [-w / 2 + 0.6 + k * (w - 1.2) / 3 for k in range(4)]:
-            util.box(bm, (0.18, d + t, 0.22), loc=(x, 0, h - 0.11))
+            util.box(bm, (0.18, d + t - 0.06, 0.22), loc=(x, 0, h - 0.11))
     o = util.mesh_object("Ceiling", bm, cm, smooth=False)
     util.box_uv(o, 0.4)
     objs.append(o)
@@ -167,7 +167,7 @@ def _hanging_lantern(loc, glow="#ff4a1c"):
     return _place(props.red_lantern(), loc)
 
 
-def _rug(mats, w, d, color="#8e1a14", h=0.012):
+def _rug(mats, w, d, color="#8e1a14", h=0.03):
     m = util.material("rug_" + color.strip("#"), color=color, rough=0.85)
     bm = bmesh.new()
     util.box(bm, (w, d, h), loc=(0, 0, h / 2 + 0.002))
@@ -209,6 +209,9 @@ def sect_main_hall():
     util.box_uv(throne, 1.5)
     objs.append(throne)
     objs.append(util.collider("ThroneCol", (1.3, 0.8, 2.0), (0, 3.3, 1.0)))
+    # the 0.5 m dais had no collider at all (the player walked through it): a block and a front ramp
+    objs.append(util.collider("DaisCol", (3.4, 2.0, 0.5), (0, 3.0, 0.25)))
+    objs.append(realms.ramp_collider("DaisRamp", 3.4, 0.0, 0.5, 0.6, 2.0))
     objs += _place(props.incense_burner(), (0, -2.4, 0.0), scale=0.85)
     for sx in (-1, 1):
         objs += _place(props.banner(), (sx * 3.5, 3.5, 0.0), yaw=180, scale=0.55)
@@ -226,6 +229,8 @@ def elder_quarters():
     o = util.mesh_object("MeditationDais", bm, m["wood"], smooth=False)
     util.box_uv(o, 1.0)
     objs.append(o)
+    objs.append(realms.ramp_collider("MatRamp", 2.2, 0.0, 0.16, 0.25, 0.65))
+    objs.append(util.collider("MatCol", (2.2, 1.8, 0.16), (0, 1.55, 0.08)))
     objs += _place(_cushion("#2f4d3a", 0.55, 0.1), (0, 1.55, 0.16))
     objs += _place(_table(m, 0.9, 0.55, 0.4), (0, -0.6, 0.0))
     for a in (-0.55, 0.55):
@@ -290,9 +295,9 @@ def weapons_hall():
     objs += _place(props.weapon_rack(), (0, 2.7, 0.0), yaw=180)
     bm = bmesh.new()
     n = 48
-    ring = [V((1.9 * math.cos(2 * math.pi * k / n), 1.9 * math.sin(2 * math.pi * k / n), 0.011)) for k in range(n)]
+    ring = [V((1.9 * math.cos(2 * math.pi * k / n), 1.9 * math.sin(2 * math.pi * k / n), 0.03)) for k in range(n)]
     uv = bm.loops.layers.uv.verify()
-    c = bm.verts.new(V((0, 0, 0.011)))
+    c = bm.verts.new(V((0, 0, 0.03)))
     vs = [bm.verts.new(p) for p in ring]
     for k in range(n):
         f = bm.faces.new((c, vs[k], vs[(k + 1) % n]))
@@ -531,8 +536,8 @@ def blood_abyss_shrine():
     bm = bmesh.new()
     n = 40
     uv = bm.loops.layers.uv.verify()
-    c = bm.verts.new(V((0, 2.2, 0.011)))
-    ring = [V((2.2 * math.cos(2 * math.pi * k / n), 2.2 + 2.2 * math.sin(2 * math.pi * k / n), 0.011))
+    c = bm.verts.new(V((0, 2.2, 0.03)))
+    ring = [V((2.2 * math.cos(2 * math.pi * k / n), 2.2 + 2.2 * math.sin(2 * math.pi * k / n), 0.03))
             for k in range(n)]
     vs = [bm.verts.new(p) for p in ring]
     for k in range(n):

@@ -733,6 +733,18 @@
    "text": "Keep it close, then. Welcome to the Azure Cloud, Junior Brother. Tomorrow you learn how little you know.",
    "duration": 6.49
   },
+  "q001_o3_l5.ogg": {
+   "hash": "2a631996b7636613",
+   "speaker": "senior_wei",
+   "text": "Welcome, welcome! Don't mind the scowl, new one. It's how Elder Mo says hello.",
+   "duration": 5.25
+  },
+  "q001_o3_l6.ogg": {
+   "hash": "fafa3f621adff6cf",
+   "speaker": "elder_mo",
+   "text": "Wei Tong. Weapon rack. Now. And take the new one's bundle, since you're so welcoming.",
+   "duration": 5.97
+  },
   "q002_o0_l0.ogg": {
    "hash": "f9baf2ccdeec1812",
    "speaker": "elder_gu",
@@ -823,6 +835,18 @@
    "text": "Then it was a very efficient laundering. Next!",
    "duration": 2.86
   },
+  "q002_o3_l4.ogg": {
+   "hash": "9f16f7d3be704fed",
+   "speaker": "gate_lu",
+   "text": "Don't take it to heart. He docked me a stone last month for sneezing on the ledger.",
+   "duration": 4.27
+  },
+  "q002_o3_l5.ogg": {
+   "hash": "f8682f22e1408255",
+   "speaker": "steward_qian",
+   "text": "It was a very expensive sneeze, Lu Ping.",
+   "duration": 2.74
+  },
   "q003_o0_l0.ogg": {
    "hash": "1899eeb08a6f0184",
    "speaker": "senior_wei",
@@ -882,6 +906,12 @@
    "speaker": "senior_wei",
    "text": "I bet on everyone. It keeps life interesting. Here, take this. Real fighters need real rice.",
    "duration": 7.1
+  },
+  "q003_o3_l3.ogg": {
+   "hash": "8e3aaad3296bfed9",
+   "speaker": "elder_mo",
+   "text": "Three, with a stumble on the second. The bet said clean. I owe you nothing, Wei Tong.",
+   "duration": 5.11
   },
   "q004_o0_l0.ogg": {
    "hash": "4a0486640499956e",
@@ -955,6 +985,12 @@
    "text": "Then maybe it should bruise a little.",
    "duration": 1.67
   },
+  "q004_o2_l3.ogg": {
+   "hash": "0d7291447bdc92ff",
+   "speaker": "gate_lu",
+   "text": "Too late. Two of his attendants limped past the gate an hour ago. The whole mountain knows by now.",
+   "duration": 4.97
+  },
   "q005_o0_l0.ogg": {
    "hash": "d70198309a198914",
    "speaker": "senior_han",
@@ -1015,6 +1051,12 @@
    "text": "Warm? Hm. Jade doesn't usually do that. Tell no one but the elders, Junior Brother.",
    "duration": 5.41
   },
+  "q005_o2_l3.ogg": {
+   "hash": "1a1ba3f0f38cafc7",
+   "speaker": "elder_mo",
+   "text": "Tell this elder, then. Warm jade. Hmph. Keep breathing, disciple. And keep that pendant close.",
+   "duration": 7.01
+  },
   "q006_o0_l0.ogg": {
    "hash": "36278a467768f675",
    "speaker": "elder_hua",
@@ -1068,6 +1110,24 @@
    "speaker": "elder_hua",
    "text": "Careful hands make good alchemists and better friends. Take this pill. It will ease your meridians.",
    "duration": 6.74
+  },
+  "q006_o3_l2.ogg": {
+   "hash": "2561a3cdd369f6ee",
+   "speaker": "xiao_man",
+   "text": "I only dropped two in the pond, Elder! The carp only ate one. Well. One and a half.",
+   "duration": 6.21
+  },
+  "q006_o3_l3_f.ogg": {
+   "hash": "16ac6055b3b6fd42",
+   "speaker": "player",
+   "text": "She was very brave about it. The carp were not.",
+   "duration": 2.79
+  },
+  "q006_o3_l3_m.ogg": {
+   "hash": "87e4f923c19aa4a8",
+   "speaker": "player",
+   "text": "She was very brave about it. The carp were not.",
+   "duration": 2.32
   },
   "q007_o0_l0.ogg": {
    "hash": "47fe169a55b57027",
@@ -1128,6 +1188,18 @@
    "speaker": "elder_bai",
    "text": "They bled so that this land might sleep. Now nobody remembers their name. That is the fate of heroes, mostly.",
    "duration": 7.63
+  },
+  "q007_o3_l4.ogg": {
+   "hash": "ae5c5294b75143d9",
+   "speaker": "elder_gu",
+   "text": "Old history is best left on the shelf, Bai. The Law Hall keeps its own records of those days.",
+   "duration": 5.85
+  },
+  "q007_o3_l5.ogg": {
+   "hash": "b609db3917be3db9",
+   "speaker": "elder_bai",
+   "text": "The Law Hall keeps them very well hidden, Gu. Mind the stairs on your way out.",
+   "duration": 5.36
   },
   "q008_o0_l0.ogg": {
    "hash": "c49f94246a34813b",
@@ -1201,6 +1273,18 @@
    "text": "Hm. Yes. A trinket. The array must be aging. Go, disciple, and speak of this to no one.",
    "duration": 7.37
   },
+  "q008_o3_l4.ogg": {
+   "hash": "998337fbb4f4478e",
+   "speaker": "elder_mo",
+   "text": "Aging, Gu? I checked every rune of that array myself, last spring.",
+   "duration": 4.5
+  },
+  "q008_o3_l5.ogg": {
+   "hash": "6eaaf08add0f4686",
+   "speaker": "elder_gu",
+   "text": "Then check them again, Mo. The disciple may go.",
+   "duration": 3.2
+  },
   "q009_o0_l0.ogg": {
    "hash": "4ab70badc09cb9a8",
    "speaker": "narrator",
@@ -1266,6 +1350,24 @@
    "speaker": "elder_mo",
    "text": "Probably a stray demonic cultivator passing through. Probably. You did well, Junior Brother. Get some rest.",
    "duration": 7.28
+  },
+  "q009_o4_l2.ogg": {
+   "hash": "e88421efd8a674dd",
+   "speaker": "gate_lu",
+   "text": "I rang the bell, Elder! Well. The new one rang it. I supervised, very closely.",
+   "duration": 5.12
+  },
+  "q009_o4_l3_f.ogg": {
+   "hash": "542763fcdf6e7bd6",
+   "speaker": "player",
+   "text": "There were two of them, Elder. Both with eyes like fresh blood.",
+   "duration": 3.49
+  },
+  "q009_o4_l3_m.ogg": {
+   "hash": "a4595cf005daecf8",
+   "speaker": "player",
+   "text": "There were two of them, Elder. Both with eyes like fresh blood.",
+   "duration": 3.03
   },
   "q010_o0_l0.ogg": {
    "hash": "5b6eecedccd97fe1",
@@ -1339,6 +1441,12 @@
    "text": "I will not disappoint you, Sect Master.",
    "duration": 1.91
   },
+  "q010_o2_l4.ogg": {
+   "hash": "6600fa5e18256d3a",
+   "speaker": "elder_mo",
+   "text": "Hmph. A loud breakthrough, but a clean one. Adequate, Sect Master. Adequate.",
+   "duration": 6.53
+  },
   "q011_o0_l0.ogg": {
    "hash": "c91688934ee2a549",
    "speaker": "elder_gu",
@@ -1368,6 +1476,12 @@
    "speaker": "elder_gu",
    "text": "A cultivator who fears wolves should have stayed a farmer. Go.",
    "duration": 3.96
+  },
+  "q011_o0_l4.ogg": {
+   "hash": "eb6545ad241b8d6c",
+   "speaker": "senior_wei",
+   "text": "Three days, Elder. I'll pack for four. In case the wolves are hungry and we have to share.",
+   "duration": 5.85
   },
   "q011_o2_l0.ogg": {
    "hash": "52e0a9476f397fc0",
@@ -1441,6 +1555,24 @@
    "text": "Not yet. Something's driving them out of their den. Let's find out what, then eat. Or eat, then find out.",
    "duration": 6.36
   },
+  "q012_o3_l3.ogg": {
+   "hash": "2a8a1cc9b510c021",
+   "speaker": "wanderer_ye",
+   "text": "The wolves are running from something, disciples. Follow them, and be ready to be sorry.",
+   "duration": 4.32
+  },
+  "q012_o3_l4_f.ogg": {
+   "hash": "48a980db1183e295",
+   "speaker": "senior_wei",
+   "text": "Who said that? Did a bamboo just talk? Junior Sister, tell me a bamboo just talked.",
+   "duration": 5.81
+  },
+  "q012_o3_l4_m.ogg": {
+   "hash": "12221e6e0483a6b0",
+   "speaker": "senior_wei",
+   "text": "Who said that? Did a bamboo just talk? Junior Brother, tell me a bamboo just talked.",
+   "duration": 6.34
+  },
   "q013_o0_l0.ogg": {
    "hash": "4d2818fda0cd6e53",
    "speaker": "narrator",
@@ -1470,6 +1602,12 @@
    "speaker": "senior_wei",
    "text": "Elder Hua can study these. And the den is not empty. Something bigger is still in there.",
    "duration": 5.37
+  },
+  "q013_o3_l2.ogg": {
+   "hash": "a0a9616c0444bb39",
+   "speaker": "wanderer_ye",
+   "text": "Look at the roots of those fangs, disciples. That is not wolf blood.",
+   "duration": 3.43
   },
   "q014_o0_l0.ogg": {
    "hash": "f7ad5cd0b29ac8f2",
@@ -1537,6 +1675,18 @@
    "text": "Go home, little disciple. Keep that pendant under your robe. There are eyes in this forest older than mine.",
    "duration": 5.42
   },
+  "q014_o3_l4_f.ogg": {
+   "hash": "4a6662715dd90f00",
+   "speaker": "senior_wei",
+   "text": "Junior Sister, the scary masked man is praising us. Do we say thank you, or do we run?",
+   "duration": 5.64
+  },
+  "q014_o3_l4_m.ogg": {
+   "hash": "2b50281d5a695231",
+   "speaker": "senior_wei",
+   "text": "Junior Brother, the scary masked man is praising us. Do we say thank you, or do we run?",
+   "duration": 5.51
+  },
   "q015_o0_l0.ogg": {
    "hash": "05b9ca38cb680ea2",
    "speaker": "senior_wei",
@@ -1584,6 +1734,12 @@
    "speaker": "hermit_lan",
    "text": "Follow the sound of the frogs. They are loud and very proud of it.",
    "duration": 4.46
+  },
+  "q015_o1_l4.ogg": {
+   "hash": "d573acbb4a0748ef",
+   "speaker": "senior_wei",
+   "text": "(weakly) Speaking of tea... is there any? If I'm dying, I'd like to die holding tea.",
+   "duration": 5.98
   },
   "q015_o2_l0.ogg": {
    "hash": "38c1aab34d8e7268",
@@ -1657,6 +1813,12 @@
    "text": "Tonight. Right. After dinner. Kidding! Mostly kidding.",
    "duration": 4.28
   },
+  "q016_o1_l4.ogg": {
+   "hash": "eea913da8a1125fe",
+   "speaker": "wanderer_ye",
+   "text": "Twenty guards. Two cages. Go at the second watch, when the fool with the torch falls asleep.",
+   "duration": 5.16
+  },
   "q016_o2_l0.ogg": {
    "hash": "ee78c52f9f977497",
    "speaker": "narrator",
@@ -1680,6 +1842,12 @@
    "speaker": "player",
    "text": "They're people, not cargo.",
    "duration": 1.27
+  },
+  "q017_o0_l2.ogg": {
+   "hash": "c5d9f5a3b1c2f2dc",
+   "speaker": "senior_wei",
+   "text": "Iron-Fang himself! Dumpling, we're going to be famous!",
+   "duration": 3.61
   },
   "q017_o1_l0.ogg": {
    "hash": "ce693004898a3575",
@@ -1765,6 +1933,12 @@
    "text": "Everyone says a great many things. The dead are rarely consulted. Take it to your elders. Quickly.",
    "duration": 7.07
   },
+  "q018_o2_l4.ogg": {
+   "hash": "f963fe1b7c45c87c",
+   "speaker": "senior_wei",
+   "text": "I said it looked bad. I said so on the ridge. I'm saying it again, for the record.",
+   "duration": 5.3
+  },
   "q019_o0_l0.ogg": {
    "hash": "04c821241a9edf0f",
    "speaker": "bandit_tie",
@@ -1819,6 +1993,18 @@
    "text": "The Blood Moon rises. That is all you need to know. Tell your sect master, and trust fewer people than you'd like.",
    "duration": 5.71
   },
+  "q019_o2_l4_f.ogg": {
+   "hash": "941ac7a654a2c104",
+   "speaker": "senior_wei",
+   "text": "Trust fewer people. Right. I trust Su Yue and my buns. That's two. Very exclusive.",
+   "duration": 6.68
+  },
+  "q019_o2_l4_m.ogg": {
+   "hash": "6d684461792aeb06",
+   "speaker": "senior_wei",
+   "text": "Trust fewer people. Right. I trust Lin Feng and my buns. That's two. Very exclusive.",
+   "duration": 6.88
+  },
   "q020_o0_l0.ogg": {
    "hash": "b7c8ee6f7d86e8c1",
    "speaker": "senior_wei",
@@ -1872,6 +2058,24 @@
    "speaker": "elder_mo",
    "text": "I'll speak to the Sect Master. Wei Tong says you carried him on your back. Hmph. Good.",
    "duration": 5.72
+  },
+  "q020_o2_l3.ogg": {
+   "hash": "00b48c655b420f0f",
+   "speaker": "senior_wei",
+   "text": "Like a sack of rice, Elder. A heroic sack of rice. With legs.",
+   "duration": 4.71
+  },
+  "q020_o2_l4_f.ogg": {
+   "hash": "fb0cdf1b85654d39",
+   "speaker": "player",
+   "text": "He ate twelve buns on the way home. I felt every one of them.",
+   "duration": 3.59
+  },
+  "q020_o2_l4_m.ogg": {
+   "hash": "5c731abf5fa02ae1",
+   "speaker": "player",
+   "text": "He ate twelve buns on the way home. I felt every one of them.",
+   "duration": 3.06
   },
   "q021_o0_l0.ogg": {
    "hash": "3d5e5c6dde40a8b4",
@@ -2022,6 +2226,12 @@
    "speaker": "widow_liu",
    "text": "Don't promise, young immortal. Promises are heavy. Just look. That's enough.",
    "duration": 5.25
+  },
+  "q023_o0_l4.ogg": {
+   "hash": "d1d456443b9cea7e",
+   "speaker": "senior_han",
+   "text": "Then we'll look, Madam Liu. Both of us. Very carefully.",
+   "duration": 3.52
   },
   "q023_o1_l0.ogg": {
    "hash": "9bfac8b86a3f663b",
@@ -2179,6 +2389,12 @@
    "text": "A man who knows that much about demons... either hunts them, or is one.",
    "duration": 3.39
   },
+  "q025_o3_l4.ogg": {
+   "hash": "5e4dfb1301552fdd",
+   "speaker": "constable_du",
+   "text": "Cultivators! The woman is home, shaking but whole. I'm doubling the night watch. Tell me what else to do.",
+   "duration": 5.99
+  },
   "q026_o0_l0.ogg": {
    "hash": "9efbfd388efd65b8",
    "speaker": "innkeeper_fang",
@@ -2281,6 +2497,12 @@
    "text": "Some people cry at funerals because they're sad. Others because they're hungry. Let's pay him a visit.",
    "duration": 6.06
   },
+  "q027_o3_l3.ogg": {
+   "hash": "fe18249bbcd43abd",
+   "speaker": "wanderer_ye",
+   "text": "Visit him in daylight. A man who wears a kind face is weakest when he has to keep smiling.",
+   "duration": 4.68
+  },
   "q028_o0_l0.ogg": {
    "hash": "5f26a259e85bb698",
    "speaker": "keeper_hong",
@@ -2311,6 +2533,18 @@
    "text": "And that pendant. Green jade, lotus-carved. Oh, the Patriarch will be so very pleased with me.",
    "duration": 6.92
   },
+  "q028_o0_l4_f.ogg": {
+   "hash": "a76f742e18664fc2",
+   "speaker": "senior_han",
+   "text": "Don't drink it, Su Yue. Keeper, put the cup down. Slowly.",
+   "duration": 3.68
+  },
+  "q028_o0_l4_m.ogg": {
+   "hash": "c1c58192ca0e172f",
+   "speaker": "senior_han",
+   "text": "Don't drink it, Lin Feng. Keeper, put the cup down. Slowly.",
+   "duration": 3.95
+  },
   "q028_o2_l0.ogg": {
    "hash": "41767941fc248a13",
    "speaker": "keeper_hong",
@@ -2340,6 +2574,12 @@
    "speaker": "player",
    "text": "Keep the townsfolk indoors. We'll end this tonight.",
    "duration": 2.6
+  },
+  "q029_o0_l3.ogg": {
+   "hash": "7e6d713e13c9cc7e",
+   "speaker": "constable_du",
+   "text": "Twelve guards, Magistrate. Twelve spears, and one very old drum. We're ready.",
+   "duration": 4.35
   },
   "q029_o1_l0.ogg": {
    "hash": "843b40e305a714a4",
@@ -2424,6 +2664,12 @@
    "speaker": "widow_liu",
    "text": "Then I'll keep the water sweet until you do.",
    "duration": 2.38
+  },
+  "q030_o0_l4.ogg": {
+   "hash": "addba848694ad4d6",
+   "speaker": "senior_han",
+   "text": "We saw his formation, Madam Liu. They wanted the taken alive. That hope is real.",
+   "duration": 4.79
   },
   "q030_o1_l0.ogg": {
    "hash": "05f221cd21ec5224",
@@ -2515,6 +2761,24 @@
    "text": "The Verdant Lotus built the seal. Their ruins lie in the Whispering Bamboo. Stones cannot be cut out of a book.",
    "duration": 7.76
   },
+  "q031_o1_l4.ogg": {
+   "hash": "68689f51143af4a3",
+   "speaker": "senior_han",
+   "text": "Elders and the Law Hall. That is not a long list, Elder Bai.",
+   "duration": 3.64
+  },
+  "q031_o1_l5_f.ogg": {
+   "hash": "db85b251e8cdb7b9",
+   "speaker": "player",
+   "text": "And not one we can say out loud. Not yet.",
+   "duration": 2.74
+  },
+  "q031_o1_l5_m.ogg": {
+   "hash": "416f5ad8007a74ff",
+   "speaker": "player",
+   "text": "And not one we can say out loud. Not yet.",
+   "duration": 2.33
+  },
   "q031_o3_l0.ogg": {
    "hash": "cdcc009ab516761d",
    "speaker": "narrator",
@@ -2593,6 +2857,18 @@
    "text": "I could have done many things for three hundred years. Go. I will follow when my shame lets me.",
    "duration": 5.63
   },
+  "q032_o3_l5.ogg": {
+   "hash": "10341f5201dddc5e",
+   "speaker": "wanderer_ye",
+   "text": "He speaks true, lotus-bearer. I have watched those ruins for a year. They are waiting for you.",
+   "duration": 4.85
+  },
+  "q032_o3_l6.ogg": {
+   "hash": "6a240bd26e2f38f2",
+   "speaker": "hermit_lan",
+   "text": "You again. You walk too quietly for an honest man.",
+   "duration": 3.84
+  },
   "q033_o1_l0.ogg": {
    "hash": "2fee5f4f76707ff5",
    "speaker": "rival_zhao",
@@ -2653,6 +2929,18 @@
    "text": "Apparently my trinket is older than your clan.",
    "duration": 1.85
   },
+  "q033_o2_l4.ogg": {
+   "hash": "6b6469dac7c4b85b",
+   "speaker": "wanderer_ye",
+   "text": "Never both to one hand. Remember that line, lotus-bearer. Someone in your sect has forgotten it.",
+   "duration": 5.15
+  },
+  "q033_o2_l5.ogg": {
+   "hash": "2647e65353819299",
+   "speaker": "rival_zhao",
+   "text": "Who said that? Show yourself! ...He's gone. I hate this forest.",
+   "duration": 4.02
+  },
   "q034_o0_l0.ogg": {
    "hash": "f500d01448728225",
    "speaker": "rival_zhao",
@@ -2689,6 +2977,30 @@
    "text": "Please tell me that one doesn't move.",
    "duration": 1.79
   },
+  "q034_o2_l2.ogg": {
+   "hash": "0eebcd0cbfddcde7",
+   "speaker": "hermit_lan",
+   "text": "It moves, young man. Only when it must. I would not stand quite so close.",
+   "duration": 5.13
+  },
+  "q034_o2_l3.ogg": {
+   "hash": "b7f4325ba1946b42",
+   "speaker": "rival_zhao",
+   "text": "Where did you come from? Does everyone in this forest walk like a ghost?",
+   "duration": 3.45
+  },
+  "q034_o2_l4_f.ogg": {
+   "hash": "c57c9b7570a3c3d3",
+   "speaker": "player",
+   "text": "He's the hermit. He's... a friend of the lotus.",
+   "duration": 2.42
+  },
+  "q034_o2_l4_m.ogg": {
+   "hash": "c1d598a8dd68c8b9",
+   "speaker": "player",
+   "text": "He's the hermit. He's... a friend of the lotus.",
+   "duration": 2.22
+  },
   "q035_o0_l0.ogg": {
    "hash": "02255fcd11594feb",
    "speaker": "hermit_lan",
@@ -2706,6 +3018,24 @@
    "speaker": "hermit_lan",
    "text": "Do not fear it. It is not cruel, only very, very thorough.",
    "duration": 4.4
+  },
+  "q035_o0_l3.ogg": {
+   "hash": "d7baba2e3f632b50",
+   "speaker": "rival_zhao",
+   "text": "Thorough. Wonderful. My favourite kind of stone monster.",
+   "duration": 3.29
+  },
+  "q035_o0_l4_f.ogg": {
+   "hash": "cc87df10702efbba",
+   "speaker": "player",
+   "text": "Then I'll be thorough too.",
+   "duration": 1.41
+  },
+  "q035_o0_l4_m.ogg": {
+   "hash": "7eb6a25fcdb2c83a",
+   "speaker": "player",
+   "text": "Then I'll be thorough too.",
+   "duration": 1.13
   },
   "q035_o1_l0.ogg": {
    "hash": "59c377d48841e479",
@@ -2791,6 +3121,12 @@
    "text": "One day. Not yet. First I must forgive a coward, and he is very stubborn.",
    "duration": 6.18
   },
+  "q036_o2_l4.ogg": {
+   "hash": "64f8fe34ca3f5adc",
+   "speaker": "rival_zhao",
+   "text": "Forgive him quickly, old man. There's a tournament coming, and my rival is sitting in a forest.",
+   "duration": 5.02
+  },
   "q037_o0_l0.ogg": {
    "hash": "741dd8d4fe863de6",
    "speaker": "rival_zhao",
@@ -2820,6 +3156,12 @@
    "speaker": "rival_zhao",
    "text": "Don't be sentimental. Nobody gets to defeat you except me. I've been planning it for months.",
    "duration": 4.84
+  },
+  "q037_o1_l3.ogg": {
+   "hash": "8879d3f18f9cdc6b",
+   "speaker": "hermit_lan",
+   "text": "Tactically leak. I shall remember that one. Hold still, boy. This will sting.",
+   "duration": 5.63
   },
   "q038_o0_l0.ogg": {
    "hash": "77b309eb953396bc",
@@ -2868,6 +3210,12 @@
    "speaker": "elder_gu",
    "text": "Did she. Then keep it, disciple. Keep it very close. Things kept close are the easiest to lose.",
    "duration": 7.94
+  },
+  "q038_o2_l3.ogg": {
+   "hash": "cf5e05218010b261",
+   "speaker": "rival_zhao",
+   "text": "I only told the Law Hall what I saw, Elder. As I was ordered.",
+   "duration": 3.48
   },
   "q038_o3_l0.ogg": {
    "hash": "cd108f6c1af14478",
@@ -2928,6 +3276,12 @@
    "speaker": "steward_qian",
    "text": "Approved it. Everyone approves things. Nobody counts things. Fine. Take them. Sign here. And here. And here.",
    "duration": 8.83
+  },
+  "q039_o1_l3.ogg": {
+   "hash": "ded10e4a3d4702fd",
+   "speaker": "elder_hua",
+   "text": "Sign it quickly, Steward, or I'll brew you something for your nerves. You won't enjoy it.",
+   "duration": 5.74
   },
   "q039_o3_l0.ogg": {
    "hash": "f7fb7ea218352811",
@@ -3019,6 +3373,30 @@
    "text": "I want you to enter. And I want whoever cut those pages to watch you win.",
    "duration": 4.8
   },
+  "q040_o2_l3_f.ogg": {
+   "hash": "988fa992e2302147",
+   "speaker": "senior_han",
+   "text": "I'll train her myself, Sect Master. Morning and evening.",
+   "duration": 3.43
+  },
+  "q040_o2_l3_m.ogg": {
+   "hash": "3f1ffc0f6517e52b",
+   "speaker": "senior_han",
+   "text": "I'll train him myself, Sect Master. Morning and evening.",
+   "duration": 3.15
+  },
+  "q040_o2_l4_f.ogg": {
+   "hash": "924005ebf7bee771",
+   "speaker": "player",
+   "text": "Then whoever cut those pages will have a very good view.",
+   "duration": 3.06
+  },
+  "q040_o2_l4_m.ogg": {
+   "hash": "dfc892c8e69ff1e3",
+   "speaker": "player",
+   "text": "Then whoever cut those pages will have a very good view.",
+   "duration": 2.67
+  },
   "q041_o1_l0.ogg": {
    "hash": "f181d6bfa77ca3b7",
    "speaker": "narrator",
@@ -3048,6 +3426,12 @@
    "speaker": "steward_qian",
    "text": "Then the Sect Master can pay. Fine, fine. Waived. Don't tell anyone. I have a reputation.",
    "duration": 6.38
+  },
+  "q041_o2_l3.ogg": {
+   "hash": "c47442fcf1401b27",
+   "speaker": "rival_zhao",
+   "text": "Waived? He charged me four. And a seal fee. And a fee for the ink on the seal.",
+   "duration": 4.96
   },
   "q041_o3_l0.ogg": {
    "hash": "4f49be49c67a4be5",
@@ -3090,6 +3474,24 @@
    "speaker": "senior_wei",
    "text": "Listen. Yan Tie is strong, but he fights like a landslide, all at once. Make him chase you and he'll tire.",
    "duration": 7.2
+  },
+  "q042_o2_l2.ogg": {
+   "hash": "7339bd48f71e0488",
+   "speaker": "senior_han",
+   "text": "He's right, for once. Make Yan Tie chase you. Then make him regret it.",
+   "duration": 4.37
+  },
+  "q042_o2_l3_f.ogg": {
+   "hash": "dd348405a26c3d22",
+   "speaker": "player",
+   "text": "Lunch it is, then. Your treat, Senior Brother.",
+   "duration": 3.32
+  },
+  "q042_o2_l3_m.ogg": {
+   "hash": "b0224c776ecf4aef",
+   "speaker": "player",
+   "text": "Lunch it is, then. Your treat, Senior Brother.",
+   "duration": 2.3
   },
   "q043_o0_l0.ogg": {
    "hash": "98bef47bc7d1552c",
@@ -3145,6 +3547,12 @@
    "text": "It was an observation. Go and eat something. You look like a boiled noodle.",
    "duration": 4.89
   },
+  "q043_o3_l3.ogg": {
+   "hash": "f5a9c73721811474",
+   "speaker": "senior_wei",
+   "text": "Adequate! Did everyone hear that? Adequate! That's practically poetry from him!",
+   "duration": 5.32
+  },
   "q044_o0_l0.ogg": {
    "hash": "fcdc115bcd62f886",
    "speaker": "narrator",
@@ -3199,6 +3607,12 @@
    "text": "Elder Gu. Same as yours. Why does that matter?",
    "duration": 2.94
   },
+  "q044_o1_l5.ogg": {
+   "hash": "f39f5f3f6f20bbe0",
+   "speaker": "elder_mo",
+   "text": "Zhao Ming liked the sunrise more. Stay for it, boy. I'll square your curfew with the Law Hall.",
+   "duration": 5.74
+  },
   "q044_o2_l0.ogg": {
    "hash": "bcd06aca4d91e038",
    "speaker": "senior_han",
@@ -3247,6 +3661,24 @@
    "text": "Also, a Law Hall disciple told me to stop betting on you. Rude, right? I bet more.",
    "duration": 5.93
   },
+  "q045_o3_l2.ogg": {
+   "hash": "714f62d5bba05dc8",
+   "speaker": "senior_wei",
+   "text": "Eleven stones and a hat? My kidney deserves a share, Lu Ping.",
+   "duration": 4.72
+  },
+  "q045_o3_l3_f.ogg": {
+   "hash": "dbd98534c9a88a39",
+   "speaker": "player",
+   "text": "Buy the hat. Then stop betting.",
+   "duration": 2.18
+  },
+  "q045_o3_l3_m.ogg": {
+   "hash": "621e1c5a29854deb",
+   "speaker": "player",
+   "text": "Buy the hat. Then stop betting.",
+   "duration": 1.79
+  },
   "q046_o0_l0.ogg": {
    "hash": "83afcd092827556d",
    "speaker": "elder_hua",
@@ -3294,6 +3726,24 @@
    "speaker": "elder_hua",
    "text": "Tell no one about the Law Hall yet. An accusation without proof is just a very loud way to die.",
    "duration": 6.93
+  },
+  "q046_o3_l2.ogg": {
+   "hash": "f0aadcd2e7c4822d",
+   "speaker": "xiao_man",
+   "text": "I'll help you brew, Elder! I won't drop anything. I'll drop almost nothing.",
+   "duration": 4.94
+  },
+  "q046_o3_l3_f.ogg": {
+   "hash": "524ddf27a3269976",
+   "speaker": "player",
+   "text": "Then we'd better hurry. Yan Tie fights at dawn.",
+   "duration": 3.09
+  },
+  "q046_o3_l3_m.ogg": {
+   "hash": "9b5148c7c33acd30",
+   "speaker": "player",
+   "text": "Then we'd better hurry. Yan Tie fights at dawn.",
+   "duration": 2.43
   },
   "q047_o0_l0.ogg": {
    "hash": "b95bcda7699e22f0",
@@ -3361,6 +3811,24 @@
    "text": "Win the final. If anyone is going to beat Yan Tie, it should be the person who's going to lose to me someday.",
    "duration": 5.95
   },
+  "q047_o2_l3.ogg": {
+   "hash": "2d3122c3e3aa7902",
+   "speaker": "senior_wei",
+   "text": "Did Zhao Kang just pay a compliment? Somebody carve it on the stele.",
+   "duration": 3.94
+  },
+  "q047_o2_l4_f.ogg": {
+   "hash": "3af39b5d6ad293be",
+   "speaker": "player",
+   "text": "I'll hold him to it.",
+   "duration": 1.19
+  },
+  "q047_o2_l4_m.ogg": {
+   "hash": "d3059a8251f3f2b2",
+   "speaker": "player",
+   "text": "I'll hold him to it.",
+   "duration": 0.98
+  },
   "q048_o0_l0.ogg": {
    "hash": "89b4d03dbe0305b5",
    "speaker": "elder_gu",
@@ -3408,6 +3876,24 @@
    "speaker": "elder_mo",
    "text": "Go and clear your head. You've a champion to face at dawn.",
    "duration": 3.37
+  },
+  "q048_o1_l3.ogg": {
+   "hash": "49513ff7920c3bf4",
+   "speaker": "elder_bai",
+   "text": "He did. Badly. I had to fix the grammar. There is no inspection rule, disciple.",
+   "duration": 6.83
+  },
+  "q048_o1_l4_f.ogg": {
+   "hash": "96039b14ddc40873",
+   "speaker": "player",
+   "text": "Then why does Elder Gu want it so badly?",
+   "duration": 2.33
+  },
+  "q048_o1_l4_m.ogg": {
+   "hash": "ae0ca22052023c63",
+   "speaker": "player",
+   "text": "Then why does Elder Gu want it so badly?",
+   "duration": 1.88
   },
   "q048_o2_l0.ogg": {
    "hash": "7fd543d130d71af4",
@@ -3493,6 +3979,24 @@
    "text": "Wait. The pagoda bell... someone is ringing the pagoda bell. Where is Han Xue?",
    "duration": 5.33
   },
+  "q049_o2_l3.ogg": {
+   "hash": "1b5338407ba908b1",
+   "speaker": "elder_mo",
+   "text": "The pagoda? Han Xue was watching it. Sect Master, I'll go.",
+   "duration": 4.48
+  },
+  "q049_o2_l4_f.ogg": {
+   "hash": "3d0deb451d410ad1",
+   "speaker": "player",
+   "text": "No, Elder. I'm faster. Let me go.",
+   "duration": 3.28
+  },
+  "q049_o2_l4_m.ogg": {
+   "hash": "f28333eb44a3e2ba",
+   "speaker": "player",
+   "text": "No, Elder. I'm faster. Let me go.",
+   "duration": 2.64
+  },
   "q050_o0_l0_f.ogg": {
    "hash": "59f65ccfbc5acea3",
    "speaker": "senior_han",
@@ -3540,6 +4044,24 @@
    "speaker": "elder_bai",
    "text": "Without it, if the seal breaks, we cannot remake it. Go to the Sect Master. Quickly.",
    "duration": 6.44
+  },
+  "q050_o3_l3.ogg": {
+   "hash": "26b0b5aafd98c23e",
+   "speaker": "senior_han",
+   "text": "Don't move, Elder. Your arm is broken, whatever you say about bookshelves.",
+   "duration": 3.87
+  },
+  "q050_o3_l4_f.ogg": {
+   "hash": "778d57e98f10bdf2",
+   "speaker": "player",
+   "text": "We'll get it back, Elder Bai. I swear it.",
+   "duration": 2.78
+  },
+  "q050_o3_l4_m.ogg": {
+   "hash": "750ab13cf554dac2",
+   "speaker": "player",
+   "text": "We'll get it back, Elder Bai. I swear it.",
+   "duration": 2.49
   },
   "q050_o4_l0.ogg": {
    "hash": "014152e4abc9979d",
@@ -3661,6 +4183,12 @@
    "text": "Ye Wuming. It means nameless night. I chose it myself. It is the only thing here I ever chose.",
    "duration": 6.09
   },
+  "q052_o3_l4.ogg": {
+   "hash": "ebb9e9d8b8f2e22c",
+   "speaker": "senior_han",
+   "text": "A name you chose yourself. That's worth more than most names, Ye Wuming.",
+   "duration": 3.91
+  },
   "q053_o2_l0.ogg": {
    "hash": "d3eb35ce8d2dfeaf",
    "speaker": "narrator",
@@ -3691,6 +4219,12 @@
    "text": "Or both. People can be both.",
    "duration": 1.8
   },
+  "q053_o3_l3.ogg": {
+   "hash": "304640c7e26a722e",
+   "speaker": "wanderer_ye",
+   "text": "I can hear you, Han Xue. Patience. I've had a great deal of practice at it.",
+   "duration": 4.27
+  },
   "q054_o0_l0.ogg": {
    "hash": "7b38dd1efd6f9f91",
    "speaker": "narrator",
@@ -3720,6 +4254,30 @@
    "speaker": "crimson_xuemei",
    "text": "I'll take the pretty ice sword for the cages. Kill the rest.",
    "duration": 3.6
+  },
+  "q054_o1_l3_f.ogg": {
+   "hash": "c8053edccf1e9a7b",
+   "speaker": "senior_han",
+   "text": "Crimson Elder or not, she bleeds like anyone. Su Yue, watch the left!",
+   "duration": 4.33
+  },
+  "q054_o1_l3_m.ogg": {
+   "hash": "3a1e00755a7c2ba0",
+   "speaker": "senior_han",
+   "text": "Crimson Elder or not, she bleeds like anyone. Lin Feng, watch the left!",
+   "duration": 4.15
+  },
+  "q054_o1_l4_f.ogg": {
+   "hash": "d5b2f5be8dd0bc8b",
+   "speaker": "player",
+   "text": "I see them. Back to back!",
+   "duration": 1.84
+  },
+  "q054_o1_l4_m.ogg": {
+   "hash": "ca885605841bf417",
+   "speaker": "player",
+   "text": "I see them. Back to back!",
+   "duration": 1.74
   },
   "q054_o2_l0.ogg": {
    "hash": "f30aa655645b523f",
@@ -3757,6 +4315,30 @@
    "text": "One by one, the obelisks crumble. Far off, in the dark, many voices gasp at once, like people breathing for the first time in days.",
    "duration": 8.11
   },
+  "q055_o2_l0.ogg": {
+   "hash": "2d23c2f0278f4781",
+   "speaker": "crimson_xuemei",
+   "text": "You broke my ring, little lamb. Your ice-sword friend screams so prettily for you. Kill them, my dears.",
+   "duration": 5.79
+  },
+  "q055_o2_l1.ogg": {
+   "hash": "62780174c9172d27",
+   "speaker": "wanderer_ye",
+   "text": "She won't fight us herself. Not yet. She likes to watch. Break the guards.",
+   "duration": 4.46
+  },
+  "q055_o2_l2_f.ogg": {
+   "hash": "aea63521dfa7b64e",
+   "speaker": "player",
+   "text": "Where is Han Xue, Xue Mei? Where is she?",
+   "duration": 3.32
+  },
+  "q055_o2_l2_m.ogg": {
+   "hash": "2e3684f58da8ec3c",
+   "speaker": "player",
+   "text": "Where is Han Xue, Xue Mei? Where is she?",
+   "duration": 2.15
+  },
   "q055_o3_l0.ogg": {
    "hash": "b4a99c8f8fd21d60",
    "speaker": "wanderer_ye",
@@ -3792,6 +4374,36 @@
    "speaker": "wanderer_ye",
    "text": "The command tent is at the centre. Where there are orders, there are answers.",
    "duration": 3.59
+  },
+  "q056_o1_l0.ogg": {
+   "hash": "cac5e05e98ede991",
+   "speaker": "bandit_tie",
+   "text": "The sect brat? Here? Don't look at me like that. They have our families in those cages.",
+   "duration": 4.6
+  },
+  "q056_o1_l1.ogg": {
+   "hash": "ae3198200de9cdb5",
+   "speaker": "wanderer_ye",
+   "text": "Iron-Fang. So the Abyss owns you too. Stand aside, or stand with them.",
+   "duration": 4.37
+  },
+  "q056_o1_l2_f.ogg": {
+   "hash": "96c89ec0ee44273a",
+   "speaker": "player",
+   "text": "Then help us free them, Tie Hu.",
+   "duration": 2.3
+  },
+  "q056_o1_l2_m.ogg": {
+   "hash": "478668fa359c44a1",
+   "speaker": "player",
+   "text": "Then help us free them, Tie Hu.",
+   "duration": 1.98
+  },
+  "q056_o1_l3.ogg": {
+   "hash": "14b5290833bc3cbe",
+   "speaker": "bandit_tie",
+   "text": "Not today. Today I didn't see you. Run, before I remember that I did.",
+   "duration": 3.52
   },
   "q056_o3_l0.ogg": {
    "hash": "803fc3323a4fce90",
@@ -3847,6 +4459,24 @@
    "text": "Farmers, fishermen, disciples of three sects. A young man with Xiao Man's eyes. And a boy who says his name is Liu Er.",
    "duration": 8.46
   },
+  "q057_o2_l2_f.ogg": {
+   "hash": "069358a378c4ea25",
+   "speaker": "player",
+   "text": "Senior Sister! Can you stand?",
+   "duration": 2.18
+  },
+  "q057_o2_l2_m.ogg": {
+   "hash": "1f2fd978b05a6a40",
+   "speaker": "player",
+   "text": "Senior Sister! Can you stand?",
+   "duration": 2.07
+  },
+  "q057_o2_l3.ogg": {
+   "hash": "db309b43439bcabd",
+   "speaker": "wanderer_ye",
+   "text": "She can stand. She can also complain, which is better.",
+   "duration": 3.41
+  },
   "q058_o0_l0.ogg": {
    "hash": "e356c4bdb934ad7c",
    "speaker": "xiao_shi",
@@ -3864,6 +4494,24 @@
    "speaker": "xiao_shi",
    "text": "An elder from our sect was here. Gu. He stood by the altar and talked to the blood like it was a person.",
    "duration": 5.91
+  },
+  "q058_o0_l3.ogg": {
+   "hash": "33902f3ac5e002cf",
+   "speaker": "senior_han",
+   "text": "Gu. At the altar. Then he's already there.",
+   "duration": 2.74
+  },
+  "q058_o0_l4_f.ogg": {
+   "hash": "400ea0a7afd4aaf3",
+   "speaker": "player",
+   "text": "Your sister is well, Xiao Shi. She'll be better when she sees you.",
+   "duration": 4.41
+  },
+  "q058_o0_l4_m.ogg": {
+   "hash": "96623bba0aeb0d5e",
+   "speaker": "player",
+   "text": "Your sister is well, Xiao Shi. She'll be better when she sees you.",
+   "duration": 3.91
   },
   "q058_o2_l0.ogg": {
    "hash": "fb3a30b2c03de8c6",
@@ -3918,6 +4566,12 @@
    "speaker": "crimson_xuemei",
    "text": "Oh, I love it when they run.",
    "duration": 2.18
+  },
+  "q059_o1_l3.ogg": {
+   "hash": "eb65f26a5156e3bc",
+   "speaker": "wanderer_ye",
+   "text": "Nameless remembers you, Xue Mei. He remembers everything you ever did to him.",
+   "duration": 3.99
   },
   "q059_o2_l0.ogg": {
    "hash": "eb735d378cf2b5fe",
@@ -4015,6 +4669,18 @@
    "text": "Lin Feng, I... thank you. I'll pick herbs for you for a hundred years. I'll only drop some of them.",
    "duration": 6.68
   },
+  "q060_o2_l3_f.ogg": {
+   "hash": "5adcb0ad8783f204",
+   "speaker": "player",
+   "text": "He counted the bars every night, Xiao Man. He never stopped thinking of you.",
+   "duration": 4.22
+  },
+  "q060_o2_l3_m.ogg": {
+   "hash": "7354d489eb2994fe",
+   "speaker": "player",
+   "text": "He counted the bars every night, Xiao Man. He never stopped thinking of you.",
+   "duration": 4.31
+  },
   "q060_o3_l0.ogg": {
    "hash": "a4fc0b83d72e5b57",
    "speaker": "master_yun",
@@ -4069,6 +4735,12 @@
    "text": "Right here, Magistrate. People need to see you standing.",
    "duration": 2.88
   },
+  "q061_o2_l3.ogg": {
+   "hash": "ad577cf2afd96b7d",
+   "speaker": "rival_zhao",
+   "text": "Forty guards and a ballista. The Zhao clan has held worse walls with less. ...Not many. But some.",
+   "duration": 5.56
+  },
   "q062_o0_l0.ogg": {
    "hash": "c15ca208734d346b",
    "speaker": "constable_du",
@@ -4110,6 +4782,12 @@
    "speaker": "merchant_jin",
    "text": "Take it. Take all of it. Maybe it will weigh a little less on the scales in the next life.",
    "duration": 5.02
+  },
+  "q062_o1_l4.ogg": {
+   "hash": "90e99914b5b9a061",
+   "speaker": "constable_du",
+   "text": "Six months' profit, Jin, or no town left to sell it in. Pick one.",
+   "duration": 4.15
   },
   "q062_o3_l0.ogg": {
    "hash": "95b932b69a4de2cc",
@@ -4165,6 +4843,12 @@
    "text": "Hmph. From your lips to heaven's ears.",
    "duration": 2.69
   },
+  "q063_o2_l4.ogg": {
+   "hash": "87d98998c108c3c6",
+   "speaker": "senior_wei",
+   "text": "Nobody's dying before dinner, anyway. After dinner, we'll see.",
+   "duration": 4.0
+  },
   "q064_o0_l0.ogg": {
    "hash": "c54b202818057bfd",
    "speaker": "ferryman_pan",
@@ -4195,6 +4879,24 @@
    "text": "Here, a dumpling. Eat it. Then go and hit something. Elder Mo would want you fed and angry.",
    "duration": 6.03
   },
+  "q064_o2_l2.ogg": {
+   "hash": "6c1d1ab3a6bcd2eb",
+   "speaker": "rival_zhao",
+   "text": "Strategically guarding the kitchens. Wei Tong, you are a genius and a disgrace.",
+   "duration": 5.0
+  },
+  "q064_o2_l3_f.ogg": {
+   "hash": "0e8de062680b3eb4",
+   "speaker": "player",
+   "text": "Save me two dumplings. I'll be back for them.",
+   "duration": 3.13
+  },
+  "q064_o2_l3_m.ogg": {
+   "hash": "fea740dd177149fe",
+   "speaker": "player",
+   "text": "Save me two dumplings. I'll be back for them.",
+   "duration": 2.56
+  },
   "q065_o2_l0.ogg": {
    "hash": "7c929918d41c9c72",
    "speaker": "narrator",
@@ -4212,6 +4914,24 @@
    "speaker": "rival_zhao",
    "text": "They didn't push the graveyard to take the town. They wanted blood on those runes. Why?",
    "duration": 4.6
+  },
+  "q065_o3_l2.ogg": {
+   "hash": "e4de553863522d72",
+   "speaker": "senior_wei",
+   "text": "Blood on the runes. Like the old deacon's circle. Somebody is still collecting.",
+   "duration": 5.07
+  },
+  "q065_o3_l3_f.ogg": {
+   "hash": "f3b1f4e33b3eeae8",
+   "speaker": "player",
+   "text": "And somebody is still paying for it. Let's find out who.",
+   "duration": 3.41
+  },
+  "q065_o3_l3_m.ogg": {
+   "hash": "39ea3dca81433554",
+   "speaker": "player",
+   "text": "And somebody is still paying for it. Let's find out who.",
+   "duration": 3.12
   },
   "q066_o0_l0.ogg": {
    "hash": "208ab61204a8fdad",
@@ -4243,6 +4963,12 @@
    "text": "Tell Liu Er to stay inside tonight. And give him an extra bowl of rice from me.",
    "duration": 3.9
   },
+  "q066_o3_l3.ogg": {
+   "hash": "8fe7514a33bc1930",
+   "speaker": "ferryman_pan",
+   "text": "And every farmer's across the river, Madam Liu. My third plank complained the whole way.",
+   "duration": 5.56
+  },
   "q067_o0_l0.ogg": {
    "hash": "c29ad84ae503ed7d",
    "speaker": "merchant_jin",
@@ -4272,6 +4998,12 @@
    "speaker": "player",
    "text": "Fear made you do it. What you do next is your choice. Go help Constable Du, Master Jin.",
    "duration": 4.75
+  },
+  "q067_o0_l4.ogg": {
+   "hash": "86b585e492208408",
+   "speaker": "constable_du",
+   "text": "Iron-Fang threatened my runners too, Jin. You should have come to me.",
+   "duration": 3.5
   },
   "q067_o2_l0.ogg": {
    "hash": "7f9f17840d78038c",
@@ -4345,11 +5077,35 @@
    "text": "...You're a fool. Fine. Iron-Fang pays his debts. Eventually.",
    "duration": 3.85
   },
+  "q068_o2_l5.ogg": {
+   "hash": "23e1ee68956d14c7",
+   "speaker": "constable_du",
+   "text": "Swear it here, Iron-Fang, and I'll write it down. In ink. The permanent kind.",
+   "duration": 4.92
+  },
   "q069_o0_l0.ogg": {
    "hash": "f1327bda4bc6b80a",
    "speaker": "constable_du",
    "text": "They're at the gate! Everyone with a spear, with me! For Qingshi!",
    "duration": 3.85
+  },
+  "q069_o0_l1.ogg": {
+   "hash": "b354906d8197bd5d",
+   "speaker": "rival_zhao",
+   "text": "For Qingshi! And for the Zhao clan, who will hear about this in great detail!",
+   "duration": 4.21
+  },
+  "q069_o0_l2_f.ogg": {
+   "hash": "3ef551f14f5a92ac",
+   "speaker": "player",
+   "text": "Hold the line! They're breaking!",
+   "duration": 2.06
+  },
+  "q069_o0_l2_m.ogg": {
+   "hash": "adbe441213941e8e",
+   "speaker": "player",
+   "text": "Hold the line! They're breaking!",
+   "duration": 2.0
   },
   "q069_o1_l0.ogg": {
    "hash": "d9a7439e869f3ea5",
@@ -4429,6 +5185,24 @@
    "text": "Iron-Fang is washing dishes in my kitchen, by the way. He's surprisingly good. Very thorough scrubber.",
    "duration": 6.6
   },
+  "q070_o1_l2.ogg": {
+   "hash": "ddd9430c29892408",
+   "speaker": "bandit_tie",
+   "text": "Very thorough. Tell them very thorough. Iron-Fang does nothing by halves.",
+   "duration": 3.56
+  },
+  "q070_o1_l3_f.ogg": {
+   "hash": "b14fc6781f42066b",
+   "speaker": "player",
+   "text": "One cup, then. To the nineteen.",
+   "duration": 2.68
+  },
+  "q070_o1_l3_m.ogg": {
+   "hash": "39231974b03ab57f",
+   "speaker": "player",
+   "text": "One cup, then. To the nineteen.",
+   "duration": 1.96
+  },
   "q070_o2_l0.ogg": {
    "hash": "61643056291ad2f0",
    "speaker": "narrator",
@@ -4501,6 +5275,36 @@
    "text": "Two out of three is usually fine. Go on, lotus child. I'll be in my pavilion, watching.",
    "duration": 8.36
   },
+  "q071_o2_l4_f.ogg": {
+   "hash": "5259e2ed21faa16a",
+   "speaker": "rival_zhao",
+   "text": "A persistent memory? Is she a ghost? Su Yue, is she a ghost? Nobody said ghosts.",
+   "duration": 6.16
+  },
+  "q071_o2_l4_m.ogg": {
+   "hash": "9042c4ab69f18cbc",
+   "speaker": "rival_zhao",
+   "text": "A persistent memory? Is she a ghost? Lin Feng, is she a ghost? Nobody said ghosts.",
+   "duration": 5.94
+  },
+  "q071_o2_l5.ogg": {
+   "hash": "e5a7e46737a8d89a",
+   "speaker": "senior_han",
+   "text": "Bow to the sage, Zhao Kang.",
+   "duration": 1.72
+  },
+  "q071_o2_l6_f.ogg": {
+   "hash": "e8cddb6f886249a9",
+   "speaker": "player",
+   "text": "Thank you, Sage. We'll keep our shoes sturdy.",
+   "duration": 2.84
+  },
+  "q071_o2_l6_m.ogg": {
+   "hash": "fea45bbdf9370618",
+   "speaker": "player",
+   "text": "Thank you, Sage. We'll keep our shoes sturdy.",
+   "duration": 2.43
+  },
   "q072_o0_l0.ogg": {
    "hash": "401266d1b858bd92",
    "speaker": "rival_zhao",
@@ -4518,6 +5322,18 @@
    "speaker": "rival_zhao",
    "text": "Well, that's elitist.",
    "duration": 2.26
+  },
+  "q072_o0_l3_f.ogg": {
+   "hash": "35229185031ac4d8",
+   "speaker": "player",
+   "text": "Keep walking, Zhao Kang. And don't look down.",
+   "duration": 3.11
+  },
+  "q072_o0_l3_m.ogg": {
+   "hash": "71af68268aa11109",
+   "speaker": "player",
+   "text": "Keep walking, Zhao Kang. And don't look down.",
+   "duration": 2.6
   },
   "q072_o1_l0.ogg": {
    "hash": "560b1b7f6228f0bd",
@@ -4585,6 +5401,12 @@
    "text": "Apology accepted, Zhao Kang. Friend.",
    "duration": 2.35
   },
+  "q073_o2_l4.ogg": {
+   "hash": "36d6f6ba4fde1cd5",
+   "speaker": "senior_han",
+   "text": "I heard all of that, Zhao Kang. I'm telling no one. I'm writing it down.",
+   "duration": 4.25
+  },
   "q074_o0_l0.ogg": {
    "hash": "fbc09ae782bede8b",
    "speaker": "star_sage",
@@ -4608,6 +5430,12 @@
    "speaker": "star_sage",
    "text": "Wrong, but I like your answer better than mine. It was a staircase with the bottom steps removed. Read my chart.",
    "duration": 7.22
+  },
+  "q074_o0_l3.ogg": {
+   "hash": "9086af0e862d3002",
+   "speaker": "rival_zhao",
+   "text": "A staircase? That's not a riddle. That's carpentry.",
+   "duration": 3.07
   },
   "q074_o1_l0.ogg": {
    "hash": "f851a42a8b38540d",
@@ -4657,6 +5485,24 @@
    "text": "Stolen body? What kind of warning is that?",
    "duration": 2.34
   },
+  "q075_o3_l2.ogg": {
+   "hash": "1bae33da08b43b01",
+   "speaker": "rival_zhao",
+   "text": "A warning for thieves. The Blood Moon would ignore it on principle.",
+   "duration": 3.47
+  },
+  "q075_o3_l3_f.ogg": {
+   "hash": "bcba7e7177d73aeb",
+   "speaker": "player",
+   "text": "Or for someone who means to steal a body. Remember it.",
+   "duration": 3.42
+  },
+  "q075_o3_l3_m.ogg": {
+   "hash": "1ea4dcb15a63a20e",
+   "speaker": "player",
+   "text": "Or for someone who means to steal a body. Remember it.",
+   "duration": 2.89
+  },
   "q076_o0_l0.ogg": {
    "hash": "8b53b14cda18c29f",
    "speaker": "senior_han",
@@ -4687,6 +5533,12 @@
    "text": "Our formation needs them too. Why would the Blood Moon build the same thing we're building?",
    "duration": 4.02
   },
+  "q076_o2_l3.ogg": {
+   "hash": "c493aa60bab7de72",
+   "speaker": "rival_zhao",
+   "text": "Same stamp as the red stars. I don't like coincidences. They're never coincidences.",
+   "duration": 5.07
+  },
   "q077_o0_l0.ogg": {
    "hash": "517d4edd3aca8346",
    "speaker": "narrator",
@@ -4711,6 +5563,24 @@
    "text": "It is suffering. It will kill you because it is suffering. Please free it.",
    "duration": 5.58
   },
+  "q077_o2_l3.ogg": {
+   "hash": "9d502c4dd882f867",
+   "speaker": "senior_han",
+   "text": "Free it, not kill it. That's harder, Sage.",
+   "duration": 2.89
+  },
+  "q077_o2_l4_f.ogg": {
+   "hash": "16b7af888a4c9378",
+   "speaker": "player",
+   "text": "Then we do the harder thing.",
+   "duration": 1.47
+  },
+  "q077_o2_l4_m.ogg": {
+   "hash": "a46e6187fc78b997",
+   "speaker": "player",
+   "text": "Then we do the harder thing.",
+   "duration": 1.21
+  },
   "q078_o0_l0.ogg": {
    "hash": "1258641f4ed189c0",
    "speaker": "narrator",
@@ -4728,6 +5598,18 @@
    "speaker": "senior_han",
    "text": "Everyone told you, Zhao Kang.",
    "duration": 1.99
+  },
+  "q078_o0_l3_f.ogg": {
+   "hash": "91cb603a89a878d3",
+   "speaker": "player",
+   "text": "Stay behind me, both of you. It's hurting, not hunting.",
+   "duration": 3.47
+  },
+  "q078_o0_l3_m.ogg": {
+   "hash": "9410afef2a80065d",
+   "speaker": "player",
+   "text": "Stay behind me, both of you. It's hurting, not hunting.",
+   "duration": 2.91
   },
   "q078_o1_l0.ogg": {
    "hash": "a62206fb759bd752",
@@ -4831,6 +5713,18 @@
    "text": "Then ask who kept the archive. Go carefully, lotus child. Heaven is watching you now.",
    "duration": 6.79
   },
+  "q079_o2_l4_f.ogg": {
+   "hash": "435ebd0cf5aab602",
+   "speaker": "senior_han",
+   "text": "Like a door instead of a lock. Su Yue, that archive belonged to the Law Hall.",
+   "duration": 4.23
+  },
+  "q079_o2_l4_m.ogg": {
+   "hash": "fbf3d9d97fa38c43",
+   "speaker": "senior_han",
+   "text": "Like a door instead of a lock. Lin Feng, that archive belonged to the Law Hall.",
+   "duration": 4.52
+  },
   "q080_o0_l0.ogg": {
    "hash": "a46684148ed6e7dd",
    "speaker": "narrator",
@@ -4884,6 +5778,12 @@
    "speaker": "elder_mo",
    "text": "Leave it with me. I'll check every rune myself. Go, see the Sect Master. You've earned your cake.",
    "duration": 7.1
+  },
+  "q080_o1_l4.ogg": {
+   "hash": "3ea8077c330d6287",
+   "speaker": "elder_bai",
+   "text": "Certified by me. But I only checked the copy against itself, Mo. A forger's favourite kind of scholar.",
+   "duration": 7.55
   },
   "q080_o2_l0.ogg": {
    "hash": "788e007bd746acb0",
@@ -4975,6 +5875,24 @@
    "text": "Old men do that before long journeys. He's not going anywhere, is he?",
    "duration": 4.24
   },
+  "q081_o3_l3.ogg": {
+   "hash": "5139f48e57d0343b",
+   "speaker": "senior_han",
+   "text": "He gave me his whetstone. Elder Mo never gives anyone anything. I didn't like it either, Wei Tong.",
+   "duration": 5.21
+  },
+  "q081_o3_l4_f.ogg": {
+   "hash": "1bc0401f3a7d1a6f",
+   "speaker": "player",
+   "text": "He's checking the runes. That's all. He'll be fine.",
+   "duration": 3.38
+  },
+  "q081_o3_l4_m.ogg": {
+   "hash": "e1e1c5f66a68bdd7",
+   "speaker": "player",
+   "text": "He's checking the runes. That's all. He'll be fine.",
+   "duration": 3.19
+  },
   "q082_o0_l0.ogg": {
    "hash": "41d1362b11d95b8f",
    "speaker": "gate_lu",
@@ -5017,6 +5935,12 @@
    "text": "I know. That's what worries me. Go. If you're not back by dawn, I'm telling Elder Mo, and then I'm coming to drag you home.",
    "duration": 7.43
   },
+  "q082_o2_l3.ogg": {
+   "hash": "a25884225684f0da",
+   "speaker": "senior_wei",
+   "text": "Then take Dumpling. Take two Dumplings. Take me. Nobody said anything about swords.",
+   "duration": 5.72
+  },
   "q083_o1_l0.ogg": {
    "hash": "1970ee939cf02614",
    "speaker": "elder_gu",
@@ -5040,6 +5964,30 @@
    "speaker": "elder_gu",
    "text": "I cannot face the mirror. It shows me what I am. You can. Free her. Then run home before they light it.",
    "duration": 6.6
+  },
+  "q083_o1_l4.ogg": {
+   "hash": "5e346e146e7d3e2e",
+   "speaker": "wanderer_ye",
+   "text": "He speaks the truth, for once. I watched him at the mirror. He never looks into it.",
+   "duration": 4.58
+  },
+  "q083_o1_l5.ogg": {
+   "hash": "3a9fa7f3cfdcb267",
+   "speaker": "elder_gu",
+   "text": "The nameless one. So you did not come alone.",
+   "duration": 2.72
+  },
+  "q083_o1_l6_f.ogg": {
+   "hash": "98b69fd6006aafa2",
+   "speaker": "player",
+   "text": "I didn't bring him. He brings himself.",
+   "duration": 2.45
+  },
+  "q083_o1_l6_m.ogg": {
+   "hash": "ff8c701300d48c88",
+   "speaker": "player",
+   "text": "I didn't bring him. He brings himself.",
+   "duration": 1.94
   },
   "q083_o2_l0.ogg": {
    "hash": "6f983f259afe88d2",
@@ -5113,6 +6061,30 @@
    "text": "Go. Now. The formation... I can feel it waking even from here. Run, Lin Feng, run!",
    "duration": 7.67
   },
+  "q084_o3_l2_f.ogg": {
+   "hash": "6de4a3d78fb673eb",
+   "speaker": "wanderer_ye",
+   "text": "I'll get him out of the Abyss. Go, Su Yue. Faster than you have ever run.",
+   "duration": 4.34
+  },
+  "q084_o3_l2_m.ogg": {
+   "hash": "5a8f7fd4f4d3d8c5",
+   "speaker": "wanderer_ye",
+   "text": "I'll get him out of the Abyss. Go, Lin Feng. Faster than you have ever run.",
+   "duration": 4.18
+  },
+  "q084_o3_l3_f.ogg": {
+   "hash": "723108feeebf9a99",
+   "speaker": "player",
+   "text": "Then run with me, both of you!",
+   "duration": 1.7
+  },
+  "q084_o3_l3_m.ogg": {
+   "hash": "ad941be5311422ca",
+   "speaker": "player",
+   "text": "Then run with me, both of you!",
+   "duration": 1.68
+  },
   "q085_o0_l0_f.ogg": {
    "hash": "5040b5f96b05630f",
    "speaker": "gate_lu",
@@ -5130,6 +6102,24 @@
    "speaker": "gate_lu",
    "text": "Elder Mo went into the array. He told everyone to stay back. The light's gone red. It's gone all red!",
    "duration": 5.77
+  },
+  "q085_o0_l2_f.ogg": {
+   "hash": "1aca9b53ccb0447a",
+   "speaker": "player",
+   "text": "Where's the Sect Master? Where's Han Xue?",
+   "duration": 2.84
+  },
+  "q085_o0_l2_m.ogg": {
+   "hash": "2b11e0d0e1c044b7",
+   "speaker": "player",
+   "text": "Where's the Sect Master? Where's Han Xue?",
+   "duration": 2.46
+  },
+  "q085_o0_l3.ogg": {
+   "hash": "5a2fbd0db39cab8e",
+   "speaker": "senior_wei",
+   "text": "Han Xue's at the array! I'm holding the gate! Go!",
+   "duration": 3.85
   },
   "q085_o2_l0_f.ogg": {
    "hash": "78783bdd5958a1c6",
@@ -5185,6 +6175,12 @@
    "text": "Make them anyway, Senior Brother. We'll eat them for him.",
    "duration": 3.14
   },
+  "q086_o2_l3.ogg": {
+   "hash": "ce0435884cd3d2ca",
+   "speaker": "senior_han",
+   "text": "We'll all eat them, Wei Tong. Every one. Even the burnt ones.",
+   "duration": 3.97
+  },
   "q087_o0_l0.ogg": {
    "hash": "ff79dcdcae531615",
    "speaker": "narrator",
@@ -5214,6 +6210,30 @@
    "speaker": "xiao_man",
    "text": "Are you all right? You don't have to be. My brother says being all right is overrated.",
    "duration": 5.48
+  },
+  "q087_o2_l2_f.ogg": {
+   "hash": "5a86933e008cbef3",
+   "speaker": "xiao_shi",
+   "text": "I said overrated. I also said it's allowed. Sit with us a while, Su Yue.",
+   "duration": 5.12
+  },
+  "q087_o2_l2_m.ogg": {
+   "hash": "609729d998d92ce6",
+   "speaker": "xiao_shi",
+   "text": "I said overrated. I also said it's allowed. Sit with us a while, Lin Feng.",
+   "duration": 4.66
+  },
+  "q087_o2_l3_f.ogg": {
+   "hash": "494ba62489cb6824",
+   "speaker": "player",
+   "text": "Thank you. Both of you.",
+   "duration": 1.71
+  },
+  "q087_o2_l3_m.ogg": {
+   "hash": "c0bfd3adc7aeb329",
+   "speaker": "player",
+   "text": "Thank you. Both of you.",
+   "duration": 1.5
   },
   "q087_o3_l0.ogg": {
    "hash": "ca9460a423703b95",
@@ -5293,6 +6313,12 @@
    "text": "...Mo would have said the same. Very well. I will show you the way through the black gate.",
    "duration": 4.57
   },
+  "q088_o2_l4.ogg": {
+   "hash": "d29817d11a4389b1",
+   "speaker": "master_yun",
+   "text": "The precepts are mine to keep now, Gu. And I have given this choice away.",
+   "duration": 4.69
+  },
   "q089_o0_l0.ogg": {
    "hash": "76ae49182853aaa0",
    "speaker": "rival_zhao",
@@ -5328,6 +6354,24 @@
    "speaker": "steward_qian",
    "text": "I have counted every stone in this sect for thirty years. Tonight I will count nothing. Just come back.",
    "duration": 5.62
+  },
+  "q089_o2_l2.ogg": {
+   "hash": "ff68a4e62c6b73d9",
+   "speaker": "rival_zhao",
+   "text": "Steward Qian, counting nothing. Somebody paint this moment.",
+   "duration": 4.04
+  },
+  "q089_o2_l3_f.ogg": {
+   "hash": "e1d8b142b28f845d",
+   "speaker": "player",
+   "text": "I'll come back, Steward. I'll even bring you a receipt.",
+   "duration": 3.5
+  },
+  "q089_o2_l3_m.ogg": {
+   "hash": "a8546662143408b0",
+   "speaker": "player",
+   "text": "I'll come back, Steward. I'll even bring you a receipt.",
+   "duration": 2.67
   },
   "q089_o4_l0.ogg": {
    "hash": "15ef78c0932908ab",
@@ -5401,6 +6445,24 @@
    "text": "Mo believed in you before any of us. Let's prove him right, Lin Feng.",
    "duration": 4.6
   },
+  "q090_o2_l3.ogg": {
+   "hash": "adb5a5430912ca6f",
+   "speaker": "senior_han",
+   "text": "We march together. All of us. He would have called that adequate.",
+   "duration": 3.7
+  },
+  "q090_o2_l4_f.ogg": {
+   "hash": "145c9fccbe36e390",
+   "speaker": "player",
+   "text": "Then let's be adequate, Sect Master. For him.",
+   "duration": 3.1
+  },
+  "q090_o2_l4_m.ogg": {
+   "hash": "88be44a27dbfc59a",
+   "speaker": "player",
+   "text": "Then let's be adequate, Sect Master. For him.",
+   "duration": 2.95
+  },
   "q091_o1_l0.ogg": {
    "hash": "f2b1f94fbd3a7bb0",
    "speaker": "master_yun",
@@ -5461,6 +6523,12 @@
    "text": "After, Senior Sister. I promise.",
    "duration": 2.22
   },
+  "q091_o3_l3.ogg": {
+   "hash": "977394577801ed87",
+   "speaker": "rival_zhao",
+   "text": "And after the sparring match, a banquet. The Zhao clan is paying. I've already sent the letter.",
+   "duration": 5.42
+  },
   "q092_o0_l0.ogg": {
    "hash": "e64d2a58615f8b93",
    "speaker": "senior_wei",
@@ -5491,6 +6559,24 @@
    "text": "Go on. The gate's ahead. Elder Mo would've said something grumpy and encouraging. Pretend I did.",
    "duration": 6.11
   },
+  "q092_o2_l2.ogg": {
+   "hash": "c324c566b67e484c",
+   "speaker": "rival_zhao",
+   "text": "One bun. He's been mourning that bun for an hour. The camp was on fire and he mourned the bun.",
+   "duration": 4.88
+  },
+  "q092_o2_l3_f.ogg": {
+   "hash": "5558a67442ce8cf3",
+   "speaker": "player",
+   "text": "Hold the pools, both of you. I'm going for the gate.",
+   "duration": 3.21
+  },
+  "q092_o2_l3_m.ogg": {
+   "hash": "0155682e4bcee245",
+   "speaker": "player",
+   "text": "Hold the pools, both of you. I'm going for the gate.",
+   "duration": 2.66
+  },
   "q093_o0_l0.ogg": {
    "hash": "25cfe9dd10cac571",
    "speaker": "elder_gu",
@@ -5520,6 +6606,12 @@
    "speaker": "elder_gu",
    "text": "Yes. I've made my peace with that. It is the first peace I have felt in twenty years.",
    "duration": 4.98
+  },
+  "q093_o0_l4.ogg": {
+   "hash": "a2751c85956f88a8",
+   "speaker": "master_yun",
+   "text": "Gu Hanshan. Whatever happens tonight, you go in as an elder of the Azure Cloud.",
+   "duration": 4.97
   },
   "q093_o1_l0.ogg": {
    "hash": "e95b3e6b338eff57",
@@ -5563,6 +6655,24 @@
    "text": "Lan... is waiting. I think she'll let me apologise. Thank you, Lin Feng.",
    "duration": 4.58
   },
+  "q094_o1_l3.ogg": {
+   "hash": "78f35f336ae64785",
+   "speaker": "senior_han",
+   "text": "We'll fill it, Elder Gu. With someone kind. I promise you that.",
+   "duration": 3.88
+  },
+  "q094_o1_l4_f.ogg": {
+   "hash": "9f0cdee5e386dda4",
+   "speaker": "player",
+   "text": "Rest now, Elder. You opened the gate.",
+   "duration": 2.77
+  },
+  "q094_o1_l4_m.ogg": {
+   "hash": "10af93404f0af008",
+   "speaker": "player",
+   "text": "Rest now, Elder. You opened the gate.",
+   "duration": 2.21
+  },
   "q094_o2_l0.ogg": {
    "hash": "770979de643723a7",
    "speaker": "narrator",
@@ -5592,6 +6702,24 @@
    "speaker": "wanderer_ye",
    "text": "It's done. His power has no root now. Only what he carries in himself.",
    "duration": 4.28
+  },
+  "q095_o1_l2.ogg": {
+   "hash": "27aa91d4b143843d",
+   "speaker": "bandit_tie",
+   "text": "No root. Good. Then we pull up the rest of the weed.",
+   "duration": 2.92
+  },
+  "q095_o1_l3_f.ogg": {
+   "hash": "decfb6cbd8016b8c",
+   "speaker": "player",
+   "text": "Get the prisoners clear of the altar. It's coming down.",
+   "duration": 3.32
+  },
+  "q095_o1_l3_m.ogg": {
+   "hash": "05b2a3570a9a9696",
+   "speaker": "player",
+   "text": "Get the prisoners clear of the altar. It's coming down.",
+   "duration": 2.83
   },
   "q095_o2_l0.ogg": {
    "hash": "ba8f5ee6e5225d4b",
@@ -5653,6 +6781,24 @@
    "text": "I have my name back, Lin Feng. The children have theirs. Go. Finish it. We'll hold the abyss.",
    "duration": 6.07
   },
+  "q096_o3_l3.ogg": {
+   "hash": "62f2961b09484aec",
+   "speaker": "senior_han",
+   "text": "Then we go up after him. The array to the isles still works.",
+   "duration": 3.32
+  },
+  "q096_o3_l4_f.ogg": {
+   "hash": "f1e8778e6866cde7",
+   "speaker": "player",
+   "text": "No. Hold the Abyss with Ye Wuming, Senior Sister. This part is mine.",
+   "duration": 4.92
+  },
+  "q096_o3_l4_m.ogg": {
+   "hash": "7eb97502ade6037f",
+   "speaker": "player",
+   "text": "No. Hold the Abyss with Ye Wuming, Senior Sister. This part is mine.",
+   "duration": 4.4
+  },
   "q097_o0_l0.ogg": {
    "hash": "f81737160eda4b51",
    "speaker": "star_sage",
@@ -5695,6 +6841,24 @@
    "text": "Lin Feng... you still owe me that sparring match. Don't you dare ascend without paying your debts.",
    "duration": 4.72
   },
+  "q097_o2_l3.ogg": {
+   "hash": "be8cf8bcbd4c8234",
+   "speaker": "star_sage",
+   "text": "She did follow you. She argued with my bridge the whole way across. The bridge lost.",
+   "duration": 6.46
+  },
+  "q097_o2_l4_f.ogg": {
+   "hash": "8f922bcf8869cf4b",
+   "speaker": "player",
+   "text": "Thank you, Senior Sister. Hold the bridge.",
+   "duration": 2.6
+  },
+  "q097_o2_l4_m.ogg": {
+   "hash": "479a997737138fc8",
+   "speaker": "player",
+   "text": "Thank you, Senior Sister. Hold the bridge.",
+   "duration": 2.27
+  },
   "q098_o2_l0.ogg": {
    "hash": "806c7d06f209c8ee",
    "speaker": "narrator",
@@ -5730,6 +6894,12 @@
    "speaker": "rival_zhao",
    "text": "Ha! That's the spirit. Go. The sky is waiting, and it has terrible manners.",
    "duration": 5.4
+  },
+  "q098_o3_l4.ogg": {
+   "hash": "4d13ed2b8b3ef133",
+   "speaker": "star_sage",
+   "text": "I shall referee. I have always wanted to referee something. Heaven never lets me.",
+   "duration": 6.77
   },
   "q099_o1_l0.ogg": {
    "hash": "142dc0c2c684c092",
@@ -5814,6 +6984,12 @@
    "speaker": "master_yun",
    "text": "Then go, Lin Feng. And look down on us sometimes. We'll be the ones waving.",
    "duration": 5.66
+  },
+  "q100_o0_l4.ogg": {
+   "hash": "a98ba5341b14f934",
+   "speaker": "senior_han",
+   "text": "Go, then. But the sparring match stands. I'll wait. I'm very good at waiting.",
+   "duration": 4.66
   },
   "q100_o1_l0.ogg": {
    "hash": "c5f41770d328f4ad",

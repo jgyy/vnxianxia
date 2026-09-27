@@ -256,7 +256,7 @@ class HeadMesh:
         rect["mouth"] = (col_at(jst, -xm), col_at(jst, xm), row_at(mid, L["labrale_inferius"][2] - 9.5),
                          row_at(mid, p.subnasale - 5.0), 1)
         for side, sx in ((1, "L"), (-1, "R")):
-            nc = np.array(self._nostril_centre(side))
+            nc = np.array(self.nostril_centre(side))
             d = np.linalg.norm(G - nc, axis=-1)
             d[:, np.abs(cols) > math.radians(40)] = 1e9
             jc, ic = np.unravel_index(np.argmin(d), d.shape)
@@ -266,7 +266,7 @@ class HeadMesh:
             rect[f"nostril_{sx}"] = (i0, i1, j0, j0 + 2, side)
         return rect
 
-    def _nostril_centre(self, side):
+    def nostril_centre(self, side):
         p = self.p
         L = fl.landmarks(p)
         return (side * (p.alar_w * 0.5 - 9.2), L["pronasale"][1] + 9.5, p.subnasale + 1.0)
@@ -485,7 +485,7 @@ class HeadMesh:
     def _nostril_ogrid(self, side, rect):
         B = self.B
         per, s, per_chart = self._perimeter(rect)
-        c = np.array(self._nostril_centre(side))
+        c = np.array(self.nostril_centre(side))
         # the opening: an oblique ellipse in the (x, y) plane of the nose underside
         ang = 2 * math.pi * s
         rl, rw = 3.9, 1.9

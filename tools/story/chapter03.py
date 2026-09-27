@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -50,7 +50,8 @@ CHAPTER = chapter(
                        (LIU, "My Liu Er went to fetch the nets at dusk. The river was calm. He swam like a fish, my boy."),
                        (LIU, "They say he drowned. His body never came back. The river gives back everyone eventually."),
                        (P, "I'll find out what happened to him. I promise."),
-                       (LIU, "Don't promise, young immortal. Promises are heavy. Just look. That's enough.")),
+                       (LIU, "Don't promise, young immortal. Promises are heavy. Just look. That's enough."),
+                       added(HAN, "Then we'll look, Madam Liu. Both of us. Very carefully.")),
                   talk(PAN, "Question the old ferryman at the docks",
                        (PAN, "Seen something? Forty years on this water, I've seen everything twice."),
                        (PAN, "New moon, two months back. Lanterns moving on the far bank, toward the hill graves. Pale folk, carrying sacks."),
@@ -92,7 +93,8 @@ CHAPTER = chapter(
                        (HAN, "Sleep talismans. Blood-ink. These people know the town, the patrols, even which windows don't lock."),
                        (HAN, "And I saw someone on the rooftops, watching. A masked man. He didn't help. He didn't run either."),
                        (P, "I've met him. In the bamboo forest. He warned me about the Blood Moon."),
-                       (HAN, "A man who knows that much about demons... either hunts them, or is one.")),
+                       (HAN, "A man who knows that much about demons... either hunts them, or is one."),
+                       added(DU, "Cultivators! The woman is home, shaking but whole. I'm doubling the night watch. Tell me what else to do.")),
               ], xp=220, items={"rune_fragment": 1, "medicine": 1}),
         # ---------------------------------------------------------------- q026
         quest("The Masked Stranger",
@@ -124,7 +126,8 @@ CHAPTER = chapter(
                   talk(HAN, "Decide what to do with Han Xue",
                        (HAN, "The tablets are temple tablets. Only Keeper Hong carves these."),
                        (P, "Madam Fang said he cries at every funeral."),
-                       (HAN, "Some people cry at funerals because they're sad. Others because they're hungry. Let's pay him a visit."), at="Graveyard"),
+                       (HAN, "Some people cry at funerals because they're sad. Others because they're hungry. Let's pay him a visit."),
+                       added(YE, "Visit him in daylight. A man who wears a kind face is weakest when he has to keep smiling."), at="Graveyard"),
               ], xp=210, items={"rune_fragment": 1}),
         # ---------------------------------------------------------------- q028
         quest("The Temple Keeper",
@@ -133,6 +136,7 @@ CHAPTER = chapter(
                   talk(HONG, "Visit Keeper Hong at the temple",
                        (HONG, "Young immortals! Come in, come in. Tea? It's a special blend. Very calming."),
                        (P, "It smells of blood lotus, Keeper."),
+                       added(HAN, "Don't drink it, {player}. Keeper, put the cup down. Slowly."),
                        (HONG, "Does it? Old nose, old tea. Such strong young cultivators. Such... vigorous blood."),
                        (HONG, "And that pendant. Green jade, lotus-carved. Oh, the Patriarch will be so very pleased with me.")),
                   cinematic("ch03_reveal", "Watch the temple keeper reveal himself"),
@@ -146,6 +150,7 @@ CHAPTER = chapter(
                   talk(ZHOU, "Rally the magistrate",
                        (ZHOU, "The temple keeper? I had tea with him every week! He blessed my house! He... he blessed my house."),
                        (ZHOU, "I was a fool and a coward. The yamen guards are yours. Tell me what to do."),
+                       added(DU, "Twelve guards, Magistrate. Twelve spears, and one very old drum. We're ready."),
                        (P, "Keep the townsfolk indoors. We'll end this tonight.")),
                   reach("Graveyard", "Storm the graveyard",
                         (N, "The rune circle burns red. Keeper Hong stands at its centre, his kindly face peeling away like wet paper.")),
@@ -165,6 +170,7 @@ CHAPTER = chapter(
                   talk(LIU, "Tell Widow Liu the truth",
                        (P, "Your son didn't drown. He was taken. To a place called the Blood Moon Abyss. He may still be alive."),
                        (LIU, "Alive? Don't... don't give me hope unless you mean it, immortal."),
+                       added(HAN, "We saw his formation, Madam Liu. They wanted the taken alive. That hope is real."),
                        (P, "I mean it. I'll look for him. For him and for everyone they took."),
                        (LIU, "Then I'll keep the water sweet until you do.")),
                   talk(FANG, "Accept Madam Fang's thanks",

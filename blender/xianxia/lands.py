@@ -120,6 +120,8 @@ def transform_objs(objs, loc=(0, 0, 0), rot_z=0.0, scale=1.0):
 
 def convex_mesh(name, bm):
     """Convex collision hull from arbitrary bmesh geometry."""
+    # coincident input vertices make convex_hull report them both as used and unused; merge them first
+    bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=1e-4)
     res = bmesh.ops.convex_hull(bm, input=bm.verts)
     extra = [g for g in res["geom_interior"] + res["geom_unused"] if isinstance(g, bmesh.types.BMVert)]
     if extra:
@@ -1039,52 +1041,10 @@ def bounds_colliders(hx, hz, height=90.0, base=-30.0, thick=4.0):
 # forest
 # --------------------------------------------------------------------------
 def forest_terrain():
-    """Bamboo valley: rolling floor, winding paths, a stream bed and steep valley walls."""
+    """The whole bamboo valley (tools/maps/bamboo_forest.py): forest floor, paths, the stream and its
+    gorge, the misty lake, the marsh, the ruins' paving, valley walls; water surfaces; bounds."""
     from maps import bamboo_forest as F
-    m = {}
-    m["floor"] = util.material("forest_floor", forest_floor(1024), normal_strength=0.8)
-    m["cliff"] = util.material("crag", crag("#77746a", 512), normal_strength=1.0)
-    m["bed"] = util.material("pebbles", pebbles(512), normal_strength=1.2)
-    m["moss"] = util.material("moss_floor", tex.foliage("#3d5a2a", 512, 145), normal_strength=0.6)
-    ps = path_strip(512)
-    m["path"] = clip_alpha(util.material("forest_path", ps, alpha=ps["alpha"], normal_strength=0.3))
-    dp = dirt_patch(512)
-    m["dirt"] = clip_alpha(util.material("dirt_patch", dp, alpha=dp["alpha"], normal_strength=0.3))
-    m["paving"] = util.material("old_paving", tex.paving("#a09a8a", 512, 82, tiles=4, gap=0.01, moss=0.45),
-                                normal_strength=1.0)
-    m["water"] = util.material("stream_water", tex.water(256), alpha=0.78, normal_strength=0.6)
-
-    def classify(x, z, h, nrm):
-        if nrm.z < 0.74:
-            return 1
-        if F.boundary(x, z) > 3:
-            return 3
-        if F.STREAM.distance(x, z, 4.0)[0] < 3.4 and h < F.stream_level(x) + 0.3:
-            return 2
-        return 0
-
-    def uv_fn(co, mi, nrm):
-        if mi == 1:
-            return triplanar(co, nrm, 0.06)
-        if mi == 2:
-            return (co.x * 0.25, co.y * 0.25)
-        return (co.x * 0.1, co.y * 0.1)
-    ground = terrain_grid("Ground-col", F.height, F.SPAN, 1.6, [m["floor"], m["cliff"], m["bed"], m["moss"]],
-                          classify, uv_fn)
-    objs = [ground]
-
-    def keep(x, z):
-        return F.boundary(x, z) < 1.0 and F.STREAM.distance(x, z, 8.0)[0] > 5.8
-    for name, p in F.PATHS.items():
-        objs.append(ribbon("Path_" + name, p.pts, p.width, F.height, m["path"], keep=keep))
-    for (x, z, r) in (F.ZONES["camp"], F.ZONES["clearing"], F.ZONES["hermit"], F.ZONES["teleport"]):
-        objs.append(disc_patch("Dirt", x, z, r * 0.75, F.height, m["dirt"], lift=0.04))
-    rnd = random.Random(5)
-    cx, cz, r = F.ZONES["ruins_inner"]
-    objs.append(disc_patch("RuinsPaving", cx, cz, r + 1, F.height, m["paving"], lift=0.07, rings=18,
-                           drop=lambda i, j: rnd.random() < 0.1, uv_scale=0.22))
-    objs.append(ribbon("StreamWater", F.STREAM.pts, 9.5, lambda x, z: F.stream_level(x) - 0.1, m["water"], lift=0.0,
-                       taper=None, cols=2))
+    objs = ground_terrain(F.G, "ForestGround", _water_mats())
     objs += bounds_colliders(F.PLAY_X + 14, F.PLAY_Z + 14)
     return objs
 
@@ -1923,10 +1883,10 @@ def town_house(w=8.0, d=5.5, seed=1):
     bm = bmesh.new()
     for sx in (-1, 1):
         for sy in (-1, 1):
-            util.box(bm, (0.24, 0.24, wz - base), loc=(sx * hw, sy * hd, (base + wz) / 2))
-        util.box(bm, (0.2, 0.26, 2.35), loc=(sx * 0.9, -hd - 0.01, base + 1.17))
-        util.box(bm, (0.14, 0.26, 1.3), loc=(sx * 3.3, -hd - 0.01, base + 1.75))
-        util.box(bm, (0.14, 0.26, 1.3), loc=(sx * 1.8, -hd - 0.01, base + 1.75))
+            util.box(bm, (0.3, 0.3, wz - base), loc=(sx * hw, sy * hd, (base + wz) / 2))
+        util.box(bm, (0.2, 0.32, 2.35), loc=(sx * 0.88, -hd - 0.01, base + 1.17))
+        util.box(bm, (0.14, 0.32, 1.3), loc=(sx * 3.3, -hd - 0.01, base + 1.75))
+        util.box(bm, (0.14, 0.32, 1.3), loc=(sx * 1.8, -hd - 0.01, base + 1.75))
         util.box(bm, (1.6, 0.3, 0.12), loc=(sx * 2.55, -hd - 0.02, base + 1.15))
         util.box(bm, (1.6, 0.3, 0.12), loc=(sx * 2.55, -hd - 0.02, base + 2.35))
     util.box(bm, (2.0, 0.28, 0.2), loc=(0, -hd - 0.02, base + 2.35))
@@ -2041,11 +2001,12 @@ def town_house_large(w=11.0, d=7.0):
     objs += roof
     # signs: horizontal plaque over the entrance, vertical board at the corner, a wine flag
     bm = bmesh.new()
-    panel(bm, -1.6, 1.6, -hd - 1.45, f1 - 0.95, f1 - 0.25)
+    panel(bm, -1.6, 1.6, -hd - 1.485, f1 - 0.95, f1 - 0.25)
     objs.append(util.mesh_object("InnPlaque", bm, sign_h, smooth=False))
     bm = bmesh.new()
-    panel(bm, -hw - 0.35, -hw + 0.35, -hd - 1.5, 0.9, f1 - 0.6)
-    panel(bm, -hw - 0.35, -hw + 0.35, -hd - 1.54, 0.9, f1 - 0.6, flip=True)
+    # the corner board used to sit inside its own 8 cm frame (both faces hidden or flickering)
+    panel(bm, -hw - 0.35, -hw + 0.35, -hd - 1.585, 0.9, f1 - 0.6)
+    panel(bm, -hw - 0.35, -hw + 0.35, -hd - 1.455, 0.9, f1 - 0.6, flip=True)
     objs.append(util.mesh_object("InnSign", bm, sign_v, smooth=False))
     bm = bmesh.new()
     util.box(bm, (3.4, 0.12, 0.8), loc=(0, -hd - 1.4, f1 - 0.6))
@@ -2206,7 +2167,7 @@ def town_gate():
     for sx in (-1, 1):
         x = sx * (ow / 2 + pw / 2)
         bevel_box(bm_s, (pw + 0.2, pd + 0.2, 0.5), loc=(x, 0, 0.25), bevel=0.04)
-        util.box(bm_b, (pw, pd, ph - 0.5), loc=(x, 0, 0.5 + (ph - 0.5) / 2))
+        util.box(bm_b, (pw, pd, ph - 0.62), loc=(x, 0, 0.5 + (ph - 0.62) / 2))
         bevel_box(bm_s, (pw + 0.15, pd + 0.15, 0.2), loc=(x, 0, ph - 0.1), bevel=0.03)
     objs.append(obj("GatePiers", bm_b, m["brick"], uv=0.5))
     objs.append(obj("GateStone", bm_s, m["stone"], uv=0.7))
@@ -2499,60 +2460,16 @@ def cart():
 
 
 def town_terrain():
-    """River valley town ground: packed earth streets inside the walls, fields, a hill, the river."""
+    """The Qingshi river valley (tools/maps/qingshi_town.py): one ground mesh with the streets, squares,
+    fields and river bed as regions, the river, canal and ponds, the river's stone embankment."""
     from maps import qingshi_town as T
-    m = {}
-    m["grass"] = util.material("meadow", tex.grass(1024, 123), normal_strength=0.6)
-    m["cliff"] = util.material("crag", crag("#8a8374", 1024, 602, "#5f6b3a"), normal_strength=1.0)
-    m["earth"] = util.material("packed_earth", earth("#a08966", 512, 423, 0.35), normal_strength=0.3)
-    m["crops"] = util.material("crops", crops(512), normal_strength=0.8)
-    m["bed"] = util.material("pebbles", pebbles(512), normal_strength=1.2)
-    m["paving"] = util.material("street_paving", tex.paving("#b0a797", 512, 83, tiles=6, gap=0.008, moss=0.05),
-                                normal_strength=1.0)
-    ps = path_strip(512, 522, "#a08a66", "#6f7040")
-    m["road"] = clip_alpha(util.material("dirt_road", ps, alpha=ps["alpha"], normal_strength=0.3))
-    m["blocks"] = util.material("stone_blocks", stone_blocks("#8f8a80", 512, 492, rows=6, cols=3, moss=0.2),
-                                normal_strength=1.0)
-    m["water"] = util.material("river_water", tex.water(256, 165), alpha=0.85, normal_strength=0.6)
-    in_town = (T.WALL_W - 2, T.WALL_N - 2, T.WALL_E + 2, T.WALL_S + 3)
+    objs = ground_terrain(T.G, "TownGround", _water_mats())
+    m = {"blocks": util.material("stone_blocks", stone_blocks("#8f8a80", 512, 492, rows=6, cols=3, moss=0.2),
+                                 normal_strength=1.0)}
 
-    def classify(x, z, h, nrm):
-        if nrm.z < 0.74:
-            return 1
-        if h < -1.0:
-            return 4
-        if T._in_rect(x, z, in_town, 0.01) > 0 or T._in_rect(x, z, (-73, -60, -48, 50), 0.01) > 0:
-            return 2
-        if T._in_rect(x, z, (T.FARM[0] + 1, T.FARM[1] + 1, T.FARM[2] - 1, T.FARM[3] - 1), 0.01) > 0 and nrm.z > 0.985:
-            return 3
-        return 0
-
-    def uv_fn(co, mi, nrm):
-        if mi == 1:
-            return triplanar(co, nrm, 0.045)
-        if mi in (2, 4):
-            return (co.x * 0.2, co.y * 0.2)
-        if mi == 3:
-            return (co.x * 0.25, co.y * 0.25)
-        return (co.x * 0.1, co.y * 0.1)
-    ground = terrain_grid("Ground-col", T.height, T.SPAN, 1.5, [m["grass"], m["cliff"], m["earth"], m["crops"],
-                                                                m["bed"]],
-                          classify, uv_fn)
-    objs = [ground]
-    lifts = {"main": 0.06, "cross": 0.05, "riverside": 0.05, "alley": 0.045, "lane": 0.045, "well": 0.045}
-    for name, (pts, w) in T.STREETS.items():
-        objs.append(ribbon("Street_" + name, pts, w, T.height, m["paving"], lift=lifts[name], taper=None, cols=3,
-                           tile=w / round(w / 6.0)))
-    for name, (x0, z0, x1, z1) in T.SQUARES.items():
-        objs.append(ribbon("Square_" + name, [(x0, (z0 + z1) / 2), (x1, (z0 + z1) / 2)], z1 - z0, T.height, m["paving"],
-                           lift=0.035, taper=None, cols=6, tile=6.0))
-
-    def keep(x, z):
-        return T.boundary(x, z) < 1.0 and T._in_rect(x, z, (T.WALL_W, T.WALL_N, T.WALL_E, T.WALL_S), 0.01) == 0
-    for name, p in T.ROADS.items():
-        objs.append(ribbon("Road_" + name, p.pts, p.width, T.height, m["road"], keep=keep, lift=0.07))
-    # the river and its stone embankment
-    objs.append(ribbon("River", T.RIVER.pts, 20.0, lambda x, z: T.WATER_Y, m["water"], lift=0.0, taper=None, cols=2))
+    def open_bank(z):
+        """Where the embankment is broken: the canal mouth, the mill race, the docks."""
+        return abs(z - T.CANAL_Z) < 6.5 or abs(z + 184) < 4.0 or abs(z + 144) < 4.0
     bank = []
     for k in range(len(T.RIVER.pts)):
         x, z = T.RIVER.pts[k]
@@ -2566,9 +2483,13 @@ def town_terrain():
         if idx:
             dist += math.hypot(x - bank[idx - 1][0], z - bank[idx - 1][1])
         ex, ez = tz, -tx
+        if open_bank(z):
+            prev = None
+            continue
+        # the coping stands 12 cm proud of the ground (a curb, never coplanar with it)
         row = [bm.verts.new(V((x - ex * 0.45, -(z - ez * 0.45), -3.6))), bm.verts.new(V((x - ex * 0.45,
-                                                                                         -(z - ez * 0.45), 0.03))),
-               bm.verts.new(V((x + ex * 0.45, -(z + ez * 0.45), 0.03)))]
+                                                                                         -(z - ez * 0.45), 0.12))),
+               bm.verts.new(V((x + ex * 0.45, -(z + ez * 0.45), 0.12)))]
         if prev:
             for c in range(2):
                 f = bm.faces.new((prev[1][c], prev[1][c + 1], row[c + 1], row[c]))
@@ -2585,7 +2506,7 @@ def town_terrain():
             p0 = (a[0] + (b[0] - a[0]) * k / steps, a[1] + (b[1] - a[1]) * k / steps)
             p1 = (a[0] + (b[0] - a[0]) * (k + 1) / steps, a[1] + (b[1] - a[1]) * (k + 1) / steps)
             cz = (p0[1] + p1[1]) / 2
-            if abs(cz - T.DOCK_Z) < 2.4 or abs(cz) > T.SPAN:
+            if abs(cz - T.DOCK_Z) < 2.4 or abs(cz - 108) < 2.4 or open_bank(cz) or abs(cz) > T.SPAN:
                 continue
             ln = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
             ang = math.atan2(-(p1[1] - p0[1]), p1[0] - p0[0])
@@ -2595,7 +2516,421 @@ def town_terrain():
     return objs
 
 
+# --------------------------------------------------------------------------
+# ground terrain of the enlarged maps (tools/maps/terrain.py Ground)
+# --------------------------------------------------------------------------
+def tea_rows(size=512, seed=611):
+    """Contour rows of clipped tea bushes over dark soil (rows along u)."""
+    u, v = tex.grid(size)
+    soil = earth("#4e3d2a", size, seed, 0.15)
+    rows = 4
+    fv = (v * rows) % 1.0
+    bush = tex.sstep(0.46, 0.2, np.abs(fv - 0.5))
+    leaf = tex.fbm(size, 64, 3, 0.55, seed + 1)
+    n = tex.fbm(size, 6, 4, 0.5, seed + 2)
+    green = tex.lerp(tex.srgb("#2f5a24"), tex.srgb("#7fa43c"), leaf * 0.6 + n * 0.4)
+    col = tex.lerp(soil["albedo"], green, np.clip(bush * 1.3, 0, 1)[..., None])
+    return tex.result(col, 0.8, 0.0, bush * 0.8 + leaf * 0.3)
+
+
+def gravel(color="#9c968a", size=512, seed=621):
+    base = pebbles(size, seed, 40, color)
+    n = tex.fbm(size, 6, 4, 0.5, seed + 3)
+    base["albedo"] = base["albedo"] * (0.85 + 0.25 * n)[..., None]
+    return base
+
+
+def mud(size=512, seed=631, color="#3d3a22", scum="#6f8a2a"):
+    """Wet marsh mud with algae scum and puddle sheen."""
+    n = tex.fbm(size, 6, 5, 0.55, seed)
+    s = tex.fbm(size, 12, 4, 0.5, seed + 1)
+    col = tex.srgb(color) * (0.7 + 0.5 * n)[..., None]
+    sc = tex.sstep(0.55, 0.7, s)
+    col = tex.lerp(col, tex.srgb(scum), (sc * 0.6)[..., None])
+    wet = tex.sstep(0.35, 0.2, n)
+    return tex.result(col * (1 - 0.3 * wet)[..., None], 0.9 - 0.7 * wet, 0.0, n * 0.4 + sc * 0.2)
+
+
+def ash(size=512, seed=641):
+    """Grey volcanic ash with drifted ridges and cinders."""
+    n = tex.fbm(size, 6, 6, 0.55, seed)
+    ripple = np.abs(np.sin((tex.fbm(size, 3, 3, 0.5, seed + 1) * 9 + tex.grid(size)[1] * 24) * math.pi))
+    cind = tex.sstep(0.8, 0.9, tex.fbm(size, 64, 2, 0.5, seed + 2))
+    col = tex.lerp(tex.srgb("#6a6461"), tex.srgb("#a29a93"), (n * 0.7 + ripple * 0.3)[..., None])
+    col = tex.lerp(col, tex.srgb("#1c1818"), (cind * 0.8)[..., None])
+    return tex.result(col, 0.95, 0.0, n * 0.4 + ripple * 0.2 + cind * 0.3)
+
+
+def sand(color="#d9d2c0", size=512, seed=651):
+    n = tex.fbm(size, 8, 5, 0.55, seed)
+    grit = tex.fbm(size, 128, 2, 0.5, seed + 1)
+    col = tex.srgb(color) * (0.85 + 0.2 * n + 0.1 * (grit - 0.5))[..., None]
+    return tex.result(col, 0.85, 0.0, n * 0.3 + grit * 0.3)
+
+
+def _bone_ground(size=512, seed=661):
+    """Dark earth littered with bleached bone shards."""
+    from . import realms
+    soil = realms.crimson_soil(size, seed)
+    shards = tex.sstep(0.82, 0.88, tex.fbm(size, 40, 2, 0.5, seed + 1))
+    col = tex.lerp(soil["albedo"], tex.srgb("#d8cfb8"), (shards * 0.85)[..., None])
+    return tex.result(col, 0.85, 0.0, soil["height"] * 0.6 + shards * 0.5)
+
+
+def _ground_palette():
+    """Material key -> (material factory, metres per texture repeat, tri-planar)."""
+    from . import realms
+    return {
+        "grass": (lambda: util.material("meadow", tex.grass(1024, 123), normal_strength=0.6), 10.0, False),
+        "grass_sect": (lambda: util.material("grass", tex.grass(1024), normal_strength=0.6), 9.0, False),
+        "forest": (lambda: util.material("forest_floor", forest_floor(1024), normal_strength=0.8), 10.0, False),
+        "moss": (lambda: util.material("moss_floor", tex.foliage("#3d5a2a", 512, 145), normal_strength=0.6), 8.0,
+                 False),
+        "cliff": (lambda: util.material("crag", crag("#8a8374", 1024, 602, "#5f6b3a"), normal_strength=1.0), 22.0,
+                  True),
+        "cliff_sect": (lambda: util.material("cliff", tex.cliff("#7d776c", 1024), normal_strength=1.2), 20.0, True),
+        "paving": (lambda: util.material("paving", tex.paving("#cdbfa6", 1024, gap=0.007, moss=0.12),
+                                         normal_strength=1.0), 4.0, False),
+        "paving_old": (lambda: util.material("old_paving", tex.paving("#a09a8a", 512, 82, tiles=4, gap=0.01,
+                                                                      moss=0.45), normal_strength=1.0), 4.5, False),
+        "street": (lambda: util.material("street_paving", tex.paving("#b0a797", 512, 83, tiles=6, gap=0.008,
+                                                                     moss=0.05), normal_strength=1.0), 6.0, False),
+        "earth": (lambda: util.material("packed_earth", earth("#a08966", 512, 423, 0.35), normal_strength=0.3), 5.0,
+                  False),
+        "road": (lambda: util.material("dirt_road", earth("#8f7a58", 512, 424, 0.6), normal_strength=0.4), 5.0,
+                 False),
+        "dirt": (lambda: util.material("dirt", earth("#6f5a3c", 512, 425, 0.3), normal_strength=0.4), 5.0, False),
+        "gravel": (lambda: util.material("gravel", gravel(), normal_strength=1.0), 3.0, False),
+        "crops": (lambda: util.material("crops", crops(512), normal_strength=0.8), 4.0, False),
+        "tea": (lambda: util.material("tea_rows", tea_rows(512), normal_strength=0.9), 4.0, False),
+        "pebbles": (lambda: util.material("pebbles", pebbles(512), normal_strength=1.2), 4.0, False),
+        "mud": (lambda: util.material("marsh_mud", mud(512), normal_strength=0.6), 6.0, False),
+        "sand": (lambda: util.material("sand", sand(), normal_strength=0.5), 5.0, False),
+        "ash": (lambda: util.material("ash", ash(512), normal_strength=0.8), 8.0, False),
+        "abyss_soil": (lambda: realms._mat("abyss_soil", realms.crimson_soil(512), 1.4, normal_strength=1.0), 10.0,
+                       False),
+        "abyss_rock": (lambda: util.material("abyss_rock", realms.basalt(512, 413, "#352c2e"), normal_strength=1.3),
+                       11.0, True),
+        "abyss_blocks": (lambda: util.material("dark_blocks", realms.dark_blocks(512), normal_strength=1.0), 4.0,
+                         False),
+        "bone_ground": (lambda: util.material("bone_ground", _bone_ground(512), normal_strength=0.8), 6.0, False),
+    }
+
+
+class _Mesher:
+    """Collects polygons (vertex ids + material key) and builds one Blender mesh from them."""
+
+    def __init__(self):
+        self.pos = []
+        self.ids = {}
+        self.polys = []
+
+    def vid(self, x, z, y):
+        k = (round(x, 3), round(z, 3))
+        i = self.ids.get(k)
+        if i is None:
+            i = len(self.pos)
+            self.ids[k] = i
+            self.pos.append((x, z, y))
+        return i
+
+    def build(self, name, palette, mats):
+        used = sorted({k for _, k, _ in self.polys})
+        if not used:
+            return None
+        remap = {}
+        verts, faces, mis, uvs = [], [], [], []
+        for poly, key, nrm in self.polys:
+            f = []
+            for i in poly:
+                j = remap.get(i)
+                if j is None:
+                    j = len(verts)
+                    remap[i] = j
+                    x, z, y = self.pos[i]
+                    verts.append((x, -z, y))
+                f.append(j)
+            faces.append(f)
+            mis.append(used.index(key))
+            _, rep, tri = palette[key]
+            ax = max(range(3), key=lambda k: abs(nrm[k])) if tri else 2
+            for i in poly:
+                x, z, y = self.pos[i]
+                if ax == 2:
+                    uvs += [x / rep, -z / rep]
+                elif ax == 0:
+                    uvs += [-z / rep, y / rep]
+                else:
+                    uvs += [x / rep, y / rep]
+        me = bpy.data.meshes.new(name)
+        me.from_pydata(verts, [], faces)
+        me.polygons.foreach_set("material_index", mis)
+        uvl = me.uv_layers.new(name="UVMap")
+        uvl.data.foreach_set("uv", uvs)
+        for k in used:
+            me.materials.append(mats[k])
+        me.validate()
+        me.update()
+        ob = bpy.data.objects.new(name, me)
+        util.link(ob)
+        me.shade_smooth()
+        return ob
+
+
+def _split_poly(poly, vals, lerp_vert):
+    """Split a convex polygon at the zero level of per-vertex values (linear along the edges)."""
+    inside, outside = [], []
+    n = len(poly)
+    for k in range(n):
+        a, b = poly[k], poly[(k + 1) % n]
+        va, vb = vals[k], vals[(k + 1) % n]
+        (inside if va <= 0 else outside).append(a)
+        if (va <= 0) != (vb <= 0):
+            m = lerp_vert(a, b, va / (va - vb))
+            inside.append(m)
+            outside.append(m)
+    return inside, outside
+
+
+def _ccw(poly, table):
+    """Order a polygon counter-clockwise seen from above in Blender space (normal +Z). Repeated vertices
+    (a cut that lands on a corner snaps onto it) are dropped; None if fewer than three remain."""
+    clean = []
+    for v in poly:
+        if not clean or clean[-1] != v:
+            clean.append(v)
+    while len(clean) > 1 and clean[0] == clean[-1]:
+        clean.pop()
+    if len(set(clean)) < 3 or len(set(clean)) != len(clean):
+        return None
+    poly = clean
+    area = 0.0
+    n = len(poly)
+    for k in range(n):
+        ax, az = table[poly[k]][0], -table[poly[k]][1]
+        bx, bz = table[poly[(k + 1) % n]][0], -table[poly[(k + 1) % n]][1]
+        area += ax * bz - bx * az
+    return poly if area > 0 else poly[::-1]
+
+
+def _mesh_ground_cells(G, i0, j0, i1, j1, heights, mesher, flat=None, only=None, min_len=1.1):
+    """Triangulate grid cells [i0, i1) x [j0, j1), refine triangles along the region outlines and
+    split every triangle exactly at them (first region wins). With ``flat``/``only`` it meshes a flat
+    water surface instead: the parts inside the shape ``only`` at height ``flat``.
+
+    Refinement only ever inserts edge midpoints on the flat triangles of the height field, and the
+    decision to split an edge depends on that edge alone, so neighbouring triangles agree (no cracks,
+    no T-junctions) and the surface is exactly the collision surface of the plain grid."""
+    x0, z0 = G.bounds[0], G.bounds[1]
+    s = G.step
+    bb = (x0 + i0 * s - 4, z0 + j0 * s - 4, x0 + i1 * s + 4, z0 + j1 * s + 4)
+    if only is not None:
+        regs = [("water", only)]
+    else:
+        regs = [(mat, shape) for _, mat, shape in G.regions_near(bb)
+                if shape.bbox[0] <= bb[2] and shape.bbox[2] >= bb[0] and shape.bbox[1] <= bb[3]
+                and shape.bbox[3] >= bb[1]]
+    nreg = len(regs)
+    table = {}
+
+    def vert(x, z, y):
+        i = mesher.vid(x, z, y)
+        if i not in table:
+            table[i] = (x, z, y, tuple(shape.sdf(x, z) for _, shape in regs))
+        return i
+
+    def node(i, j):
+        x, z = x0 + i * s, z0 + j * s
+        if flat is None:
+            return vert(x, z, heights[j][i])
+        return vert(x, z, flat(x, z) if callable(flat) else flat)
+
+    mid_cache = {}
+
+    def midpoint(a, b):
+        key = (a, b) if a < b else (b, a)
+        if key in mid_cache:
+            return mid_cache[key]
+        ax, az, ay, sa = table[a]
+        bx, bz, by, sb = table[b]
+        ln = math.hypot(bx - ax, bz - az)
+        m = None
+        if ln > min_len:
+            for k in range(nreg):
+                # split where an outline crosses the edge, or where a narrow band (a path) may pass
+                # between its ends
+                if (sa[k] > 0) != (sb[k] > 0) or (sa[k] > 0 and sb[k] > 0 and sa[k] + sb[k] < ln * 1.1):
+                    m = vert((ax + bx) / 2, (az + bz) / 2, (ay + by) / 2)
+                    break
+        mid_cache[key] = m
+        return m
+
+    leaves = []
+
+    def refine(a, b, c, depth=0):
+        mab, mbc, mca = midpoint(a, b), midpoint(b, c), midpoint(c, a)
+        cnt = (mab is not None) + (mbc is not None) + (mca is not None)
+        if cnt == 0 or depth > 8:
+            leaves.append((a, b, c))
+        elif cnt == 3:
+            refine(a, mab, mca, depth + 1)
+            refine(mab, b, mbc, depth + 1)
+            refine(mca, mbc, c, depth + 1)
+            refine(mab, mbc, mca, depth + 1)
+        elif cnt == 1:
+            if mab is not None:
+                refine(a, mab, c, depth + 1)
+                refine(mab, b, c, depth + 1)
+            elif mbc is not None:
+                refine(b, mbc, a, depth + 1)
+                refine(mbc, c, a, depth + 1)
+            else:
+                refine(c, mca, b, depth + 1)
+                refine(mca, a, b, depth + 1)
+        elif mab is None:
+            refine(c, mca, mbc, depth + 1)
+            refine(mca, a, mbc, depth + 1)
+            refine(a, b, mbc, depth + 1)
+        elif mbc is None:
+            refine(a, mab, mca, depth + 1)
+            refine(mab, b, mca, depth + 1)
+            refine(b, c, mca, depth + 1)
+        else:
+            refine(b, mbc, mab, depth + 1)
+            refine(mbc, c, mab, depth + 1)
+            refine(c, a, mab, depth + 1)
+
+    for j in range(j0, j1):
+        for i in range(i0, i1):
+            a, b, c, d = node(i, j), node(i + 1, j), node(i + 1, j + 1), node(i, j + 1)
+            # split along the flatter diagonal
+            if abs(table[a][2] - table[c][2]) > abs(table[b][2] - table[d][2]):
+                tris = ((a, d, b), (b, d, c))
+            else:
+                tris = ((a, d, c), (a, c, b))
+            for t in tris:
+                if only is not None and all(table[v][3][0] > s * 1.5 for v in t):
+                    continue
+                if flat is None and G.floor is not None and all(table[v][2] < G.floor for v in t):
+                    continue        # hidden far below the clouds: nobody can see or reach it
+                refine(*t)
+
+    def lerp_vert(a, b, t):
+        if t < 1e-3:
+            return a
+        if t > 1 - 1e-3:
+            return b
+        ax, az, ay, _ = table[a]
+        bx, bz, by, _ = table[b]
+        return vert(ax + (bx - ax) * t, az + (bz - az) * t, ay + (by - ay) * t)
+
+    for tri in leaves:
+        pa, pb, pc = (table[v] for v in tri)
+        ux, uy, uz = pb[0] - pa[0], pb[2] - pa[2], pb[1] - pa[1]
+        vx, vy, vz = pc[0] - pa[0], pc[2] - pa[2], pc[1] - pa[1]
+        nx, ny, nz = uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx
+        ln = math.sqrt(nx * nx + ny * ny + nz * nz) or 1.0
+        nx, ny, nz = nx / ln, ny / ln, nz / ln
+        if ny < 0:
+            nx, ny, nz = -nx, -ny, -nz
+        nrm_b = (nx, -nz, ny)            # Blender axes, for tri-planar UVs
+        poly = list(tri)
+        for k in range(nreg):
+            vals = [table[v][3][k] for v in poly]
+            if all(v_ > 0 for v_ in vals):
+                continue
+            if all(v_ <= 0 for v_ in vals):
+                inside, poly = poly, []
+            else:
+                inside, poly = _split_poly(poly, vals, lerp_vert)
+            if len(inside) >= 3:
+                cp = _ccw(inside, table)
+                if cp:
+                    mesher.polys.append((cp, regs[k][0], nrm_b))
+            if len(poly) < 3:
+                poly = []
+                break
+        if poly and only is None:
+            cx = sum(table[v][0] for v in poly) / len(poly)
+            cz = sum(table[v][1] for v in poly) / len(poly)
+            cy = sum(table[v][2] for v in poly) / len(poly)
+            cp = _ccw(poly, table)
+            if cp:
+                mesher.polys.append((cp, G.classify(cx, cz, cy, ny), nrm_b))
+
+
+def ground_terrain(G, name="Ground", water_mats=None):
+    """Chunked height-field terrain of a tools/maps/terrain.Ground. Every chunk is one visible mesh
+    with its own trimesh collision ('-col'), whose triangles are split exactly along the paving, road
+    and field outlines (so no overlay can z-fight with the ground), plus flat water surfaces without
+    collision (water_mats: material key -> factory)."""
+    palette = _ground_palette()
+    mats = {}
+
+    def mat(k):
+        if k not in mats:
+            mats[k] = palette[k][0]()
+        return mats[k]
+    x0, z0, x1, z1 = G.bounds
+    s = G.step
+    nx, nz = int(round((x1 - x0) / s)), int(round((z1 - z0) / s))
+    heights = [[G.height(x0 + i * s, z0 + j * s) for i in range(nx + 1)] for j in range(nz + 1)]
+    objs = []
+    C = G.chunk
+    for cj in range(0, nz, C):
+        for ci in range(0, nx, C):
+            mesher = _Mesher()
+            _mesh_ground_cells(G, ci, cj, min(ci + C, nx), min(cj + C, nz), heights, mesher)
+            for key in {k for _, k, _ in mesher.polys}:
+                mat(key)
+            ob = mesher.build(f"{name}_{ci // C}_{cj // C}-col", palette, mats)
+            if ob is not None:
+                objs.append(ob)
+    for k, (wmat, shape, level) in enumerate(G.waters):
+        pal = {"water": (None, 8.0, False)}
+        wm = {"water": (water_mats or {})[wmat]()}
+        bx0, bz0, bx1, bz1 = shape.inflate(1.0)
+        i0, j0 = max(0, int((bx0 - x0) / s)), max(0, int((bz0 - z0) / s))
+        i1, j1 = min(nx, int((bx1 - x0) / s) + 1), min(nz, int((bz1 - z0) / s) + 1)
+        mesher = _Mesher()
+        _mesh_ground_cells(G, i0, j0, i1, j1, heights, mesher, flat=level, only=shape, min_len=1.2)
+        ob = mesher.build(f"Water{k}", pal, wm)
+        if ob is not None:
+            objs.append(ob)
+    return objs
+
+
+def _water_mats():
+    return {
+        "pond": lambda: util.material("water", tex.water(256), alpha=0.82, normal_strength=0.6),
+        "stream": lambda: util.material("stream_water", tex.water(256), alpha=0.78, normal_strength=0.6),
+        "river": lambda: util.material("river_water", tex.water(256, 165), alpha=0.85, normal_strength=0.6),
+        "lake": lambda: util.material("lake_water", _lake_water(), alpha=0.8, normal_strength=0.5),
+        "marsh": lambda: util.material("marsh_water", _marsh_water(), alpha=0.9, normal_strength=0.4,
+                                       emission="#4a8a1a", emission_strength=0.25),
+    }
+
+
+def _lake_water():
+    w = tex.water(256, 166)
+    w["albedo"] = tex.lerp(w["albedo"], tex.srgb("#8ab0b0"), 0.35)
+    return w
+
+
+def _marsh_water():
+    w = tex.water(256, 167)
+    w["albedo"] = tex.lerp(w["albedo"], tex.srgb("#5a7a1a"), 0.6)
+    return w
+
+
+def sect_terrain():
+    """The whole Azure Cloud mountain (tools/maps/sect.py): the old plateau and its terraces."""
+    from maps import sect
+    return ground_terrain(sect.G, "SectGround", _water_mats())
+
+
 ASSETS = {
+    "terrain": sect_terrain,
     "teleport_array": teleport_array,
     "stone_stele": stone_stele,
     "treasure_chest": treasure_chest,

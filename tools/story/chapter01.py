@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -27,7 +27,9 @@ CHAPTER = chapter(
                        (P, "Orphan, yes. The sword can wait. I want to become strong enough to protect people."),
                        (MO, "Hmph. Better answer than most. What is that jade at your belt?"),
                        (P, "My mother's pendant. It's all I have of her."),
-                       (MO, "Keep it close, then. Welcome to the Azure Cloud, {junior}. Tomorrow you learn how little you know.")),
+                       (MO, "Keep it close, then. Welcome to the Azure Cloud, {junior}. Tomorrow you learn how little you know."),
+                       added(WEI, "Welcome, welcome! Don't mind the scowl, new one. It's how Elder Mo says hello."),
+                       added(MO, "Wei Tong. Weapon rack. Now. And take the new one's bundle, since you're so welcoming.")),
               ], xp=60, items={"spirit_stone": 1}),
         # ---------------------------------------------------------------- q002
         quest("Rules of the Azure Cloud",
@@ -48,7 +50,9 @@ CHAPTER = chapter(
                        (QIAN, "Allowance, allowance. Everyone wants their allowance. Name? Ah, the new one. Three spirit stones."),
                        (QIAN, "Minus one for your robe. Minus one for the robe's laundering. That leaves... hmm, one. Congratulations."),
                        (P, "The robe was already dirty."),
-                       (QIAN, "Then it was a very efficient laundering. Next!")),
+                       (QIAN, "Then it was a very efficient laundering. Next!"),
+                       added(LU, "Don't take it to heart. He docked me a stone last month for sneezing on the ledger."),
+                       added(QIAN, "It was a very expensive sneeze, Lu Ping.")),
               ], xp=60, items={"spirit_stone": 1}),
         # ---------------------------------------------------------------- q003
         quest("Iron Body, Iron Will",
@@ -65,7 +69,8 @@ CHAPTER = chapter(
                   talk(WEI, "Report back to Wei Tong",
                        (WEI, "Three puppets! Elder Mo owes me a bun. I bet him you'd manage two."),
                        (P, "You bet on me?"),
-                       (WEI, "I bet on everyone. It keeps life interesting. Here, take this. Real fighters need real rice.")),
+                       (WEI, "I bet on everyone. It keeps life interesting. Here, take this. Real fighters need real rice."),
+                       added(MO, "Three, with a stumble on the second. The bet said clean. I owe you nothing, Wei Tong.")),
               ], xp=80, items={"medicine": 1}),
         # ---------------------------------------------------------------- q004
         quest("A Rival's Sneer",
@@ -82,7 +87,8 @@ CHAPTER = chapter(
                   talk(WEI, "Tell Senior Brother Wei what happened",
                        (WEI, "You slapped the Zhao clan's face on your second day? Ha! I'll have to buy you dumplings."),
                        (WEI, "Careful, though. Zhao Kang's not wicked, just raised on gold and flattery. That kind of pride bruises easily."),
-                       (P, "Then maybe it should bruise a little.")),
+                       (P, "Then maybe it should bruise a little."),
+                       added(LU, "Too late. Two of his attendants limped past the gate an hour ago. The whole mountain knows by now.")),
               ], xp=90, items={"spirit_stone": 1}),
         # ---------------------------------------------------------------- q005
         quest("Breath of Heaven and Earth",
@@ -98,7 +104,8 @@ CHAPTER = chapter(
                   talk(HAN, "Return to Han Xue",
                        (HAN, "You felt it? The first time, most people only feel their legs going numb."),
                        (P, "It was like a spark. And my pendant grew warm."),
-                       (HAN, "Warm? Hm. Jade doesn't usually do that. Tell no one but the elders, {junior}.")),
+                       (HAN, "Warm? Hm. Jade doesn't usually do that. Tell no one but the elders, {junior}."),
+                       added(MO, "Tell this elder, then. Warm jade. Hmph. Keep breathing, disciple. And keep that pendant close.")),
               ], xp=90, items={"spirit_herb": 1}),
         # ---------------------------------------------------------------- q006
         quest("Herbs of the West Terrace",
@@ -115,6 +122,8 @@ CHAPTER = chapter(
                        (MAN, "He promised to write every week. It's been a month. He's probably too busy eating Mother's cooking.")),
                   talk(HUA, "Deliver the herbs to Elder Hua",
                        (HUA, "Five herbs, roots intact, and my apprentice still dry. You have a careful hand."),
+                       added(MAN, "I only dropped two in the pond, Elder! The carp only ate one. Well. One and a half."),
+                       added(P, "She was very brave about it. The carp were not."),
                        (HUA, "Careful hands make good alchemists and better friends. Take this pill. It will ease your meridians.")),
               ], xp=100, items={"medicine": 2}),
         # ---------------------------------------------------------------- q007
@@ -133,7 +142,9 @@ CHAPTER = chapter(
                        (BAI, "All three! And no corners folded. You may live."),
                        (BAI, "This one here is old history. The Verdant Lotus Sect, who stood beside our founder three centuries ago."),
                        (P, "What happened to them?"),
-                       (BAI, "They bled so that this land might sleep. Now nobody remembers their name. That is the fate of heroes, mostly.")),
+                       (BAI, "They bled so that this land might sleep. Now nobody remembers their name. That is the fate of heroes, mostly."),
+                       added(GU, "Old history is best left on the shelf, Bai. The Law Hall keeps its own records of those days."),
+                       added(BAI, "The Law Hall keeps them very well hidden, Gu. Mind the stairs on your way out.")),
               ], xp=100, items={"jade_slip": 1}),
         # ---------------------------------------------------------------- q008
         quest("The Formation Array",
@@ -152,7 +163,9 @@ CHAPTER = chapter(
                        (GU, "The array flared. Every rune, all at once. It has not done that in three hundred years."),
                        (GU, "You were standing at its heart. Show me that pendant."),
                        (P, "It's only my mother's jade, Elder."),
-                       (GU, "Hm. Yes. A trinket. The array must be aging. Go, disciple, and speak of this to no one.")),
+                       (GU, "Hm. Yes. A trinket. The array must be aging. Go, disciple, and speak of this to no one."),
+                       added(MO, "Aging, Gu? I checked every rune of that array myself, last spring."),
+                       added(GU, "Then check them again, Mo. The disciple may go.")),
               ], xp=110, items={"spirit_stone": 2}),
         # ---------------------------------------------------------------- q009
         quest("Red Eyes in the Pines",
@@ -170,6 +183,8 @@ CHAPTER = chapter(
                        (LU, "Red eyes? That's an old granny story. Red eyes mean the Blood Moon is... oh. Oh no.")),
                   talk(MO, "Report to Elder Mo",
                        (MO, "Corrupted wolves. Their qi was poisoned with blood. That hasn't happened since the Blood Moon Sect fell."),
+                       added(LU, "I rang the bell, Elder! Well. The new one rang it. I supervised, very closely."),
+                       added(P, "There were two of them, Elder. Both with eyes like fresh blood."),
                        (MO, "Probably a stray demonic cultivator passing through. Probably. You did well, {junior}. Get some rest.")),
               ], xp=130, items={"wolf_fang": 1}),
         # ---------------------------------------------------------------- q010
@@ -187,7 +202,8 @@ CHAPTER = chapter(
                        (YUN, "Yun Qingyao. Sect Master of the Azure Cloud. I felt your breakthrough from the hall. It was very... loud."),
                        (YUN, "Elder Mo tells me the formation array answered you, and that wolves with red eyes came to our wall."),
                        (YUN, "Omens come in pairs, they say. I would rather they didn't. Rest well, {player}. Tomorrow the sect needs you."),
-                       (P, "I will not disappoint you, Sect Master.")),
+                       (P, "I will not disappoint you, Sect Master."),
+                       added(MO, "Hmph. A loud breakthrough, but a clean one. Adequate, Sect Master. Adequate.")),
               ], xp=200, items={"spirit_stone": 3}, realm="Qi Condensation"),
     ])
 

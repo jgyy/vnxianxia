@@ -1,7 +1,7 @@
 """Cycles dialogue portraits: head-and-shoulders character art in a 3/4 view.
 
     python blender/render_portraits.py [--out godot/ui/portraits] [--only name,name]
-                                       [--samples 192] [--size 256] [--face-maps]
+                                       [--samples 192] [--size 256]
 
 Photographic set-up: an 85 mm lens at about a metre, three-quarter view with
 the far eye on the thirds line, shallow depth of field focused on the near
@@ -11,9 +11,6 @@ radial falloff tinted per character.  Render-time material upgrades that
 glTF cannot carry: subsurface scattering on skin, a refractive cornea and
 tear line, and a hint of subsurface in the sclera.  Each character wears a
 quiet expression suited to its role through the face shape keys.
-
---face-maps paints the face with face_paint.preview_maps (the facial feature
-masks of the new head UV layout) instead of the GLB's face texture.
 """
 import argparse
 import math
@@ -26,7 +23,7 @@ sys.path.insert(0, HERE)
 import bpy  # noqa: E402
 from mathutils import Vector  # noqa: E402
 
-from xianxia import characters, preview, util  # noqa: E402
+from xianxia import characters, preview  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 
@@ -55,7 +52,6 @@ def parse_args():
     ap.add_argument("--only", default="")
     ap.add_argument("--samples", type=int, default=192)
     ap.add_argument("--size", type=int, default=256)
-    ap.add_argument("--face-maps", action="store_true", help="paint the face with face_paint.preview_maps")
     return ap.parse_args(argv)
 
 
@@ -65,40 +61,29 @@ def _bsdf(mat):
     return next((n for n in mat.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None)
 
 
-def upgrade_materials(cfg, face_maps):
+def upgrade_materials(cfg):
     """Render-only shading that the glTF materials cannot express."""
     s = cfg["scale"]
-    name = cfg["name"]
-    if face_maps:
-        from xianxia import face_paint
-        maps = face_paint.preview_maps(cfg, 2048)
-        mat = bpy.data.materials.get(name + "_face")
-        nodes = [n for n in mat.node_tree.nodes if n.type == "TEX_IMAGE"]
-        imgs = {"albedo": util.image_from_array(name + "_face_preview", maps["albedo"])}
-        for n in nodes:
-            if n.image and n.image.name.endswith("_albedo"):
-                n.image = imgs["albedo"]
     for mat in bpy.data.materials:
         b = _bsdf(mat)
         if b is None:
             continue
-        mname = mat.name
-        if mname.endswith(("_face", "_skin")):
-            b.inputs["Subsurface Weight"].default_value = 0.32
+        mname = mat.name.lower()
+        sss = b.inputs["Subsurface Weight"]
+        if mname.endswith(("_face", "_skin")) and sss.default_value == 0.0 and not sss.links:
+            sss.default_value = 0.32                     # skin materials without their own SSS set-up
             b.inputs["Subsurface Radius"].default_value = (1.0, 0.42, 0.24)
             b.inputs["Subsurface Scale"].default_value = 0.0035 * s
-            b.inputs["Specular IOR Level"].default_value = 0.42
-        elif mname == "Eye_Cornea" or mname == "Eye_Tearline":
+        elif mname.endswith(("cornea", "tearline")):
+            # glTF can only carry an alpha film; in Cycles the cornea refracts the iris like a lens
             b.inputs["Transmission Weight"].default_value = 1.0
             b.inputs["Alpha"].default_value = 1.0
+            b.inputs["Base Color"].default_value = (1.0, 1.0, 1.0, 1.0)
             b.inputs["Roughness"].default_value = 0.0
             b.inputs["IOR"].default_value = 1.376
             mat.surface_render_method = "DITHERED"
-        elif mname == "Eye_Sclera":
-            b.inputs["Subsurface Weight"].default_value = 0.25
-            b.inputs["Subsurface Scale"].default_value = 0.002 * s
-        elif mname in ("Teeth", "Tongue", "Mouth_Inner"):
-            b.inputs["Subsurface Weight"].default_value = 0.3
+        elif mname.endswith(("eye_sclera", "teeth", "tongue", "mouth_inner")) and sss.default_value == 0.0:
+            sss.default_value = 0.25
             b.inputs["Subsurface Scale"].default_value = 0.002 * s
 
 
@@ -132,7 +117,7 @@ def portrait(cfg, args):
     expr, (bg_in, bg_out), rim = LOOKS.get(cfg["name"], (dict(), ((0.2, 0.22, 0.25), (0.05, 0.055, 0.065)),
                                                           (1.0, 0.9, 0.8)))
     pose(arm, meshes, expr)
-    upgrade_materials(cfg, args.face_maps)
+    upgrade_materials(cfg)
     s = cfg["scale"]
     scene = preview.setup(res=(args.size * 2, args.size * 2), samples=args.samples, sky=(0.1, 0.11, 0.13),
                           strength=0.35, look="AgX - Medium High Contrast")

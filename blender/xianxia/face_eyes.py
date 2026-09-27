@@ -13,7 +13,7 @@ A lid *state* dict drives every eye shape key by re-running the same geometry:
 
 Eyeball parts (all weighted to the eye.L / eye.R bones by face_rig):
 * sclera sphere with the corneal window cut out (slot Eye_Sclera, azimuthal
-  UV centred on the visual axis: uv = 0.5 + 0.5 * (angle / pi) * (cos, sin));
+  UV centred on the visual axis: uv = 0.5 + 0.5 * (angle / 90 deg) * (cos, sin));
 * iris: a shallow cone from the limbus to the pupil with radial fibre ridges
   and a limbal groove (slot Eye_Iris, planar polar UV: the limbus is the circle
   of radius 0.5 around (0.5, 0.5), the pupil edge sits at radius 0.5 * PUPIL / LIMBUS);
@@ -108,7 +108,8 @@ class EyeLids:
         # the conjunctival tuck (th < 0) hugs the true globe; the lids ride on the lid ellipsoid
         a = np.where(th < 0, R, np.where(u < 0, self.a_med, self.a_lat))
         q = (1.0 + th / R) ** 2 - (u / a) ** 2 - (w / R) ** 2
-        return self.c[1] - R * np.sqrt(np.clip(q, 0.0, None)) + 3.0 * R * np.clip(-q, 0.0, None)
+        # past the lid ellipsoid's rim the surface folds back behind the globe (a few mm at most)
+        return self.c[1] - R * np.sqrt(np.clip(q, 0.0, None)) + np.minimum(3.0 * R * np.clip(-q, 0.0, None), 5.0)
 
     def to_head(self, u, w, y):
         """Eye-local frontal coordinates -> head mm."""
@@ -241,7 +242,7 @@ def eyeball(bm, centre, R, fwd=(0.0, -1.0, 0.0), segs=32, rings=10, uv=None, mat
             fa = bm.faces.new((grid[j][i], grid[j + 1][i], grid[j + 1][i2], grid[j][i2]))
             fa.material_index = mats[0]
             for lp, (jj, ii) in zip(fa.loops, ((j, i), (j + 1, i), (j + 1, i2 if i2 else segs), (j, i2 if i2 else segs))):
-                rr = 0.5 * angs[jj] / math.pi
+                rr = 0.5 * angs[jj] / (0.5 * math.pi)
                 ph = 2 * math.pi * ii / segs
                 lp[uvl].uv = (0.5 + rr * math.cos(ph), 0.5 + rr * math.sin(ph))
     # ---- iris: from the limbus (slightly inside the sclera) to the pupil, a shallow cone
@@ -290,7 +291,7 @@ def eyeball(bm, centre, R, fwd=(0.0, -1.0, 0.0), segs=32, rings=10, uv=None, mat
         fa.material_index = mats[0]
         for lp, ii in zip(fa.loops, (i, i2 or segs, i2 or segs, i)):
             ph = 2 * math.pi * ii / segs
-            rr = 0.5 * lim_ang / math.pi
+            rr = 0.5 * lim_ang / (0.5 * math.pi)
             lp[uvl].uv = (0.5 + rr * math.cos(ph), 0.5 + rr * math.sin(ph))
     # ---- cornea: a corneal cap blended into a thin tear film over the front of the sclera
     cz = R * math.cos(lim_ang) - math.sqrt(CORNEA_R ** 2 - LIMBUS ** 2)

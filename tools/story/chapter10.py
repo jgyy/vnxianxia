@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -24,7 +24,8 @@ CHAPTER = chapter(
                   talk(HAN, "Stand with Han Xue at the canyon mouth",
                        (HAN, "Stay alive. That's not a request, it's what the Sect Master said, and I'm saying it louder."),
                        (HAN, "And after, when this is done, you owe me a proper sparring match. No holding back."),
-                       (P, "After, Senior Sister. I promise."), at="CanyonEntrance"),
+                       (P, "After, Senior Sister. I promise."),
+                       added(ZHAO, "And after the sparring match, a banquet. The Zhao clan is paying. I've already sent the letter."), at="CanyonEntrance"),
               ], xp=2000),
         # ---------------------------------------------------------------- q092
         quest("Breaking the Line",
@@ -36,7 +37,9 @@ CHAPTER = chapter(
                          (ZHAO, "Left side's mine, {player}! You can have the right side. It's smaller.")),
                   reach("BloodPools", "Regroup with Wei Tong at the blood pools",
                        (WEI, "We did it! The camp's burning, and I've only lost one bun. It was a very brave bun."),
-                       (WEI, "Go on. The gate's ahead. Elder Mo would've said something grumpy and encouraging. Pretend I did.")),
+                       (WEI, "Go on. The gate's ahead. Elder Mo would've said something grumpy and encouraging. Pretend I did."),
+                       added(ZHAO, "One bun. He's been mourning that bun for an hour. The camp was on fire and he mourned the bun."),
+                       added(P, "Hold the pools, both of you. I'm going for the gate.")),
               ], xp=2200, items={"medicine": 3}),
         # ---------------------------------------------------------------- q093
         quest("The Black Gate",
@@ -46,7 +49,8 @@ CHAPTER = chapter(
                        (GU, "Remember the blood-red token you took from Iron-Fang's chest? The one I confiscated? I kept it."),
                        (GU, "It's a command token. With it, the gate guards will let me in. They don't know yet what I have become."),
                        (P, "They'll kill you when they find out."),
-                       (GU, "Yes. I've made my peace with that. It is the first peace I have felt in twenty years."), at="ObeliskRing"),
+                       (GU, "Yes. I've made my peace with that. It is the first peace I have felt in twenty years."),
+                       added(YUN, "Gu Hanshan. Whatever happens tonight, you go in as an elder of the Azure Cloud."), at="ObeliskRing"),
                   reach("DemonGate", "Wait before the black gate",
                         (N, "The gate is black iron, carved with a moon swallowing a sword. It is taller than the main hall. It is utterly silent."),
                         (N, "Then, from inside, the sound of fighting. One man against many.")),
@@ -61,7 +65,9 @@ CHAPTER = chapter(
                   talk(GU, "Kneel beside Gu Hanshan at the gate",
                        (GU, "Ah. You came. I held them... as long as I could. I was always better at law than fighting."),
                        (GU, "Tell the sect... tell them the Law Hall is empty now. Fill it with someone kinder than me."),
-                       (GU, "Lan... is waiting. I think she'll let me apologise. Thank you, {player}."), at="DemonGate"),
+                       (GU, "Lan... is waiting. I think she'll let me apologise. Thank you, {player}."),
+                       added(HAN, "We'll fill it, Elder Gu. With someone kind. I promise you that."),
+                       added(P, "Rest now, Elder. You opened the gate."), at="DemonGate"),
                   interact("prison_cage", "PrisonCages", "Break open the last cages",
                            (N, "The last locks fall. Mothers, children, old men stumble into the red light, blinking, alive.")),
                   talk(TIE, "Find Iron-Fang at the cages",
@@ -75,7 +81,9 @@ CHAPTER = chapter(
                   defeat("demon_cultivator", 4, "AltarOfBlood", "Defeat the altar's last defenders"),
                   interact("blood_altar", "AltarOfBlood", "Shatter the Altar of Blood",
                            (N, "The altar cracks from top to bottom. Three hundred years of stolen blood pours out and soaks away into the stone."),
-                           (YE, "It's done. His power has no root now. Only what he carries in himself.")),
+                           (YE, "It's done. His power has no root now. Only what he carries in himself."),
+                           added(TIE, "No root. Good. Then we pull up the rest of the weed."),
+                           added(P, "Get the prisoners clear of the altar. It's coming down.")),
                   meditate("FortressCourt", 10, "Still your soul in the silence of the void",
                            (N, "In the silence after the altar breaks, you sink inward. Past body, past qi, past soul, to the empty place beneath."),
                            (N, "Nothing is there. And nothing is exactly enough. You rise with the stillness of the void in your bones.")),
@@ -93,7 +101,9 @@ CHAPTER = chapter(
                   talk(YE, "Find Ye Wuming in the abyss depths",
                        (YE, "His body is dust. But his remnant soul tore free and fled upward. To the Sky Isles."),
                        (YE, "Your breakthrough has drawn heaven's eye. Your tribulation is gathering. He means to steal it, and ascend in your place."),
-                       (YE, "I have my name back, {player}. The children have theirs. Go. Finish it. We'll hold the abyss."), at="AbyssDepths"),
+                       (YE, "I have my name back, {player}. The children have theirs. Go. Finish it. We'll hold the abyss."),
+                       added(HAN, "Then we go up after him. The array to the isles still works."),
+                       added(P, "No. Hold the Abyss with Ye Wuming, Senior Sister. This part is mine."), at="AbyssDepths"),
               ], xp=4000, items={"demon_core": 3}),
         # ---------------------------------------------------------------- q097
         quest("Pursuit to the Heavens",
@@ -107,7 +117,9 @@ CHAPTER = chapter(
                   reach("IsleOfWinds", "Speak with Han Xue on the Isle of Winds",
                        (HAN, "I followed you through the array. Obviously. Did you think I'd let you face the sky alone?"),
                        (HAN, "I'll hold the bridge. Nothing else crosses. Go."),
-                       (HAN, "{player}... you still owe me that sparring match. Don't you dare ascend without paying your debts.")),
+                       (HAN, "{player}... you still owe me that sparring match. Don't you dare ascend without paying your debts."),
+                       added(SAGE, "She did follow you. She argued with my bridge the whole way across. The bridge lost."),
+                       added(P, "Thank you, Senior Sister. Hold the bridge.")),
               ], xp=3000),
         # ---------------------------------------------------------------- q098
         quest("Remnants of the Blood Moon",
@@ -121,7 +133,8 @@ CHAPTER = chapter(
                        (ZHAO, "Don't look at me like that. Of course I came. Someone has to witness your triumph and complain about it."),
                        (ZHAO, "Swear something to me. When you come back down, we fight. Properly. And I win."),
                        (P, "When I come back down, Zhao Kang. And you'll lose."),
-                       (ZHAO, "Ha! That's the spirit. Go. The sky is waiting, and it has terrible manners.")),
+                       (ZHAO, "Ha! That's the spirit. Go. The sky is waiting, and it has terrible manners."),
+                       added(SAGE, "I shall referee. I have always wanted to referee something. Heaven never lets me.")),
               ], xp=3000, items={"thunder_crystal": 1}),
         # ---------------------------------------------------------------- q099
         quest("Heavenly Tribulation",
@@ -145,6 +158,7 @@ CHAPTER = chapter(
                        (YUN, "The stair has opened for you. Three hundred years, and our sect has its first immortal."),
                        (YUN, "You don't have to go. The heavens will wait. They have nothing but time."),
                        (P, "If I stay, the stair closes, and nobody climbs it again for a thousand years. Someone should see what's up there."),
+                       added(HAN, "Go, then. But the sparring match stands. I'll wait. I'm very good at waiting."),
                        (YUN, "Then go, {player}. And look down on us sometimes. We'll be the ones waving."), at="CloudGate"),
                   talk(SAGE, "Say farewell to Qing Luan",
                        (SAGE, "Sixty years I waited here for someone worth the climb. It was worth it. Don't tell anyone I said so."),

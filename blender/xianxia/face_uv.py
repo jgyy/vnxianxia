@@ -11,7 +11,7 @@ Islands (u right, v up, all characters share the layout):
 island                chart region               projection
 ====================  =========================  =================================
 FACE  u 0.00-0.62     |lon| <= 80 deg,           Lambert azimuthal equal-area
-      v 0.00-1.00     b <= 50 deg                centred on (lon 0, b -14 deg): a
+      v 0.00-1.00     b <= 50 deg                centred on (lon 0, b -7 deg): a
                       (face, front of neck)      front projection without the edge
                                                  crush of an orthographic one; the
                                                  neck continues straight down
@@ -29,9 +29,9 @@ collar to the temple), the circle b = 50 deg (well inside the hair), and the
 ear roots.  The eye / mouth / nostril cavities keep the chart of their own
 points, so they fall next to the opening they belong to.
 
-For painting: ``lonb_from_uv(u, v)`` inverts the layout (per texel), and
-``landmark_uv(cfg)`` gives the UV of the facial landmarks (eyes, brows,
-lips, nose, jaw ...) for a character, so features can be painted exactly.
+The skin painter (skin.paint) rasterises the head triangles in this layout and
+works on their 3-D positions, helped by the world landmarks face_head stores
+in ``obj["face_landmarks"]``.
 """
 import math
 
@@ -41,7 +41,7 @@ from . import face_chart as fc
 
 SEAM = math.radians(80.0)
 TOP = math.radians(50.0)
-CENTER_B = math.radians(-14.0)
+CENTER_B = math.radians(-7.0)
 
 # island boxes (u0, v0, u1, v1)
 FACE_BOX = (0.0, 0.0, 0.62, 1.0)
@@ -207,62 +207,6 @@ def uv_from_lonb(lon, b, island=None):
     return u, v
 
 
-def lonb_from_uv(u, v):
-    """Inverse layout: (lon, b, island) per UV (island -1 = unused texel / ear box)."""
-    f = _fits()
-    u = np.asarray(u, np.float64)
-    v = np.asarray(v, np.float64)
-    lon = np.zeros(np.broadcast(u, v).shape)
-    b = np.zeros_like(lon)
-    isl = np.full(lon.shape, -1)
-    # face: invert the azimuthal projection, then the neck continuation
-    s, cx, cy = f["face"]
-    x, y = (u - cx) / s, (v - cy) / s
-    rho = np.hypot(x, y)
-    c = 2 * np.arcsin(np.clip(rho / 2, 0, 1))
-    sb0, cb0 = math.sin(CENTER_B), math.cos(CENTER_B)
-    with np.errstate(invalid="ignore", divide="ignore"):
-        bb = np.arcsin(np.clip(np.cos(c) * sb0 + np.where(rho > 0, y * np.sin(c) * cb0 / rho, 0), -1, 1))
-        ll = np.arctan2(x * np.sin(c), rho * cb0 * np.cos(c) - y * sb0 * np.sin(c))
-    ll = warp_lon(ll, inverse=True)
-    head_face = bb >= fc.B_HEAD
-    bb = warp_b(np.maximum(bb, fc.B_HEAD), inverse=True)
-    # rows below B_HEAD: solve x = X_B(lon) * shrink(b), y = Y_B(lon) - below(b) by fixed-point steps
-    tab_l = np.linspace(-SEAM, SEAM, 321)
-    tab_x, tab_y = _azimuthal(warp_lon(tab_l), np.full_like(tab_l, fc.B_HEAD))
-    blend_len = 1.6 * (fc.B_HEAD - fc.B_NECK)
-    b_neck = np.full_like(x, fc.B_HEAD)
-    for _ in range(8):
-        ll_n = np.interp(x / _neck_shrink(b_neck), tab_x, tab_l)
-        drop = np.interp(ll_n, tab_l, tab_y) - y
-        b_neck = np.where(drop <= blend_len, fc.B_HEAD - drop / 1.6,
-                          fc.B_NECK - (drop - blend_len) / (fc.NECK_DZ_PER_RAD / 90.0))
-    in_face = (u >= FACE_BOX[0]) & (u <= FACE_BOX[2])
-    lon = np.where(in_face, np.where(head_face, ll, ll_n), lon)
-    b = np.where(in_face, np.where(head_face, bb, b_neck), b)
-    isl = np.where(in_face, 0, isl)
-    # side
-    s, cx, cy = f["side"]
-    x, y = (u - cx) / s, (v - cy) / s
-    in_side = (u >= SIDE_BOX[0]) & (v >= SIDE_BOX[1])
-    ls = x / 0.72 + math.pi
-    drop = fc.B_HEAD - y
-    bs = np.where(y >= fc.B_HEAD, warp_b(y, inverse=True), np.where(drop <= blend_len, fc.B_HEAD - drop / 1.6,
-                                               fc.B_NECK - (drop - blend_len) / (fc.NECK_DZ_PER_RAD / 90.0)))
-    lon = np.where(in_side, (ls + math.pi) % (2 * math.pi) - math.pi, lon)
-    b = np.where(in_side, bs, b)
-    isl = np.where(in_side, 1, isl)
-    # crown
-    s, cx, cy = f["crown"]
-    x, y = (u - cx) / s, (v - cy) / s
-    in_crown = (u >= CROWN_BOX[0]) & (u <= CROWN_BOX[2]) & (v <= CROWN_BOX[3])
-    rho = np.hypot(x, y)
-    lon = np.where(in_crown, np.arctan2(x, -y), lon)
-    b = np.where(in_crown, math.pi / 2 - 2 * np.arcsin(np.clip(rho / 2, 0, 1)), b)
-    isl = np.where(in_crown, 2, isl)
-    return lon, b, isl
-
-
 def ear_uv(side, local_up, local_back, size):
     """Planar UV inside the ear box for ear-local (up, back) millimetres."""
     u0, v0, u1, v1 = EAR_BOX[side]
@@ -270,27 +214,3 @@ def ear_uv(side, local_up, local_back, size):
     uu = u0 + (u1 - u0) * (0.5 + np.asarray(local_back) / (2 * half))
     vv = v0 + (v1 - v0) * (0.5 + np.asarray(local_up) / (2 * half))
     return uu, vv
-
-
-def landmark_uv(cfg):
-    """{landmark name: (u, v)} for a character: where to paint brows, lips, liner, blush ..."""
-    from . import face_landmarks as fl
-    p = fl.params_for(cfg)
-    out = {}
-    for name, pt in fl.landmarks(p).items():
-        lon, b = fl.chart_of(pt)
-        if pt[2] < -100 and abs(lon) < 1.0 and name.startswith("cervic"):
-            b = float(fc.b_of_neck_z(pt[2]))
-        u, v = uv_from_lonb(np.array([lon]), np.array([b]))
-        out[name] = (float(u[0]), float(v[0]))
-    # contours useful for painting: lip borders and the brow line
-    stom, upper, lower = fl.lip_curves(p, 21)
-    fy = -0.905 * p.head[1]
-    for key, curve in (("lip_upper", upper), ("lip_lower", lower), ("stomion_line", stom)):
-        pts = []
-        for x, z in curve:
-            lon, b = fl.chart_of((x, fy - 2.0, z))
-            u, v = uv_from_lonb(np.array([lon]), np.array([b]))
-            pts.append((float(u[0]), float(v[0])))
-        out[key] = pts
-    return out

@@ -94,17 +94,6 @@ class SurfaceTable:
         _, t = fc.cast(surf.F, LON.ravel(), LAT.ravel(), centre_only=True)
         self.t = t.reshape(LAT.shape)
 
-    def radius_v(self, lon, lat):
-        """Vectorised bilinear lookup of the surface distance (mm)."""
-        fi = np.interp(lon, self.lons, np.arange(len(self.lons)))
-        fj = np.interp(lat, self.lats, np.arange(len(self.lats)))
-        i0 = np.minimum(fi.astype(int), len(self.lons) - 2)
-        j0 = np.minimum(fj.astype(int), len(self.lats) - 2)
-        a, b = fi - i0, fj - j0
-        t = self.t
-        return ((t[j0, i0] * (1 - a) + t[j0, i0 + 1] * a) * (1 - b) +
-                (t[j0 + 1, i0] * (1 - a) + t[j0 + 1, i0 + 1] * a) * b)
-
     def radius(self, lon, lat):
         i = np.interp(lon, self.lons, np.arange(len(self.lons)))
         j = np.interp(lat, self.lats, np.arange(len(self.lats)))
