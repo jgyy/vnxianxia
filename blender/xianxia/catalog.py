@@ -1,5 +1,5 @@
 """Every environment asset: GLB file name -> builder callable."""
-from . import arch, lands, nature, props, realms
+from . import arch, interiors, lands, nature, props, realms
 
 ENVIRONMENT = {
     "main_hall": arch.main_hall,
@@ -30,3 +30,4 @@ ENVIRONMENT = {
 }
 ENVIRONMENT.update(lands.ASSETS)
 ENVIRONMENT.update(realms.ASSETS)
+ENVIRONMENT.update(interiors.ASSETS)

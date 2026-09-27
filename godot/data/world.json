@@ -102,6 +102,16 @@
   "wolf_fang": "Spirit Wolf Fang"
  },
  "maps": {
+  "alchemy_pavilion": {
+   "markers": [
+    "ExitDoor",
+    "PillFurnace",
+    "PlayerSpawn",
+    "TeleportArray"
+   ],
+   "music": "sect",
+   "name": "Alchemy Pavilion"
+  },
   "bamboo_forest": {
    "markers": [
     "AncientShrine",
@@ -143,17 +153,110 @@
    "music": "abyss",
    "name": "Blood Moon Abyss"
   },
+  "blood_abyss_shrine": {
+   "markers": [
+    "ExitDoor",
+    "PlayerSpawn",
+    "RelicAltar",
+    "TeleportArray"
+   ],
+   "music": "abyss",
+   "name": "Ancient Shrine"
+  },
+  "celestial_pavilion": {
+   "markers": [
+    "ExitDoor",
+    "PlayerSpawn",
+    "StarChart",
+    "TeleportArray"
+   ],
+   "music": "sky",
+   "name": "Celestial Sanctum"
+  },
+  "disciple_dormitory": {
+   "markers": [
+    "Dormitory",
+    "ExitDoor",
+    "PlayerSpawn",
+    "TeleportArray"
+   ],
+   "music": "sect",
+   "name": "Disciple Dormitory"
+  },
+  "elder_quarters": {
+   "markers": [
+    "ExitDoor",
+    "MeditationMat",
+    "PlayerSpawn",
+    "TeleportArray"
+   ],
+   "music": "sect",
+   "name": "Elder's Quarters"
+  },
+  "hidden_vault": {
+   "markers": [
+    "ExitDoor",
+    "PlayerSpawn",
+    "TeleportArray",
+    "VaultTreasure"
+   ],
+   "music": "forest",
+   "name": "Hidden Vault"
+  },
+  "qingshi_blacksmith": {
+   "markers": [
+    "ExitDoor",
+    "Forge",
+    "PlayerSpawn",
+    "TeleportArray"
+   ],
+   "music": "town",
+   "name": "Blacksmith"
+  },
+  "qingshi_herb_shop": {
+   "markers": [
+    "ExitDoor",
+    "HerbCounter",
+    "PlayerSpawn",
+    "TeleportArray"
+   ],
+   "music": "town",
+   "name": "Herb Shop"
+  },
+  "qingshi_inn": {
+   "markers": [
+    "BarCounter",
+    "ExitDoor",
+    "PlayerSpawn",
+    "TeleportArray"
+   ],
+   "music": "town",
+   "name": "Drunken Crane Inn"
+  },
+  "qingshi_teahouse": {
+   "markers": [
+    "ExitDoor",
+    "PlayerSpawn",
+    "TeaCounter",
+    "TeleportArray"
+   ],
+   "music": "town",
+   "name": "Teahouse"
+  },
   "qingshi_town": {
    "markers": [
     "BackAlley",
+    "Blacksmith",
     "Farmland",
     "Graveyard",
+    "HerbShop",
     "Inn",
     "MagistrateHall",
     "MainStreet",
     "MarketSquare",
     "PlayerSpawn",
     "Riverside",
+    "TeaHouse",
     "TeleportArray",
     "Temple",
     "TownGate",
@@ -164,9 +267,22 @@
    "music": "town",
    "name": "Qingshi Town"
   },
+  "scripture_pavilion": {
+   "markers": [
+    "BookShelves",
+    "ExitDoor",
+    "PlayerSpawn",
+    "TeleportArray"
+   ],
+   "music": "sect",
+   "name": "Scripture Pavilion"
+  },
   "sect": {
    "markers": [
+    "AlchemyPavilion",
     "CliffEdge",
+    "DiscipleDormitory",
+    "ElderQuarters",
     "FormationArray",
     "GateGuardPost",
     "HallSteps",
@@ -185,10 +301,21 @@
     "StoneBridge",
     "TeleportArray",
     "TrainingGround",
-    "WeaponRack"
+    "WeaponRack",
+    "WeaponsHall"
    ],
    "music": "sect",
    "name": "Azure Cloud Sect"
+  },
+  "sect_main_hall": {
+   "markers": [
+    "ExitDoor",
+    "PlayerSpawn",
+    "TeleportArray",
+    "ThroneDais"
+   ],
+   "music": "sect",
+   "name": "Sect Main Hall"
   },
   "sky_isles": {
    "markers": [
@@ -207,6 +334,16 @@
    ],
    "music": "sky",
    "name": "Celestial Sky Isles"
+  },
+  "weapons_hall": {
+   "markers": [
+    "ArmoryRacks",
+    "ExitDoor",
+    "PlayerSpawn",
+    "TeleportArray"
+   ],
+   "music": "sect",
+   "name": "Weapons Hall"
   }
  },
  "models": [

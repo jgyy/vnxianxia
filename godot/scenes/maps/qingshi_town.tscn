@@ -412,13 +412,13 @@ transform = Transform3D(-0.845723, 0, 0.307818, 0, 0.9, 0, -0.307818, 0, -0.8457
 [node name="TempleStele" parent="Level" instance=ExtResource("21_stone_stele")]
 transform = Transform3D(0.737237, 0, 0.516219, 0, 0.9, 0, -0.516219, 0, 0.737237, 42, 0, -41.5)
 
-[node name="TownHouse16" parent="Level" instance=ExtResource("25_town_house")]
+[node name="Blacksmith" parent="Level" instance=ExtResource("25_town_house")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, 0, 8)
 
-[node name="TownHouse17" parent="Level" instance=ExtResource("25_town_house")]
+[node name="HerbShop" parent="Level" instance=ExtResource("25_town_house")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 32, 0, 8)
 
-[node name="TownHouse18" parent="Level" instance=ExtResource("25_town_house")]
+[node name="TownHouse16" parent="Level" instance=ExtResource("25_town_house")]
 transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, 22, 0, 20.5)
 
 [node name="TeaHouse" parent="Level" instance=ExtResource("26_town_house_large")]
@@ -1046,3 +1046,12 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 72, 2.1, 12)
 
 [node name="WatchTower" type="Marker3D" parent="Markers"]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 37.5, 1, 30)
+
+[node name="TeaHouse" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 34, 1, 17)
+
+[node name="Blacksmith" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, 1, 11.5)
+
+[node name="HerbShop" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 32, 1, 11.5)
