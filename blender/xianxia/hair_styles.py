@@ -129,17 +129,40 @@ class Groom:
         return b
 
     def gathered(self, count, lon_range, lat_range, tie, bulge=0.012, width=0.018, accept=None,
-                 strips=("dense", "dense2", "medium"), tie_radius=0.012, margin=0.0):
+                 strips=("dense", "dense2", "medium"), tie_radius=0.012, margin=0.0, sections=28, groove=0.35):
         s, rng, head = self.s, self.rng, self.head
         lon, lat = head.sample(rng, self.n(count), lon_range, lat_range, accept, hairline_margin=margin)
         P = G.gather(head, lon, lat, tie, rng, n_pts=16, bulge=bulge * s, tight=0.004 * s,
                      tie_radius=tie_radius * s)
+        P = self._comb_sections(P, lon, sections, groove)
         P = G.resample(P, self._points(G.lengths(P), 0.04, 4, 6))
         # sparse, wispy cards along the hairline so it fades in instead of ending in a hard edge
         edge = np.sin(lat) - head.hairline(np.abs(lon)) < 0.07
         names = np.where(edge, rng.choice(["wisp", "wisp2", "medium2"], len(lon)), rng.choice(list(strips), len(lon)))
         self._emit(P, names, width, "head", tip=0.8, twist=0.2)
         return P
+
+    def _comb_sections(self, P, lon, sections, groove=0.35):
+        """Combed-back hair gathers into sections with shallow grooves between them.
+
+        Cards are binned by root longitude (with jitter so the partings wander); each is
+        pulled toward its section's mean path, most strongly mid-way to the tie.
+        """
+        if sections <= 1 or len(P) < sections:
+            return P
+        key = (lon + math.pi) / (2 * math.pi) * sections + self.rng.normal(0, 0.25, len(lon))
+        sec = np.floor(key).astype(int) % sections
+        t = np.linspace(0, 1, P.shape[1], dtype=np.float32)[None, :, None]
+        pull = groove * np.clip(np.sin(np.pi * t), 0, 1) ** 1.5
+        out = P.copy()
+        for k in range(sections):
+            m = sec == k
+            if m.sum() < 2:
+                continue
+            mean = P[m].mean(0)
+            out[m] = P[m] + (mean[None] - P[m]) * pull[0]
+        out[:, 1:] = self.head.push(out[:, 1:], 0.003 * self.s)
+        return out
 
     def bun(self, count, centre, axis, radius, height, turns=1.3, width=0.016, strips=("medium", "tip")):
         s = self.s
@@ -323,7 +346,8 @@ def style_topknot(g, tail_len=0.6, guan_size=1.0, grey=False):
                width=0.024, fan=0.4)
     if not grey:
         g.locks(60, 0.3, lon=(0.82, 1.05), lat=(0.2, 0.45), width=0.012)
-        g.bangs(18, lon_half=0.3, length=0.08, width=0.01, sweep=0.35, depth=0.06, curtain=0.02)
+        g.bangs(14, lon_half=0.3, length=0.08, width=0.012, sweep=0.35, depth=0.06, curtain=0.02,
+                strips=("medium2", "tip"))
     g.flyaways(60)
 
 
