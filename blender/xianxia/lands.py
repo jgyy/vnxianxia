@@ -1041,52 +1041,10 @@ def bounds_colliders(hx, hz, height=90.0, base=-30.0, thick=4.0):
 # forest
 # --------------------------------------------------------------------------
 def forest_terrain():
-    """Bamboo valley: rolling floor, winding paths, a stream bed and steep valley walls."""
+    """The whole bamboo valley (tools/maps/bamboo_forest.py): forest floor, paths, the stream and its
+    gorge, the misty lake, the marsh, the ruins' paving, valley walls; water surfaces; bounds."""
     from maps import bamboo_forest as F
-    m = {}
-    m["floor"] = util.material("forest_floor", forest_floor(1024), normal_strength=0.8)
-    m["cliff"] = util.material("crag", crag("#77746a", 512), normal_strength=1.0)
-    m["bed"] = util.material("pebbles", pebbles(512), normal_strength=1.2)
-    m["moss"] = util.material("moss_floor", tex.foliage("#3d5a2a", 512, 145), normal_strength=0.6)
-    ps = path_strip(512)
-    m["path"] = clip_alpha(util.material("forest_path", ps, alpha=ps["alpha"], normal_strength=0.3))
-    dp = dirt_patch(512)
-    m["dirt"] = clip_alpha(util.material("dirt_patch", dp, alpha=dp["alpha"], normal_strength=0.3))
-    m["paving"] = util.material("old_paving", tex.paving("#a09a8a", 512, 82, tiles=4, gap=0.01, moss=0.45),
-                                normal_strength=1.0)
-    m["water"] = util.material("stream_water", tex.water(256), alpha=0.78, normal_strength=0.6)
-
-    def classify(x, z, h, nrm):
-        if nrm.z < 0.74:
-            return 1
-        if F.boundary(x, z) > 3:
-            return 3
-        if F.STREAM.distance(x, z, 4.0)[0] < 3.4 and h < F.stream_level(x) + 0.3:
-            return 2
-        return 0
-
-    def uv_fn(co, mi, nrm):
-        if mi == 1:
-            return triplanar(co, nrm, 0.06)
-        if mi == 2:
-            return (co.x * 0.25, co.y * 0.25)
-        return (co.x * 0.1, co.y * 0.1)
-    ground = terrain_grid("Ground-col", F.height, F.SPAN, 1.6, [m["floor"], m["cliff"], m["bed"], m["moss"]],
-                          classify, uv_fn)
-    objs = [ground]
-
-    def keep(x, z):
-        return F.boundary(x, z) < 1.0 and F.STREAM.distance(x, z, 8.0)[0] > 5.8
-    for name, p in F.PATHS.items():
-        objs.append(ribbon("Path_" + name, p.pts, p.width, F.height, m["path"], keep=keep))
-    for (x, z, r) in (F.ZONES["camp"], F.ZONES["clearing"], F.ZONES["hermit"], F.ZONES["teleport"]):
-        objs.append(disc_patch("Dirt", x, z, r * 0.75, F.height, m["dirt"], lift=0.04))
-    rnd = random.Random(5)
-    cx, cz, r = F.ZONES["ruins_inner"]
-    objs.append(disc_patch("RuinsPaving", cx, cz, r + 1, F.height, m["paving"], lift=0.07, rings=18,
-                           drop=lambda i, j: rnd.random() < 0.1, uv_scale=0.22))
-    objs.append(ribbon("StreamWater", F.STREAM.pts, 9.5, lambda x, z: F.stream_level(x) - 0.1, m["water"], lift=0.0,
-                       taper=None, cols=2))
+    objs = ground_terrain(F.G, "ForestGround", _water_mats())
     objs += bounds_colliders(F.PLAY_X + 14, F.PLAY_Z + 14)
     return objs
 
@@ -2781,7 +2739,10 @@ def _mesh_ground_cells(G, i0, j0, i1, j1, heights, mesher, flat=None, only=None,
         return i
 
     def node(i, j):
-        return vert(x0 + i * s, z0 + j * s, flat if flat is not None else heights[j][i])
+        x, z = x0 + i * s, z0 + j * s
+        if flat is None:
+            return vert(x, z, heights[j][i])
+        return vert(x, z, flat(x, z) if callable(flat) else flat)
 
     mid_cache = {}
 

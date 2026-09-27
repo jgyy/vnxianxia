@@ -18,7 +18,13 @@ R = math.radians
 
 
 def rustic():
-    m = lands.kit()
+    """The wood, bamboo and thatch materials of the forest buildings (small tiling textures)."""
+    m = {}
+    m["planks"] = util.material("rustic_planks", lands.planks("#7a5a3c", 256), normal_strength=0.7)
+    m["old_planks"] = util.material("old_planks", lands.planks("#6a6150", 256, 402), normal_strength=0.8)
+    m["log"] = util.material("log_bark", tex.bark("#5b4a38", 256, 133), normal_strength=1.0)
+    m["rope"] = util.material("rope", tex.bark("#9b855c", 128, 135), normal_strength=0.4)
+    m["daub"] = util.material("daub", tex.plaster("#b9a27c", 256, 103, "#6d5a3e"), normal_strength=0.5)
     m["bamboo"] = util.material("culm", lands.culm(256), normal_strength=0.4)
     m["thatch"] = util.material("thatch", lands.thatch(256), normal_strength=1.2)
     m["mat"] = util.material("bamboo_mat", lands.woven("#a8834a", 256, 553), normal_strength=0.6)
@@ -760,6 +766,7 @@ ASSETS = {
     "buried_temple": buried_temple,
     "buddha_cliff": buddha_cliff,
     "rope_bridge": rope_bridge,
+    "rope_bridge_long": lambda: rope_bridge(42.0, 2.0, 2.2),
     "battlefield_debris": battlefield,
     "burial_mounds": burial_mounds,
     "drying_racks": drying_racks,

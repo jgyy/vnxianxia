@@ -1403,75 +1403,23 @@ def _rock_arch(bm, a, b, height, r=1.6, seed=0.0):
 
 
 def abyss_terrain():
-    """Blood Moon Abyss canyon (see tools/maps/blood_abyss.py): crimson soil floors and ledges,
-    jagged basalt walls, glowing blood pools and two rock arches. Visible trimesh collision."""
+    """The whole Blood Moon Abyss (tools/maps/blood_abyss.py): crimson soil floors and ledges, basalt
+    walls, ash plains, bone fields, the blood river, blood pools, the lava pool, and two rock arches.
+    One chunked ground mesh with trimesh collision (lands.ground_terrain)."""
+    from . import lands
     L = abyss_layout()
-    soil = _mat("abyss_soil", crimson_soil(512), 1.4, normal_strength=1.0)
     rock = util.material("abyss_rock", basalt(512, 413, "#352c2e"), normal_strength=1.3)
-    blood = _mat("blood", liquid(256), 1.6, normal_strength=0.4)
-    x0, z0, x1, z1 = L.BOUNDS
-    step = L.STEP
-    nx, nz = int(round((x1 - x0) / step)), int(round((z1 - z0) / step))
-    bm = bmesh.new()
-    uvl = bm.loops.layers.uv.verify()
-    grid, dist = [], []
-    for j in range(nz + 1):
-        gz = z0 + j * step
-        row, drow = [], []
-        for i in range(nx + 1):
-            gx = x0 + i * step
-            h = L.ground_height(gx, gz)
-            d = L.carve(gx, gz)[1]
-            w = L._sstep(1.0, 4.5, d)
-            jx = w * 1.1 * noise.noise(V((gx * 0.23, gz * 0.23, 1.7)))
-            jz = w * 1.1 * noise.noise(V((gx * 0.23, gz * 0.23, 5.3)))
-            row.append(bm.verts.new(V((gx + jx, -(gz + jz), h))))
-            drow.append(d)
-        grid.append(row)
-        dist.append(drow)
-    for j in range(nz):
-        for i in range(nx):
-            f = bm.faces.new((grid[j][i], grid[j + 1][i], grid[j + 1][i + 1], grid[j][i + 1]))
-            f.normal_update()
-            n = f.normal
-            dc = (dist[j][i] + dist[j + 1][i] + dist[j][i + 1] + dist[j + 1][i + 1]) / 4
-            steep = n.z < 0.74 or dc > 2.5
-            f.material_index = 1 if steep else 0
-            for loop in f.loops:
-                co = loop.vert.co
-                if not steep:
-                    loop[uvl].uv = (co.x * 0.1, co.y * 0.1)
-                elif abs(n.x) > abs(n.y):
-                    loop[uvl].uv = (co.y * 0.09, co.z * 0.09)
-                else:
-                    loop[uvl].uv = (co.x * 0.09, co.z * 0.09)
-    ground = util.mesh_object("AbyssGround-col", bm, [soil, rock], smooth=True)
-    objs = [ground]
-    # blood pools: liquid sitting in the depressions (no collision)
-    bm = bmesh.new()
-    uvl = bm.loops.layers.uv.verify()
-    for pool in L.POOLS:
-        px, pz, rx, rz, depth, seed = pool
-        level = L.pool_level(pool)
-        c = bm.verts.new(V((px, -pz, level)))
-        ring = []
-        for k in range(40):
-            a = 2 * math.pi * k / 40
-            ring.append(bm.verts.new(V((px + rx * 1.02 * math.cos(a), -(pz + rz * 1.02 * math.sin(a)), level))))
-        for k in range(40):
-            f = bm.faces.new((c, ring[(k + 1) % 40], ring[k]))
-            for loop in f.loops:
-                loop[uvl].uv = (loop.vert.co.x * 0.12, loop.vert.co.y * 0.12)
-    for f in bm.faces:
-        f.normal_update()
-        if f.normal.z < 0:
-            f.normal_flip()
-    objs.append(util.mesh_object("BloodPools", bm, blood, smooth=False))
+    waters = {
+        "blood": lambda: _mat("blood", liquid(256), 1.6, normal_strength=0.4),
+        "lava": lambda: util.material("lava", liquid(256, 452, "#5a0a02", "#ff5a0a", "#ffb030"), emission="#ff4a0a",
+                                      emission_strength=3.5, normal_strength=0.3),
+    }
+    objs = lands.ground_terrain(L.G, "AbyssGround", waters)
     # rock arches over the canyon mouth and the grotto passage
     for k, (a, b, hgt) in enumerate((((22.0, 56.0), (45.0, 54.0), 13.0), ((-51.0, -15.0), (-56.0, -27.0), 9.0))):
         bm = bmesh.new()
-        pa = V((a[0], -a[1], L.ground_height(*a) - 2.0))
-        pb = V((b[0], -b[1], L.ground_height(*b) - 2.0))
+        pa = V((a[0], -a[1], L.G.height(*a) - 2.0))
+        pb = V((b[0], -b[1], L.G.height(*b) - 2.0))
         _rock_arch(bm, pa, pb, hgt, r=1.8, seed=k * 3.1)
         o = util.mesh_object(f"RockArch{k}", bm, rock, smooth=True)
         util.box_uv(o, 0.12)
