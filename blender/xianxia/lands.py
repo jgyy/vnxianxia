@@ -2501,60 +2501,16 @@ def cart():
 
 
 def town_terrain():
-    """River valley town ground: packed earth streets inside the walls, fields, a hill, the river."""
+    """The Qingshi river valley (tools/maps/qingshi_town.py): one ground mesh with the streets, squares,
+    fields and river bed as regions, the river, canal and ponds, the river's stone embankment."""
     from maps import qingshi_town as T
-    m = {}
-    m["grass"] = util.material("meadow", tex.grass(1024, 123), normal_strength=0.6)
-    m["cliff"] = util.material("crag", crag("#8a8374", 1024, 602, "#5f6b3a"), normal_strength=1.0)
-    m["earth"] = util.material("packed_earth", earth("#a08966", 512, 423, 0.35), normal_strength=0.3)
-    m["crops"] = util.material("crops", crops(512), normal_strength=0.8)
-    m["bed"] = util.material("pebbles", pebbles(512), normal_strength=1.2)
-    m["paving"] = util.material("street_paving", tex.paving("#b0a797", 512, 83, tiles=6, gap=0.008, moss=0.05),
-                                normal_strength=1.0)
-    ps = path_strip(512, 522, "#a08a66", "#6f7040")
-    m["road"] = clip_alpha(util.material("dirt_road", ps, alpha=ps["alpha"], normal_strength=0.3))
-    m["blocks"] = util.material("stone_blocks", stone_blocks("#8f8a80", 512, 492, rows=6, cols=3, moss=0.2),
-                                normal_strength=1.0)
-    m["water"] = util.material("river_water", tex.water(256, 165), alpha=0.85, normal_strength=0.6)
-    in_town = (T.WALL_W - 2, T.WALL_N - 2, T.WALL_E + 2, T.WALL_S + 3)
+    objs = ground_terrain(T.G, "TownGround", _water_mats())
+    m = {"blocks": util.material("stone_blocks", stone_blocks("#8f8a80", 512, 492, rows=6, cols=3, moss=0.2),
+                                 normal_strength=1.0)}
 
-    def classify(x, z, h, nrm):
-        if nrm.z < 0.74:
-            return 1
-        if h < -1.0:
-            return 4
-        if T._in_rect(x, z, in_town, 0.01) > 0 or T._in_rect(x, z, (-73, -60, -48, 50), 0.01) > 0:
-            return 2
-        if T._in_rect(x, z, (T.FARM[0] + 1, T.FARM[1] + 1, T.FARM[2] - 1, T.FARM[3] - 1), 0.01) > 0 and nrm.z > 0.985:
-            return 3
-        return 0
-
-    def uv_fn(co, mi, nrm):
-        if mi == 1:
-            return triplanar(co, nrm, 0.045)
-        if mi in (2, 4):
-            return (co.x * 0.2, co.y * 0.2)
-        if mi == 3:
-            return (co.x * 0.25, co.y * 0.25)
-        return (co.x * 0.1, co.y * 0.1)
-    ground = terrain_grid("Ground-col", T.height, T.SPAN, 1.5, [m["grass"], m["cliff"], m["earth"], m["crops"],
-                                                                m["bed"]],
-                          classify, uv_fn)
-    objs = [ground]
-    lifts = {"main": 0.06, "cross": 0.05, "riverside": 0.05, "alley": 0.045, "lane": 0.045, "well": 0.045}
-    for name, (pts, w) in T.STREETS.items():
-        objs.append(ribbon("Street_" + name, pts, w, T.height, m["paving"], lift=lifts[name], taper=None, cols=3,
-                           tile=w / round(w / 6.0)))
-    for name, (x0, z0, x1, z1) in T.SQUARES.items():
-        objs.append(ribbon("Square_" + name, [(x0, (z0 + z1) / 2), (x1, (z0 + z1) / 2)], z1 - z0, T.height, m["paving"],
-                           lift=0.035, taper=None, cols=6, tile=6.0))
-
-    def keep(x, z):
-        return T.boundary(x, z) < 1.0 and T._in_rect(x, z, (T.WALL_W, T.WALL_N, T.WALL_E, T.WALL_S), 0.01) == 0
-    for name, p in T.ROADS.items():
-        objs.append(ribbon("Road_" + name, p.pts, p.width, T.height, m["road"], keep=keep, lift=0.07))
-    # the river and its stone embankment
-    objs.append(ribbon("River", T.RIVER.pts, 20.0, lambda x, z: T.WATER_Y, m["water"], lift=0.0, taper=None, cols=2))
+    def open_bank(z):
+        """Where the embankment is broken: the canal mouth, the mill race, the docks."""
+        return abs(z - T.CANAL_Z) < 6.5 or abs(z + 184) < 4.0 or abs(z + 144) < 4.0
     bank = []
     for k in range(len(T.RIVER.pts)):
         x, z = T.RIVER.pts[k]
@@ -2568,9 +2524,13 @@ def town_terrain():
         if idx:
             dist += math.hypot(x - bank[idx - 1][0], z - bank[idx - 1][1])
         ex, ez = tz, -tx
+        if open_bank(z):
+            prev = None
+            continue
+        # the coping stands 12 cm proud of the ground (a curb, never coplanar with it)
         row = [bm.verts.new(V((x - ex * 0.45, -(z - ez * 0.45), -3.6))), bm.verts.new(V((x - ex * 0.45,
-                                                                                         -(z - ez * 0.45), 0.03))),
-               bm.verts.new(V((x + ex * 0.45, -(z + ez * 0.45), 0.03)))]
+                                                                                         -(z - ez * 0.45), 0.12))),
+               bm.verts.new(V((x + ex * 0.45, -(z + ez * 0.45), 0.12)))]
         if prev:
             for c in range(2):
                 f = bm.faces.new((prev[1][c], prev[1][c + 1], row[c + 1], row[c]))
@@ -2587,7 +2547,7 @@ def town_terrain():
             p0 = (a[0] + (b[0] - a[0]) * k / steps, a[1] + (b[1] - a[1]) * k / steps)
             p1 = (a[0] + (b[0] - a[0]) * (k + 1) / steps, a[1] + (b[1] - a[1]) * (k + 1) / steps)
             cz = (p0[1] + p1[1]) / 2
-            if abs(cz - T.DOCK_Z) < 2.4 or abs(cz) > T.SPAN:
+            if abs(cz - T.DOCK_Z) < 2.4 or abs(cz - 108) < 2.4 or open_bank(cz) or abs(cz) > T.SPAN:
                 continue
             ln = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
             ang = math.atan2(-(p1[1] - p0[1]), p1[0] - p0[0])
