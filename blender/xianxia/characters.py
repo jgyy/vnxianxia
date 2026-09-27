@@ -181,6 +181,10 @@ def joints(cfg):
         b[f"upper_arm.{side}"] = (mir(sh), mir(elbow), f"shoulder.{side}")
         b[f"forearm.{side}"] = (mir(elbow), mir(wrist), f"upper_arm.{side}")
         b[f"hand.{side}"] = (mir(wrist), mir(hand), f"forearm.{side}")
+        # wide-sleeve drape: hangs from mid-forearm, kept gravity-aligned with
+        # follow-through by gait.sleeve_follow on every action
+        sl = elbow + (wrist - elbow) * 0.3
+        b[f"sleeve.{side}"] = (mir(sl), mir(sl + (wrist - elbow).normalized() * 0.2), f"forearm.{side}")
         b.update(anatomy.finger_bones(mir(wrist), mir(hand), side, hand_scale(cfg)))
         b[f"thigh.{side}"] = (mir(V((hw, 0.0, 0.94))), mir(V((hw, -0.012, 0.515))), "hips")
         b[f"shin.{side}"] = (mir(V((hw, -0.012, 0.515))), mir(V((hw, 0.018, 0.09))), f"thigh.{side}")
@@ -295,6 +299,33 @@ def w_arm(p, bones, s, side):
     return w
 
 
+def w_sleeve(p, bones, s, side):
+    """Wide sleeve / cuff: the upper sleeve and the front of the opening
+    follow the arm, the back and lower drape progressively the hanging
+    sleeve bone (so a bent elbow does not swing the opening forward like a
+    horn: the drape falls under the forearm)."""
+    w = w_arm(p, bones, s, side)
+    bn = f"sleeve.{side}"
+    if bn not in bones:
+        return w
+    el, wr, _ = bones[f"forearm.{side}"]
+    d = wr - el
+    flen = d.length
+    d = d / flen
+    along = (p - el).dot(d)
+    t = along / flen
+    off = p - (el + d * along)
+    r = max(off.length, 1e-6)
+    back = off.y / r      # rest pose: +y is behind the arm = underneath once the elbow bends
+    k = util_smooth((t - 0.15) / 0.6)
+    k *= 0.45 + 0.53 * util_smooth((back + 0.25) / 0.95)
+    if k <= 0.0:
+        return w
+    w = {n: v * (1 - k) for n, v in w.items()}
+    _add(w, {bn: k})
+    return w
+
+
 def w_hand(p, bones, s, side):
     h, t, _ = bones[f"hand.{side}"]
     along = (p - h).dot((t - h).normalized())
@@ -317,7 +348,18 @@ def w_neck(p, bones, s):
 
 def w_ribbon(p, bones, s):
     names = ["chest", "upper_arm.L", "forearm.L", "upper_arm.R", "forearm.R", "spine"]
-    return seg_weights(p, bones, names, power=6.0, top=2)
+    w = seg_weights(p, bones, names, power=6.0, top=2)
+    # the tails hanging below the wrists ride the gravity-aligned sleeve drape
+    # (on the forearm they jutted forward like a tray whenever the elbow bent)
+    side = "L" if p.x > 0 else "R"
+    bn = f"sleeve.{side}"
+    if bn in bones:
+        wz = bones[f"forearm.{side}"][1].z
+        f = util_smooth((wz + 0.04 * s - p.z) / (0.14 * s))
+        if f > 0:
+            w = {n: v * (1 - f) for n, v in w.items()}
+            _add(w, {bn: f})
+    return w
 
 
 def assign(obj, fn, bones, s, *args):
@@ -628,7 +670,7 @@ def build_outfit(cfg, J, mats, s):
                 u_, v_ = loop[uvl].uv
                 loop[uvl].uv = (u_, 0.62 + v_ * 0.5)
         sl = util.mesh_object(f"Sleeve.{side}", bm, mats["robe"])
-        parts.append(("arm", sl, side))
+        parts.append(("sleeve", sl, side))
         # cuff trim band
         bm = bmesh.new()
         c0 = cuff - d * 0.05 * s
@@ -642,7 +684,7 @@ def build_outfit(cfg, J, mats, s):
             rings_c.append(util.ring(pt, b, nn, rx_ * 1.02, ry_ * 1.02, 32))
         util.loft(bm, rings_c, closed=True, uv_scale=(6.0, 1.0 / (0.05 * s)))
         o = util.mesh_object(f"Cuff.{side}", bm, mats["trim"])
-        parts.append(("arm", o, side))
+        parts.append(("sleeve", o, side))
         # hand: one subdivided surface with knuckles, finger pads and nails
         _, hand_t, _ = J[f"hand.{side}"]
         o, nails = anatomy.hand_mesh(wr, hand_t, side, s * hand_scale(cfg), mats["skin"], mats["nail"],
@@ -1321,6 +1363,9 @@ def build_character(cfg):
         elif kind == "arm":
             assign(o, w_arm, J, s, side)
             clothes.append(o)
+        elif kind == "sleeve":
+            assign(o, w_sleeve, J, s, side)
+            clothes.append(o)
         elif kind == "hand":
             assign(o, w_hand, J, s, side)
             body.append(o)
@@ -1354,4 +1399,6 @@ def build_character(cfg):
     if cfg["name"].startswith("cultivator_"):
         from . import moves
         actions += moves.build_player_actions(arm, J, cfg, s)
+    from . import gait
+    gait.sleeve_follow(arm, actions, s)
     return arm, meshes, actions
