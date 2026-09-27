@@ -472,6 +472,10 @@ def export_glb(path, objects=None, animations=False, jpeg=True):
             export_all_influences=False,
             export_def_bones=True,
             export_optimize_animation_size=True,
+            # sample actions without re-evaluating every other object per frame (shape-key
+            # tracks are read straight from their F-curves) - keeps 130+ face-animated
+            # protagonist actions from taking minutes to export
+            export_optimize_disable_viewport=True,
         )
     bpy.ops.export_scene.gltf(**kwargs)
     return path

@@ -10,7 +10,7 @@ import bpy
 from mathutils import Matrix, Quaternion, Vector
 from mathutils.bvhtree import BVHTree
 
-from . import anatomy, tex, util
+from . import anatomy, face_anim, face_head, face_rig, face_shapes, tex, util
 
 V = Vector
 R = math.radians
@@ -326,11 +326,6 @@ def w_sidelock(p, bones, s):
     return {"head": 1 - f, "chest": f}
 
 
-def w_neck(p, bones, s):
-    z = p.z / s
-    return _chain_z(z, [(1.48, "chest"), (1.53, "neck"), (1.60, "neck"), (1.64, "head")])
-
-
 def w_ribbon(p, bones, s):
     names = ["chest", "upper_arm.L", "forearm.L", "upper_arm.R", "forearm.R", "spine"]
     return seg_weights(p, bones, names, power=6.0, top=2)
@@ -421,114 +416,15 @@ def flat_ribbon(name, path, width, mat, outward_fn, samples=6, u_scale=1.0):
 # head
 # --------------------------------------------------------------------------
 def head_shape(d, fem, jaw, features=None):
-    """Unit-sphere direction -> sculpted head surface (see anatomy.head_shape)."""
-    return anatomy.head_shape(d, fem, jaw, features)
+    """Unit-sphere direction -> point on the built head (unit head space: world = centre + q * radii)."""
+    return face_rig.head_shape(d, fem, jaw, features)
 
 
 def build_head(cfg, J, mats, s):
-    fem = cfg["female"]
-    rx, ry, rz = (r * s for r in cfg["head_r"])
-    centre = V((0, -0.012, 1.664)) * s
-    bm = bmesh.new()
-    uv = bm.loops.layers.uv.verify()
-    res = bmesh.ops.create_uvsphere(bm, u_segments=96, v_segments=64, radius=1.0)
-    dirs = {}
-    for v in bm.verts:
-        d = v.co.normalized()
-        dirs[v] = d
-        v.co = centre + head_shape(d, fem, cfg["jaw"], cfg.get("face"))
-    for v in bm.verts:
-        q = v.co - centre
-        v.co = centre + V((q.x * rx, q.y * ry, q.z * rz))
-    for f in bm.faces:
-        us = []
-        for loop in f.loops:
-            d = dirs[loop.vert]
-            lon = math.atan2(d.x, -d.y)
-            u = tex.lon_to_u(lon)
-            vv = math.asin(max(-1, min(1, d.z))) / math.pi + 0.5
-            us.append([u, vv])
-        umin, umax = min(u[0] for u in us), max(u[0] for u in us)
-        if umax - umin > 0.5:
-            for u in us:
-                if u[0] < 0.5:
-                    u[0] += 1.0
-        for loop, u in zip(f.loops, us):
-            loop[uv].uv = u
-    head = util.mesh_object("Head", bm, mats["face"])
+    """The head, face, eyes, mouth interior, lashes, brows, ears and neck as one "Head" mesh.
 
-    def surf(dx, dz):
-        d = V((dx, -math.sqrt(max(0.0, 1 - dx * dx - dz * dz)), dz))
-        q = head_shape(d, fem, cfg["jaw"], cfg.get("face"))
-        return centre + V((q.x * rx, q.y * ry, q.z * rz))
-
-    parts = [head]
-    # eyes + lids
-    er = (0.0126 if fem else 0.0119) * s
-    for side in (1, -1):
-        sp = surf(0.37 * side, 0.075)
-        c = sp + V((0, 0.30 * er, 0))
-        bm = bmesh.new()
-        util.sphere(bm, er, segs=24, rings=16)
-        bmesh.ops.rotate(bm, verts=bm.verts, cent=(0, 0, 0), matrix=Matrix.Rotation(R(90), 3, "X"))
-        bmesh.ops.translate(bm, verts=bm.verts, vec=c)
-        parts.append(util.mesh_object("Eye", bm, mats["eye"]))
-        # eyelid shell around an almond opening (outer corner lifted = phoenix eye)
-        parts.append(eyelid_shell(c, er * 1.1, side, fem, mats["lid"]))
-    # ears: helix, antihelix, concha and lobe, set behind the jaw at eye-to-nose height
-    for side in (1, -1):
-        bm = bmesh.new()
-        loc = surf(0.985 * side, -0.16) + V((side * 0.002 * s, 0.02 * s, 0))
-        anatomy.ear(bm, loc, side, s, 1.0 if not fem else 0.92)
-        o = util.mesh_object("Ear", bm, mats["skin"])
-        util.box_uv(o, 6.0)
-        parts.append(o)
-    return parts, centre, (rx, ry, rz)
-
-
-def eyelid_shell(c, lr, side, fem, mat, cols=40, rows=8):
-    tilt = 0.20 if fem else 0.12
-    w = 0.97
-    up_h, lo_h = (0.30, 0.22) if fem else (0.22, 0.2)
-
-    def inside(lx, lz):
-        if abs(lx) >= w:
-            return False
-        k = 1 - (lx / w) ** 2
-        base = tilt * lx
-        return base - lo_h * k ** 0.9 < lz < base + up_h * k ** 0.8
-
-    bm = bmesh.new()
-    uv = bm.loops.layers.uv.verify()
-    grid = []
-    for i in range(cols):
-        phi = 2 * math.pi * i / cols
-        cx, cz = math.cos(phi), math.sin(phi)
-        lo, hi = 0.0, 1.0
-        for _ in range(24):
-            mid = (lo + hi) * 0.5
-            if inside(mid * cx, mid * cz):
-                lo = mid
-            else:
-                hi = mid
-        tb = math.asin(min(lo, 0.999))
-        tmax = R(105)
-        col = []
-        for j in range(rows + 1):
-            th = tb + (tmax - tb) * (j / rows) ** 1.4
-            p = V((math.sin(th) * cx * side, -math.cos(th), math.sin(th) * cz)) * lr
-            col.append(bm.verts.new(c + p))
-        grid.append(col)
-    for i in range(cols):
-        i2 = (i + 1) % cols
-        for j in range(rows):
-            vs = (grid[i][j], grid[i][j + 1], grid[i2][j + 1], grid[i2][j])
-            f = bm.faces.new(vs if side > 0 else tuple(reversed(vs)))
-            for loop in f.loops:
-                ii = next(k for k in (i, i2) if loop.vert in grid[k])
-                jj = grid[ii].index(loop.vert)
-                loop[uv].uv = (ii / cols, jj / rows)
-    return util.mesh_object("Eyelid", bm, mat)
+    Returns the face_head.FaceHead (``.obj``, ``.centre``, ``.radii``); see face_head / face_mesh."""
+    return face_head.FaceHead(cfg, mats, s, V((0, -0.012, 1.664)) * s)
 
 
 def hairline_table(fem):
@@ -913,12 +809,7 @@ def build_outfit(cfg, J, mats, s):
                                      fem)
         parts.append(("hand", nails, side))
         parts.append(("hand", o, side))
-    # --- neck
-    bm = bmesh.new()
-    anatomy.neck(bm, s, cfg["neck_r"] * s, fem)
-    neck = util.mesh_object("Neck", bm, mats["skin"])
-    parts.append(("neck", neck))
-    # --- collar trims (left lapel over right: wearer's left crosses to the right hip)
+    # --- collar trims (the neck itself is part of the head mesh, see build_head) (left lapel over right: wearer's left crosses to the right hip)
     back_neck = V((0, 0.07, 1.53))
     outer = [back_neck, V((0.055, 0.045, 1.53)), V((0.075, -0.01, 1.51)), V((0.045, -0.075, 1.47)),
              V((-0.01, -0.12, 1.38)), V((-0.07, -0.13, 1.27)), V((-0.12, -0.11, 1.16)),
@@ -1607,14 +1498,12 @@ def build_character(cfg):
     mats = make_materials(cfg)
     arm = build_armature(cfg, J)
 
-    head_parts, centre, radii = build_head(cfg, J, mats, s)
-    hair_parts = build_hair(cfg, mats, centre, radii, s)
+    face = build_head(cfg, J, mats, s)
+    face_rig.add_eye_bones(arm, face.eye_centres_world(), 0.02 * s)
+    hair_parts = build_hair(cfg, mats, face.centre, face.radii, s)
     outfit, bvh, ring_at = build_outfit(cfg, J, mats, s)
 
     body, hair, clothes, acc = [], [], [], []
-    for o in head_parts:
-        assign(o, lambda p, b, s_: {"head": 1.0}, J, s)
-        body.append(o)
     for kind, o in hair_parts:
         fn = {"head": lambda p, b, s_: {"head": 1.0}, "hair": w_hair, "side": w_sidelock}[kind]
         assign(o, fn, J, s)
@@ -1634,9 +1523,6 @@ def build_character(cfg):
         elif kind == "leg":
             assign(o, w_leg, J, s, side)
             clothes.append(o)
-        elif kind == "neck":
-            assign(o, w_neck, J, s)
-            body.append(o)
     accessory = cfg.get("accessory", "ribbon" if cfg["female"] else "sword")
     if accessory == "sword":
         for o in build_sword(mats, s, J):
@@ -1648,7 +1534,9 @@ def build_character(cfg):
         acc.append(o)
 
     meshes = []
-    for name, group in (("Body", body), ("Hair", hair), ("Outfit", clothes), ("Accessories", acc)):
+    face_shapes.build(face)
+    for name, group in (("Head", [face.obj]), ("Body", body), ("Hair", hair), ("Outfit", clothes),
+                        ("Accessories", acc)):
         if not group:
             continue
         o = util.join(group, name)
@@ -1661,4 +1549,5 @@ def build_character(cfg):
     if cfg["name"].startswith("cultivator_"):
         from . import moves
         actions += moves.build_player_actions(arm, J, cfg, s)
+    face_anim.bake(arm, face, actions)
     return arm, meshes, actions

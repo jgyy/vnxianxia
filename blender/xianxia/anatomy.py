@@ -1,11 +1,8 @@
-"""Anatomical body parts for the cultivators: skull/face, ears, neck and hands.
+"""Anatomical body parts for the cultivators: ears and hands.
 
-The head is a sphere whose directions are mapped onto a sculpted surface
-(``head_shape``): stacked cross-sections give a real skull, cheekbones, a
-mandible with a jaw angle and a squared chin, then Gaussian "clay" layers add
-the brow ridge, orbits, nose, lips and chin. Because the mapping is defined
-per unit-sphere direction, UVs, eye placement and the painted face texture
-all stay in the same latitude/longitude space.
+The head, face and neck live in the face_* modules (a landmark-driven implicit
+head, ray-cast onto an O-grid quad topology); this module keeps the pinna,
+which ``face_head`` attaches in head millimetres.
 
 Hands are box-modelled cages (palm, three phalanges per finger, thumb) that
 are Catmull-Clark subdivided into one smooth surface with knuckles, finger
@@ -23,235 +20,70 @@ V = Vector
 R = math.radians
 
 
-def smooth(t):
-    t = max(0.0, min(1.0, t))
-    return t * t * (3 - 2 * t)
-
-
-def g2(x, z, cx, cz, sx, sz):
-    return math.exp(-(((x - cx) / sx) ** 2 + ((z - cz) / sz) ** 2))
-
-
-# --------------------------------------------------------------------------
-# skull and face
-# --------------------------------------------------------------------------
-# Cross-sections from crown (z = 1) to the chin (z = -1) in unit head space:
-# (z, y_front, y_back, half width at the back, half width at the front,
-#  superellipse power front, power back). -y is the face.
-SECTIONS_MALE = [
-    (1.00, -0.02, 0.08, 0.02, 0.02, 2.0, 2.0),
-    (0.93, -0.36, 0.48, 0.40, 0.36, 2.1, 2.0),
-    (0.75, -0.70, 0.84, 0.74, 0.66, 2.2, 2.1),
-    (0.45, -0.90, 0.99, 0.93, 0.84, 2.5, 2.2),
-    (0.18, -0.95, 1.00, 0.97, 0.90, 2.9, 2.2),
-    (-0.05, -0.96, 0.97, 0.98, 0.93, 3.0, 2.2),
-    (-0.25, -0.97, 0.86, 0.96, 0.86, 2.9, 2.3),
-    (-0.45, -0.98, 0.60, 0.90, 0.72, 2.8, 2.6),
-    (-0.62, -0.99, 0.30, 0.83, 0.54, 2.8, 3.2),
-    (-0.76, -0.99, -0.08, 0.66, 0.50, 3.2, 3.0),
-    (-0.88, -0.97, -0.46, 0.42, 0.40, 3.4, 2.8),
-    (-0.96, -0.90, -0.66, 0.26, 0.26, 3.0, 2.4),
-    (-1.00, -0.80, -0.76, 0.02, 0.02, 2.0, 2.0),
-]
-SECTIONS_FEMALE = [
-    (1.00, -0.02, 0.08, 0.02, 0.02, 2.0, 2.0),
-    (0.93, -0.36, 0.48, 0.40, 0.36, 2.1, 2.0),
-    (0.75, -0.70, 0.85, 0.74, 0.66, 2.2, 2.1),
-    (0.45, -0.90, 1.00, 0.93, 0.84, 2.4, 2.2),
-    (0.18, -0.95, 1.00, 0.97, 0.90, 2.7, 2.2),
-    (-0.05, -0.96, 0.96, 0.97, 0.91, 2.8, 2.2),
-    (-0.25, -0.97, 0.84, 0.95, 0.85, 2.7, 2.3),
-    (-0.45, -0.98, 0.58, 0.88, 0.70, 2.5, 2.5),
-    (-0.62, -0.99, 0.28, 0.78, 0.52, 2.5, 2.8),
-    (-0.76, -0.98, -0.10, 0.56, 0.42, 2.6, 2.6),
-    (-0.88, -0.95, -0.46, 0.34, 0.31, 2.6, 2.4),
-    (-0.96, -0.88, -0.66, 0.18, 0.18, 2.4, 2.2),
-    (-1.00, -0.80, -0.76, 0.02, 0.02, 2.0, 2.0),
-]
-
-_SECTION_CACHE = {}
-
-
-def _sections(fem, jaw):
-    key = (fem, round(jaw, 3))
-    if key in _SECTION_CACHE:
-        return _SECTION_CACHE[key]
-    rows = SECTIONS_FEMALE if fem else SECTIONS_MALE
-    # jaw: 0 = narrow, 1 = broad mandible; scales the lower face half widths
-    out = []
-    for z, yf, yb, wb, wf, pf, pb in rows:
-        k = smooth((-0.3 - z) / 0.4) * smooth((z + 1.0) / 0.12)
-        f = 1.0 + (jaw - 0.45) * 0.5 * k
-        out.append(V((z, yf, yb, wb * f, wf * f, pf, pb)))
-    pts = [V(r) for r in reversed(out)]           # ascending z
-    dense = util.catmull(pts, 12)
-    dense.sort(key=lambda v: v[0])
-    _SECTION_CACHE[key] = dense
-    return dense
-
-
-def _section_at(z, fem, jaw):
-    tab = _sections(fem, jaw)
-    if z <= tab[0][0]:
-        return tab[0]
-    lo, hi = 0, len(tab) - 1
-    while hi - lo > 1:
-        mid = (lo + hi) // 2
-        if tab[mid][0] <= z:
-            lo = mid
-        else:
-            hi = mid
-    a, b = tab[lo], tab[hi]
-    t = (z - a[0]) / max(b[0] - a[0], 1e-9)
-    return a.lerp(b, t)
-
-
-def _superellipse(c, s, pf, pb):
-    p = pf if c > 0 else pb
-    e = 2.0 / p
-    return math.copysign(abs(c) ** e, c), math.copysign(abs(s) ** e, s)
-
-
-def head_shape(d, fem, jaw, features=None):
-    """Map a unit-sphere direction to the sculpted head surface (unit space).
-
-    features: optional dict of shape tweaks (nose, cheek, chin, brow, lips, age).
-    """
-    f = features or {}
-    x, y, z = d
-    z = max(-1.0, min(1.0, z))
-    theta = math.atan2(x, -y)            # 0 = straight ahead (face), +x = character's left
-    c, s = math.cos(theta), math.sin(theta)
-    sec = _section_at(z, fem, jaw)
-    _, yf, yb, wb, wf, pf, pb = sec
-    cc, ss = _superellipse(c, s, pf, pb)
-    front = max(0.0, c)
-    w = wb + (wf - wb) * front ** 1.5
-    yc = (yf + yb) * 0.5
-    hd = (yb - yf) * 0.5
-    p = V((w * ss, yc - hd * cc, z))
-    ax = abs(x)
-    fr = front ** 3                       # strictly facial region
-
-    # --- facial "clay" layers (in unit head space, -y = toward the viewer)
-    nose_k = f.get("nose", 1.0)
-    brow_k = f.get("brow", 1.0 if not fem else 0.45)
-    cheek_k = f.get("cheek", 1.0)
-    chin_k = f.get("chin", 1.0 if not fem else 0.75)
-    lip_k = f.get("lips", 0.8 if not fem else 1.0)
-    # forehead slopes back a touch; temples are hollow
-    p.y += 0.05 * smooth((z - 0.35) / 0.5) * fr
-    p.x -= math.copysign(0.035 * g2(ax, z, 0.93, 0.25, 0.12, 0.22), x)
-    # brow ridge (glabella + superciliary arches)
-    p.y -= brow_k * 0.045 * g2(ax, z, 0.26, 0.24, 0.30, 0.07) * fr
-    p.y -= brow_k * 0.02 * g2(ax, z, 0.0, 0.27, 0.12, 0.08) * fr
-    # nasion: the bridge dips between the eyes
-    p.y += 0.035 * g2(ax, z, 0.0, 0.14, 0.1, 0.07) * fr
-    # orbits: eye sockets sink in, deepest at the inner-upper corner
-    p.y += 0.085 * g2(ax, z, 0.35, 0.07, 0.19, 0.11) * fr
-    p.y += 0.03 * g2(ax, z, 0.2, 0.12, 0.08, 0.06) * fr
-    # cheekbones (zygomatic): forward and outward below the outer eye
-    ck = g2(ax, z, 0.62, -0.12, 0.2, 0.13) * cheek_k
-    p.y -= 0.045 * ck * front ** 1.2
-    p.x += math.copysign(0.03 * ck, x)
-    # cheek hollow under the cheekbone
-    p.y += 0.035 * g2(ax, z, 0.6, -0.45, 0.16, 0.14) * front * (1.0 if not fem else 0.4)
-    # nose: a narrow bony bridge that projects more toward a defined tip, small alae
-    zb = smooth((0.14 - z) / 0.46)                       # 0 at the nasion .. 1 at the tip
-    ridge_w = 0.045 + 0.05 * zb
-    ridge = math.exp(-((ax / ridge_w) ** 2)) * smooth((0.14 - z) / 0.1) * smooth((z + 0.4) / 0.08)
-    p.y -= nose_k * (0.05 + (0.15 if not fem else 0.12) * zb) * ridge * fr
-    tip = g2(ax, z, 0.0, -0.33, 0.075, 0.06)
-    p.y -= nose_k * (0.07 if not fem else 0.06) * tip * fr
-    ala = g2(ax, z, 0.1, -0.365, 0.045, 0.04)
-    p.y -= nose_k * 0.055 * ala * fr
-    p.x += math.copysign(0.008 * ala, x)
-    # nostril underside tucks in, columella
-    p.y += 0.05 * g2(ax, z, 0.055, -0.415, 0.05, 0.028) * fr
-    # philtrum groove and a gentle muzzle (dental arch) under the nose
-    p.y -= 0.028 * g2(ax, z, 0.0, -0.6, 0.3, 0.16) * fr
-    p.y += 0.01 * g2(ax, z, 0.0, -0.5, 0.022, 0.06) * fr
-    # nasolabial folds
-    nl = math.exp(-(((ax - (0.17 + 0.18 * smooth((-0.4 - z) / 0.3))) / 0.035) ** 2)) \
-        * g2(0, z, 0, -0.52, 1, 0.14)
-    p.y += 0.015 * nl * fr
-    # lips: upper lip, lower lip, mouth line and corners
-    up_lip = g2(ax, z, 0.0, -0.575, 0.24, 0.035)
-    lo_lip = g2(ax, z, 0.0, -0.665, 0.21, 0.045)
-    p.y -= lip_k * (0.04 * up_lip + 0.048 * lo_lip) * fr
-    p.y += 0.022 * g2(ax, z, 0.0, -0.622, 0.25, 0.012) * fr
-    p.y += 0.02 * g2(ax, z, 0.26, -0.62, 0.04, 0.05) * fr
-    # labiomental fold and the chin (mentalis) — squarer for men
-    p.y += 0.022 * g2(ax, z, 0.0, -0.75, 0.22, 0.035) * fr
-    chin = math.exp(-((ax / (0.30 if not fem else 0.22)) ** 4)) * g2(0, z, 0, -0.86, 1, 0.08)
-    p.y -= chin_k * 0.085 * chin * fr
-    # mandible: a crisp jaw line (edge of the jaw bone)
-    jl = g2(ax, z, 0.72, -0.66, 0.2, 0.08) * (1.0 - front ** 4)
-    p.x += math.copysign((0.03 if not fem else 0.015) * jl, x)
-    age = f.get("age", 0.0)
-    if age:
-        # sagging jowls, sunken cheeks and temples
-        p.y += 0.03 * age * g2(ax, z, 0.55, -0.35, 0.2, 0.2) * front
-        p.x += math.copysign(0.02 * age * g2(ax, z, 0.6, -0.72, 0.2, 0.08), x)
-    return p
-
-
 # --------------------------------------------------------------------------
 # ears
 # --------------------------------------------------------------------------
-EAR_OUTLINE = [  # (back, up) in mm around the pinna, starting at the top front, clockwise seen from the side
-    (-4, 26), (4, 30), (12, 27), (17, 18), (18, 6), (15, -6), (10, -16), (4, -24), (-3, -28),
-    (-9, -24), (-10, -14), (-9, -2), (-10, 10), (-9, 20)]
-# rings from the attachment to the concha: (scale toward the concha centre, outward mm)
-EAR_RINGS = [(0.78, -3.0), (0.98, 3.5), (1.0, 7.5), (0.9, 9.5), (0.8, 7.5), (0.7, 9.0), (0.52, 5.5),
-             (0.32, 2.5), (0.12, -0.5)]
+# Pinna outline (back, up) in mm seen from the side, clockwise from the top of
+# the helix root: the helix rim sweeps up and back, down the posterior edge to
+# a soft free lobule, then forward and up along the tragus notch.
+EAR_OUTLINE = [(-3, 24), (3, 29), (11, 27), (16, 19), (17.5, 8), (15, -4), (11, -14), (6, -22), (1, -29),
+               (-4, -31), (-8, -27), (-9, -19), (-7.5, -12), (-9, -3), (-10, 8), (-8.5, 18)]
+# Rings from the attachment to the concha floor: (scale toward the concha centre,
+# lateral offset mm, curl of the rim).  The rim rolls over (helix), dips into
+# the scapha, rises on the antihelix and falls into the concha.
+EAR_RINGS = [(0.80, -3.0, 0.0), (0.97, 2.5, 0.0), (1.03, 6.8, 0.0), (1.0, 9.3, -1.2), (0.93, 9.0, -2.2),
+             (0.86, 7.0, -1.0), (0.76, 7.9, 0.0), (0.66, 8.4, 0.0), (0.52, 5.2, 0.0), (0.36, 1.8, 0.0),
+             (0.18, -1.2, 0.0), (0.04, -2.4, 0.0)]
 
 
-def ear(bm, loc, side, s, size=1.0):
-    """Pinna: helix rim, scapha, antihelix and concha lofted from an ear outline."""
-    k = 0.001 * s * size
-    centre = V((-3.0, 2.0))
-    outline = util.catmull([V((a, b, 0)) for a, b in EAR_OUTLINE + EAR_OUTLINE[:1]], 3)[:-1]
+def ear(bm, loc, side, size=1.0, flare=21.0, uv_fn=None, mat_index=0):
+    """Pinna in head millimetres: helix rim, scapha, antihelix, concha, lobule and tragus.
+
+    loc: attachment point (tragus root); side +1 = left; flare: protrusion
+    angle (deg) of the pinna away from the head.  uv_fn(up, back) -> (u, v).
+    Returns the created vertices."""
+    k = size
+    centre = V((-2.0, 1.0))
+    outline = util.catmull([V((a, b_, 0)) for a, b_ in EAR_OUTLINE + EAR_OUTLINE[:1]], 3)[:-1]
+    rot = Matrix.Rotation(R(-flare * side), 3, "Z")
+    made = []
+    uvl = bm.loops.layers.uv.verify()
     rows = []
-    for sc, out in EAR_RINGS:
+    for sc, out, curl in EAR_RINGS:
         ring_ = []
         for q in outline:
             u = centre.x + (q.x - centre.x) * sc
             v = centre.y + (q.y - centre.y) * sc
-            # the pinna flares away from the head toward the back
-            w = out + max(0.0, u) * 0.18 * (1.0 if sc > 0.6 else 0.3)
-            ring_.append(loc + V((side * w * k, u * k, v * k)))
+            lobe = max(0.0, -v - 16.0) / 14.0                  # the lobule is thick and soft
+            # the pinna flares away from the head toward its back edge, the rim curls forward
+            w = out + max(0.0, u) * 0.22 * (1.0 if sc > 0.6 else 0.3) + lobe * 1.5 * (sc > 0.5)
+            back = u + curl * (1.0 if sc > 0.9 else 0.5)
+            p = rot @ V((side * w, back, 0.0))
+            ring_.append(loc + V((p.x * k, p.y * k, v * k)))
         rows.append(ring_)
-    util.loft(bm, rows, closed=True, cap_end=True, uv_scale=(1.0, 1.0))
-    # tragus: a small flap in front of the canal
-    util.sphere(bm, 3.0 * k, loc=loc + V((side * 3.0 * k, -8.5 * k, 0.0)), segs=10, rings=6,
-                scale=(0.7, 0.8, 1.2))
-
-
-# --------------------------------------------------------------------------
-# neck
-# --------------------------------------------------------------------------
-def neck(bm, s, nr, fem):
-    """Neck with sternocleidomastoid wedge, throat and nape, rising into the skull."""
-    rows = []
-    zs = [1.44, 1.49, 1.54, 1.585, 1.63, 1.665]
-    n = 24
-    for j, z in enumerate(zs):
-        t = j / (len(zs) - 1)
-        ring_ = []
+    n = len(outline)
+    vrows = [[bm.verts.new(p) for p in r] for r in rows]
+    for j in range(len(vrows) - 1):
         for i in range(n):
-            a = 2 * math.pi * i / n            # 0 = front
-            c, sn = math.cos(a), math.sin(a)
-            r = nr * (1.18 - 0.2 * smooth(t / 0.5))
-            # SCM muscles make the front-sides fuller; the throat is flatter
-            scm = math.exp(-((abs(sn) - 0.62) / 0.25) ** 2) * max(0.0, c) * (0.10 if not fem else 0.04)
-            adam = (0.12 if not fem else 0.0) * math.exp(-((sn / 0.2) ** 2)) * max(0.0, c) ** 4 \
-                * math.exp(-(((t - 0.45) / 0.18) ** 2))
-            rr = r * (1.0 + scm + adam - 0.08 * max(0.0, c) ** 2)
-            yoff = 0.012 * s * (1 - t) + 0.006 * s
-            ring_.append(V((rr * sn * 1.08, -rr * c * 0.94 + yoff, z * s)))
-        rows.append(ring_)
-    util.loft(bm, rows, closed=True, uv_scale=(3.0, 10.0))
+            i2 = (i + 1) % n
+            quad = (vrows[j][i], vrows[j][i2], vrows[j + 1][i2], vrows[j + 1][i])
+            f = bm.faces.new(quad if side > 0 else quad[::-1])
+            f.material_index = mat_index
+    f = bm.faces.new(vrows[-1] if side > 0 else vrows[-1][::-1])
+    f.material_index = mat_index
+    made += [v for r in vrows for v in r]
+    # tragus: a small flap in front of the canal
+    before = set(bm.verts)
+    util.sphere(bm, 3.2 * k, loc=loc + V((side * 2.5 * k, -7.5 * k, -3.0 * k)), segs=10, rings=6,
+                scale=(0.65, 0.8, 1.25))
+    made += [v for v in bm.verts if v not in before]
+    for f in {f for v in made for f in v.link_faces}:
+        f.material_index = mat_index
+        if uv_fn is not None:
+            for lp in f.loops:
+                d = lp.vert.co - loc
+                lp[uvl].uv = uv_fn(d.z / k, d.y / k)
+    return made
 
 
 # --------------------------------------------------------------------------
