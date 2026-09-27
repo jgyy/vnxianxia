@@ -672,8 +672,19 @@ def build():
                 wq = qid(qnum)
                 legacy = q.get("legacy")
                 flags_new = set()
-                if legacy_ch and legacy != (legacy_ch - 1) * 10 + qi + 1:
-                    E.err(wq, "legacy quest number %r out of place" % legacy)
+                if legacy_ch:
+                    n_lead = NB.LEGACY_LEAD_QUESTS[legacy_ch]
+                    n_tail = NB.LEGACY_TAIL_QUESTS[legacy_ch]
+                    tail_start = NB.LEGACY_QUESTS_PER_CHAPTER - n_tail
+                    if qi < n_lead:
+                        expected = (legacy_ch - 1) * 10 + qi + 1
+                    elif qi < NB.QUESTS_PER_CHAPTER - n_tail:
+                        expected = None
+                    else:
+                        pos_in_tail = qi - (NB.QUESTS_PER_CHAPTER - n_tail)
+                        expected = (legacy_ch - 1) * 10 + tail_start + pos_in_tail + 1
+                    if legacy != expected:
+                        E.err(wq, "legacy quest number %r out of place" % legacy)
                 if legacy and NB.legacy_to_new(legacy) != qnum:
                     E.err(wq, "legacy q%03d should be %s" % (legacy, qid(NB.legacy_to_new(legacy))))
                 vkey = ("q%03d" % legacy) if legacy else None
