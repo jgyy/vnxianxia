@@ -13,6 +13,10 @@ const JournalScript := preload("res://scripts/ui/journal.gd")
 const TravelScript := preload("res://scripts/ui/travel_menu.gd")
 const RunnerScript := preload("res://scripts/quest_runner.gd")
 const MonologueScript := preload("res://scripts/world/monologue.gd")
+const ConversationScript := preload("res://scripts/world/conversation.gd")
+## after a conversation, E is ignored this long so the key press that closed
+## it (or a hurried second one) never starts another
+const INTERACT_COOLDOWN_MSEC := 400
 
 var map: Node3D
 var hud: CanvasLayer
@@ -23,9 +27,13 @@ var journal: CanvasLayer
 var travel: CanvasLayer
 var runner: Node
 var monologue: Node
+var conversation: Node
 var busy := true
 var npcs := {}                 ## npc id -> Npc on the current map
 var first_load := true
+var _scene_depth := 0
+var _interact_after := 0
+var _load_id := 0
 
 @onready var player: CharacterBody3D = $Player
 
@@ -42,7 +50,9 @@ func _ready() -> void:
 	runner.game = self
 	monologue = MonologueScript.new()
 	monologue.game = self
-	for n in [hud, dialogue, cinematic, loading, journal, travel, runner, monologue]:
+	conversation = ConversationScript.new()
+	conversation.game = self
+	for n in [hud, dialogue, cinematic, loading, journal, travel, runner, monologue, conversation]:
 		add_child(n)
 	hud.player = player
 	player.controls_enabled = false
@@ -53,14 +63,28 @@ func _ready() -> void:
 	player.character_changed.connect(func(_n): hud.refresh())
 	Game.realm_changed.connect(_on_breakthrough)
 	Game.stage_changed.connect(_on_stage)
-	journal.quit_to_title.connect(func(): get_tree().change_scene_to_file("res://scenes/title.tscn"))
+	dialogue.line_started.connect(_on_line)
+	journal.quit_to_title.connect(_quit_to_title)
 	travel.chosen.connect(func(m): travel_to(m))
 	player.refill()
 	load_map(Game.map_id)
 
 
+func _exit_tree() -> void:
+	# never leave the (autoload) tree paused or the cursor hidden behind us
+	if get_tree():
+		get_tree().paused = false
+
+
+func _quit_to_title() -> void:
+	get_tree().paused = false
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	Audio.stop_voice()
+	get_tree().change_scene_to_file("res://scenes/title.tscn")
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if busy or dialogue.active or cinematic.active:
+	if busy or dialogue.active or cinematic.active or travel.open or journal.open:
 		return
 	if event.is_action_pressed("journal"):
 		journal.show_page("quest")
@@ -75,9 +99,14 @@ func _unhandled_input(event: InputEvent) -> void:
 ## track_visited is false for a door into a building interior, so interiors
 ## never show up as jade teleport array destinations (see Doors.INTERIORS).
 func load_map(map_id: String, spawn := "PlayerSpawn", track_visited := true) -> void:
+	_load_id += 1
+	var my_load := _load_id
 	busy = true
 	player.controls_enabled = false
 	player.stop_meditation()
+	_end_scene_now()
+	if player.moves:
+		player.moves.close_menu()
 	if map:
 		runner.clear()
 	var q := Game.quest()
@@ -87,15 +116,23 @@ func load_map(map_id: String, spawn := "PlayerSpawn", track_visited := true) -> 
 	loading.open(map_id, sub)
 	Audio.play_music("", 0.6)
 	var path := MAP_DIR + map_id + ".tscn"
+	if not ResourceLoader.exists(path):
+		push_warning("no map %s; staying in %s" % [map_id, Game.map_id])
+		path = MAP_DIR + Game.map_id + ".tscn"
+		map_id = Game.map_id
+		spawn = "PlayerSpawn"
 	ResourceLoader.load_threaded_request(path)
 	var progress := []
 	while ResourceLoader.load_threaded_get_status(path, progress) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 		loading.set_progress(progress[0] if progress.size() > 0 else 0.0)
 		await get_tree().process_frame
 	var scene := ResourceLoader.load_threaded_get(path) as PackedScene
+	if my_load != _load_id:
+		return                          # a newer load took over
 	if map:
 		for n in npcs.values():
-			n.queue_free()
+			if is_instance_valid(n):
+				n.queue_free()
 		npcs.clear()
 		map.queue_free()
 		map = null
@@ -107,23 +144,31 @@ func load_map(map_id: String, spawn := "PlayerSpawn", track_visited := true) -> 
 	for i in 3:
 		await get_tree().physics_frame
 	Game.map_id = map_id
-	if track_visited and not Game.visited.has(map_id):
+	if track_visited and not Doors.INTERIORS.has(map_id) and not Game.visited.has(map_id):
 		Game.visited.append(map_id)
+	if not map.has_marker(spawn):
+		spawn = "PlayerSpawn"
 	var p: Vector3 = map.marker_position(spawn)
-	player.global_position = p + Vector3.UP * 0.3
+	player.place_at(p + Vector3.UP * 0.3)
 	player.spawn_point = player.global_position
-	player.velocity = Vector3.ZERO
-	var tp: Vector3 = map.marker_position("TeleportArray")
+	# face away from the teleport array (into the map), camera behind the hero
+	var tp: Vector3 = map.marker_position("TeleportArray") if map.has_marker("TeleportArray") else p + Vector3.BACK
 	var away := p - tp
+	away.y = 0.0
+	if away.length() < 0.1:
+		away = Vector3.FORWARD
 	player.model_root.rotation.y = atan2(away.x, away.z)
+	player._yaw = atan2(-away.x, -away.z)
 	refresh_npcs()
 	Audio.play_music(map.music)
 	if not Game.fast:
 		await get_tree().create_timer(0.6).timeout
+	if my_load != _load_id:
+		return
 	loading.close()
 	hud.banner(Story.map_name(map_id), sub)
 	busy = false
-	player.controls_enabled = true
+	release_controls()
 	map_loaded.emit(map_id)
 	runner.activate()
 	if first_load and Game.objective_index == 0 and Game.objective().get("type") != "cinematic":
@@ -134,6 +179,8 @@ func load_map(map_id: String, spawn := "PlayerSpawn", track_visited := true) -> 
 func travel_to(map_id: String) -> void:
 	if busy or map_id == Game.map_id:
 		return
+	busy = true                          # no second teleport / door while this one winds up
+	player.controls_enabled = false
 	Audio.sfx("teleport", -3.0)
 	Fx.burst(map, player.global_position + Vector3.UP, Color(0.5, 1.0, 0.9), 80, 4.0)
 	if not Game.fast:
@@ -146,6 +193,8 @@ func travel_to(map_id: String) -> void:
 func enter_door(link: Dictionary) -> void:
 	if busy:
 		return
+	busy = true
+	player.controls_enabled = false
 	Audio.sfx("teleport", -3.0)
 	Fx.burst(map, player.global_position + Vector3.UP, Color(0.9, 0.85, 0.6), 40, 2.5)
 	if not Game.fast:
@@ -168,16 +217,26 @@ func refresh_npcs() -> void:
 	# the active talk target stays wherever the objective wants it
 	var obj := Game.objective()
 	var pinned := ""
-	if obj.get("type") == "talk" and obj.map == Game.map_id:
+	if obj.get("type") == "talk" and obj.get("map") == Game.map_id:
 		pinned = obj.npc
 	for id in npcs.keys():
-		if id != pinned and not keep.has(id):
+		if not is_instance_valid(npcs[id]):
+			npcs.erase(id)
+		elif id != pinned and not keep.has(id):
 			npcs[id].queue_free()
 			npcs.erase(id)
 	for id in keep:
 		if id == pinned and npcs.has(id):
 			continue
-		ensure_npc(id, keep[id])
+		if map.has_marker(keep[id]):
+			ensure_npc(id, keep[id])
+
+
+## Is an NPC's home on the current map (and are they around at this point of the story)?
+func is_ambient(id: String) -> bool:
+	var d: Dictionary = Story.npc(id)
+	var home = d.get("home")
+	return home != null and home.map == Game.map_id and _present(d)
 
 
 func _present(d: Dictionary) -> bool:
@@ -196,8 +255,8 @@ func _quest_pos(id: String) -> int:
 
 ## Get (or spawn) an NPC and stand it on a marker facing the arrival point.
 func ensure_npc(id: String, marker: String) -> Npc:
-	var n: Npc = npcs.get(id)
-	if n == null or not is_instance_valid(n):
+	var n: Npc = find_npc(id)
+	if n == null:
 		n = Npc.create(id)
 		map.add_child(n)
 		npcs[id] = n
@@ -205,58 +264,96 @@ func ensure_npc(id: String, marker: String) -> Npc:
 	if n.global_position.distance_to(p) > 0.5:
 		n.global_position = p
 		var look: Vector3 = map.marker_position("PlayerSpawn")
-		if look.distance_to(p) < 3.0:
+		if look.distance_to(p) < 3.0 and map.has_marker("TeleportArray"):
 			look = map.marker_position("TeleportArray")
 		var to := look - p
 		n.rotation.y = atan2(to.x, to.z)
+		n.face(Vector3.INF)
+	return n
+
+
+## Get (or spawn) an NPC and stand it at a point, turned toward `look`.
+func place_npc(id: String, at: Vector3, look: Vector3) -> Npc:
+	var n: Npc = find_npc(id)
+	if n == null:
+		n = Npc.create(id)
+		map.add_child(n)
+		npcs[id] = n
+	n.global_position = at
+	var to := look - at
+	if Vector2(to.x, to.z).length() > 0.05:
+		n.rotation.y = atan2(to.x, to.z)
+	n.face(look)
+	n.visible = true
 	return n
 
 
 func find_npc(id: String) -> Npc:
 	var n = npcs.get(id)
-	return n if n and is_instance_valid(n) else null
+	return n if n and is_instance_valid(n) and not n.is_queued_for_deletion() else null
 
 
-## Run a conversation; the speaking NPC (if any) faces the player and gestures.
+## Open a conversation scene (controls held, conversation camera). Scenes
+## nest: the dialogue, the choice and its reply of one objective share one.
+func scene_begin(npc: Npc = null) -> void:
+	_scene_depth += 1
+	if _scene_depth == 1:
+		player.controls_enabled = false
+		player.velocity = Vector3(0.0, player.velocity.y, 0.0)
+		player.stop_meditation()
+		if player.moves:
+			player.moves.close_menu()
+		hud.set_prompt("")
+		conversation.begin(npc, runner.party)
+	elif npc:
+		conversation.set_main(npc)
+
+
+func scene_end() -> void:
+	_scene_depth = maxi(0, _scene_depth - 1)
+	if _scene_depth == 0:
+		conversation.end()
+		_interact_after = Time.get_ticks_msec() + (INTERACT_COOLDOWN_MSEC if not Game.fast else 0)
+		release_controls()
+
+
+func _end_scene_now() -> void:
+	_scene_depth = 0
+	conversation.end()
+
+
+## Hand the controls back unless something else still holds them.
+func release_controls() -> void:
+	var held: bool = busy or cinematic.active or dialogue.active or _scene_depth > 0 or player.dead
+	player.controls_enabled = not held
+	player.clear_input_buffer()
+
+
+func _on_line(speaker: String) -> void:
+	conversation.on_line(speaker)
+
+
+## Run a conversation; the NPCs present face the speaker, who gestures.
 ## Conditional lines are shown only when their condition holds (Story.visible_lines).
 func converse(lines: Array, npc: Npc = null) -> void:
 	lines = Story.visible_lines(lines)
 	if lines.is_empty():
 		return
-	player.controls_enabled = false
-	player.velocity = Vector3.ZERO
-	player.stop_meditation()
-	hud.set_prompt("")
+	scene_begin(npc)
 	if npc:
 		npc.face(player.global_position)
-		var to := npc.global_position - player.global_position
-		player.model_root.rotation.y = atan2(to.x, to.z)
-	var speaking := func(speaker: String):
-		for n in npcs.values():
-			if is_instance_valid(n):
-				n.set_talking(n.npc_id == speaker)
-		if player.anim and not player.dead:
-			player.anim.play(player.moves.talk_anim(speaker == "player") if player.moves else ("talk" if speaker == "player" else "idle"), 0.3)
-	dialogue.line_started.connect(speaking)
+		player.face_toward(npc.global_position)
 	await dialogue.play(lines)
-	dialogue.line_started.disconnect(speaking)
-	for n in npcs.values():
-		if is_instance_valid(n):
-			n.set_talking(false)
-	if player.anim and not player.dead:
-		player.anim.play("idle", 0.3)
-	player.controls_enabled = true
+	scene_end()
 
 
 ## Offer a moral choice; returns the index into ``options`` (texts).
 func choose(prompt: String, options: Array, npc: Npc = null) -> int:
-	player.controls_enabled = false
-	player.velocity = Vector3.ZERO
-	hud.set_prompt("")
+	scene_begin(npc)
 	if npc:
 		npc.face(player.global_position)
 	var i: int = await dialogue.choose(prompt, options)
-	player.controls_enabled = true
+	scene_end()
 	return i
 
 
@@ -264,8 +361,9 @@ func _process(_delta: float) -> void:
 	if busy or map == null:
 		return
 	if player.global_position.y < map.kill_y:
-		player.respawn(player.spawn_point)
-	if dialogue.active or cinematic.active:
+		# fell off the world: back to the last arrival point (no free heal)
+		player.place_at(player.spawn_point)
+	if dialogue.active or cinematic.active or _scene_depth > 0:
 		hud.set_prompt("")
 		return
 	var text: String = runner.prompt()
@@ -283,34 +381,47 @@ func _process(_delta: float) -> void:
 
 
 func _near_teleport() -> bool:
-	if Doors.INTERIORS.has(Game.map_id):
+	if Doors.INTERIORS.has(Game.map_id) or not map.has_marker("TeleportArray"):
 		return false
 	return player.global_position.distance_to(map.marker_position("TeleportArray")) < 4.5
 
 
 ## The nearest usable door on the current map, as {"marker": String, "link": Dictionary}, or {} for none.
 func _near_door() -> Dictionary:
+	var best := {}
+	var bd := 3.0
 	for marker in Doors.doors_on(Game.map_id):
 		if not map.has_marker(marker):
 			continue
-		if player.global_position.distance_to(map.marker_position(marker)) >= 3.0:
+		var d := player.global_position.distance_to(map.marker_position(marker))
+		if d >= bd:
 			continue
 		var link: Dictionary = Doors.link_at(Game.map_id, marker)
 		if link.has("min_realm") and not Game.cond_ok({"min_realm": link.min_realm}):
 			continue
-		return {"marker": marker, "link": link}
-	return {}
+		bd = d
+		best = {"marker": marker, "link": link}
+	return best
 
 
+## The nearest NPC within talking distance.
 func _near_npc() -> Npc:
+	var best: Npc = null
+	var bd := 2.4
 	for n in npcs.values():
-		if is_instance_valid(n) and n.visible and player.global_position.distance_to(n.global_position) < 2.4:
-			return n
-	return null
+		if not is_instance_valid(n) or not n.visible:
+			continue
+		var d := player.global_position.distance_to(n.global_position)
+		if d < bd:
+			bd = d
+			best = n
+	return best
 
 
 func _on_interact() -> void:
-	if busy or dialogue.active or cinematic.active:
+	if busy or dialogue.active or cinematic.active or _scene_depth > 0 or player.dead:
+		return
+	if Time.get_ticks_msec() < _interact_after:
 		return
 	if runner.try_interact():
 		return
@@ -338,11 +449,17 @@ func _on_interact() -> void:
 func _on_player_died() -> void:
 	hud.toast("You have fallen. Your dao heart endures...", UiTheme.CRIMSON)
 	Audio.sfx("gameover", -2.0)
+	var load_at := _load_id
 	await get_tree().create_timer(3.0 if not Game.fast else 0.05).timeout
+	if not is_inside_tree() or map == null or load_at != _load_id or not player.dead:
+		return                          # the map changed (or we left) while fallen
 	var at: Vector3 = map.marker_position("PlayerSpawn") + Vector3.UP * 0.3
 	player.respawn(at)
+	player.spawn_point = at
 	for e in get_tree().get_nodes_in_group("enemies"):
-		e.hp = e.max_hp
+		if e.has_method("reset_after_player_death"):
+			e.reset_after_player_death()
+	release_controls()
 
 
 func _on_breakthrough(realm: String) -> void:

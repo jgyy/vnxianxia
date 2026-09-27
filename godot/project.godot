@@ -24,6 +24,12 @@ window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[importer_defaults]
+
+scene={
+"meshes/generate_lods": false
+}
+
 [physics]
 
 common/physics_ticks_per_second=60

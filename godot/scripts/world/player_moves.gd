@@ -159,6 +159,20 @@ func on_model(ap: AnimationPlayer) -> void:
 			anim.get_animation(a).loop_mode = Animation.LOOP_LINEAR
 
 
+## Forget any move in progress (ledge hang, climb, dodge, slide, charge,
+## block, queued one-shots): called when the player is teleported.
+func reset_state() -> void:
+	_state = ""
+	_charging = false
+	_blocking = false
+	_block_key = false
+	_gliding = false
+	_motion = Vector3.ZERO
+	_clear_busy()
+	if player and player._action_lock > 1.0 and not player.dead:
+		player._action_lock = 0.0
+
+
 func has(anim_name: String) -> bool:
 	return anim != null and anim.has_animation(anim_name)
 
@@ -269,7 +283,7 @@ func handle_input(event: InputEvent) -> bool:
 		return true
 	if player.dead:
 		return false
-	if event.is_action_pressed("jump") and not player.is_on_floor():
+	if event.is_action_pressed("jump") and not player.is_grounded():
 		return _air_jump()
 	if event.is_action_pressed("jump") and _state == "ledge":
 		_climb()
@@ -312,7 +326,7 @@ func handle_input(event: InputEvent) -> bool:
 func strike(kind: String) -> bool:
 	if player.dead or anim == null or _state != "":
 		return true
-	if not player.is_on_floor():
+	if not player.is_grounded():
 		if kind == "kick" and has("flying_kick") and _now >= _busy_until:
 			_blow("flying_kick", 13, 1.5, 0.5)
 		return true
@@ -351,7 +365,7 @@ func _blow(anim_name: String, hit_frame: int, mult: float, reach: float) -> floa
 
 
 func charge_begin() -> void:
-	if _charging or not player.is_on_floor() or player._action_lock > 0.0 or not has("charge_start"):
+	if _charging or not player.is_grounded() or player._action_lock > 0.0 or not has("charge_start"):
 		return
 	player.stop_meditation()
 	_face_enemy()
@@ -378,7 +392,7 @@ func _face_enemy() -> void:
 
 func block(on: bool) -> void:
 	if on:
-		if _blocking or not player.is_on_floor() or player._action_lock > 0.0 or not has("block_start"):
+		if _blocking or not player.is_grounded() or player._action_lock > 0.0 or not has("block_start"):
 			return
 		player.stop_meditation()
 		_blocking = true
@@ -422,7 +436,7 @@ func hit_reaction(amount: float, from: Node) -> void:
 	_blocking = false
 	var mx: float = Game.max_hp()
 	var boss: bool = from != null and "boss" in from and from.boss
-	if (amount >= mx * 0.25 or (boss and amount >= mx * 0.12)) and player.is_on_floor() and has("knockdown"):
+	if (amount >= mx * 0.25 or (boss and amount >= mx * 0.12)) and player.is_grounded() and has("knockdown"):
 		_state = ""
 		play_once("knockdown", 0.06, false, ["getup"])
 		_busy_until = _now + _length("knockdown") * 0.8
@@ -463,7 +477,7 @@ func on_respawn() -> void:
 
 func technique(i: int) -> void:
 	var t: Array = TECHNIQUES[i]
-	if player.qi < t[1] or not player.is_on_floor() or player._action_lock > 0.0 or not has(t[0]):
+	if player.qi < t[1] or not player.is_grounded() or player._action_lock > 0.0 or not has(t[0]):
 		return
 	player.stop_meditation()
 	player._face_nearest_enemy(22.0)
@@ -473,7 +487,7 @@ func technique(i: int) -> void:
 	player._action_lock = l * 0.7
 	Audio.sfx("qi_charge", -6.0)
 	var delay: float = t[2] / FPS if not Game.fast else 0.0
-	get_tree().create_timer(delay).timeout.connect(_release_technique.bind(i))
+	get_tree().create_timer(delay, false).timeout.connect(_release_technique.bind(i))
 
 
 func _release_technique(i: int) -> void:
@@ -513,7 +527,7 @@ func _release_technique(i: int) -> void:
 
 
 func dodge() -> void:
-	if not player.is_on_floor() or _state != "" or player.dead or _charging:
+	if not player.is_grounded() or _state != "" or player.dead or _charging:
 		return
 	if player._action_lock > 0.2:
 		return
@@ -580,7 +594,7 @@ func pre_physics(delta: float, dir: Vector3, running: bool) -> Variant:
 		return dir
 	if menu_open:
 		dir = Vector3.ZERO
-	var on_floor: bool = player.is_on_floor()
+	var on_floor: bool = player.is_grounded()
 	_crouch = on_floor and player.controls_enabled and Input.is_action_pressed("crouch") and _state == ""
 	# sprinting after a sustained run
 	if running and dir != Vector3.ZERO and on_floor:
@@ -627,7 +641,7 @@ func _motion_state(delta: float) -> Variant:
 	player.velocity.z = v.z
 	if not player.is_on_floor():
 		player.velocity.y -= player.GRAVITY * delta
-	player.move_and_slide()
+	player.move_body(delta)
 	return null
 
 
@@ -747,7 +761,7 @@ func meditate_enter() -> void:
 
 func meditate_exit() -> void:
 	_clear_busy()
-	if has("meditate_exit") and player.is_on_floor() and not player.dead:
+	if has("meditate_exit") and player.is_grounded() and not player.dead:
 		play_once("meditate_exit", 0.3, false)
 		player._action_lock = maxf(player._action_lock, _length("meditate_exit") * 0.75)
 	elif anim:
@@ -765,7 +779,7 @@ func _meditation_cycle() -> void:
 
 
 func _on_realm_changed(_realm: String) -> void:
-	if player == null or player.dead or not player.is_on_floor() or not player.controls_enabled or anim == null:
+	if player == null or player.dead or not player.is_grounded() or not player.controls_enabled or anim == null:
 		return
 	player.stop_meditation()
 	if has("breakthrough"):
@@ -786,7 +800,7 @@ func talk_anim(speaking: bool) -> String:
 func update_animation(delta: float) -> bool:
 	if anim == null:
 		return false
-	if not player.is_on_floor() or _state != "":
+	if not player.is_grounded() or _state != "":
 		return true
 	var planar := Vector2(player.velocity.x, player.velocity.z).length()
 	var moving := planar > 0.15
@@ -808,7 +822,7 @@ func update_animation(delta: float) -> bool:
 	var fwd: Vector3 = player.model_root.global_basis.z
 	if _crouch:
 		wanted = "crouch_walk" if moving else "crouch_idle"
-		speed = clampf(planar / 0.8, 0.6, 1.6) if moving else 1.0
+		speed = player.stride_scale("crouch_walk", planar) if moving else 1.0
 	elif _blocking:
 		wanted = "block_idle"
 		if moving:
@@ -819,17 +833,13 @@ func update_animation(delta: float) -> bool:
 				wanted = "strafe_l" if l > 0.0 else "strafe_r"
 			else:
 				wanted = "walk" if f > 0.0 else "walk_back"
-			speed = clampf(planar / 1.0, 0.6, 1.5)
+			speed = player.stride_scale(wanted, planar)
 	elif moving:
-		if planar > 2.8:
-			wanted = "sprint" if _sprinting and has("sprint") else "run"
-			speed = planar / (6.2 if wanted == "sprint" else 4.2)
-		elif _sneak:
+		# walk / run / sprint with hysteresis, speed_scale = ground speed / authored speed (no foot sliding)
+		wanted = player.gait_for(planar, _loco, _sprinting and has("sprint"))
+		if wanted == "walk" and _sneak and has("sneak"):
 			wanted = "sneak"
-			speed = clampf(planar / 1.0, 0.6, 1.5)
-		else:
-			wanted = "walk"
-			speed = clampf(planar / 1.45, 0.5, 1.5)
+		speed = player.stride_scale(wanted, planar)
 	else:
 		if _now - _last_attack < 6.0 or not _enemies_near(12.0).is_empty():
 			wanted = "sword_idle" if _now - _last_sword < 8.0 else "combat_idle"
@@ -847,7 +857,7 @@ func update_animation(delta: float) -> bool:
 			_loco = "run"
 			return true
 	if not moving and _loco in ["run", "sprint"] and has("run_stop"):
-		play_once("run_stop", 0.12, true)
+		play_once("run_stop", 0.08, true)
 		return true
 	if wanted == "idle":
 		_idle_time += delta
@@ -864,14 +874,14 @@ func update_animation(delta: float) -> bool:
 	if not has(wanted):
 		wanted = "idle"
 	if anim.current_animation != wanted:
-		anim.play(wanted, 0.25 if wanted != "block_idle" else 0.12)
+		var blend := 0.12 if wanted == "block_idle" else (0.25 if wanted.ends_with("idle") else 0.2)
+		if anim.current_animation == "run_start" and wanted in ["run", "sprint"]:
+			blend = 0.0          # run_start ends exactly on run's first frame
+		anim.play(wanted, blend)
 	anim.speed_scale = speed
 	_loco = wanted
 	if moving:
-		player._step_timer -= delta
-		if player._step_timer <= 0.0:
-			player._step_timer = 0.31 if planar > 2.8 else (0.62 if _crouch or _sneak else 0.5)
-			Audio.sfx("footstep_stone", -14.0 if not (_crouch or _sneak) else -22.0, randf_range(0.9, 1.1))
+		player.footstep_tick(wanted, -14.0 if not (_crouch or _sneak) else -22.0)
 	return true
 
 
@@ -890,7 +900,7 @@ func _check_victory(wanted: String) -> void:
 ## Plays an emote sequence (the last looping animation holds until moving).
 func play_emote(anims: Array) -> void:
 	close_menu()
-	if player.dead or not player.is_on_floor() or anim == null or _state != "":
+	if player.dead or not player.is_grounded() or anim == null or _state != "":
 		return
 	player.stop_meditation()
 	player.velocity = Vector3.ZERO

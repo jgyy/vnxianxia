@@ -73,6 +73,11 @@ var _hints: HBoxContainer
 var _stage_queue: Array = []
 var _stage_busy := false
 var _clock := 0.0
+var _top_col: VBoxContainer
+## a conversation (dialogue box or choice) holds the screen: toasts wait,
+## overlapping HUD pieces fade out of its way
+var _quiet := false
+var _pending_toasts: Array = []
 
 
 func _ready() -> void:
@@ -227,6 +232,7 @@ func _build_right(frame: Control) -> void:
 
 func _build_top(frame: Control) -> void:
 	var col := _col(frame, BoxContainer.ALIGNMENT_BEGIN, 4)
+	_top_col = col
 	_compass = Compass.new()
 	_compass.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	col.add_child(_compass)
@@ -478,6 +484,10 @@ func set_meditation(value: float) -> void:
 
 
 func toast(text: String, color := UiTheme.TEXT, seconds := 4.0) -> void:
+	if _quiet or _conversation_up():
+		# raised during a conversation: shown once it is over, not under the box
+		_pending_toasts.append([text, color, seconds])
+		return
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel", UiTheme.kit_box("toast"))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -615,7 +625,10 @@ func _show_stage(it: Dictionary) -> void:
 func _process(delta: float) -> void:
 	_clock += delta
 	var dlg: Variant = get_parent().get("dialogue") if get_parent() else null
-	_hints.visible = not (dlg is Node and dlg.get("active"))
+	var talking: bool = dlg is Node and dlg.get("active")
+	_set_quiet(_conversation_up())
+	_hints.visible = not talking
+	_fade_for_dialogue(dlg if talking else null, delta)
 	if _meditate.visible:
 		_ring_glow.modulate.a = 0.35 + 0.25 * sin(_clock * 2.4)
 	var cam := get_viewport().get_camera_3d()
@@ -635,6 +648,50 @@ func _process(delta: float) -> void:
 		_compass.set_target(NAN, 0.0)
 		return
 	_compass.set_target(wrapf(atan2(to.x, -to.z) - heading, -PI, PI), flat.length())
+
+
+# ------------------------------------------------------------------ conversations
+
+## Is a conversation (the dialogue box, a choice, or the scene around them) up?
+func _conversation_up() -> bool:
+	var g := get_parent()
+	if g == null:
+		return false
+	var dlg: Variant = g.get("dialogue")
+	var depth: Variant = g.get("_scene_depth")
+	return (dlg is Node and dlg.get("active")) or (depth is int and depth > 0)
+
+
+func _set_quiet(on: bool) -> void:
+	if on == _quiet:
+		return
+	_quiet = on
+	if not on and not _pending_toasts.is_empty():
+		var waiting := _pending_toasts.duplicate()
+		_pending_toasts.clear()
+		for t in waiting:
+			toast(t[0], t[1], t[2])
+
+
+## While the dialogue box is up, the toast column fades away and the centre
+## stage (banner / title card) and the top column (boss bar, quest card) fade
+## wherever they would overlap the box; all fade back afterwards.
+func _fade_for_dialogue(dlg: Variant, delta: float) -> void:
+	var box := Rect2()
+	if dlg is Node and dlg.has_method("panel_rect"):
+		box = dlg.panel_rect().grow(6.0)
+	var rate := delta / 0.25
+	_toasts.modulate.a = move_toward(_toasts.modulate.a, 0.0 if _quiet else 1.0, rate)
+	var top_hit := false
+	for n in [_boss, _card]:
+		if n.visible and box.has_area() and n.get_global_rect().intersects(box):
+			top_hit = true
+	_top_col.modulate.a = move_toward(_top_col.modulate.a, 0.0 if top_hit else 1.0, rate)
+	var stage_hit := false
+	for n in _stage.get_children():
+		if n is Control and n.visible and box.has_area() and n.get_global_rect().intersects(box):
+			stage_hit = true
+	_stage.modulate.a = move_toward(_stage.modulate.a, 0.0 if stage_hit else 1.0, rate)
 
 
 # ------------------------------------------------------------------ widgets

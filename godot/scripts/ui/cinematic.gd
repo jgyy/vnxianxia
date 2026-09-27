@@ -15,6 +15,7 @@ var _line: Label
 var _speaker: Label
 var _skip := false
 var _cam: Camera3D
+var _card_tweens: Array[Tween] = []
 
 
 func _ready() -> void:
@@ -76,9 +77,16 @@ func _centered(root: Control, size: int, color: Color, y: float) -> Label:
 	return l
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if active and (event.is_action_pressed("pause") or (event is InputEventKey and event.pressed and event.keycode == KEY_ENTER)):
+func _input(event: InputEvent) -> void:
+	if not active:
+		return
+	# Esc / Enter skip; every other key and click is swallowed so nothing
+	# (a jump, an interaction, the pause menu) happens behind the cinematic
+	if event.is_action_pressed("pause") or (event is InputEventKey and event.pressed and not event.echo
+			and event.keycode in [KEY_ENTER, KEY_KP_ENTER]):
 		_skip = true
+		get_viewport().set_input_as_handled()
+	elif (event is InputEventKey and event.pressed) or (event is InputEventMouseButton and event.pressed):
 		get_viewport().set_input_as_handled()
 
 
@@ -100,22 +108,26 @@ func play(cin_id: String) -> void:
 	var player: Node3D = game.player
 	player.controls_enabled = false
 	player.stop_meditation()
+	player.velocity = Vector3.ZERO
+	if player.moves:
+		player.moves.close_menu()
 	game.hud.show_gameplay(false)
 	if cin.get("music"):
 		Audio.play_music(cin.music)
 	var temp: Array[Node] = []
 	var hidden: Array[Node] = []
 	for a in cin.get("actors", []):
+		if not map.has_marker(a.marker):
+			continue                 # a marker the (regenerated) map no longer has
 		var pos: Vector3 = map.marker_position(a.marker)
-		var face = map.marker_position(a.face) if a.get("face") else null
+		var face = map.marker_position(a.face) if a.get("face") and map.has_marker(a.face) else null
 		if a.npc == "player":
-			player.global_position = pos + Vector3.UP * 0.1
-			player.velocity = Vector3.ZERO
+			player.place_at(pos + Vector3.UP * 0.1)
 			if face != null:
 				var to: Vector3 = face - pos
 				player.model_root.rotation.y = atan2(to.x, to.z)
-			if player.anim and player.anim.has_animation(a.anim):
-				player.anim.play(a.anim)
+			# held, or the idle locomotion would replace the pose on the next physics frame
+			player.hold_pose(a.get("anim", "idle"), 0.0)
 			continue
 		var existing: Node = game.find_npc(a.npc)
 		if existing:
@@ -135,12 +147,14 @@ func play(cin_id: String) -> void:
 			en.process_mode = Node.PROCESS_MODE_DISABLED
 			map.add_child(en)
 			var base: Vector3 = map.marker_position(e.marker)
-			en.global_position = base + Vector3(cos(i * 2.4) * 2.5 * mini(i, 1), 0, sin(i * 2.4) * 2.5 * mini(i, 1))
+			# posed (physics off), so stand each one on the ground itself
+			en.global_position = map.ground_at(base + Vector3(cos(i * 2.4) * 2.5 * mini(i, 1), 0, sin(i * 2.4) * 2.5 * mini(i, 1)))
 			en.remove_from_group("enemies")
 			temp.append(en)
 	_cam = Camera3D.new()
 	_cam.fov = 50.0
-	_cam.far = 3000.0
+	_cam.near = 0.1
+	_cam.far = 1500.0
 	map.add_child(_cam)
 	_cam.make_current()
 	if not Game.fast:
@@ -149,24 +163,37 @@ func play(cin_id: String) -> void:
 			Audio.sfx("chapter_title", -2.0)
 			await _card(cin.title, cin.get("subtitle", ""))
 		for shot in cin.shots:
-			if _skip:
+			if _skip or not is_instance_valid(map):
 				break
-			await _shot(map, shot)
+			if map.has_marker(shot.marker):
+				await _shot(map, shot)
 	Audio.stop_voice()
 	_line.text = ""
 	_speaker.text = ""
 	for n in temp:
-		n.queue_free()
+		if is_instance_valid(n):
+			n.queue_free()
 	for n in hidden:
-		n.visible = true
+		if is_instance_valid(n):
+			n.visible = true
+	if cin.get("music") and is_instance_valid(map) and map == game.map:
+		Audio.play_music(map.music)
 	_cam.queue_free()
+	_cam = null
 	player.camera.make_current()
-	if player.anim:
-		player.anim.play("idle")
+	player.release_pose()
+	if player.anim and not player.dead:
+		player.anim.play("idle", 0.2)
 	_letterbox(false, 0.4)
 	game.hud.show_gameplay(true)
-	player.controls_enabled = true
 	active = false
+	for tw in _card_tweens:
+		if tw and tw.is_valid():
+			tw.kill()
+	_card_tweens.clear()
+	_title.modulate.a = 0.0
+	_subtitle.modulate.a = 0.0
+	game.release_controls()
 	if cin.get("title") and not Game.fast:
 		game.hud.quest_card(Game.quest())
 	visible = false
@@ -179,13 +206,16 @@ func _card(title: String, sub: String) -> void:
 	var tw := create_tween().set_parallel(true)
 	tw.tween_property(_title, "modulate:a", 1.0, 1.0)
 	tw.tween_property(_subtitle, "modulate:a", 1.0, 1.4)
+	_card_tweens.append(tw)
 	var t := 0.0
 	while t < 3.2 and not _skip:
 		await get_tree().process_frame
 		t += get_process_delta_time()
+	tw.kill()                    # a skipped fade-in must not fight the fade-out
 	var tw2 := create_tween().set_parallel(true)
 	tw2.tween_property(_title, "modulate:a", 0.0, 0.8)
 	tw2.tween_property(_subtitle, "modulate:a", 0.0, 0.8)
+	_card_tweens.append(tw2)
 
 
 func _orbit(p: Vector3, o: Dictionary) -> Vector3:
