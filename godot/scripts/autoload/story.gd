@@ -1,6 +1,6 @@
 extends Node
 ## The main story (res://data/story.json, compiled by tools/build_story.py):
-## 10 volumes x 10 chapters x 10 quests, the NPC roster and cinematics, plus
+## 10 volumes x 10 chapters x 20 quests, the NPC roster and cinematics, plus
 ## text-token substitution for the active protagonist.
 
 const PATH := "res://data/story.json"
@@ -85,7 +85,7 @@ func chapter_label(number: int) -> String:
 	return "Chapter %d · %s" % [number, chapter(number).get("title", "")]
 
 
-## Index in the 1000-quest story of quest ``n`` (1..100) of the original 100-quest story.
+## Index in the 2000-quest story of quest ``n`` (1..100) of the original 100-quest story.
 func legacy_index(n: int) -> int:
 	return int(_legacy.get(n, -1))
 
