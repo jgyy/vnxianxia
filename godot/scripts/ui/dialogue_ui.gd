@@ -36,6 +36,10 @@ func _ready() -> void:
 	_panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	_panel.position = Vector2(-520, -214)
 	_panel.custom_minimum_size = Vector2(1040, 186)
+	# Long lines, wrapped text and a 2-4 option choice list can all make the
+	# panel taller than custom_minimum_size; grow upward (never down), or the
+	# extra height pushes the bottom of the box below the screen.
+	_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_panel.add_theme_stylebox_override("panel", UiTheme.panel(Color(0.04, 0.05, 0.08, 0.86), UiTheme.GOLD, 8))
 	root.add_child(_panel)
 	var hb := HBoxContainer.new()

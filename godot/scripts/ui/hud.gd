@@ -117,6 +117,7 @@ func _ready() -> void:
 	_thought.custom_minimum_size = Vector2(720, 40)
 	_thought.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_thought.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_thought.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_thought.modulate.a = 0.0
 	_root.add_child(_thought)
 	# toasts (left, under vitals)
