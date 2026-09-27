@@ -68,7 +68,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## Load a map behind the loading screen and place the player at a marker.
-func load_map(map_id: String, spawn := "PlayerSpawn") -> void:
+## track_visited is false for a door into a building interior, so interiors
+## never show up as jade teleport array destinations (see Doors.INTERIORS).
+func load_map(map_id: String, spawn := "PlayerSpawn", track_visited := true) -> void:
 	busy = true
 	player.controls_enabled = false
 	player.stop_meditation()
@@ -101,7 +103,7 @@ func load_map(map_id: String, spawn := "PlayerSpawn") -> void:
 	for i in 3:
 		await get_tree().physics_frame
 	Game.map_id = map_id
-	if not Game.visited.has(map_id):
+	if track_visited and not Game.visited.has(map_id):
 		Game.visited.append(map_id)
 	var p: Vector3 = map.marker_position(spawn)
 	player.global_position = p + Vector3.UP * 0.3
@@ -133,6 +135,18 @@ func travel_to(map_id: String) -> void:
 	if not Game.fast:
 		await get_tree().create_timer(0.5).timeout
 	await load_map(map_id, "TeleportArray")
+	Game.save()
+
+
+## Step through a door into a building interior (or back out of one).
+func enter_door(link: Dictionary) -> void:
+	if busy:
+		return
+	Audio.sfx("teleport", -3.0)
+	Fx.burst(map, player.global_position + Vector3.UP, Color(0.9, 0.85, 0.6), 40, 2.5)
+	if not Game.fast:
+		await get_tree().create_timer(0.3).timeout
+	await load_map(link.get("to", ""), link.get("spawn", "PlayerSpawn"), false)
 	Game.save()
 
 
@@ -252,7 +266,10 @@ func _process(_delta: float) -> void:
 		return
 	var text: String = runner.prompt()
 	if text == "":
-		if _near_teleport():
+		var door := _near_door()
+		if not door.is_empty():
+			text = "E  " + str(door.link.get("label", "Enter"))
+		elif _near_teleport():
 			text = "E  Use the teleport array"
 		else:
 			var n := _near_npc()
@@ -262,7 +279,23 @@ func _process(_delta: float) -> void:
 
 
 func _near_teleport() -> bool:
+	if Doors.INTERIORS.has(Game.map_id):
+		return false
 	return player.global_position.distance_to(map.marker_position("TeleportArray")) < 4.5
+
+
+## The nearest usable door on the current map, as {"marker": String, "link": Dictionary}, or {} for none.
+func _near_door() -> Dictionary:
+	for marker in Doors.doors_on(Game.map_id):
+		if not map.has_marker(marker):
+			continue
+		if player.global_position.distance_to(map.marker_position(marker)) >= 3.0:
+			continue
+		var link: Dictionary = Doors.link_at(Game.map_id, marker)
+		if link.has("min_realm") and not Game.cond_ok({"min_realm": link.min_realm}):
+			continue
+		return {"marker": marker, "link": link}
+	return {}
 
 
 func _near_npc() -> Npc:
@@ -276,6 +309,10 @@ func _on_interact() -> void:
 	if busy or dialogue.active or cinematic.active:
 		return
 	if runner.try_interact():
+		return
+	var door := _near_door()
+	if not door.is_empty():
+		enter_door(door.link)
 		return
 	if _near_teleport():
 		var o := Game.objective()

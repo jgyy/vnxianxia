@@ -106,6 +106,18 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 20, 0, -38)
 [node name="Pavilion" parent="Level" instance=ExtResource("13_pavilion")]
 transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, -18, 0, -20)
 
+[node name="AlchemyPavilion" parent="Level" instance=ExtResource("10_main_hall")]
+transform = Transform3D(2.44929e-17, 0, -0.4, 0, 0.4, 0, 0.4, 0, 2.44929e-17, -24, 0, -8)
+
+[node name="WeaponsHall" parent="Level" instance=ExtResource("10_main_hall")]
+transform = Transform3D(2.44929e-17, 0, -0.4, 0, 0.4, 0, 0.4, 0, 2.44929e-17, -24, 0, 12)
+
+[node name="ElderQuarters" parent="Level" instance=ExtResource("10_main_hall")]
+transform = Transform3D(-0.4, 0, -4.89859e-17, 0, 0.4, 0, 4.89859e-17, 0, -0.4, 24, 0, 20)
+
+[node name="DiscipleDormitory" parent="Level" instance=ExtResource("10_main_hall")]
+transform = Transform3D(-0.45, 0, -5.51091e-17, 0, 0.45, 0, 5.51091e-17, 0, -0.45, 14, 0, 22)
+
 [node name="FormationArray" parent="Level" instance=ExtResource("6_formation_array")]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0.04, 8)
 
@@ -662,3 +674,15 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 23, 1, 11.5)
 
 [node name="OuterPines" type="Marker3D" parent="Markers"]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 34, 1, 46)
+
+[node name="AlchemyPavilion" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -20.5, 1, -8)
+
+[node name="WeaponsHall" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -20.5, 1, 12)
+
+[node name="ElderQuarters" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 24, 1, 16.5)
+
+[node name="DiscipleDormitory" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, 1, 18)
