@@ -340,7 +340,7 @@ CHAPTERS = [
           B("gather", "Demon Cores From the Rim's Watch",
             "The fallen shadow-born and blood guards leave demon cores behind, worth gathering before the Abyss reclaims them.",
             item="demon_core", v=0),
-          B("social", "Han Xue's Question",
+          B("social", "Han Xue's Doubt",
             "Han Xue asks whether stealing Xue Chen back is even possible, given how deep the Patriarch's shadow runs in him.",
             (HAN, "Ye Wuming was stolen back as a child, before the shadow set fully. Xue Chen's grown in it his whole life. I don't know if that's different. I hope not."),
             v=0),

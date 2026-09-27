@@ -868,7 +868,7 @@ CHAPTERS = [
             "Magistrate Zhou, still mourning the loss of perfect dumplings, asks if anyone salvaged the false cook's recipe.",
             (ZHOU, "If evil can cook that well, I have questions about the universe. Also, does anyone have the recipe? Asking for the yamen."),
             v=0),
-          B("social", "Old Pan's River",
+          B("social", "Old Pan Makes Peace With the Water",
             "Old Pan, having thrown a Blood Moon soldier into his river, spends an evening making peace with the water again.",
             (PAN, "Forty years and I never had to do that before. The river doesn't judge. It just carries. I'm grateful for that, tonight."),
             v=0),

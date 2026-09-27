@@ -1136,7 +1136,7 @@ CHAPTERS = [
           B("train", "Steadying the Nerves",
             "With the whole mountain on edge, Elder Yan organizes one more round of drills, insisting steady hands make steady soldiers.",
             foe="training_puppet", count=3, v=0),
-          B("probe", "The Night Before",
+          B("probe", "The Night Before the Peak",
             "The night before you bring your soul to its peak, Han Xue sits with you and says nothing useful, which is exactly what you need.",
             (HAN, "I don't have anything wise to say. I just didn't want you sitting up here alone tonight."),
             v=0),

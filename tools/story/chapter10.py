@@ -1,5 +1,6 @@
 from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
+from .saga_gen import B, C
 
 CHAPTER = chapter(
     10, "Heavenly Tribulation",
@@ -127,6 +128,10 @@ CHAPTER = chapter(
               "The heavenly tribulation descends on the summit, and the Patriarch's remnant rides the lightning.",
               "sky_isles", [
                   cinematic("ch10_tribulation", "Ascend to the tribulation peak"),
+                  talk(HAN, "Hear Han Xue's voice from the bridge below",
+                       (HAN, "I can feel it from here. The lightning. Don't you dare let it take more of you than it has to."),
+                       (P, "I won't. I'll come back down. I promised."),
+                       (HAN, "You'd better. Go on. Face it.")),
                   defeat("heart_demon", 1, "TribulationPeak", "Survive the heart tribulation and destroy the remnant",
                          (PATRIARCH, "The ninth bolt is the heart tribulation. I will be your heart, little lotus."),
                          (DEMON, "Hello again, {player}. He found me in the mirror. He says we can share."),
@@ -154,4 +159,53 @@ CHAPTER = chapter(
                   cinematic("ch10_ascension", "Ascend"),
                   cinematic("ch10_epilogue", "Epilogue: the Azure Cloud Sect"),
               ], xp=10000, items={"spirit_stone": 99}, realm="Immortal Ascension"),
+    ])
+
+# The last quiet before the ninth bolt. Everyone who can reach the summit
+# does, one last time, before the tribulation itself. Spliced in between
+# "Remnants of the Blood Moon" and "Heavenly Tribulation".
+EXTRA = C(
+    "Heavenly Tribulation", "sky_isles",
+    "The delta is planted, the remnant is climbing, and heaven's storm is almost overhead. Before the ninth bolt, "
+    "everyone who marched with you gathers on the isles one last time.",
+    cast=[SAGE, HAN, ZHAO, YE, TIE, GU, YUN],
+    foes=["blood_guard", "demon_cultivator", "celestial_sentinel"],
+    items=["thunder_crystal", "tribulation_jade", "void_shard"],
+    props=["seal", "stone_stele", "demon_obelisk"],
+    beats=[
+        B("hunt", "The Remnant's Last Guards",
+          "The Patriarch's remnant leaves possessed guards behind on the jade bridge, buying itself time to climb.",
+          foe="blood_guard", v=0),
+        B("gather", "The Last Forty Crystals",
+          "Elder Bai's delta needs its final forty crystals planted on the summit before the ninth bolt falls.",
+          item="thunder_crystal", v=0),
+        B("probe", "Ye Wuming's Name",
+          "At the obelisk ring below, Ye Wuming's crane reaches the isles: he has his name back at last.",
+          (YE, "Ye Chen. My name was Ye Chen. My mother's cousin gave it to me before the moon took me. I remember it now. All of it."),
+          v=0),
+        B("social", "Iron-Fang's Sister",
+          "A second crane follows: Iron-Fang's sister is free, mid-shout, exactly as frozen as she was taken.",
+          (TIE, "She's shouting. At me. For being late. Twenty years late. I've never been so happy to be shouted at."),
+          v=0),
+        B("hunt", "Demon Cultivators on the Ruins",
+          "A last pocket of demon cultivators, possessed by the fleeing remnant's touch, holds the celestial ruins.",
+          foe="demon_cultivator", v=0),
+        B("gather", "Void Shards From the Possessed Garden",
+          "The immortal garden, cleared of possession, leaves void shards behind worth gathering before the storm.",
+          item="void_shard", v=0),
+        B("social", "Gu's Last Gift",
+          "A final crane arrives from the abyss: Gu Hanshan's last request, granted by the Sect Master, is read aloud.",
+          (GU, "Tell them the Law Hall is empty. Tell them I opened one gate, at least, before I closed for good. Thank you, {junior}."),
+          v=0),
+        B("hunt", "Celestial Sentinels, Guarding the Peak",
+          "The palace's oldest sentinels form a line at the peak's edge, not to stop you, but to guard the ninth bolt's ground.",
+          foe="celestial_sentinel", v=0),
+        B("gather", "Tribulation Jade, One Last Piece",
+          "You gather one final piece of tribulation jade, meaning to leave it at the summit for whoever climbs next.",
+          item="tribulation_jade", v=0),
+        B("cultivate", "Before the Ninth Bolt",
+          "At the foot of the Ascension Stair, you sit one last time, and carry everyone who carried you, all the way here.",
+          (HAN, "I'm holding the bridge. Nothing crosses. Go and take the sky, {player}. I'll be right here when you're done."),
+          (SAGE, "I'll be shouting. Loudly. The whole way up. Go, lotus child. Heaven's waited ten thousand years. It can wait one more minute."),
+          v=0),
     ])

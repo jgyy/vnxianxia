@@ -343,7 +343,7 @@ CHAPTERS = [
           B("gather", "Incense for the Returned",
             "The town lights incense for each of the eleven who returned, a small ritual Widow Liu insists on for luck.",
             item="incense", v=0),
-          B("social", "Zhou's Second Speech",
+          B("social", "Zhou's Quieter Speech",
             "Magistrate Zhou, still shaken by his own hollowing, gives a second, quieter speech, this one just for the eleven.",
             (ZHOU, "I gave up without noticing I'd given up. If it happened to me, it can happen to anyone. Watch each other. That's the whole speech."),
             v=0),
