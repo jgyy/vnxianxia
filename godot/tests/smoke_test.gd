@@ -71,6 +71,20 @@ func _assets() -> void:
 					ok = ok and ap != null and ap.has_animation(a) and ap.get_animation(a).length > 0.3
 				var bones: int = (skeletons[0] as Skeleton3D).get_bone_count() if skeletons.size() == 1 else 0
 				check(ok, "%s: rig with %d bones, %d animations" % [file, bones, anims.size()])
+				if not world.creature_anims.has(model) and model != "stone_golem":  # rock golem: no face
+					# the face's blinks, speech and expressions are morph targets driven by the actions
+					var shapes := 0
+					for mi in meshes:
+						var mesh: Mesh = (mi as MeshInstance3D).mesh
+						if mesh is ArrayMesh:
+							shapes = maxi(shapes, (mesh as ArrayMesh).get_blend_shape_count())
+					var face_tracks := 0
+					if ap and ap.has_animation("talk"):
+						var talk := ap.get_animation("talk")
+						for t in talk.get_track_count():
+							if talk.track_get_type(t) == Animation.TYPE_BLEND_SHAPE:
+								face_tracks += 1
+					check(shapes >= 20 and face_tracks >= 5, "%s: %d facial blend shapes, %d driven by talk" % [file, shapes, face_tracks])
 			inst.free()
 	for m in world.models:
 		check(ResourceLoader.exists("res://assets/characters/%s.glb" % m), "model %s exists" % m)

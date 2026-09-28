@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import world_spec  # noqa: E402
 
-MAX_BYTES = 12 * 1024 * 1024
+MAX_BYTES = 16 * 1024 * 1024  # heroes: 136 actions + 22 facial morph targets + 2k skin maps
 PROP_MAX_BYTES = 1536 * 1024   # interactable quest props
 PROP_STEP_OVER = 0.5           # props lower than this may be walked over without collision
 ITEM_MAX_BYTES = 512 * 1024    # hand-held pickups
@@ -88,9 +88,32 @@ def read_glb(path):
     return json.loads(data[20:20 + clen]), len(data)
 
 
+def _buffer_refs(gltf):
+    """Every bufferView an accessor (sparse data included) or image points at must exist
+    and lie inside its buffer; a post-export rewrite that drops a view corrupts the file
+    (Godot then fails the import with 'Sparse indices ... out of bounds')."""
+    errors = []
+    views, buffers = gltf.get("bufferViews", []), gltf.get("buffers", [])
+    for vi, bv in enumerate(views):
+        if bv.get("byteOffset", 0) + bv["byteLength"] > buffers[bv.get("buffer", 0)]["byteLength"]:
+            errors.append(f"bufferView {vi} runs past the end of its buffer")
+    refs = []
+    for ai, a in enumerate(gltf.get("accessors", [])):
+        if "bufferView" in a:
+            refs.append((f"accessor {ai}", a["bufferView"]))
+        if "sparse" in a:
+            refs.append((f"accessor {ai} sparse indices", a["sparse"]["indices"]["bufferView"]))
+            refs.append((f"accessor {ai} sparse values", a["sparse"]["values"]["bufferView"]))
+    refs += [(f"image {i}", img["bufferView"]) for i, img in enumerate(gltf.get("images", [])) if "bufferView" in img]
+    bad = [what for what, v in refs if not 0 <= v < len(views)]
+    if bad:
+        errors.append(f"{len(bad)} dangling bufferView references (first: {bad[0]})")
+    return errors
+
+
 def check(path):
     gltf, size = read_glb(path)
-    errors = []
+    errors = _buffer_refs(gltf)
     meshes = gltf.get("meshes", [])
     if not meshes:
         errors.append("no meshes")

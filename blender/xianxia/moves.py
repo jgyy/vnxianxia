@@ -2221,6 +2221,11 @@ def optimize_glb(path, rot_tol=0.0012, pos_tol=0.0006, other_tol=0.002):
     out = bytearray()
     new_views, vmap = [], {}
     used = {a["bufferView"] for i, a in enumerate(acc) if i not in anim_acc and "bufferView" in a}
+    # morph targets (the face's shape keys) are exported as sparse accessors whose
+    # index and value data live in views of their own
+    for i, a in enumerate(acc):
+        if i not in anim_acc and "sparse" in a:
+            used.update((a["sparse"]["indices"]["bufferView"], a["sparse"]["values"]["bufferView"]))
     used.update(img["bufferView"] for img in g.get("images", []) if "bufferView" in img)
     for vi, bv in enumerate(views):
         if vi not in used:
@@ -2238,6 +2243,10 @@ def optimize_glb(path, rot_tol=0.0012, pos_tol=0.0006, other_tol=0.002):
         na = dict(a)
         if "bufferView" in na:
             na["bufferView"] = vmap[na["bufferView"]]
+        if "sparse" in na:
+            sp = na["sparse"] = dict(na["sparse"])
+            sp["indices"] = dict(sp["indices"], bufferView=vmap[sp["indices"]["bufferView"]])
+            sp["values"] = dict(sp["values"], bufferView=vmap[sp["values"]["bufferView"]])
         amap[ai] = len(new_acc)
         new_acc.append(na)
 
