@@ -5,7 +5,7 @@ rebuild with `python blender/build_assets.py --only <model>` (use the Blender ve
 
 | Files | Builder | Rig / animations |
 |---|---|---|
-| `cultivator_male`, `cultivator_female` | `characters.PLAYERS` + `moves.build_player_actions`, then `moves.optimize_glb` | 58-bone humanoid rig (54 + `sleeve.L/R` + `eye.L/R`); the 10 base actions + 126 extended moves (136); about 10.5-11.3 MB each (the head's morph targets are ~3 MB) |
+| `cultivator_male`, `cultivator_female` | `characters.PLAYERS` + `moves.build_player_actions`, then `moves.optimize_glb` | 58-bone humanoid rig (54 + `sleeve.L/R` + `eye.L/R`); the 10 base actions + 126 extended moves (136); about 12.5-13.5 MB each (the 22 facial morph targets are ~5 MB; `optimize_glb` must keep their sparse bufferViews, see docs/bugfixes/animation.md #20) |
 | `elder_male`, `sect_master`, `disciple_male`, `disciple_female`, `villager_male`, `villager_female`, `bandit`, `demon_cultivator`, `blood_patriarch` | `characters.VARIANTS` | humanoid rig, `idle walk run salute cast attack hit death meditate talk` |
 | `stone_golem` | `creatures.build_golem` | humanoid rig of rock chunks; checked against the humanoid list |
 | `spirit_wolf`, `jiao_serpent` | `creatures.build_wolf` / `build_serpent` | quadruped / spine-chain rig; `idle walk run attack hit death` |

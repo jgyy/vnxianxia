@@ -30,7 +30,7 @@ one file per key of `blender/xianxia/catalog.py` `ENVIRONMENT`, named `<key>.glb
 - Collision nodes carry `-colonly` / `-convcolonly` / `-col` suffixes. Stairs and podiums use smooth ramp colliders
   (risers <= 0.17 m), and walkable shapes need gentle collider slopes (docs/bugfixes/world.md #6-13).
 - Quest props (validated): collision if taller than 0.5 m, lowest point at the origin, at most 1.5 MB. Everything
-  else: at most 12 MB (the terrains are the largest, about 4-9 MB).
+  else: at most 16 MB (the terrains are the largest, about 4-9 MB).
 - `.glb.import`: `meshes/generate_lods=false` except for the 24 vegetation / rubble assets (trees, bamboo, rocks,
   ferns, `crates`, `bone_pile` ...). Keep that when you regenerate. A new vegetation GLB that should get LODs needs
   `generate_lods=true` set in its `.import`.

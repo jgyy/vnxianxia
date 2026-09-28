@@ -30,7 +30,7 @@ entry there. If it is a quest prop or an item, its id goes into `tools/world_spe
   `-convcolonly`, `convex=False` produces `-colonly`, and walkable terrain uses `-col`. Stairs get a smooth ramp
   collider through the tread nosings with risers <= 0.17 m (`buildings.podium`, `stair_ramp`). Quest props taller
   than 0.5 m must have collision.
-- Budgets (checked by `tools/validate_glb.py`): 12 MB per GLB, 1.5 MB per quest prop, 512 KB and 0.6 m per item.
+- Budgets (checked by `tools/validate_glb.py`): 16 MB per GLB (the heroes carry 22 facial morph targets, about 12.5-13.5 MB), 1.5 MB per quest prop, 512 KB and 0.6 m per item.
   Terrains are chunked and only refined where visible (docs/bugfixes/world.md #3).
 - Determinism: textures use seeded `np.random.default_rng(seed)`. Keep seeds fixed so rebuilt GLBs don't churn.
 - Call `util.reset_scene()` before each asset. It also clears the texture and material caches.

@@ -25,7 +25,7 @@ python tools/validate_glb.py godot/assets                    # CI check (stdlib)
   suffixes (`-colonly`, `-convcolonly`, `-col`).
 - Textures are embedded as JPEG (quality 88). The PNG/JPG files Godot extracts next to the GLBs on import are
   gitignored.
-- Budgets: 12 MB per GLB (the terrains and heroes are the largest, 4-9 MB), 1.5 MB per quest prop, 512 KB per item.
+- Budgets: 16 MB per GLB (the heroes are the largest at about 12.5-13.5 MB, then the terrains at 4-9 MB), 1.5 MB per quest prop, 512 KB per item.
 - Only the files ending in `.glb` / `.glb.import` matter here. The smoke test's `DirAccess` scan and
   `validate_glb.py`'s `rglob("*.glb")` skip everything else, so these AGENTS.md files are harmless.
 
