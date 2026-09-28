@@ -55,7 +55,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libx11-6 libxrender1 libxfixes3 libxi6 libxkbcommon0 libxext6 libsm6 libgl1 libegl1
       - name: Install Blender (bpy)
-        run: pip install "bpy==${BPY_VERSION}"
+        run: pip install "bpy==${BPY_VERSION}" scipy   # scipy: KD-trees in the face painter
       - name: Build every character, creature and environment GLB
         run: python blender/build_assets.py --out build/assets
       - name: Validate freshly built GLBs
