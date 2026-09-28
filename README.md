@@ -1,12 +1,13 @@
 # vnxianxia — Azure Cloud Sect: *The Lotus and the Blood Moon*
 
 A third-person **xianxia action-RPG** with a **2000-quest main story**, built entirely from code.
-Headless **Blender 5.2.2** Python scripts model, texture, rig and animate every character, creature and
-building. Five generated maps, a voiced story with cinematics, and a full game runtime (quests, dialogue,
-combat, HUD, loading screens, journal) run in **Godot 4.7.2**. The music and sound effects are synthesised
-with numpy, and all 974 voice lines are neural TTS (Piper).
+Headless **Blender 5.2.2** Python scripts model, texture, rig and animate every character, creature, building,
+prop and HUD ornament. Five generated maps (each about ten times the area of the first release, with 124
+generated buildings and landmarks), a voiced story told in group conversations with cinematics, and a full game
+runtime (quests, dialogue, combat, HUD, loading screens, journal) run in **Godot 4.7.2**. The music and sound
+effects are synthesised with numpy, and all 1170 voice files are neural TTS (Piper).
 
-![Voiced dialogue in the Azure Cloud Sect](docs/screenshots/dialogue_voiced.jpg)
+![A group conversation in the Azure Cloud Sect](docs/screenshots/dialogue_group.jpg)
 
 | Chapter intro cinematic | Quest HUD: tracker, compass, objective marker |
 |---|---|
@@ -29,9 +30,11 @@ Mortal to Immortal Ascension. Every major breakthrough calls down a heavenly tri
 quest (the finale's climactic tribulation fight, which has no room for one) offers a moral choice that moves the hero
 along two axes, Bearing (disciplined/precept-bound &lt;-&gt; free-wandering) and the Dao (righteous &lt;-&gt; demonic),
 giving nine cultivation temperaments from Guardian of the Precepts to Servant of the Blood Moon; elders, juniors,
-townsfolk and demonic cultivators react to the alignment and realm the hero reaches. It has 20 cinematics, 40 named
-NPCs and 12,769 words of voiced dialogue (813 lines, plus male and female takes of every line that names the hero) in
-the ten original chapters, and 118,000 more words of text-only dialogue in the 90 chapters built around them. Play as
+townsfolk and demonic cultivators react to the alignment and realm the hero reaches. It has 20 cinematics, 66
+named NPCs (40 principal characters and 26 minor locals of the new districts) and 958 voiced lines (plus male and
+female takes of every line that names the hero) in the ten original chapters, and about 230,000 more words of
+text-only dialogue in the 90 chapters built around them. Every quest has at least one conversation between the hero
+and two or more NPCs, who gather around the speaker in the world. Play as
 **Lin Feng** or **Su Yue**; Tab switches between
 them and the dialogue follows. The full plot, the cast and the volume and chapter lists are in
 **[docs/STORY.md](docs/STORY.md)**; every quest is listed in **[docs/QUESTS.md](docs/QUESTS.md)**. In game, the
@@ -52,17 +55,39 @@ flowchart LR
 
 ## Characters
 
-Every model is sculpted procedurally: a cross-section skull with cheekbones, a mandible angle and a squared chin
-(no more egg-shaped heads); a lofted ear with helix, antihelix and concha; and hands built as one
-Catmull-Clark-subdivided surface with knuckles, finger pads and nails, driven by 15 finger bones per hand
-(54-bone rig). Skin textures have multi-scale pores, skin lines, haemoglobin and venous tint, a beard shadow,
-T-zone roughness and individual brow hairs. Godot renders them with subsurface scattering.
+Every character is modelled, textured, rigged and animated by about 12,500 lines of Blender Python
+(`blender/xianxia/face_*.py`, `hair_*.py`, `skin*.py`, `gait.py`, `anatomy.py`, `characters.py`, `moves.py`, `tex.py`):
 
-| Face (Cycles) | Profile | Hand |
-|---|---|---|
-| ![face](docs/screenshots/realism_face.jpg) | ![profile](docs/screenshots/realism_profile.jpg) | ![hand](docs/screenshots/realism_hand.jpg) |
+- **Faces** (`face_*.py`, 14 modules): a head built from about 150 anatomical landmarks placed by measured
+  proportions of young Korean adult faces (facial thirds and fifths, a soft V-line jaw, midface projection, a parallel
+  or in-out double eyelid, aegyo-sal, a 7° canthal tilt), with aged variants for the elders. It is a quad grid with
+  edge loops around the eyes, mouth and nostrils, eyeballs with a refracting cornea, sealed eyelids that follow the
+  gaze (`eye.L`/`eye.R` bones), a caruncle and tear line, teeth, gums and tongue, and lash and brow cards. Geometric
+  self-checks run on every build (lid seal, blink closure, symmetry, folds).
+- **Facial animation**: 22 shape keys (blinks, visemes, smile, frown, brows, squint, jaw...) baked into every
+  action: randomised blinks and eye saccades in idle, speech mouth shapes and nods in `talk`, a smile in `salute`, a
+  wince in `hit`, closed eyes in `meditate` and `death`. They reach Godot as blend-shape tracks (the smoke test
+  checks every face).
+- **Hair** (`hair_*.py`): strand cards grown from guide curves on the actual scalp, combed along flow fields,
+  settled by a follow-the-leader solver with gravity and collision, clumped, and textured by a procedural strand
+  atlas (root-to-tip colour, per-strand jitter, flow and depth maps). Nine styles, from the hero's topknot with a guan
+  to the heroine's half-up hair with see-through bangs and hairpins, plus beards.
+- **Skin** (`skin*.py`): a melanin/haemoglobin colour model painted in UV space from the head's landmarks: pores
+  along skin tension lines, fine lines, vellus, moles, blush and lip tint masked to the lip borders, beard shadow,
+  wrinkles and age spots, an oily T-zone lobe, iris and sclera textures.
+- **Walking and running** (`gait.py`): IK locomotion with feet locked to the ground through each stance
+  (verified to under 1 mm of slip), heel strike to toe-off roll, a flight phase when running, pelvic rotation and
+  tilt, chest counter-rotation, a steady head and lagging arms, authored at exactly the game's speeds (walk 1.6, run
+  4.6, sprint 6.2 m/s) so the runtime scales playback by ground speed. Wide sleeves hang from their own pendulum
+  bones.
 
-![Cycles turnaround of the two heroes](docs/screenshots/characters_turnaround.jpg)
+| Faces before and after (Cycles portraits) |
+|---|
+| ![faces](docs/screenshots/face_realism.jpg) |
+
+| Hair and skin | Walk and run cycles (dressed and skeleton) |
+|---|---|
+| ![hair](docs/screenshots/hair_skin.jpg) | ![gait](docs/screenshots/gait_walk_run.jpg) |
 
 ![The cast in engine](docs/screenshots/characters_lineup.jpg)
 
@@ -86,7 +111,8 @@ knockdown and get-up, two deaths and a revival, meditation variants, breakthroug
 riding, 50+ social and daily-life emotes, a four-part dance, victory poses, idle fidgets and talk gestures.
 Each is authored as a few key poses of readable controls (IK hand and foot targets, torso angles, finger
 presets) and solved per frame with two-bone IK so planted feet stay planted, with monotone spline easing,
-overlapping-action offsets and seamless loops; the GLBs are then keyframe-reduced (about 6.7 MB each).
+overlapping-action offsets and seamless loops; the GLBs are then keyframe-reduced (about 12.5-13.5 MB each with
+the facial morph targets). The rig has 58 bones: 54 body and finger bones, two sleeve drapes and two eyes.
 
 ![Animation contact sheet](docs/screenshots/animations_sheet.jpg)
 
@@ -100,35 +126,124 @@ overlapping-action offsets and seamless loops; the GLBs are then keyframe-reduce
 | **Blood Moon Abyss** | **Celestial Sky Isles** | **Meditation on the formation array** |
 | ![abyss](docs/screenshots/map_blood_abyss.jpg) | ![sky](docs/screenshots/map_sky_isles.jpg) | ![meditate](docs/screenshots/meditation.jpg) |
 
+Each map is about ten times the area of the first release, grown around its original core:
+
+| Map | Size | New districts |
+|---|---|---|
+| Azure Cloud Sect | the whole massif, about 600 x 630 m | outer sect, mission hall, martial arena, bell and drum towers, treasure tower, Sword Peak by chain bridge, sword tomb, medicine valley and pill kilns, beast garden, waterfall cave, ancestral tombs, tea terraces |
+| Whispering Bamboo Forest | about 560 x 570 m | stilt-house village, misty lake with pavilion and jetty, waterwheel, buried temple, carved buddha cliff, gorge with rope bridge, banyan giant, poison marsh |
+| Qingshi Town | a walled county town, about 560 m across | night market, granary, silk workshop and dye yard, academy and exam cells, merchant manor, opera stage and temple fair, City God temple, canal, docks, mill, barracks |
+| Blood Moon Abyss | about 590 x 500 m, ten times the walkable floor | blood river and bone bridge, slave mines, soul forge, ash plains, lava falls, obsidian spires, ruined sect, ghost village, demon palace |
+| Celestial Sky Isles | 30 new isles, about 100,000 m² | immortal palace, hall of records, observatory, cloud harbour and sky-ship wreck, dragon bones, peach garden, gate of heaven, tree of ages |
+
+| Sect overview | Sect mission district | Qingshi Town street |
+|---|---|---|
+| ![sect](docs/screenshots/world_sect_overview.jpg) | ![mission](docs/screenshots/world_sect_mission.jpg) | ![street](docs/screenshots/world_qingshi_town_street.jpg) |
+| **Bamboo village** | **Demon palace** | **Immortal palace** |
+| ![village](docs/screenshots/world_bamboo_forest_village.jpg) | ![palace](docs/screenshots/world_blood_abyss_palace.jpg) | ![sky](docs/screenshots/world_sky_isles_palace.jpg) |
+
 Each map is written by a Python layout module (`tools/maps/*.py`) with named markers from
-`tools/world_spec.py`. The quests only ever refer to those markers, and CI checks that every marker stands on
-walkable ground. Jade teleport arrays link the regions.
+`tools/world_spec.py` (287 markers, 152 of them new). The 124 new buildings and landmarks come from
+`blender/xianxia/buildings*.py`: parametric halls with bracket sets, curved roofs and ridge beasts, towers, gates,
+bridges, stilt houses, demonic and celestial architecture, all with collision and stairs of 0.17 m risers. The quests
+only ever refer to markers; they now use 221 distinct places, every new one included, and no single spot hosts more
+than 84 objectives. CI checks that every marker stands on walkable ground. Jade teleport arrays link the regions.
+
+Quests also use 40 interactable props (30 new, from `blender/xianxia/quest_props.py`, such as the mission notice
+board, pill furnace, tortoise stele, armillary sphere and sealed coffin) in 676 interact objectives, and all 18
+collectibles have their own model (`blender/xianxia/items.py`).
+
+| Quest props | Collectibles |
+|---|---|
+| ![props](docs/screenshots/quest_props.jpg) | ![items](docs/screenshots/items.jpg) |
+
+## Group conversations
+
+A talk objective is a scene: the NPCs named in its `with` list gather on open ground around the speaker, the
+conversation camera cuts over the shoulder to whoever speaks, listeners turn to the speaker, and the portrait and
+name follow each line. Text appears at once; one key press advances one line.
+
+```mermaid
+sequenceDiagram
+    participant P as Player
+    participant QR as quest_runner.gd
+    participant M as map.gd
+    participant C as conversation.gd
+    participant D as dialogue_ui.gd
+    P->>QR: E near the NPC with the ! marker
+    QR->>M: open_spot() + reachable() for each NPC in "with"
+    M-->>QR: spots on open ground around the speaker
+    QR->>C: begin(group, player)
+    loop every line
+        C->>C: speaker plays talk, listeners face them, camera cuts over the shoulder
+        C->>D: line (portrait, name, text shown at once)
+        P->>D: E / Space / click (one press = one line)
+    end
+    QR->>D: moral choice (1-4), a companion may react
+    C-->>P: gameplay camera back; guests leave, locals walk home
+```
+
+| A three-way conversation | The reply after a choice |
+|---|---|
+| ![group](docs/screenshots/dialogue_group.jpg) | ![reply](docs/screenshots/dialogue_group_reply.jpg) |
+
+## HUD
+
+The HUD kit is rendered by headless Blender (`blender/render_hud.py`): lacquered ink-jade panels with gilt
+cloud-scroll corners, carved jade gauges with 血 and 气 medallions, a scrolling 东南西北 compass strip, a quest
+scroll, toast ribbons, keycap chips, a meditation ring and a portrait frame, all 9-sliced from 2x textures. The UI
+scales with the window (`canvas_items` stretch on a 1280x720 base) and is pinned to the screen corners, so it holds
+at 16:9, 16:10, 21:9 and 4:3.
+
+| 1280x720 | 2560x1080 |
+|---|---|
+| ![hud](docs/screenshots/hud_after_1280x720.jpg) | ![hud wide](docs/screenshots/hud_after_2560x1080.jpg) |
+
+## Bug hunt
+
+Every defect found and fixed in this round is logged, one line each (symptom -> cause -> fix with file:line), in
+[docs/bugfixes/](docs/bugfixes/):
+
+| Log | Fixed | Examples |
+|---|---|---|
+| [runtime](docs/bugfixes/runtime.md) | 77 | no step-up onto stairs; dialogue skip re-triggering the conversation; pickups spawned inside buildings; camera depth precision |
+| [world](docs/bugfixes/world.md) | 65 | coplanar floors z-fighting ("flipping textures"); unclimbable plinth colliders; an orphaned duplicate pier |
+| [props](docs/bugfixes/props.md) | 24 | 3,535 overlapping face pairs; props with no model; a boat with both rails on one side |
+| [face](docs/bugfixes/face.md) | 32 | inside-out eyeballs; lids 2.3 mm off the eye; lip tint painted past the lips |
+| [animation](docs/bugfixes/animation.md) | 20 | feet sliding 4-45 cm per step; NPCs running leaning back; morph targets lost in the keyframe pass |
+| [story](docs/bugfixes/story.md) | 19 | lines by NPCs not present; "We're done at here." x130; a traitor revealed 200 quests early |
+| [hair and skin](docs/bugfixes/hair_skin.md) | 11 | isotropic plastic hair highlight; box-mapped buns; NaN noise at small sizes |
+| [HUD](docs/bugfixes/hud.md) | 10 | UI never scaled with resolution; banners drawn over quest cards |
+
 
 ## Pipeline
 
 ```mermaid
 flowchart LR
     subgraph Blender["Headless Blender 5.2.2 (bpy)"]
-        T[tex.py<br/>numpy PBR textures] --> AN[anatomy.py<br/>skull · ears · hands]
-        AN --> CH[characters.py<br/>11 humanoids · rig · 10 actions]
+        T[tex.py · skin*.py<br/>numpy PBR textures] --> FA[face_*.py<br/>landmark head · eyes · mouth<br/>22 shape keys]
+        HA[hair_*.py<br/>strand cards] --> CH
+        FA --> CH[characters.py<br/>11 humanoids · 58-bone rig]
+        GT[gait.py · moves.py<br/>IK gait · 136 hero actions] --> CH
         T --> CR[creatures.py<br/>golem · wolf · jiao]
-        T --> EN[arch / props / nature<br/>lands / realms<br/>~80 environment assets]
+        T --> EN[arch / props / nature / lands / realms<br/>buildings*.py · quest_props · items<br/>~290 environment, prop and item GLBs]
         CH --> PR[render_portraits.py<br/>Cycles portraits]
+        HUD[render_hud.py<br/>HUD kit]
     end
     subgraph Data["Python data (stdlib)"]
-        WS[world_spec.py<br/>maps · markers · enemies · items] --> MAPS[tools/maps/*<br/>5 map layouts]
-        WS --> ST[tools/story/*<br/>2000 quests · 20 cinematics · 40 NPCs]
+        WS[world_spec.py<br/>maps · 287 markers · props · items] --> MAPS[tools/maps/*<br/>5 maps, ~10x area]
+        WS --> ST[tools/story/*<br/>2000 quests · group conversations<br/>20 cinematics · 66 NPCs]
         ST --> BS[build_story.py<br/>validate → story.json]
     end
     subgraph Audio["Audio"]
         GA[gen_audio.py<br/>11 tracks · 42 SFX] 
-        GV[gen_voices.py<br/>Piper TTS · 974 lines]
+        GV[gen_voices.py<br/>Piper TTS · 1170 files]
     end
     CH & CR & EN -->|glTF| G[(godot/assets/*.glb)]
     MAPS --> SC[(scenes/maps/*.tscn)]
     BS --> SJ[(data/story.json)]
     ST --> GV
-    G & SC & SJ & PR & GA & GV --> RT[Godot 4.7.2 runtime]
+    G & SC & SJ & PR & HUD & GA & GV --> RT[Godot 4.7.2 runtime]
     RT --> CI{{CI: validate · smoke test ·<br/>2000-quest walkthrough in 20 shards · screenshots}}
 ```
 
@@ -144,7 +259,7 @@ stateDiagram-v2
         CheckMap --> Travel: objective on another map
         Travel --> [*]: teleport array → Loading
         CheckMap --> Active
-        Active --> Talk: NPC with ! marker
+        Active --> Talk: NPC with ! marker, the group gathers
         Active --> Reach: golden beacon
         Active --> Defeat: enemies spawn, battle/boss music
         Active --> Collect: glowing pickups
@@ -170,7 +285,9 @@ stateDiagram-v2
 | `quest_runner.gd` | runs each objective type, spawns what it needs, offers moral choices, grants rewards and breakthroughs |
 | `world/tribulation.gd` | heavenly tribulations: swirling storm clouds, telegraphed lightning volleys, beast and heart-shade waves |
 | `player.gd` · `world/enemy.gd` | third-person controller with palm strikes, qi blasts and meditation; data-driven enemy AI |
-| `ui/*` | HUD, voiced dialogue with portraits, cinematics, loading screen, journal/pause, travel menu |
+| `world/stepper.gd` | step-up onto risers up to 0.45 m and step-down snapping, for the player and enemies |
+| `world/conversation.gd` | group conversations: staging around the speaker, over-the-shoulder shots per line, facing |
+| `ui/*` | Blender-rendered HUD, instant-text dialogue with framed portraits, cinematics, loading screen, journal/pause, travel menu |
 
 ## Play it
 
@@ -235,22 +352,29 @@ cannot be completed, any marker floats, or the final realm is not *Immortal Asce
 ```
 blender/
   build_assets.py        builds every GLB          render_portraits.py   dialogue portraits
+  render_hud.py          the HUD kit               render_props_sheet.py, render_animation_sheet.py   contact sheets
   xianxia/
-    anatomy.py           skull, face, ears, neck, hands + finger rig
-    characters.py        humanoids: variants, hair styles, outfits, rig, weights, 10 actions
+    face_*.py            landmark head, eyes, mouth, lash/brow cards, shape keys, facial animation, self-checks
+    hair_*.py skin*.py   strand-card groom and atlas; layered skin, eye and mouth textures and shaders
+    gait.py moves.py     IK walk/run/sprint and sleeve drapes; the 136 hero actions
+    anatomy.py           ears, hands + finger rig
+    characters.py        humanoids: variants, outfits, rig, weights, base actions
     creatures.py         stone golem, spirit wolf, Jiao serpent
     tex.py util.py       procedural textures, materials, mesh helpers
     arch.py props.py nature.py lands.py realms.py   buildings, props, terrain for all maps
+    buildings*.py        the 124 buildings and landmarks of the enlarged maps
+    quest_props.py items.py   interactable quest props, dressing props, collectible models
 godot/
   scenes/                title.tscn, game.tscn, player.tscn, maps/*.tscn (generated)
   scripts/               autoload/, ui/, world/, game.gd, quest_runner.gd, player.gd, map.gd
   data/                  story.json, world.json (generated)
   audio/                 music/, sfx/, voice/ (generated)
-  ui/                    portraits/, loading/
+  ui/                    hud/, fonts/, portraits/, loading/
   tests/                 smoke_test, walkthrough_test, capture_screenshots, capture_loading_art, capture_map
 tools/
   world_spec.py          single source of truth for maps, markers, enemies, items, realms
   maps/                  map layout modules        story/   the 2000-quest saga as Python data
-  build_maps.py build_story.py gen_voices.py gen_audio.py validate_glb.py
-docs/                    STORY.md, AUDIO.md, screenshots/
+  build_maps.py build_story.py gen_voices.py gen_audio.py validate_glb.py zfight_glb.py
+docs/                    STORY.md, AUDIO.md, QUESTS.md, bugfixes/ (defect logs), screenshots/
+AGENTS.md                in every directory: what it holds, what generates it, how to test it
 ```
