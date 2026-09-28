@@ -1,8 +1,20 @@
-"""Cycles head-and-shoulders portraits for the dialogue box.
+"""Cycles dialogue portraits: head-and-shoulders character art in a 3/4 view.
 
-    python blender/render_portraits.py [--out godot/ui/portraits] [--only name,name] [--samples 48]
+    python blender/render_portraits.py [--out godot/ui/portraits] [--only name,name]
+                                       [--samples 192] [--size 256]
+
+Photographic set-up: an 85 mm lens at about a metre, three-quarter view with
+the far eye on the thirds line, shallow depth of field focused on the near
+eye (f/2.2), a large soft key light high on the camera side, a dim fill, a
+coloured rim / hair light from behind and a studio backdrop with a soft
+radial falloff tinted per character.  Render-time material upgrades that
+glTF cannot carry: subsurface scattering on skin, a refractive cornea and
+tear line, and a hint of subsurface in the sclera.  Each character looks into the
+lens (eye bones, lids following) with a quiet expression suited to its role
+through the face shape keys.
 """
 import argparse
+import math
 import os
 import sys
 
@@ -10,10 +22,28 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import bpy  # noqa: E402
+from mathutils import Matrix, Vector  # noqa: E402
 
-from xianxia import characters, preview  # noqa: E402
+from xianxia import characters, face_rig, preview  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
+
+# expression (shape key -> value), backdrop (inner, outer) and rim colour per character
+LOOKS = {
+    "cultivator_male": (dict(smile=0.12, brow_up=0.05), ((0.22, 0.26, 0.31), (0.05, 0.06, 0.08)), (0.75, 0.85, 1.0)),
+    "cultivator_female": (dict(smile=0.1), ((0.28, 0.24, 0.27), (0.07, 0.055, 0.065)),
+                          (1.0, 0.82, 0.78)),
+    "elder_male": (dict(smile=0.1, brow_inner_up=0.12), ((0.2, 0.24, 0.21), (0.05, 0.06, 0.05)), (1.0, 0.9, 0.7)),
+    "sect_master": (dict(smile=0.1), ((0.27, 0.25, 0.2), (0.07, 0.06, 0.04)), (1.0, 0.9, 0.7)),
+    "disciple_male": (dict(smile=0.18), ((0.2, 0.25, 0.3), (0.05, 0.06, 0.08)), (0.8, 0.9, 1.0)),
+    "disciple_female": (dict(smile=0.14), ((0.22, 0.27, 0.22), (0.05, 0.07, 0.05)), (0.9, 1.0, 0.85)),
+    "villager_male": (dict(smile=0.1), ((0.27, 0.22, 0.17), (0.07, 0.05, 0.04)), (1.0, 0.85, 0.6)),
+    "villager_female": (dict(smile=0.22), ((0.27, 0.22, 0.17), (0.07, 0.05, 0.04)), (1.0, 0.85, 0.6)),
+    "bandit": (dict(brow_down=0.35, sneer_L=0.2), ((0.22, 0.18, 0.15), (0.05, 0.04, 0.035)), (1.0, 0.7, 0.45)),
+    "demon_cultivator": (dict(brow_down=0.25, squint_L=0.2, squint_R=0.2, smile=0.08),
+                         ((0.2, 0.06, 0.07), (0.04, 0.01, 0.015)), (1.0, 0.3, 0.25)),
+    "blood_patriarch": (dict(brow_down=0.4, frown=0.15), ((0.22, 0.05, 0.05), (0.04, 0.01, 0.01)), (1.0, 0.35, 0.2)),
+}
 
 
 def parse_args():
@@ -21,9 +51,168 @@ def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(ROOT, "godot", "ui", "portraits"))
     ap.add_argument("--only", default="")
-    ap.add_argument("--samples", type=int, default=48)
+    ap.add_argument("--samples", type=int, default=192)
     ap.add_argument("--size", type=int, default=256)
     return ap.parse_args(argv)
+
+
+def _bsdf(mat):
+    if mat is None or not mat.use_nodes:
+        return None
+    return next((n for n in mat.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None)
+
+
+def upgrade_materials(cfg):
+    """Render-only shading that the glTF materials cannot express."""
+    s = cfg["scale"]
+    for mat in bpy.data.materials:
+        b = _bsdf(mat)
+        if b is None:
+            continue
+        mname = mat.name.lower()
+        sss = b.inputs["Subsurface Weight"]
+        if mname.endswith(("_face", "_skin")) and sss.default_value == 0.0 and not sss.links:
+            sss.default_value = 0.32                     # skin materials without their own SSS set-up
+            b.inputs["Subsurface Radius"].default_value = (1.0, 0.42, 0.24)
+            b.inputs["Subsurface Scale"].default_value = 0.0035 * s
+        elif mname.endswith(("cornea", "tearline")):
+            # glTF can only carry an alpha film; in Cycles the cornea refracts the iris like a lens
+            b.inputs["Transmission Weight"].default_value = 1.0
+            b.inputs["Alpha"].default_value = 1.0
+            b.inputs["Base Color"].default_value = (1.0, 1.0, 1.0, 1.0)
+            b.inputs["Roughness"].default_value = 0.0
+            b.inputs["IOR"].default_value = 1.376
+            mat.surface_render_method = "DITHERED"
+        elif mname.endswith(("_lashes", "_brows")) and b.inputs["Alpha"].links:
+            # the engine clips these cards (glTF alpha MASK); Cycles would blend the soft alpha
+            # and the lashes would read as a faint brown haze instead of a dark lash line
+            src = b.inputs["Alpha"].links[0].from_socket
+            if src.node.type != "MATH":
+                clip = mat.node_tree.nodes.new("ShaderNodeMath")
+                clip.operation = "GREATER_THAN"
+                clip.inputs[1].default_value = 0.35
+                mat.node_tree.links.new(src, clip.inputs[0])
+                mat.node_tree.links.new(clip.outputs[0], b.inputs["Alpha"])
+        elif mname.endswith(("eye_sclera", "teeth", "tongue", "mouth_inner")) and sss.default_value == 0.0:
+            sss.default_value = 0.25
+            b.inputs["Subsurface Scale"].default_value = 0.002 * s
+
+
+def pose(arm, meshes, expression):
+    """Freeze the idle pose of frame 1, then hold a designed expression (no animation stays live)."""
+    arm.animation_data.action = bpy.data.actions["idle"]
+    bpy.context.scene.frame_set(1)
+    arm.animation_data.action = None          # the evaluated pose stays; the eyes can now be aimed
+    head = next((m for m in meshes if m.name == "Head"), None)
+    if head is not None and head.data.shape_keys:
+        ad = head.data.shape_keys.animation_data
+        if ad:
+            ad.action = None
+            ad.use_nla = False
+        for kb in head.data.shape_keys.key_blocks[1:]:
+            kb.value = expression.get(kb.name, 0.0)
+    for bone in ("eye.L", "eye.R"):
+        pb = arm.pose.bones.get(bone)
+        if pb is not None:
+            pb.rotation_mode = "QUATERNION"
+            pb.rotation_quaternion = (1.0, 0.0, 0.0, 0.0)
+    bpy.context.view_layer.update()
+
+
+def eye_contact(arm, meshes, cam_loc):
+    """Turn both eyes to the lens (with the lids following) - portraits look at the viewer."""
+    head = next((m for m in meshes if m.name == "Head"), None)
+    pitch_avg = 0.0
+    for bone in face_rig.EYE_BONES:
+        # eye rotations are relative to the (posed) head: express the view direction in the
+        # head's rest frame, or a turned head makes the eyes over-rotate and diverge
+        par = arm.pose.bones[bone].parent
+        posed = (arm.matrix_world @ par.matrix).to_3x3().normalized()
+        rest = (arm.matrix_world @ par.bone.matrix_local).to_3x3().normalized()
+        d = (rest @ posed.inverted()) @ (cam_loc - bone_world(arm, bone))
+        yaw = max(-30.0, min(30.0, math.degrees(math.atan2(d.x, -d.y))))
+        pitch = max(-20.0, min(20.0, math.degrees(math.atan2(d.z, math.hypot(d.x, d.y)))))
+        pb = arm.pose.bones[bone]
+        pb.rotation_mode = "QUATERNION"
+        pb.rotation_quaternion = face_rig.eye_rotation(arm, bone, yaw, pitch)
+        pitch_avg += pitch * 0.5
+    if head is not None and head.data.shape_keys:
+        kb = head.data.shape_keys.key_blocks
+        kb["lid_look_up"].value = max(0.0, pitch_avg) / 25.0
+        kb["lid_look_down"].value = max(0.0, -pitch_avg) / 25.0
+    bpy.context.view_layer.update()
+
+
+def turn_head(arm, cam_loc, share=0.4):
+    """Turn the neck and head part of the way toward the lens (about world Z), so the eyes
+    need not look out of their corners: a sitter turns the face a little toward the camera."""
+    mid = (bone_world(arm, "eye.L") + bone_world(arm, "eye.R")) * 0.5
+    d = cam_loc - mid
+    yaw = math.atan2(d.x, -d.y) * share          # 0 = the face looks straight down -Y
+    for bone, part in (("neck", 0.35), ("head", 0.65)):
+        pb = arm.pose.bones.get(bone)
+        if pb is None:
+            continue
+        M = arm.matrix_world @ pb.matrix
+        pivot = M.translation.copy()
+        R = Matrix.Translation(pivot) @ Matrix.Rotation(yaw * part, 4, "Z") @ Matrix.Translation(-pivot)
+        pb.matrix = arm.matrix_world.inverted() @ R @ M
+        bpy.context.view_layer.update()
+
+
+def bone_world(arm, name, tail=False):
+    pb = arm.pose.bones[name]
+    return arm.matrix_world @ (pb.tail if tail else pb.head)
+
+
+def portrait(cfg, args):
+    arm, meshes, _ = characters.build_character(cfg)
+    expr, (bg_in, bg_out), rim = LOOKS.get(cfg["name"], (dict(), ((0.2, 0.22, 0.25), (0.05, 0.055, 0.065)),
+                                                          (1.0, 0.9, 0.8)))
+    pose(arm, meshes, expr)
+    upgrade_materials(cfg)
+    s = cfg["scale"]
+    scene = preview.setup(res=(args.size * 2, args.size * 2), samples=args.samples, sky=(0.1, 0.11, 0.13),
+                          strength=0.35, look="AgX - Punchy")
+    scene.view_settings.exposure = -0.45
+    scene.cycles.max_bounces = 8
+    scene.cycles.transmission_bounces = 8
+    scene.cycles.use_denoising = True
+    eye_l = bone_world(arm, "eye.L")
+    eye_r = bone_world(arm, "eye.R")
+    mid = (eye_l + eye_r) * 0.5
+    face = mid + Vector((0.0, -0.01 * s, -0.045 * s))
+    # three-quarter view from the character's left, slightly above eye level
+    az = math.radians(28.0)
+    dist = 0.82 * s
+    cam_loc = face + Vector((math.sin(az) * dist, -math.cos(az) * dist, 0.02 * s))
+    target = mid + Vector((0.012 * s, 0.0, -0.035 * s))
+    turn_head(arm, cam_loc)
+    eye_l = bone_world(arm, "eye.L")
+    preview.camera(cam_loc, target, lens=85, focus=eye_l + Vector((0.0, -0.012 * s, 0.0)), fstop=2.2)
+    eye_contact(arm, meshes, cam_loc)
+    # short lighting: the big soft key comes from the far side of the face (the side turned away
+    # from the camera) and high, so the visible cheek falls into gentle shadow and the face models;
+    # a broad dim fill from the camera side lifts the shadows; rim + hair lights from behind
+    # (loop lighting: ~55 deg to the side and high, so the cheek-to-ear planes fall off and the
+    # face models instead of reading as a flat disc; the fill only lifts the shadow side)
+    preview.area(face + Vector((-0.85 * s, -0.6 * s, 0.55 * s)), face, energy=46, size=0.9, color=(1.0, 0.95, 0.9))
+    preview.area(face + Vector((0.95 * s, -0.5 * s, 0.1 * s)), face, energy=7, size=1.6, color=(0.92, 0.95, 1.0))
+    preview.area(face + Vector((0.5 * s, 0.7 * s, 0.35 * s)), face + Vector((0, 0, 0.03 * s)), energy=70, size=0.4,
+                 color=rim)
+    preview.area(face + Vector((0.2 * s, 0.45 * s, 0.9 * s)), face, energy=40, size=0.5, color=(1.0, 0.95, 0.9))
+    # a small soft light beside the lens puts the catchlight in the eyes
+    preview.area(cam_loc + Vector((0.12 * s, 0.0, 0.1 * s)), eye_l, energy=4, size=0.25, color=(1.0, 1.0, 1.0))
+    back = face + Vector((-math.sin(az), math.cos(az), 0.0)) * 1.4 * s
+    preview.backdrop(back, cam_loc - back, size=(2.6 * s, 2.0 * s), inner=bg_in, outer=bg_out)
+    path = os.path.join(args.out, cfg["name"] + ".png")
+    preview.render(path)
+    # rendered at twice the size and filtered down: cleaner edges on lashes and hair
+    img = bpy.data.images.load(path)
+    img.scale(args.size, args.size)
+    img.save()
+    print("wrote", path)
+    return path
 
 
 def main():
@@ -33,20 +222,7 @@ def main():
     for cfg in characters.HUMANOIDS:
         if only and cfg["name"] not in only:
             continue
-        arm, meshes, actions = characters.build_character(cfg)
-        preview.setup(res=(args.size, args.size), samples=args.samples, sky=(0.09, 0.1, 0.13), strength=0.6)
-        s = cfg["scale"]
-        head = (0.0, 0.0, 1.62 * s)
-        # key, fill and a warm rim light
-        preview.area((1.0 * s, -0.75 * s, 1.95 * s), head, energy=34, size=0.9, color=(1.0, 0.95, 0.9))
-        preview.area((-0.9 * s, -0.8 * s, 1.6 * s), head, energy=9, size=1.2, color=(0.8, 0.88, 1.0))
-        preview.area((-0.3 * s, 0.9 * s, 2.0 * s), head, energy=30, size=0.6, color=(1.0, 0.8, 0.55))
-        arm.animation_data.action = bpy.data.actions["idle"]
-        bpy.context.scene.frame_set(1)
-        preview.camera((0.36 * s, -0.88 * s, 1.66 * s), (0.0, 0.0, 1.6 * s), lens=85)
-        path = os.path.join(args.out, cfg["name"] + ".png")
-        preview.render(path)
-        print("wrote", path)
+        portrait(cfg, args)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -17,7 +17,8 @@ CHAPTER = chapter(
                        (GU, "The Medicine Hall needs moonshadow grass. It grows in the Whispering Bamboo, beyond the wolf dens."),
                        (GU, "Wei Tong will go with you. Take the teleport array outside the gate. Be back within three days."),
                        (P, "The wolf dens? After what we saw in the pines?"),
-                       (GU, "A cultivator who fears wolves should have stayed a farmer. Go.")),
+                       (GU, "A cultivator who fears wolves should have stayed a farmer. Go."),
+                       added(WEI, "Three days, Elder. I'll pack for four. In case the wolves are hungry and we have to share.")),
                   cinematic("ch02_intro", "Watch your arrival in the bamboo forest"),
                   talk(WEI, "Join Wei Tong on the forest path",
                        (WEI, "Smell that? Bamboo shoots. Wild mushrooms. Freedom. I packed twelve buns, in case of emergencies."),
@@ -37,7 +38,9 @@ CHAPTER = chapter(
                   reach("Stream", "Regroup with Wei Tong by the stream",
                        (WEI, "Spirit wolves don't hunt at noon. And they don't hunt cultivators. We taste of pills and bad temper."),
                        (P, "These weren't red-eyed, at least."),
-                       (WEI, "Not yet. Something's driving them out of their den. Let's find out what, then eat. Or eat, then find out.")),
+                       (WEI, "Not yet. Something's driving them out of their den. Let's find out what, then eat. Or eat, then find out."),
+                       added(YE, "The wolves are running from something, disciples. Follow them, and be ready to be sorry."),
+                       added(WEI, "Who said that? Did a bamboo just talk? {junior}, tell me a bamboo just talked.")),
               ], xp=130, items={"spirit_herb": 2}),
         # ---------------------------------------------------------------- q013
         quest("Fangs in the Dark",
@@ -50,6 +53,7 @@ CHAPTER = chapter(
                   defeat("corrupted_wolf", 4, "WolfDen", "Slay the corrupted wolves"),
                   collect("wolf_fang", 3, "WolfDen", "Collect fangs from the corrupted wolves"),
                   reach("Clearing", "Show the fangs to Wei Tong in the clearing",
+                       added(YE, "Look at the roots of those fangs, disciples. That is not wolf blood."),
                        (WEI, "The roots are black. Somebody fed these wolves blood, cultivator blood, and on purpose."),
                        (WEI, "Elder Hua can study these. And the den is not empty. Something bigger is still in there.")),
               ], xp=140, items={"wolf_fang": 1}),
@@ -69,6 +73,7 @@ CHAPTER = chapter(
                        (YE, "Clean work. The wolf king was old when your sect master was a child. It deserved a better death."),
                        (P, "Who are you? Did you do this?"),
                        (YE, "If I had, you would be dead. The wolves were fed blood. Someone is testing an old recipe."),
+                       added(WEI, "{junior}, the scary masked man is praising us. Do we say thank you, or do we run?"),
                        (YE, "Go home, little disciple. Keep that pendant under your robe. There are eyes in this forest older than mine."), at="Clearing"),
               ], xp=220, items={"wolf_fang": 2, "spirit_stone": 2}),
         # ---------------------------------------------------------------- q015
@@ -80,6 +85,7 @@ CHAPTER = chapter(
                         (P, "You're not dying. You're just heavy.")),
                   talk(LAN, "Beg the hermit for help",
                        (LAN, "Wolf king claws. Blood-soaked, too. Put him down on the mat, not on my tea."),
+                       added(WEI, "(weakly) Speaking of tea... is there any? If I'm dying, I'd like to die holding tea."),
                        (LAN, "The wound drinks qi. It needs water from the spirit spring, drawn by someone with a clean heart."),
                        (P, "I'll go. Where is it?"),
                        (LAN, "Follow the sound of the frogs. They are loud and very proud of it.")),
@@ -103,6 +109,7 @@ CHAPTER = chapter(
                         (N, "Below: tents, a fire, crates stamped with a merchant guild's seal. And cages. Cages full of mortals."),
                         (WEI, "Those are townsfolk. Look at their clothes. Qingshi, maybe. What do bandits want with farmers?"),
                         (P, "Nothing good. We free them tonight."),
+                        added(YE, "Twenty guards. Two cages. Go at the second watch, when the fool with the torch falls asleep."),
                         (WEI, "Tonight. Right. After dinner. Kidding! Mostly kidding.")),
                   meditate("BanditLookout", 5, "Wait for nightfall and steady your breath",
                            (N, "The fire burns low. The guards trade places. Inside the cages, a child is crying very quietly.")),
@@ -113,7 +120,8 @@ CHAPTER = chapter(
               "bamboo_forest", [
                   defeat("bandit", 4, "BanditCamp", "Raid the bandit camp",
                          (TIE, "Sect brats! On your feet, you drunks! Iron-Fang Tie Hu doesn't lose cargo!"),
-                         (P, "They're people, not cargo.")),
+                         (P, "They're people, not cargo."),
+                         added(WEI, "Iron-Fang himself! Dumpling, we're going to be famous!")),
                   interact("prison_cage", "BanditCamp", "Free the caged mortals",
                            (N, "The lock snaps. The prisoners stumble out, blinking, too frightened to cry."),
                            (N, "An old farmer grips your sleeve. They took us from Qingshi, he whispers. Every new moon, more of us vanish.")),
@@ -135,6 +143,7 @@ CHAPTER = chapter(
                   talk(LAN, "Ask the hermit about the token",
                        (LAN, "Put that thing down. Not on my tea! Not on anything I love."),
                        (LAN, "That is a Blood Moon Sect command token. Three hundred years ago, one of those could order a city to bleed."),
+                       added(WEI, "I said it looked bad. I said so on the ridge. I'm saying it again, for the record."),
                        (P, "The Blood Moon Sect was destroyed. Everyone says so."),
                        (LAN, "Everyone says a great many things. The dead are rarely consulted. Take it to your elders. Quickly.")),
               ], xp=180, items={"jade_slip": 1}),
@@ -151,7 +160,8 @@ CHAPTER = chapter(
                        (YE, "Iron-Fang ran again. He is a coward with good instincts, which is the most dangerous kind."),
                        (YE, "You found a Blood Moon token. Do you know how many people will kill for that? Now more will."),
                        (P, "Then help me. Tell me what's happening."),
-                       (YE, "The Blood Moon rises. That is all you need to know. Tell your sect master, and trust fewer people than you'd like."), at="Stream"),
+                       (YE, "The Blood Moon rises. That is all you need to know. Tell your sect master, and trust fewer people than you'd like."),
+                       added(WEI, "Trust fewer people. Right. I trust {player} and my buns. That's two. Very exclusive."), at="Stream"),
               ], xp=200, items={"spirit_stone": 2}),
         # ---------------------------------------------------------------- q020
         quest("Report to the Law Hall",
@@ -167,7 +177,9 @@ CHAPTER = chapter(
                   talk(MO, "Tell Elder Mo about the mission",
                        (MO, "Gu took the token? Well, it is his right. The Law Hall handles matters of the demonic path."),
                        (MO, "Still. Kidnapped mortals, fed wolves, command tokens. I don't like the shape of this."),
-                       (MO, "I'll speak to the Sect Master. Wei Tong says you carried him on your back. Hmph. Good.")),
+                       (MO, "I'll speak to the Sect Master. Wei Tong says you carried him on your back. Hmph. Good."),
+                       added(WEI, "Like a sack of rice, Elder. A heroic sack of rice. With legs."),
+                       added(P, "He ate twelve buns on the way home. I felt every one of them.")),
               ], xp=160, items={"spirit_stone": 3}),
     ])
 

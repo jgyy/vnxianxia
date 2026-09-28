@@ -65,6 +65,18 @@ def main():
             path = util.export_glb(os.path.join(args.out, "environment", name + ".glb"))
             built.append(path)
             print(f"  environment {name:<20} {time.time() - t:5.1f}s")
+    if not args.skip_environment:
+        for name, fn in catalog.ITEMS.items():
+            # 'item_<id>' selects an item; a bare id only when no environment asset shares it
+            # (spirit_herb / spirit_stone / jade_slip exist as both)
+            if only and "item_" + name not in only and (name not in only or name in catalog.ENVIRONMENT):
+                continue
+            t = time.time()
+            util.reset_scene()
+            fn()
+            path = util.export_glb(os.path.join(args.out, "items", name + ".glb"))
+            built.append(path)
+            print(f"  item      {name:<22} {time.time() - t:5.1f}s")
     print(f"built {len(built)} GLB files in {time.time() - t0:.1f}s -> {args.out}")
 
 

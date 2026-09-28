@@ -20,6 +20,7 @@ var _tip: Label
 var _synopsis: Label
 var _bar: ProgressBar
 var _fade: ColorRect
+var _close_tween: Tween
 
 
 func _ready() -> void:
@@ -67,6 +68,10 @@ func _ready() -> void:
 
 
 func open(map_id: String, subtitle := "") -> void:
+	# a fade-out still running from the previous load would hide this one
+	if _close_tween and _close_tween.is_valid():
+		_close_tween.kill()
+	_fade.color.a = 0.0
 	var path := ART_DIR + map_id + ".jpg"
 	_art.texture = load(path) if ResourceLoader.exists(path) else null
 	_title.text = Story.map_name(map_id)
@@ -93,5 +98,6 @@ func close() -> void:
 		return
 	_fade.color.a = 0.0
 	var tw := create_tween()
+	_close_tween = tw
 	tw.tween_property(_fade, "color:a", 1.0, 0.25)
 	tw.tween_callback(func(): visible = false; _fade.color.a = 0.0)

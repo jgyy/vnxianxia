@@ -45,6 +45,33 @@ RUNG4 = "rung_kong"
 RUNG5 = "rung_wen"
 RUNG6 = "rung_si"
 RUNG7 = "rung_chen"
+# --- the minor cast of the enlarged world (text-only): the people who live in its new districts
+SHEN = "deacon_shen"
+TAO = "kiln_tao"
+BAO = "cook_bao"
+LING = "keeper_ling"
+ZHONG = "bell_zhong"
+QIU = "warden_qiu"
+FAN = "fan_rui"
+TANG = "tang_ling"
+RUO = "auntie_ruo"
+KUANG = "headman_kuang"
+SHU = "woodcutter_shu"
+MENG = "huntress_meng"
+QU = "alchemist_qu"
+PEI = "watcher_pei"
+OUYANG = "scholar_ouyang"
+QIAO = "weaver_qiao"
+WANG = "apothecary_wang"
+YU = "actress_yu"
+BI = "matron_bi"
+LEI = "captain_lei"
+HUO = "tavern_huo"
+KU = "broker_ku"
+HEI = "acolyte_hei"
+QINGYI = "servant_qingyi"
+HE = "warden_he"
+SHUREC = "recorder_shu"
 
 
 def npc(name, title, model, home=None, tint=None, scale=1.0, appear_from=None, hidden_after=None, barks=(),
@@ -219,6 +246,106 @@ NPCS.update({
                appear_from="q1635", gone_after="q1950",
                barks=["I was born in his shadow. I will die in yours.", "The moon is almost full."]),
 })
+
+# ---------------------------------------------------------------- the minor cast (text-only)
+# Townsfolk, disciples, keepers and servants of the enlarged maps' new districts. They
+# live at a district marker (so the world is never empty there) and join the named cast's
+# conversations as bystanders (see ensemble.py); none of them ever gives a quest.
+NPCS.update({
+    SHEN: npc("Shen Guo", "Deacon of the Mission Hall", "elder_male", ("sect", "MissionHall"), [0.78, 0.74, 0.95], 0.96,
+              barks=["Tasks on the left board, complaints on the right. The right board is bigger.",
+                     "Contribution is earned, not argued for. Mostly it is argued for.",
+                     "Your seal, your name, your task. In that order, please."]),
+    TAO: npc("Tao Hongyu", "Kiln-Mistress of the Medicine Hall", "disciple_female", ("sect", "PillKilnYard"),
+             [1.2, 0.8, 0.62], 1.04,
+             barks=["Stand back from the third kiln. It sneezes.", "Heat is a language. I am fluent.",
+                    "Every burn on my arms is a pill somebody needed."]),
+    BAO: npc("Old Bao", "Cook of the Refectory", "villager_male", ("sect", "Refectory"), [1.1, 1.0, 0.85], 1.14,
+             barks=["Rice first, enlightenment second.", "Wei Tong has been here twice already. It's not noon.",
+                    "Nobody cultivates on an empty stomach. I've checked."]),
+    LING: npc("Ling Qiu", "Keeper of the Spirit Beast Garden", "disciple_female", ("sect", "SpiritBeastGarden"),
+              [0.7, 1.0, 0.8], 0.98,
+              barks=["Don't feed the thunder deer. It bites in both directions.",
+                     "The golden carp is two hundred years old and still insufferable.",
+                     "Beasts are honest. They bite you to your face."]),
+    ZHONG: npc("Zhong Ming", "Bell Warden of the East Ridge", "disciple_male", ("sect", "BellTower"), [0.9, 0.85, 0.6],
+               1.06, barks=["One stroke for dawn, two for danger, three for dinner.",
+                            "I hear the bell in my sleep. I hear it when it isn't ringing.",
+                            "Mind the rope. It remembers every hand."]),
+    QIU: npc("Old Qiu", "Warden of the Sword Tomb", "elder_male", ("sect", "SwordTomb"), [0.6, 0.65, 0.7], 0.92,
+             barks=["Every blade here was somebody's whole life.", "Don't touch. They're sleeping, not dead.",
+                    "The swords hum on stormy nights. I hum back."]),
+    FAN: npc("Fan Rui", "Outer Disciple, Collector of Rumours", "disciple_male", None, [1.0, 0.95, 0.7], 0.92,
+             barks=["Did you hear? No? I'll tell you. I'll tell everyone.", "I'm not gossiping. I'm archiving."]),
+    TANG: npc("Tang Ling", "Outer Disciple, Keeper of Notes", "disciple_female", None, [0.85, 0.8, 1.1], 0.9,
+              barks=["I wrote that down. I write everything down.", "Elder Bai says my handwriting is adequate. I cried."]),
+    RUO: npc("Auntie Ruo", "Tea Mistress of the Southern Slope", "villager_female", ("sect", "TeaTerraces"),
+             [0.9, 1.0, 0.8], 0.95,
+             barks=["Pick the two leaves and the bud. Leave the rest to grow.", "Tea forgives. Boiling water does not.",
+                    "Sit, disciple. Your face needs a cup more than your cultivation does."]),
+    KUANG: npc("Headman Kuang", "Headman of the Bamboo Village", "villager_male", ("bamboo_forest", "BambooVillage"),
+               [0.85, 0.8, 0.65], 1.0,
+               barks=["The earth god sees all. He mostly sees chickens.", "We cut bamboo, we sell bamboo, we sleep in bamboo.",
+                      "Immortals are welcome. Their swords can wait outside."]),
+    SHU: npc("Big Shu", "Woodcutter of the Bamboo", "villager_male", ("bamboo_forest", "WoodcutterCamp"),
+             [0.9, 0.75, 0.6], 1.18,
+             barks=["Mind the saw pit. It has eaten two boots and a goat.",
+                    "Bamboo grows faster than I cut. I've made peace with it."]),
+    MENG: npc("Meng Sanniang", "Huntress of the Forest Lodge", "villager_female", ("bamboo_forest", "HunterLodge"),
+              [0.75, 0.65, 0.5], 1.03,
+              barks=["Tracks don't lie. People do.", "I take what the forest can spare. Not a hair more.",
+                     "Walk quieter. The wolves already know you're here."]),
+    QU: npc("Qu Wanqing", "Wandering Alchemist", "cultivator_female", ("bamboo_forest", "AlchemistCottage"),
+            [0.9, 0.7, 1.0], 0.98,
+            barks=["Don't touch the blue jar. Or the green one. Actually, don't touch.",
+                   "I only explode things on purpose. Usually.", "Every poison is a medicine that lost its manners."]),
+    PEI: npc("Pei Yuan", "Sentry of the Forest Watchpost", "disciple_male", ("bamboo_forest", "ForestWatchpost"),
+             [0.7, 0.9, 0.7], 1.0,
+             barks=["Nothing to report. Nothing to report. A bird. Nothing to report.",
+                    "The sect sends me bamboo shoots and letters. Mostly bamboo shoots."]),
+    OUYANG: npc("Ouyang Ci", "Lecturer of the County Academy", "villager_male", ("qingshi_town", "Academy"),
+                [0.6, 0.7, 0.9], 0.97,
+                barks=["The classics have an answer for everything. The question is which classic.",
+                       "My students fear the examination. I fear my students."]),
+    QIAO: npc("Qiao Niang", "Mistress of the Silk Workshop", "villager_female", ("qingshi_town", "SilkWorkshop"),
+              [1.2, 0.7, 0.8], 0.97,
+              barks=["A dropped thread is a dropped day.", "Silk remembers every hand that pulled it."]),
+    WANG: npc("Wang Pu", "Master of the Wang Pharmacy", "villager_male", ("qingshi_town", "Pharmacy"), [0.8, 1.0, 0.8],
+              0.94, barks=["Take it with rice. Not wine. Never wine.", "Four hundred drawers. I know every one by smell."]),
+    YU: npc("Yu Hongxiu", "Leading Lady of the Qingshi Opera", "villager_female", ("qingshi_town", "OperaStage"),
+            [1.3, 0.6, 0.62], 1.0,
+            barks=["Tonight I die of heartbreak. Tomorrow, of poison. Sundays I rest.",
+                   "Every face in the audience is a story. Most of them are bored."]),
+    BI: npc("Matron Bi", "Keeper of the Temple Orphanage", "villager_female", ("qingshi_town", "Orphanage"),
+            [0.8, 0.8, 0.9], 0.93,
+            barks=["Thirty-one children and one of me. The arithmetic is not in my favour.",
+                   "Wipe your feet. Wipe your nose. Wipe that look off your face."]),
+    LEI: npc("Lei Zhen", "Captain of the County Militia", "villager_male", ("qingshi_town", "Barracks"), [0.6, 0.52, 0.5],
+             1.1, barks=["Spears up! No, the pointy end!", "The militia will hold. The militia will mostly hold."]),
+    HUO: npc("Huo Da", "Keeper of the Riverside Tavern", "villager_male", ("qingshi_town", "Tavern"), [1.0, 0.8, 0.7],
+             1.08, barks=["Fights outside. Singing inside. Paying always.",
+                          "I've heard every secret on this river. I sell none of them. Mostly."]),
+    KU: npc("Ku Sheng", "Broker of the Shadow Market", "bandit", ("blood_abyss", "ShadowMarket"), [0.5, 0.42, 0.6], 0.96,
+            appear_from="q051",
+            barks=["Everything has a price down here. Especially leaving.",
+                   "I don't take sides. I take a percentage."]),
+    HEI: npc("Hei Yan", "Acolyte of the Blood Moon", "demon_cultivator", None, [0.5, 0.3, 0.35], 0.95, appear_from="q051",
+             barks=["The moon is watching.", "Kneel now and it hurts less later."]),
+    QINGYI: npc("Qingyi", "Spirit Servant of the Jade Terraces", "disciple_female", ("sky_isles", "JadeTerraces"),
+                [0.75, 0.95, 1.2], 0.9, appear_from="q071",
+                barks=["The rice was planted when your ancestors were fish.", "Please do not step on the clouds. They bruise."]),
+    HE: npc("He Lingyun", "Crane Warden of the Isles", "elder_male", ("sky_isles", "CraneIsle"), [1.0, 1.0, 1.1], 0.95,
+            appear_from="q071",
+            barks=["The cranes remember the last immortal who passed. They did not like him.",
+                   "Walk slowly. Cranes judge haste."]),
+    SHUREC: npc("Shu Wenlan", "Scribe of the Hall of Records", "cultivator_male", ("sky_isles", "HallOfRecords"),
+                [0.9, 0.85, 0.6], 0.97, appear_from="q071",
+                barks=["Every life is a line in a book. Some lines are very long.",
+                       "Please do not breathe on the records."]),
+})
+
+MINOR = [SHEN, TAO, BAO, LING, ZHONG, QIU, FAN, TANG, RUO, KUANG, SHU, MENG, QU, PEI, OUYANG, QIAO, WANG, YU, BI,
+         LEI, HUO, KU, HEI, QINGYI, HE, SHUREC]
 
 for _id, _npc in NPCS.items():
     _v = NPC_VOICES.get(_id)

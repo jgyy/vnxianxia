@@ -115,6 +115,20 @@ func open_spot(center: Vector3, angle: float, dist: float) -> Vector3:
 		var g := ground_at(cand)
 		if g == cand or absf(g.y - center.y) > 2.0:
 			continue
-		if is_open(g):
+		if is_open(g) and reachable(center, g):
 			return g
 	return center
+
+
+## True when a spot can be walked to from `from`: nothing solid between them at
+## chest height and no roof overhead (a hollow building's inside passes
+## is_open() but is walled off from the objective).
+func reachable(from: Vector3, to: Vector3) -> bool:
+	var space := get_world_3d().direct_space_state
+	var q := PhysicsRayQueryParameters3D.create(from + Vector3.UP * 1.1, to + Vector3.UP * 1.1)
+	q.collision_mask = 1
+	if not space.intersect_ray(q).is_empty():
+		return false
+	var up := PhysicsRayQueryParameters3D.create(to + Vector3.UP * 0.5, to + Vector3.UP * 12.0)
+	up.collision_mask = 1
+	return space.intersect_ray(up).is_empty()

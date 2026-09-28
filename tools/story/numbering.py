@@ -1,4 +1,4 @@
-"""Numbering of the 1000-quest saga: 10 volumes x 10 chapters x 10 quests.
+"""Numbering of the 2000-quest saga: 10 volumes x 10 chapters x 20 quests.
 
 The ten hand-written chapters of the original 100-quest story ("legacy"
 chapters O1..O10) keep their text and voice files and are placed inside the
@@ -28,7 +28,7 @@ LEGACY_LEAD_QUESTS = {o: LEGACY_QUESTS_PER_CHAPTER - t for o, t in LEGACY_TAIL_Q
 
 
 def qid(n):
-    """Quest id of global quest number ``n`` (1..1000)."""
+    """Quest id of global quest number ``n`` (1..2000)."""
     return "q%04d" % n
 
 

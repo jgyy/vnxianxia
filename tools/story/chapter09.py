@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -25,7 +25,9 @@ CHAPTER = chapter(
                   talk(WEI, "Spend an evening with Wei Tong",
                        (WEI, "You're back! You're taller. Are you taller? Nascent Soul makes people taller, I read it somewhere. Maybe."),
                        (WEI, "Elder Mo's been in a strange mood. Keeps patting my shoulder. He gave me his tea set. His good tea set."),
-                       (WEI, "Old men do that before long journeys. He's not going anywhere, is he?")),
+                       (WEI, "Old men do that before long journeys. He's not going anywhere, is he?"),
+                       added(HAN, "He gave me his whetstone. Elder Mo never gives anyone anything. I didn't like it either, Wei Tong."),
+                       added(P, "He's checking the runes. That's all. He'll be fine.")),
               ], xp=900),
         # ---------------------------------------------------------------- q082
         quest("A Letter from the Abyss",
@@ -39,6 +41,7 @@ CHAPTER = chapter(
                   talk(HAN, "Show the letter to Han Xue",
                        (HAN, "It's a trap. Obviously. Everything Gu does is a trap wrapped in a lesson."),
                        (P, "But if he knows something about the formation... Elder Mo found a flaw. I can't ignore this."),
+                       added(WEI, "Then take Dumpling. Take two Dumplings. Take me. Nobody said anything about swords."),
                        (HAN, "I know. That's what worries me. Go. If you're not back by dawn, I'm telling Elder Mo, and then I'm coming to drag you home.")),
               ], xp=800),
         # ---------------------------------------------------------------- q083
@@ -50,7 +53,10 @@ CHAPTER = chapter(
                        (GU, "You came alone. Good. Then listen, because there is no time. The formation your sect built is a key, not a lock."),
                        (GU, "Twenty years ago I altered the archive copy. Seven runes. When it is lit, it will pour the sect's qi into the Abyss and break the seal from above."),
                        (GU, "I did it for Lan. The Patriarch swore he held her soul. He did. He fed it to the Heart Mirror long ago. I heard her screaming there."),
-                       (GU, "I cannot face the mirror. It shows me what I am. You can. Free her. Then run home before they light it."), at="AbyssDepths"),
+                       (GU, "I cannot face the mirror. It shows me what I am. You can. Free her. Then run home before they light it."),
+                       added(YE, "He speaks the truth, for once. I watched him at the mirror. He never looks into it."),
+                       added(GU, "The nameless one. So you did not come alone."),
+                       added(P, "I didn't bring him. He brings himself."), at="AbyssDepths"),
                   reach("HeartMirror", "Approach the Heart Mirror",
                         (N, "A pool of black water, perfectly still. Your reflection looks back at you. Then it smiles, a moment before you do.")),
               ], xp=900),
@@ -69,7 +75,9 @@ CHAPTER = chapter(
                            (N, "Hundreds of souls, drifting upward. One stops in front of you: a girl with Gu's eyes, who bows once, and is gone.")),
                   talk(GU, "Return to Gu Hanshan",
                        (GU, "I saw her. She bowed to you. She always had better manners than her father."),
-                       (GU, "Go. Now. The formation... I can feel it waking even from here. Run, {player}, run!"), at="AbyssDepths"),
+                       (GU, "Go. Now. The formation... I can feel it waking even from here. Run, {player}, run!"),
+                       added(YE, "I'll get him out of the Abyss. Go, {player}. Faster than you have ever run."),
+                       added(P, "Then run with me, both of you!"), at="AbyssDepths"),
               ], xp=1500, items={"spirit_stone": 8}),
         # ---------------------------------------------------------------- q085
         quest("Burning Sky over Azure Cloud",
@@ -77,7 +85,9 @@ CHAPTER = chapter(
               "sect", [
                   reach("SectGate", "Race back to the sect gate",
                         (LU, "{player}! The formation lit itself at midnight. Blood Moon disciples came out of nowhere, in our robes!"),
-                        (LU, "Elder Mo went into the array. He told everyone to stay back. The light's gone red. It's gone all red!")),
+                        (LU, "Elder Mo went into the array. He told everyone to stay back. The light's gone red. It's gone all red!"),
+                        added(P, "Where's the Sect Master? Where's Han Xue?"),
+                        added(WEI, "Han Xue's at the array! I'm holding the gate! Go!")),
                   defeat("blood_guard", 5, "SectGate", "Cut through the infiltrators at the gate"),
                   defeat("demon_cultivator", 4, "FormationArray", "Clear the demonic cultivators guarding the array",
                          (HAN, "They're protecting the array! They want it to keep burning. {player}, get to Elder Mo!")),
@@ -94,7 +104,8 @@ CHAPTER = chapter(
                   talk(WEI, "Find Wei Tong",
                        (WEI, "He gave me his tea set. I thought he was being nice. He was saying goodbye, and I didn't even notice."),
                        (WEI, "I was going to make him dumplings. Proper ones, for his birthday. I've been practising for a month."),
-                       (P, "Make them anyway, Senior Brother. We'll eat them for him.")),
+                       (P, "Make them anyway, Senior Brother. We'll eat them for him."),
+                       added(HAN, "We'll all eat them, Wei Tong. Every one. Even the burnt ones.")),
               ], xp=1200),
         # ---------------------------------------------------------------- q087
         quest("Ashes and Incense",
@@ -107,7 +118,9 @@ CHAPTER = chapter(
                        (HUA, "He'd leave peaches on my doorstep instead. Every autumn, for forty years. I'll miss the peaches.")),
                   talk(MAN, "Speak with Xiao Man at the lotus pond",
                        (MAN, "I brought plum blossoms. Elder Mo pretended he didn't like flowers, but he always smelled them when he thought no one was looking."),
-                       (MAN, "Are you all right? You don't have to be. My brother says being all right is overrated.")),
+                       (MAN, "Are you all right? You don't have to be. My brother says being all right is overrated."),
+                       added(SHI, "I said overrated. I also said it's allowed. Sit with us a while, {player}."),
+                       added(P, "Thank you. Both of you.")),
                   meditate("CliffEdge", 10, "Remember Elder Mo at the cliff edge",
                            (N, "The sea of clouds, where you first condensed your qi. Elder Mo's tassel flutters in your hand."),
                            (N, "Back straight. A crooked spine makes a crooked meridian. You straighten your back, and weep, and breathe.")),
@@ -126,6 +139,7 @@ CHAPTER = chapter(
                   talk(GU, "Face Gu Hanshan in chains at the moon gate",
                        (GU, "I surrendered at your gate an hour after you left the mirror. The Sect Master says my fate is yours to decide."),
                        (GU, "Execute me. It's what the precepts demand. I wrote half of them."),
+                       added(YUN, "The precepts are mine to keep now, Gu. And I have given this choice away."),
                        (P, "No. Come with us to the Abyss. Fight as an elder of the Azure Cloud. If you must die, die as one."),
                        (GU, "...Mo would have said the same. Very well. I will show you the way through the black gate."), at="MoonGate"),
               ], xp=1100),
@@ -141,7 +155,9 @@ CHAPTER = chapter(
                        (SHI, "Man Man is making medicine bundles. Hundreds of them. She's only dropped a few.")),
                   talk(QIAN, "Hear Steward Qian's oath",
                        (QIAN, "The treasury is open. All of it. Take whatever you need. Spirit stones are useless to the dead."),
-                       (QIAN, "I have counted every stone in this sect for thirty years. Tonight I will count nothing. Just come back.")),
+                       (QIAN, "I have counted every stone in this sect for thirty years. Tonight I will count nothing. Just come back."),
+                       added(ZHAO, "Steward Qian, counting nothing. Somebody paint this moment."),
+                       added(P, "I'll come back, Steward. I'll even bring you a receipt.")),
                   collect("medicine", 4, "LotusPond", "Collect Xiao Man's medicine bundles for the army"),
                   talk(YE, "Meet Ye Wuming at the sect gate",
                        (YE, "The blood moon rises in three days. On that night the Patriarch will break free with or without your formation."),
@@ -160,7 +176,9 @@ CHAPTER = chapter(
                   talk(YUN, "Receive the Sect Master's blessing",
                        (YUN, "Soul Transformation. Heaven itself will notice you now. So will the Patriarch."),
                        (YUN, "In three days we march on the Abyss, every disciple who can hold a sword. We end this, as our founders could not."),
-                       (YUN, "Mo believed in you before any of us. Let's prove him right, {player}.")),
+                       (YUN, "Mo believed in you before any of us. Let's prove him right, {player}."),
+                       added(HAN, "We march together. All of us. He would have called that adequate."),
+                       added(P, "Then let's be adequate, Sect Master. For him.")),
               ], xp=2000, items={"spirit_stone": 10}, realm="Soul Transformation"),
     ])
 

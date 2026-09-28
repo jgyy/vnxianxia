@@ -1,4 +1,4 @@
-from .dsl import P, N, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
+from .dsl import P, N, added, chapter, quest, talk, reach, defeat, collect, meditate, interact, cinematic
 from .npcs import *
 from .saga_gen import B, C
 
@@ -19,7 +19,8 @@ CHAPTER = chapter(
                   talk(ZHOU, "Meet Magistrate Zhou at the yamen",
                        (ZHOU, "The immortals! Good. I have forty guards, three hundred farmers and one very old ballista."),
                        (ZHOU, "I was a coward once, and a monster fed on my town while I drank his tea. Not twice. Tell me where to stand."),
-                       (P, "Right here, Magistrate. People need to see you standing.")),
+                       (P, "Right here, Magistrate. People need to see you standing."),
+                       added(ZHAO, "Forty guards and a ballista. The Zhao clan has held worse walls with less. ...Not many. But some.")),
               ], xp=500),
         # ---------------------------------------------------------------- q062
         quest("Walls and Wards",
@@ -30,6 +31,7 @@ CHAPTER = chapter(
                        (DU, "Jin's warehouse has barrels of it. He says it's for export. I say it's for not dying.")),
                   talk(JIN, "Persuade Merchant Jin to open his warehouse",
                        (JIN, "My oil? That's six months' profit! Who compensates me? The yamen? The yamen owes me for the ballista!"),
+                       added(DU, "Six months' profit, Jin, or no town left to sell it in. Pick one."),
                        (P, "You sold blood lotus to the people who took eleven of your neighbours. You owe this town more than oil."),
                        (JIN, "...That was business. I didn't know. I didn't want to know."),
                        (JIN, "Take it. Take all of it. Maybe it will weigh a little less on the scales in the next life.")),
@@ -50,6 +52,7 @@ CHAPTER = chapter(
                        (ZHAO, "I'll hold the east wall. Wei Tong takes the south. You go wherever it's worst. That's what you're good at."),
                        (ZHAO, "And if I die, tell my clan I died beautifully. Specify beautifully."),
                        (P, "Nobody's dying today, Zhao Kang."),
+                       added(WEI, "Nobody's dying before dinner, anyway. After dinner, we'll see."),
                        (ZHAO, "Hmph. From your lips to heaven's ears.")),
               ], xp=500),
         # ---------------------------------------------------------------- q064
@@ -63,7 +66,9 @@ CHAPTER = chapter(
                          (TIE, "Burn the rice! Burn the barns! Nobody eats this winter unless Iron-Fang says so!")),
                   reach("MarketSquare", "Report to Wei Tong at the market kitchens",
                        (WEI, "The farmers are across? Good. I've been guarding the kitchens. Strategically. Armies march on their stomachs."),
-                       (WEI, "Here, a dumpling. Eat it. Then go and hit something. Elder Mo would want you fed and angry.")),
+                       (WEI, "Here, a dumpling. Eat it. Then go and hit something. Elder Mo would want you fed and angry."),
+                       added(ZHAO, "Strategically guarding the kitchens. Wei Tong, you are a genius and a disgrace."),
+                       added(P, "Save me two dumplings. I'll be back for them.")),
               ], xp=520, items={"medicine": 2}),
         # ---------------------------------------------------------------- q065
         quest("The Graveyard Flank",
@@ -75,7 +80,9 @@ CHAPTER = chapter(
                            (N, "You press your palm to the rune circle. The Heart Sutra flows from your golden core, and the blood-ink fades to grey dust.")),
                   reach("MainStreet", "Check on Zhao Kang",
                        (ZHAO, "The east wall held. Barely. I may have set my own sleeve on fire. It was a tactical fire."),
-                       (ZHAO, "They didn't push the graveyard to take the town. They wanted blood on those runes. Why?")),
+                       (ZHAO, "They didn't push the graveyard to take the town. They wanted blood on those runes. Why?"),
+                       added(WEI, "Blood on the runes. Like the old deacon's circle. Somebody is still collecting."),
+                       added(P, "And somebody is still paying for it. Let's find out who.")),
               ], xp=540, items={"rune_fragment": 2}),
         # ---------------------------------------------------------------- q066
         quest("The Riverside Assault",
@@ -87,6 +94,7 @@ CHAPTER = chapter(
                   collect("medicine", 4, "Riverside", "Save the medicine crates washed up on the bank"),
                   talk(LIU, "Bring the medicine to Widow Liu at the well",
                        (LIU, "My Liu Er came home three days ago. Thin as a reed, but home. He talks about a sect disciple who broke his cage."),
+                       added(PAN, "And every farmer's across the river, Madam Liu. My third plank complained the whole way."),
                        (LIU, "You didn't promise. You just did it. Now I'll carry water to your wall until my arms fall off."),
                        (P, "Tell Liu Er to stay inside tonight. And give him an extra bowl of rice from me.")),
               ], xp=540, items={"medicine": 2}),
@@ -97,6 +105,7 @@ CHAPTER = chapter(
                   talk(JIN, "Catch Merchant Jin in the back alley",
                        (JIN, "Don't kill me! I dug that tunnel years ago for smuggling tea! Iron-Fang found out. He threatened my daughters."),
                        (JIN, "I opened it for him tonight. Then I saw you give away my oil to people who'd spat at me. I couldn't..."),
+                       added(DU, "Iron-Fang threatened my runners too, Jin. You should have come to me."),
                        (JIN, "Turn me in. I deserve it. But close the tunnel first. Please."),
                        (P, "Fear made you do it. What you do next is your choice. Go help Constable Du, Master Jin."), at="BackAlley"),
                   defeat("bandit", 4, "Warehouse", "Stop the bandits in the warehouse yard"),
@@ -117,6 +126,7 @@ CHAPTER = chapter(
                        (P, "Where are your people's families, Tie Hu?"),
                        (TIE, "In the Abyss. Behind the black gate. I burned villages so they'd keep breathing. Does that make it better? It doesn't."),
                        (P, "Kneel at this temple and swear to fight for the town you tried to burn. Then help me bring your families home."),
+                       added(DU, "Swear it here, Iron-Fang, and I'll write it down. In ink. The permanent kind."),
                        (TIE, "...You're a fool. Fine. Iron-Fang pays his debts. Eventually."), at="Temple"),
               ], xp=800, items={"spirit_stone": 6}),
         # ---------------------------------------------------------------- q069
@@ -124,7 +134,9 @@ CHAPTER = chapter(
               "The final wave hits the town gate, and a familiar figure watches from the graveyard hill.",
               "qingshi_town", [
                   defeat("demon_cultivator", 5, "TownGate", "Hold the town gate against the last wave",
-                         (DU, "They're at the gate! Everyone with a spear, with me! For Qingshi!")),
+                         (DU, "They're at the gate! Everyone with a spear, with me! For Qingshi!"),
+                         added(ZHAO, "For Qingshi! And for the Zhao clan, who will hear about this in great detail!"),
+                         added(P, "Hold the line! They're breaking!")),
                   talk(GU, "Confront Gu Hanshan on the graveyard hill",
                        (GU, "Well fought, disciple. Truly. You were always the most stubborn of the new ones."),
                        (P, "Why, Elder Gu? Why betray the sect? Why feed children to the Blood Moon?"),
@@ -144,7 +156,9 @@ CHAPTER = chapter(
                        (ZHOU, "I'm having a stele carved at the gate. Your name will be on it. The yamen will not forget. I will not forget.")),
                   talk(FANG, "Celebrate at the Drunken Crane",
                        (FANG, "Free wine for the heroes! One cup each. Immortals drink like fish and I'm not a lake."),
-                       (FANG, "Iron-Fang is washing dishes in my kitchen, by the way. He's surprisingly good. Very thorough scrubber.")),
+                       (FANG, "Iron-Fang is washing dishes in my kitchen, by the way. He's surprisingly good. Very thorough scrubber."),
+                       added(TIE, "Very thorough. Tell them very thorough. Iron-Fang does nothing by halves."),
+                       added(P, "One cup, then. To the nineteen.")),
                   meditate("Temple", 8, "Mourn the fallen at the temple",
                            (N, "Nineteen tablets. Farmers, a guard, a boy who carried arrows. You burn incense for each, and say each name aloud.")),
                   talk(YUN, "Report to the Sect Master",
